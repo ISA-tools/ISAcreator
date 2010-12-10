@@ -1,0 +1,65 @@
+<investigationFileStructure>
+    <section>
+        <name>ONTOLOGY SOURCE REFERENCE</name>
+        <numberOfRows>4</numberOfRows>
+    </section>
+
+    <section>
+        <name>INVESTIGATION</name>
+        <numberOfRows>5</numberOfRows>
+    </section>
+
+    <section>
+        <name>INVESTIGATION PUBLICATIONS</name>
+        <numberOfRows>7</numberOfRows>
+    </section>
+
+    <section>
+        <name>INVESTIGATION CONTACTS</name>
+        <numberOfRows>11</numberOfRows>
+    </section>
+
+    <section>
+        <name>STUDY</name>
+        <numberOfRows>6</numberOfRows>
+    </section>
+
+    <section>
+        <name>STUDY PUBLICATIONS</name>
+        <numberOfRows>7</numberOfRows>
+    </section>
+
+    <section>
+        <name>STUDY DESIGN DESCRIPTORS</name>
+        <numberOfRows>3</numberOfRows>
+    </section>
+
+    <section>
+        <name>STUDY FACTORS</name>
+        <numberOfRows>4</numberOfRows>
+    </section>
+
+    <section>
+        <name>STUDY ASSAYS</name>
+        <numberOfRows>8</numberOfRows>
+    </section>
+
+    <section>
+        <name>STUDY PROTOCOLS</name>
+        <numberOfRows>14</numberOfRows>
+    </section>
+
+    <section>
+        <name>STUDY CONTACTS</name>
+        <numberOfRows>11</numberOfRows>
+    </section>
+
+    <investigationStructure>
+        ONTOLOGY SOURCE REFERENCE INVESTIGATION INVESTIGATION PUBLICATIONS INVESTIGATION CONTACTS
+    </investigationStructure>
+
+    <studyStructure>
+        STUDY STUDY PUBLICATIONS STUDY DESIGN DESCRIPTORS STUDY FACTORS STUDY ASSAYS STUDY PROTOCOLS STUDY CONTACTS
+    </studyStructure>
+
+</investigationFileStructure>

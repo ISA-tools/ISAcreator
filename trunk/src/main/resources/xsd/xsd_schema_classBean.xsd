@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+           targetNamespace="http://bioontology.org/bioportal/classBeanSchema#"
+           xmlns:c="http://bioontology.org/bioportal/classBeanSchema#">
+    <xs:element name="success">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="c:accessedResource"/>
+                <xs:element ref="c:accessDate"/>
+                <xs:element ref="c:data"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="accessedResource" type="xs:string"/>
+    <xs:element name="accessDate" type="xs:string"/>
+
+    <xs:element name="data">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="c:list" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="c:classBean" minOccurs="0" maxOccurs="1"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="classBean">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="c:fullId" maxOccurs="1" minOccurs="0"/>
+                <xs:element ref="c:id" maxOccurs="1" minOccurs="0"/>
+                <xs:element ref="c:label" maxOccurs="1" minOccurs="0"/>
+                <xs:element ref="c:relations" maxOccurs="1" minOccurs="0"/>
+                <xs:element name="type" type="xs:string" maxOccurs="1" minOccurs="0"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="fullId" type="xs:string"/>
+    <xs:element name="id" type="xs:string"/>
+    <xs:element name="label" type="xs:string"/>
+
+    <xs:element name="relations">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:entry"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="entry">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="string" type="xs:string"/>
+                    <xs:element ref="c:list"/>
+                </xs:choice>
+                <xs:element minOccurs="0" ref="c:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="list">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:classBean"/>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="string" type="xs:string"/>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="int" type="xs:integer"/>
+
+</xs:schema>

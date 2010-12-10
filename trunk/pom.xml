@@ -1,0 +1,298 @@
+<!--
+  ~ ISAcreator has been designed to structure experimental metadata in ISA-TAB format.
+  ~ More information at: http://isatab.sourceforge.net/isacreator.html
+  ~
+  ~ Work carried out by:
+  ~  - Eamonn Maguire (software engineer)
+  ~  - Philippe Rocca-Serra (user requirements and wizard tool specifications)
+  ~  - Susanna-Assunta Sansone (coordination and funds)
+  ~  - Team page: http://isa-tools.org
+  ~
+  ~ License
+  ~ (Attribution-No Derivative Works 3.0 Unported)
+  ~ You are free to Share — to copy, distribute and transmit the work under the following conditions:
+  ~  - Attribution. You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work).
+  ~  - No Derivative Works. You may not alter, transform, or build upon this work.
+  ~ http://creativecommons.org/licenses/by-nd/3.0/
+  ~ http://creativecommons.org/licenses/by-nd/3.0/legalcode
+  ~
+  ~ Sponsors
+  ~ This work has been funded mainly by the EU Carcinogenomics (http://www.carcinogenomics.eu) and in part by the EU NuGO (http://www.nugo.org/everyone) projects.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.isatools</groupId>
+    <artifactId>ISAcreator</artifactId>
+    <packaging>jar</packaging>
+    <version>1.3.0.2</version>
+    <name>ISAcreator</name>
+    <url>http://www.isa-tools.org</url>
+
+    <developers>
+        <developer>
+            <id>maguire</id>
+            <name>Eamonn Maguire</name>
+            <email>eamonnmag@gmail.com</email>
+            <organization>ISA tools team</organization>
+            <organizationUrl>http://isa-tools.org</organizationUrl>
+            <timezone>0</timezone>
+        </developer>
+    </developers>
+
+    <repositories>
+
+        <repository>
+            <id>m2repo</id>
+            <name>EBI repo</name>
+            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
+        </repository>
+
+        <repository>
+            <id>mvnrepository</id>
+            <url>http://www.mvnrepository.com/</url>
+            <layout>legacy</layout>
+        </repository>
+
+        <repository>
+            <id>atlassian</id>
+            <url>https://m2proxy.atlassian.com/repository/public</url>
+        </repository>
+
+
+        <repository>
+            <id>java-dev</id>
+            <url>http://download.java.net/maven/2/</url>
+        </repository>
+
+        <repository>
+            <id>repo1</id>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+
+        <repository>
+            <id>Jarvana</id>
+            <url>http://www.jarvana.com/jarvana/browse/</url>
+        </repository>
+
+
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <executable>apt</executable>
+                    <fork>true</fork>
+                    <debug>true</debug>
+                    <compilerArguments>
+                        <s>${project.build.directory}</s>
+                    </compilerArguments>
+                    <meminitial>128m</meminitial>
+                    <maxmem>512m</maxmem>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                        <!--these properties are ignored-->
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.3</version>
+
+                <configuration>
+                    <targetJdk>1.5</targetJdk>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xmlbeans-maven-plugin</artifactId>
+                <version>2.3.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>xmlbeans</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <inherited>true</inherited>
+                <configuration>
+                    <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                    <sourceGenerationDirectory>
+                        target/generated/xmlbeans
+                    </sourceGenerationDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <packageName>uk.ac.ebi.cdb.client</packageName>
+                    <wsdlUrls>
+                        <wsdlUrl>http://www.ebi.ac.uk/webservices/citexplore/v1.0/service?wsdl</wsdlUrl>
+                    </wsdlUrls>
+                    <sourceDestDir>target/generated/citexplore</sourceDestDir>
+                </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.jws</groupId>
+                        <artifactId>jsr181-api</artifactId>
+                        <version>1.0-MR1</version>
+
+                    </dependency>
+
+                </dependencies>
+            </plugin>
+
+
+            <!--&lt;!&ndash;JNLP Plugin&ndash;&gt;-->
+            <!--<plugin>-->
+            <!--<groupId>org.codehaus.mojo.webstart</groupId>-->
+            <!--<artifactId>webstart-maven-plugin</artifactId>-->
+
+            <!--</plugin>-->
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!--<dependency>-->
+        <!--<groupId>org.codehaus.mojo.webstart</groupId>-->
+        <!--&lt;!&ndash;groupId>com.sun.java.jnlp</groupId&ndash;&gt;-->
+        <!--<artifactId>webstart-jnlp-servlet</artifactId>-->
+        <!--<version>1.0-6.0-02_ea_b02-SNAPSHOT</version>-->
+        <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>net.java.dev.fuse</groupId>
+            <artifactId>fuse-swing</artifactId>
+            <version>0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.collections</groupId>
+            <artifactId>collections-generic</artifactId>
+            <version>4.01</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>1.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.prefuse</groupId>
+            <artifactId>prefuse</artifactId>
+            <version>20071021</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.profusians</groupId>
+            <artifactId>profusians</artifactId>
+            <version>beta-20080629</version>
+        </dependency>
+
+        <dependency>
+            <groupId>uk.ac.ebi</groupId>
+            <artifactId>ols</artifactId>
+            <version>1.14.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.1-1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml</groupId>
+            <artifactId>jaxrpc-api</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>stax</groupId>
+            <artifactId>stax-api</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+
+    </dependencies>
+</project>
