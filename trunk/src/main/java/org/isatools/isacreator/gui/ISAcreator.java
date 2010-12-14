@@ -235,20 +235,17 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         FooterPanel fp = new FooterPanel(this);
         add(fp, BorderLayout.SOUTH);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                setupAboutPanel();
-                // check that java version is supported!
-                if (!acceptJavaVersion()) {
-                    lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
-                } else {
-                    lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
-                }
-                setCurrentPage(lp);
-                pack();
-                setVisible(true);
-            }
-        });
+        setupAboutPanel();
+        // check that java version is supported!
+        if (!acceptJavaVersion()) {
+            lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+        } else {
+            lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
+        }
+        setCurrentPage(lp);
+        pack();
+        setVisible(true);
+
     }
 
     public void setMappings(List<MappingObject> mappings) {

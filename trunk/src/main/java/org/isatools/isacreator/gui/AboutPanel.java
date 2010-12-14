@@ -57,7 +57,7 @@ public class AboutPanel extends JPanel {
     public AboutPanel() {
         ResourceInjector.get("gui-package.style").inject(this);
 
-        setPreferredSize(new Dimension(399, 264));
+        setPreferredSize(new Dimension(463, 301));
         setLayout(new BorderLayout());
         setOpaque(false);
         createGUI();

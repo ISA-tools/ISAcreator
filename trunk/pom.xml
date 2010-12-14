@@ -26,7 +26,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>jar</packaging>
-    <version>1.3.0.2</version>
+    <version>1.3.0</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
