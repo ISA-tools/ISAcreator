@@ -32,12 +32,15 @@
  Display of Attribution Information is required in Larger Works which are defined in the CPAL as a work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
 
  Sponsors:
- The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
+ The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu),
+ the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
 package org.isatools.isacreator.effects;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.jdesktop.fuse.InjectedResource;
+import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -53,14 +56,17 @@ import java.awt.*;
 
 public class SingleSelectionListCellRenderer extends JComponent implements ListCellRenderer {
 
-    public static final ImageIcon SELECTED_IMAGE = new ImageIcon(SingleSelectionListCellRenderer.class.getResource("/images/ontologyselectiontool/item_selected.png"));
-    public static final ImageIcon UNSELECTED_IMAGE = new ImageIcon(SingleSelectionListCellRenderer.class.getResource("/images/ontologyselectiontool/item_unselected.png"));
+    @InjectedResource
+    private ImageIcon selectedIcon, unselectedIcon;
+
     public static final Color SELECTED_COLOR = UIHelper.LIGHT_GREEN_COLOR;
     public static final Color UNSELECTED_COLOR = UIHelper.BG_COLOR;
 
     private DefaultListCellRenderer listCellRenderer;
 
     public SingleSelectionListCellRenderer() {
+        ResourceInjector.get("effects-package.style").inject(this);
+
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
@@ -108,7 +114,7 @@ public class SingleSelectionListCellRenderer extends JComponent implements ListC
 
         SpecialListImage() {
             setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-            itemSelectedIndicator = new JLabel(UNSELECTED_IMAGE);
+            itemSelectedIndicator = new JLabel(unselectedIcon);
 
             add(itemSelectedIndicator);
             add(Box.createHorizontalStrut(2));
@@ -116,9 +122,9 @@ public class SingleSelectionListCellRenderer extends JComponent implements ListC
 
         public void setSelected(boolean selected) {
             if (selected) {
-                itemSelectedIndicator.setIcon(SELECTED_IMAGE);
+                itemSelectedIndicator.setIcon(selectedIcon);
             } else {
-                itemSelectedIndicator.setIcon(UNSELECTED_IMAGE);
+                itemSelectedIndicator.setIcon(unselectedIcon);
             }
         }
     }
