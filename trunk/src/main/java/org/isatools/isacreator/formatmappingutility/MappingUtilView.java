@@ -455,6 +455,7 @@ public class MappingUtilView extends DataEntryWrapper {
 
         final MappingEntryGUI mappingTableGUI = new MappingEntryGUI(tableReference, columnsToBeMappedTo, fileName, readerToUse, preExistingMapping, fixedMappings);
         mappingTableGUI.createGUI();
+        mappingTableGUI.expandColumnToolbox();
         mappingTableGUI.setSize(new Dimension((int) (menuPanels.getWidth() * 0.80), (int) (menuPanels.getHeight() * 0.90)));
         mappingTableGUI.setBorder(null);
 

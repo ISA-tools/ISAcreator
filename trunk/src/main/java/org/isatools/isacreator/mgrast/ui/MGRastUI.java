@@ -38,6 +38,7 @@
 package org.isatools.isacreator.mgrast.ui;
 
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
+import org.isatools.isacreator.common.SelectOutputDirectoryDialog;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.common.dialog.WarningDialog;
@@ -96,7 +97,7 @@ public class MGRastUI extends JDialog {
     @InjectedResource
     private ImageIcon mgRastHeader, mgRastExportSampleSection, weKnowIcon, weKnowIconOver, weDoNotKnowIcon,
             weDoNotKnowIconOver, helpIcon, helpIconOver, closeWindowIcon, closeWindowIconOver, exportIcon,
-            exportIconOver, buttonPanelSeparator, loadingSamples, mappingConcepts, noProjectNameWarning;
+            exportIconOver, buttonPanelSeparator, loadingSamples, mappingConcepts, noProjectNameWarning, exportHeader;
 
     private JPanel swappableContainer;
 
@@ -207,7 +208,7 @@ public class MGRastUI extends JDialog {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                final SelectOutputDirectoryDialog outputDir = new SelectOutputDirectoryDialog();
+                final SelectOutputDirectoryDialog outputDir = new SelectOutputDirectoryDialog(exportHeader);
 
 
                 outputDir.addPropertyChangeListener(SelectOutputDirectoryDialog.CANCEL, new PropertyChangeListener() {

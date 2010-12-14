@@ -93,58 +93,59 @@ public class MGRastConceptMapper {
         String lcISATerm = isaTerm.toLowerCase();
 
         Set<String> tuplesForGSCTerm = null;
+        if (conceptsToMGRastTerm != null) {
+            for (String value : conceptsToMGRastTerm.keySet()) {
+                // Since the mgrast ter
 
-        for (String value : conceptsToMGRastTerm.keySet()) {
-            // Since the mgrast ter
-
-            // if the word length is too short we perform a direct match on the term. Since checking to see if
-            // ph is contained in something like phenotype will not give us the correct result...
-            if (value.length() > 4) {
-                // Simplest case.
-                if (lcISATerm.contains(value)) {
-                    String term = interrogatePossibilitiesForCorrectTerm(
-                            conceptsToMGRastTerm.get(value), checkListType);
+                // if the word length is too short we perform a direct match on the term. Since checking to see if
+                // ph is contained in something like phenotype will not give us the correct result...
+                if (value.length() > 4) {
+                    // Simplest case.
+                    if (lcISATerm.contains(value)) {
+                        String term = interrogatePossibilitiesForCorrectTerm(
+                                conceptsToMGRastTerm.get(value), checkListType);
 
 
-                    return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.SEVENTY_FIVE_PERCENT);
-                }
-                // replace or insert '_' | " " where applicable since some terms are represented
-                // inconsistently. e.g.alkyl_diether could be matched by alkyl diether
-                else if (replaceSpacesWithUnderscores(lcISATerm).contains(value) || replaceUnderscoresWithSpaces(lcISATerm).contains(value)) {
-
-                    String term = interrogatePossibilitiesForCorrectTerm(
-                            conceptsToMGRastTerm.get(value), checkListType);
-
-                    return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.SEVENTY_FIVE_PERCENT);
-                }
-                // else, when all else has failed, if the value has more than one word, we build k-tuples of the strings
-                // to check for presence of values
-                else {
-                    if (tuplesForGSCTerm == null) {
-                        String tmpISATerm = cleanupString(isaTerm.toLowerCase());
-                        tuplesForGSCTerm = buildKTuples(tmpISATerm);
+                        return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.SEVENTY_FIVE_PERCENT);
                     }
+                    // replace or insert '_' | " " where applicable since some terms are represented
+                    // inconsistently. e.g.alkyl_diether could be matched by alkyl diether
+                    else if (replaceSpacesWithUnderscores(lcISATerm).contains(value) || replaceUnderscoresWithSpaces(lcISATerm).contains(value)) {
 
-                    for (String tuple : tuplesForGSCTerm) {
-                        if (value.contains(tuple)) {
+                        String term = interrogatePossibilitiesForCorrectTerm(
+                                conceptsToMGRastTerm.get(value), checkListType);
 
-                            String term = interrogatePossibilitiesForCorrectTerm(
-                                    conceptsToMGRastTerm.get(value), checkListType);
+                        return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.SEVENTY_FIVE_PERCENT);
+                    }
+                    // else, when all else has failed, if the value has more than one word, we build k-tuples of the strings
+                    // to check for presence of values
+                    else {
+                        if (tuplesForGSCTerm == null) {
+                            String tmpISATerm = cleanupString(isaTerm.toLowerCase());
+                            tuplesForGSCTerm = buildKTuples(tmpISATerm);
+                        }
 
-                            return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.FIFTY_PERCENT);
+                        for (String tuple : tuplesForGSCTerm) {
+                            if (value.contains(tuple)) {
+
+                                String term = interrogatePossibilitiesForCorrectTerm(
+                                        conceptsToMGRastTerm.get(value), checkListType);
+
+                                return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.FIFTY_PERCENT);
+                            }
                         }
                     }
-                }
 
-            } else {
-                String tmpISATerm = cleanupString(isaTerm.toLowerCase());
+                } else {
+                    String tmpISATerm = cleanupString(isaTerm.toLowerCase());
 
-                if (value.equalsIgnoreCase(tmpISATerm)) {
+                    if (value.equalsIgnoreCase(tmpISATerm)) {
 
-                    String term = interrogatePossibilitiesForCorrectTerm(
-                            conceptsToMGRastTerm.get(value), checkListType);
+                        String term = interrogatePossibilitiesForCorrectTerm(
+                                conceptsToMGRastTerm.get(value), checkListType);
 
-                    return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.SEVENTY_FIVE_PERCENT);
+                        return new FieldMapping(isaTerm, term, term.equals("") ? ConfidenceLevel.ZERO_PERCENT : ConfidenceLevel.SEVENTY_FIVE_PERCENT);
+                    }
                 }
             }
         }

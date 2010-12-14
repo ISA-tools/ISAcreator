@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.mgrast.ui;
+package org.isatools.isacreator.common;
 
 import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.UIHelper;
@@ -68,7 +68,15 @@ public class SelectOutputDirectoryDialog extends JFrame {
     private ImageIcon panelHeader, cancelIcon, cancelIconOver, continueIcon, continueIconOver;
 
     public SelectOutputDirectoryDialog() {
-        ResourceInjector.get("exporters-package.style").inject(this);
+        this(null);
+    }
+
+    public SelectOutputDirectoryDialog(ImageIcon topImage) {
+        ResourceInjector.get("common-package.style").inject(this);
+
+        if(topImage != null) {
+            this.panelHeader = topImage;
+        }
     }
 
     public void createGUI() {
@@ -83,8 +91,6 @@ public class SelectOutputDirectoryDialog extends JFrame {
                 instantiateFrame();
                 pack();
             }
-
-
         });
     }
 
@@ -92,7 +98,6 @@ public class SelectOutputDirectoryDialog extends JFrame {
         Box container = Box.createVerticalBox();
 
         JLabel confirmation1 = new JLabel(panelHeader);
-
 
         JFileChooser jfc = new JFileChooser();
         jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

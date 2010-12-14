@@ -57,7 +57,7 @@ public class GeneralAttributeEntry extends MappingInformation {
     private ISAFieldMapping mapping;
 
     private NormalFieldEntry normalFieldEntry;
-    private GenericFieldEntry genericFieldEntry;
+    private GenericFieldEntry unitField;
 
 
     public GeneralAttributeEntry(String fieldName, String[] columnsToBeMappedTo) {
@@ -88,25 +88,25 @@ public class GeneralAttributeEntry extends MappingInformation {
 
         normalFieldEntry.addPropertyChangeListener("changeInWhetherToMap", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                genericFieldEntry.setVisible(normalFieldEntry.isMappedTo());
+                unitField.setVisible(normalFieldEntry.isMappedTo());
             }
         });
 
         if (mapping != null) {
             if (mapping.hasUnit()) {
-                genericFieldEntry = new GenericFieldEntry(fieldName, columnsToBeMappedTo, mapping.getUnit());
+                unitField = new GenericFieldEntry(fieldName, columnsToBeMappedTo, mapping.getUnit());
             } else {
-                genericFieldEntry = new GenericFieldEntry("Unit", columnsToBeMappedTo);
+                unitField = new GenericFieldEntry("Unit", columnsToBeMappedTo);
             }
         } else {
-            genericFieldEntry = new GenericFieldEntry("Unit", columnsToBeMappedTo);
+            unitField = new GenericFieldEntry("Unit", columnsToBeMappedTo);
         }
 
-        genericFieldEntry.setVisible(normalFieldEntry.isMappedTo());
+        unitField.setVisible(normalFieldEntry.isMappedTo());
 
         // makes things centralise on screen...
         JPanel unitPanelWrapper = new JPanel(new GridLayout(1, 1));
-        unitPanelWrapper.add(genericFieldEntry);
+        unitPanelWrapper.add(unitField);
 
         northPanel.add(unitPanelWrapper);
         add(northPanel, BorderLayout.NORTH);
@@ -117,7 +117,7 @@ public class GeneralAttributeEntry extends MappingInformation {
     }
 
     public GenericFieldEntry getUnitPanel() {
-        return genericFieldEntry;
+        return unitField;
     }
 
     public boolean isMappedTo() {
@@ -126,7 +126,7 @@ public class GeneralAttributeEntry extends MappingInformation {
 
     public void disableEnableComponents(boolean disableEnable) {
         normalFieldEntry.disableEnableComponents(disableEnable);
-        for (MappingChoice mc : genericFieldEntry.getFieldBuilder().getMappings()) {
+        for (MappingChoice mc : unitField.getFieldBuilder().getMappings()) {
             mc.disableEnableComponents(disableEnable);
         }
     }
@@ -134,8 +134,8 @@ public class GeneralAttributeEntry extends MappingInformation {
     public ISAFieldMapping createISAFieldMapping() {
         if (isMappedTo()) {
             ISAFieldMapping mapping = normalFieldEntry.createISAFieldMapping();
-            if (genericFieldEntry.useField()) {
-                mapping.setPerformer(genericFieldEntry.getFieldBuilder().getISAFieldsForMapping());
+            if (unitField.useField()) {
+                mapping.setUnit(unitField.getFieldBuilder().getISAFieldsForMapping());
             }
             return mapping;
         }

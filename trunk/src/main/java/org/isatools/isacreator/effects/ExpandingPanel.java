@@ -79,40 +79,44 @@ public class ExpandingPanel extends JPanel {
         optionsBox = new JPanel(new BorderLayout());
         optionsBox.setOpaque(false);
         optionsBox.add(options);
+        addNotify();
+        toggle.setIcon(close);
 
     }
 
     public void addNotify() {
         super.addNotify();
+
         JPanel toggleContainer = new JPanel();
         toggleContainer.setLayout(new BoxLayout(toggleContainer, BoxLayout.LINE_AXIS));
 
         if (headerIm == null) {
 
-            headerIm = UIHelper.createLabel("add extra elements", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR, JLabel.LEFT);
+            headerIm = UIHelper.createLabel("additional fields", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR, JLabel.LEFT);
             headerIm.setVerticalAlignment(JLabel.TOP);
             toggleContainer.add(headerIm);
             toggleContainer.add(Box.createHorizontalStrut(40));
-
         }
 
-
         if (toggle == null) {
-
-            toggle = new ToggleButton();
-            toggle.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    setExpanded(!expanded);
-                }
-            });
-            toggle.setSize(toggle.getPreferredSize());
-
-            toggle.setVerticalAlignment(JButton.CENTER);
-            toggle.setToolTipText("<html>to <strong>show or hide</strong> the options panel, click here</html>");
+            createToggle();
             toggleContainer.add(toggle);
         }
 
         content.add(toggleContainer);
+    }
+
+    private void createToggle() {
+        toggle = new ToggleButton();
+        toggle.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setExpanded(!expanded);
+            }
+        });
+        toggle.setSize(toggle.getPreferredSize());
+
+        toggle.setVerticalAlignment(JButton.CENTER);
+        toggle.setToolTipText("<html>to <strong>show or hide</strong> the options panel, click here</html>");
     }
 
     private Insets targetInsets(boolean expanded) {
@@ -135,6 +139,9 @@ public class ExpandingPanel extends JPanel {
 
     public void setExpanded(final boolean exp) {
         if ((expanded && !exp) || (!expanded && exp)) {
+            if (toggle == null) {
+                createToggle();                        
+            }
             toggle.setEnabled(false);
             if (exp) {
                 optionsBox.setBorder(new EmptyBorder(targetInsets(false)));

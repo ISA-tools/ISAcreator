@@ -40,7 +40,7 @@ package org.isatools.isacreator.qrcode.ui;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.mgrast.ui.SelectOutputDirectoryDialog;
+import org.isatools.isacreator.common.SelectOutputDirectoryDialog;
 import org.isatools.isacreator.qrcode.html.HTMLCreator;
 import org.isatools.isacreator.qrcode.logic.CodeGenerator;
 import org.isatools.isacreator.qrcode.logic.QRCode;

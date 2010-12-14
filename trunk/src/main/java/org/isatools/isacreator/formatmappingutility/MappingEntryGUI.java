@@ -49,6 +49,7 @@ import org.isatools.isacreator.effects.ExpandingPanel;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 import org.isatools.isacreator.formatmappingutility.io.SavedMappings;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
+import org.isatools.isacreator.formatmappingutility.renderers.MappingSelectionTreeCellRenderer;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -82,17 +83,10 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
     @InjectedResource
     private ImageIcon mappingHelp;
-
     @InjectedResource
     private ImageIcon errorIcon;
     @InjectedResource
     private ImageIcon popupOptions;
-    @InjectedResource
-    private ImageIcon node;
-    @InjectedResource
-    private ImageIcon openedNode;
-    @InjectedResource
-    private ImageIcon closedNode;
     @InjectedResource
     private static ImageIcon tableBrowserIcon;
 
@@ -113,6 +107,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private List<MappedElement> mappingRef;
     private Map<String, MappedElement> fixedMappings;
     private Set<String> fixedMappingsAdded;
+
+    private ExpandingPanel addColumnToolbox;
 
     private MappingInfoTab mappingInfo;
 
@@ -180,9 +176,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
         add(pane, BorderLayout.CENTER);
 
-//		add(createTree(), BorderLayout.WEST);
-//		add(deScroller, BorderLayout.CENTER);
-
         isatabFieldsTree.setSelectionRow(0);
 
 
@@ -193,7 +186,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         status = UIHelper.createLabel("", UIHelper.VER_11_PLAIN, UIHelper.RED_COLOR, JLabel.CENTER);
         statusPanel.add(status);
 
-        add(statusPanel, BorderLayout.SOUTH);
+        add(statusPanel, BorderLayout.SOUTH);        
     }
 
     public JComponent createTree() {
@@ -286,8 +279,9 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
         );
 
-        ExpandingPanel ep = new ExpandingPanel(treeContainer, toolbox);
-        westPanel.add(ep);
+        addColumnToolbox = new ExpandingPanel(treeContainer, toolbox);
+        westPanel.add(addColumnToolbox);
+
 
         return westPanel;
     }
@@ -301,6 +295,9 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         return null;
     }
 
+    public void expandColumnToolbox() {
+        addColumnToolbox.setExpanded(true);
+    }
 
     private MappingInformation chooseDisplay(String newFieldName) {
         ISAFieldMapping mapping = null;
@@ -545,69 +542,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     }
 
 
-    class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
 
-        private JPanel contents;
-        private JLabel icon;
-        private JLabel text;
-
-        public MappingSelectionTreeCellRenderer() {
-            contents = new JPanel(new BorderLayout());
-            contents.setOpaque(false);
-
-            icon = new JLabel();
-            text = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
-
-            contents.add(icon, BorderLayout.WEST);
-            contents.add(text, BorderLayout.CENTER);
-        }
-
-
-        /**
-         * Sets all list values to have a white background and green foreground if not selected, and
-         * a green background and white foregroud if selected.
-         *
-         * @param tree     - List to render
-         * @param val      - value of list item being rendered.
-         * @param index    - list index for value to be renderered.
-         * @param selected - is the value selected?
-         * @param hasFocus - has the cell got focus?
-         * @return - The CustomListCellRendered Component.
-         */
-        public Component getTreeCellRendererComponent(JTree tree, Object val, boolean selected, boolean expanded, boolean leaf, int index, boolean hasFocus) {
-
-            if (leaf) {
-                icon.setIcon(node);
-            } else {
-                icon.setIcon(expanded ? openedNode : closedNode);
-            }
-
-            text.setText(val.toString());
-            String nodeName = val.toString();
-
-            text.setFont(selected ? UIHelper.VER_11_PLAIN : UIHelper.VER_11_BOLD);
-
-            if (nodeName.contains("Characteristics")) {
-                text.setForeground(new Color(141, 198, 63));
-            } else if (nodeName.contains("Factor Value")) {
-                text.setForeground(new Color(39, 170, 225));
-            } else if (nodeName.contains("Protocol REF")) {
-                text.setForeground(new Color(239, 65, 54));
-            } else if (nodeName.contains("Parameter")) {
-                text.setForeground(new Color(147, 149, 152));
-            } else if (nodeName.contains("Comment")) {
-                text.setForeground(new Color(33, 64, 154));
-            } else if (nodeName.contains("Material Type")) {
-                text.setForeground(new Color(247, 148, 30));
-            } else if (nodeName.contains("Sample Name")) {
-                text.setForeground(new Color(218, 28, 92));
-            } else {
-                text.setForeground(UIHelper.GREY_COLOR);
-            }
-
-            return contents;
-        }
-    }
 
     public Map<String, ISAFieldMapping> createMappingRefs() {
         Map<String, ISAFieldMapping> fields = new HashMap<String, ISAFieldMapping>();
