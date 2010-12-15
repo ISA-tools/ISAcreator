@@ -142,4 +142,6 @@ public class Ontology implements Serializable {
     public void setFormat(OntologyFormats format) {
         this.format = format;
     }
+
+
 }

@@ -26,7 +26,7 @@ public class BioPortalClientTest {
     public static String testSearchTerm = "medicine";
 
     @Test
-    private void getAllOntologies() {
+    public void getAllOntologies() {
         System.out.println("_____Testing getAllOntologies()____");
 
         List<Ontology> ontologies = client.getAllOntologies();
@@ -38,7 +38,7 @@ public class BioPortalClientTest {
     }
 
     @Test
-    private void getOntologyById() {
+    public void getOntologyById() {
         System.out.println("_____Testing getOntologyById()____");
 
         Ontology ontology = client.getOntologyById(testOntologyID);
@@ -49,7 +49,7 @@ public class BioPortalClientTest {
     }
 
     @Test
-    private void getLatestOntologyVersion() {
+    public void getLatestOntologyVersion() {
         System.out.println("_____Testing getLatestOntologyVersion()____");
 
         String ontologyVersion = client.getLatestOntologyVersion(testOntologyID);
@@ -71,7 +71,7 @@ public class BioPortalClientTest {
     }
 
     @Test
-    private void getOntologyRoots() {
+    public void getOntologyRoots() {
         Map<String, String> ontologyRoots = client.getOntologyRoots(testOntologyID);
 
         assertTrue("No ontology roots found for " + testOntologyID, ontologyRoots.size() > 0);
@@ -80,7 +80,7 @@ public class BioPortalClientTest {
     }
 
     @Test
-    private void getAllTermParents() {
+    public void getAllTermParents() {
         Map<String, String> termParents = client.getAllTermParents(testTermAccession, testOntologyID);
 
         assertTrue("No term parents found for " + testTermAccession + " in " + testOntologyID, termParents.size() > 0);

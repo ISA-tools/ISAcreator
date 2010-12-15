@@ -718,14 +718,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
                                     Map<String, String> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), null, false);
 
-//                                    System.out.println("found " + olsResult.size() + " terms in OLS");
-//
-//                                    for (String accession : olsResult.keySet()) {
-//                                        System.out.println("accession: " + accession + " -> " + olsResult.get(accession));
-//                                    }
-
-//                                    System.out.println("");
-
                                     if (olsResult != null) {
                                         result.putAll(olsResult);
                                     }
@@ -832,7 +824,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         List<RecommendedOntology> filteredOntologies = new ArrayList<RecommendedOntology>();
         for (RecommendedOntology ro : ontologies) {
             if (filter.equals("ols")) {
-                if (ro.getOntology().getOntologyVersion().contains(".")) {
+                if (ro.getOntology().getOntologyVersion().length() > 5) {
                     filteredOntologies.add(ro);
                 }
             } else {

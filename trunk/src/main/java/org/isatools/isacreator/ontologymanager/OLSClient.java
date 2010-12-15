@@ -306,6 +306,7 @@ public class OLSClient implements OntologyService {
             Map<String, String> subSearchResult = null;
 
             if (ro.getBranchToSearchUnder() == null) {
+                
                 subSearchResult = getTermsByPartialNameFromSource(term, ro.getOntology().getOntologyAbbreviation(), false);
 
             } else {
