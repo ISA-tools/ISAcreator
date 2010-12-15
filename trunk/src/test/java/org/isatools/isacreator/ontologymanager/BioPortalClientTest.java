@@ -60,7 +60,7 @@ public class BioPortalClientTest {
     }
 
     @Test
-    private void getTermsByPartialNameFromSource() {
+    public void getTermsByPartialNameFromSource() {
         System.out.println("_____Testing getTermsByPartialNameFromSource()____");
 
         Map<String, String> result = client.getTermsByPartialNameFromSource(testSearchTerm, testOntologyID, false);
@@ -72,20 +72,11 @@ public class BioPortalClientTest {
 
     @Test
     public void getOntologyRoots() {
-        Map<String, String> ontologyRoots = client.getOntologyRoots(testOntologyID);
+        Map<String, String> ontologyRoots = client.getOntologyRoots(testOntologyVersion);
 
         assertTrue("No ontology roots found for " + testOntologyID, ontologyRoots.size() > 0);
 
         System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyID);
-    }
-
-    @Test
-    public void getAllTermParents() {
-        Map<String, String> termParents = client.getAllTermParents(testTermAccession, testOntologyID);
-
-        assertTrue("No term parents found for " + testTermAccession + " in " + testOntologyID, termParents.size() > 0);
-
-        System.out.println("Found " + termParents.size() + " parents for " + testTermAccession + " in " + testOntologyID + "\n");
     }
 
 
