@@ -271,7 +271,13 @@ public class TableReferenceObject implements Serializable {
         int prevValLoc = -1;
 
         for (int i = 0; i < headers.length; i++) {
-            String s = rowData[i];
+             String s;
+            if (i < rowData.length) {
+                s = rowData[i];
+            } else {
+                s = "";
+            }
+
 
             if (headers[i].toLowerCase().contains("source ref")) {
                 if (!s.equals("")) {
