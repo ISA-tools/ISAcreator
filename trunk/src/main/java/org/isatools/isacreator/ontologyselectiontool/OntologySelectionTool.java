@@ -786,7 +786,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
                             result = searchResultCache.get(cacheKeyLookup);
                         }
 
-
                         if (olsVersion.trim().equals("")) {
                             getOntologyVersionsAndDescriptions();
                         }

@@ -43,6 +43,7 @@ import org.isatools.isaconfigurator.schema.*;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.configuration.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.utils.StringProcessing;
 
 import java.io.File;
 import java.io.IOException;
@@ -151,7 +152,7 @@ public class ConfigXMLParser {
             // check what the obj is an instance of, and handle it accordingly!
             if (obj instanceof FieldType) {
                 FieldType stdField = (FieldType) obj;
-                TableFieldObject newField = new TableFieldObject(colNo, stdField.getHeader(), stdField.getDescription(), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(),
+                TableFieldObject newField = new TableFieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(),
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField());
 
@@ -206,7 +207,7 @@ public class ConfigXMLParser {
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
-                TableFieldObject newField = new TableFieldObject(colNo, "Unit", unitField.getDescription(), DataTypes.ONTOLOGY_TERM, "",
+                TableFieldObject newField = new TableFieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "",
                         unitField.getIsRequired(), false, false);
 
                 if (unitField.getRecommendedOntologies() != null) {
@@ -246,7 +247,8 @@ public class ConfigXMLParser {
     }
 
     private void processOntologyType(OntologyType ot, TableFieldObject tfo) {
-        RecommendedOntology ro = new RecommendedOntology(new Ontology(ot.getId(), ot.getVersion(), ot.getAbbreviation(), ot.getName()), null);
+        RecommendedOntology ro = new RecommendedOntology(new Ontology(ot.getId(), ot.getVersion(),
+                ot.getAbbreviation(), ot.getName()), null);
         // add branch!
         if (ot.getBranchArray() != null && ot.getBranchArray().length > 0) {
             BranchType branch = ot.getBranchArray(0);
