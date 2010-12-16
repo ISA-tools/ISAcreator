@@ -187,11 +187,13 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
                 if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
                     directory = jfc.getSelectedFile().toString();
 
+                    File dirFile = new File(directory);
+
                     if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
                         menu.showProgressPanel(loadISAanimation);
                     } else {
                         menu.showProgressPanel("attempting to load ISA-TAB submission in directory " +
-                                directory);
+                                dirFile.getName());
                     }
                     loadFile(directory + File.separator);
                 }
