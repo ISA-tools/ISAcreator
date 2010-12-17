@@ -372,6 +372,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             for (int row = 0; row < dtm.getRowCount(); row++) {
 
                 val = (dtm.getValueAt(row, col) != null) ? dtm.getValueAt(row, col).toString() : "";
+
+                if (fieldType == FieldTypes.ASSAY) {
+                    if (row == 0) {
+                        if (val.equals("")) {
+                            break;
+                        }
+                    }
+
+                }
+
                 if (col == 0) {
                     if (parent instanceof StudyDataEntry) {
                         val = "Study " + val;
