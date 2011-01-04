@@ -35,6 +35,8 @@ Please email us at <isatools@googlegroups.com> to receive the CLA. Then you shou
 
 > The purpose of this agreement is to clearly define the terms under which intellectual property has been contributed to ISAcreator and thereby allow us to defend the project should there be a legal dispute regarding the software at some future time.
 
+For a list of contributors, please see <http://github.com/ISA-tools/ISAcreator/contributors>
+
 ## License
 
 CPAL License, available at <http://isatab.sourceforge.net/licenses/ISAcreator-license.html>
