@@ -143,6 +143,7 @@ public class ImportISAFiles {
     public boolean importFile(String parentDir) {
         File f = new File(parentDir);
 
+        System.out.println("Parent directory is -> " + parentDir);
         boolean found = false;
 
         if (f.exists()) {
@@ -167,6 +168,9 @@ public class ImportISAFiles {
 
 
         try {
+
+            System.out.println("Checking investigation file");
+
             if (checkInvestigationFileStructure(f)) {
                 CSVReader csvReader = new CSVReader(new FileReader(f), '\t');
 
@@ -307,10 +311,11 @@ public class ImportISAFiles {
         }
 
         if (!investigation.addStudy(currentStudy)) {
-            problemLog.append("<p><b>Duplicate Study Found : </b> Study with name ").append(currentStudy.getStudyId()).append(" already exists.");
+            problemLog.append("<p><b>A problem occurred when adding </b> Study with name ").append(currentStudy.getStudyId()).append(". Check that it hasn't been added to the Investigation file too many times" +
+                    "and ensure that the investigation file is well formed!");
             throw new MalformedInvestigationException(
                     "Study with name " + currentStudy.getStudyId() +
-                            "already exists");
+                            " could not be added to the Investigation. Please check the Investigation file!");
         }
 
         assaysToAdd.clear();
@@ -354,6 +359,8 @@ public class ImportISAFiles {
             throws FileNotFoundException {
         Scanner sc = new Scanner(f);
 
+        System.out.println("Checking " + f.getAbsolutePath());
+
         /*
                   Structure should be of form:
                       Ontology Source References
@@ -395,11 +402,13 @@ public class ImportISAFiles {
             toMatch += (header.trim() + " ");
         }
 
-
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(toMatch);
 
-        return m.matches();
+        boolean matches = m.matches();
+        System.out.println("File Structure is valid? " + matches);
+
+        return matches;
     }
 
     public DataEntryEnvironment getDataEntryPanel() {
@@ -425,6 +434,9 @@ public class ImportISAFiles {
             throws MalformedOntologyTermException {
         String toReturn = "";
 
+        term = term == null ? "" : term;
+        accession = accession == null ? "" : accession;
+        sourceRef = sourceRef == null ? "" : sourceRef;
         // if all elements contain ; then we are dealing with multiple ontology terms
         if (term.contains(";") && sourceRef.contains(";")) {
             String[] splitTerms = term.split(";");

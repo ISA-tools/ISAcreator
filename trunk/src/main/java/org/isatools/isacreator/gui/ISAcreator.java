@@ -76,6 +76,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import javax.jnlp.*;
 
 /**
  * ISAcreator is a container for the Whole ISAcreator application.
