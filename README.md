@@ -1,4 +1,4 @@
-# ISAcreator is a Java desktop application which allows for creation and editing of ISATab files.
+#### ISAcreator is a Java desktop application which allows for creation and editing of ISATab files.
 
 
 - General info: <http://isa-tools.org>
