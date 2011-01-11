@@ -1,0 +1,155 @@
+<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+    <isatab-configuration table-name="dnamethylation_seq">
+        <measurement term-label="DNA methylation profiling" term-accession="" source-abbreviation="OBI"/>
+        <technology term-label="nucleotide sequencing" term-accession="" source-abbreviation="OBI"/>
+        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="true"
+               is-required="true">
+            <description>Samples represent major outputs resulting from a protocol application other than the special
+                case outputs of Extract or a Labeled Extract.
+            </description>
+            <default-value></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]
+            </generated-value-template>
+        </field>
+        <protocol-field protocol-type="nucleic acid preparation"/>
+        <field header="Parameter Value[cross linking]" data-type="List" is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>a protocol parameter specific to Chromatin immuprecipitation in this context</description>
+            <default-value></default-value>
+            <list-values>uv-light,formaldehyde,di-tert-butyl peroxide,formaldehyde and di-tert-butyl peroxyde
+            </list-values>
+        </field>
+        <field header="Parameter Value[DNA fragmentation]" data-type="List" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>a parameter value to report the method used for shearing DNA. Classic methods are sonication,
+                nebulisation
+            </description>
+            <default-value></default-value>
+            <list-values>sonication,nebulization,micrococcal nuclease digestion,deoxyribonuclease digestion
+            </list-values>
+        </field>
+        <field header="Parameter Value[DNA fragment size]" data-type="Double" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>a parameter to report the intended DNA fragment size resulting from the DNA fragmentation
+                process (aka DNA shearing)
+            </description>
+            <default-value></default-value>
+        </field>
+        <unit-field data-type="Ontology term" is-multiple-value="false" is-required="false">
+            <description>unit to express nucleic acid size"</description>
+        </unit-field>
+        <field header="Parameter Value[immunoprecipitation antibody]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>a parameter to report immunoprecipitation antibody details. Structure information as follows:
+                antibody name;antibody manufacturer;antibody catalog number;antibody dilution factor;clonality
+            </description>
+            <default-value></default-value>
+        </field>
+        <field header="Extract Name" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>User-defined names for each portion of extracted material.</description>
+            <default-value></default-value>
+            <generated-value-template>
+                [INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT]
+            </generated-value-template>
+        </field>
+        <field header="Parameter Value[library source]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>term from ENA</description>
+            <default-value>GENOMIC</default-value>
+        </field>
+        <field header="Parameter Value[library strategy]" data-type="List" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>term from ENA</description>
+            <default-value></default-value>
+            <list-values>PCR,RANDOM-PCR,Restriction Digest,size fractionation,CF-S,CF-M,CF-H,CF-T,Hybrid
+                selection,Reduced Representation,other,unspecified
+            </list-values>
+        </field>
+        <field header="Parameter Value[library selection]" data-type="List" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>term from ENA</description>
+            <default-value></default-value>
+            <list-values>PCR,RANDOM-PCR,HMPR,MF,MSLL,5-methylcytidine antibody,MBD2 protein methyl-CpG binding
+                domain,other,unspecified
+            </list-values>
+        </field>
+        <field header="Parameter Value[library layout]" data-type="List" is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>term from ENA</description>
+            <default-value></default-value>
+            <list-values>SINGLE,PAIRED</list-values>
+        </field>
+        <protocol-field protocol-type="labeling"/>
+        <field header="Labeled Extract Name" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>Identifier for the labeled extract.</description>
+            <default-value></default-value>
+            <generated-value-template>
+                [INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT].LE-[LABEL_COUNT]
+            </generated-value-template>
+        </field>
+        <field header="Label" data-type="String" is-file-field="false" is-multiple-value="false" is-required="false">
+            <description>Use this field when performing a multiplexing procedure and indicate here the nucleic acid tag
+                used to uniquely identify the sample if the pool.
+            </description>
+            <default-value></default-value>
+            <value-format>[ACTGNactgn]+</value-format>
+        </field>
+        <protocol-field protocol-type="nucleic acid sequencing"/>
+        <field header="Parameter Value[sequencing instrument]" data-type="List" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>a parameter to report the sequencing instrument model and make</description>
+            <default-value></default-value>
+            <list-values>454 GS,454 GS 20,454 GS FLX,454 GS FLX Titanium,454 GS Junior,GS 20,GS FLX,AB SOLiD System,AB
+                SOLiD System 2.0,AB SOLiD System 3.0,AB SOLiD 4 System,AB SOLiD 4hq System,AB SOLiD PI System,Solexa 1G
+                Genome Analyzer,Illumina Genome Analyzer,Illumina Genome Analyzer II,Illumina Genome Analyzer
+                IIx,Illumina HiSeq 2000
+            </list-values>
+        </field>
+        <field header="Parameter Value[base caller]" data-type="Ontology term" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>term from ENA</description>
+            <default-value></default-value>
+        </field>
+        <field header="Parameter Value[quality scorer]" data-type="Ontology term" is-file-field="false"
+               is-multiple-value="false" is-required="false">
+            <description>term from ENA</description>
+            <default-value></default-value>
+        </field>
+        <field header="Assay Name" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>User-defined name for an assay.</description>
+            <default-value></default-value>
+            <generated-value-template>
+                [INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT].LE-[LABEL_COUNT].ASSAY-[HYB_COUNT]
+            </generated-value-template>
+        </field>
+        <field header="Run Name" data-type="String" is-file-field="false" is-multiple-value="false" is-required="false">
+            <description>The name of the run.</description>
+            <default-value></default-value>
+        </field>
+        <field header="Raw Data File" data-type="String" is-file-field="true" is-multiple-value="false"
+               is-required="true">
+            <description>Name (or URI) of the raw data file generated by an assay.</description>
+            <default-value></default-value>
+        </field>
+        <protocol-field protocol-type="sequence analysis data transformation"/>
+        <field header="Normalization Name" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>User-defined name for each normalization applied</description>
+            <default-value></default-value>
+        </field>
+        <field header="Data Transformation Name" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>User-defined name for each data transformation applied</description>
+            <default-value></default-value>
+        </field>
+        <field header="Derived Data File" data-type="String" is-file-field="true" is-multiple-value="false"
+               is-required="false">
+            <description>Name (or URI) of the data file generated by an assay.</description>
+            <default-value></default-value>
+        </field>
+        <structured-field name="Factors"/>
+    </isatab-configuration>
+</isatab-config-file>
