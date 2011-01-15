@@ -53,7 +53,7 @@ public class CiteExploreClient {
     private static final String DOI = "DOI";
 
     @WebServiceRef(wsdlLocation = "http://www.ebi.ac.uk/webservices/citexplore/v1.0/service?wsdl")
-    private uk.ac.ebi.cdb.client.WSCitationImplService service;
+    private WSCitationImplService service;
 
     public CiteExploreClient() {
         service = new WSCitationImplService();
