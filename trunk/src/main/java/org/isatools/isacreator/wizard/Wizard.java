@@ -126,6 +126,7 @@ public class Wizard extends DataEntryWrapper {
     private Stack<HistoryComponent> previousPage;
     private Component initialPane;
     private UserProfile currentUser;
+
     private WorkingScreen workingProgressScreen;
     private Component lastPage;
 
@@ -868,8 +869,6 @@ public class Wizard extends DataEntryWrapper {
 
                                         previousPage.push(new HistoryComponent(finalPane, listeners));
                                         nextButton.setIcon(next);
-
-                                        System.out.println("going to next page");
 
                                         setCurrentPage(createDefineStudyPanel("study 1 of " + howManyStudiesVal.getText()));
                                     }

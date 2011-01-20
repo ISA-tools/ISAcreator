@@ -140,6 +140,10 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         mappingRef = new ArrayList<MappedElement>();
         addedFields = new ArrayList<String>();
         fixedMappingsAdded = new HashSet<String>();
+
+    }
+
+    public void performPreliminaryLoading() throws BiffException, IOException, NoAvailableLoaderException {
         initialData = processTable();
     }
 
@@ -480,71 +484,65 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
      *
      * @return 2D data array
      */
-    private String[][] processTable() {
+    private String[][] processTable() throws IOException, BiffException, NoAvailableLoaderException {
         List<String[]> data = new ArrayList<String[]>();
-        try {
-            if (readerToUse == FileLoader.CSV_READER_CSV || readerToUse == FileLoader.CSV_READER_TXT) {
 
-                char delimiter = (readerToUse == FileLoader.CSV_READER_CSV) ? FileLoader.COMMA_DELIM : FileLoader.TAB_DELIM;
-                CSVReader fileReader = new CSVReader(new FileReader(fileName), delimiter);
+        if (readerToUse == FileLoader.CSV_READER_CSV || readerToUse == FileLoader.CSV_READER_TXT) {
 
-                // read first line to discard it!
-                fileReader.readNext();
-                String[] nextLine;
-                int count = 0;
+            char delimiter = (readerToUse == FileLoader.CSV_READER_CSV) ? FileLoader.COMMA_DELIM : FileLoader.TAB_DELIM;
+            CSVReader fileReader = new CSVReader(new FileReader(fileName), delimiter);
 
-                while ((nextLine = fileReader.readNext()) != null && count < 5) {
-                    data.add(nextLine);
-                    count++;
-                }
+            // read first line to discard it!
+            fileReader.readNext();
+            String[] nextLine;
+            int count = 0;
 
-                return convertListToArray(data);
-
-            } else if (readerToUse == FileLoader.SHEET_READER) {
-                // read the file using the Sheet reader from jxl library
-                Workbook w;
-
-                File f = new File(fileName);
-                if (!f.isHidden()) {
-                    w = Workbook.getWorkbook(f);
-                    // Get the first sheet
-
-                    for (Sheet s : w.getSheets()) {
-                        int rowCount = Math.min(5, s.getRows());
-
-                        if (s.getRows() > 1) {
-                            for (int row = 1; row < rowCount; row++) {
-                                String[] nextLine = new String[s.getColumns()];
-
-                                for (int col = 0; col < s.getColumns(); col++) {
-                                    nextLine[col] = s.getCell(col, row).getContents();
-                                }
-                                data.add(nextLine);
-                            }
-                        }
-                        break;
-                    }
-                    return convertListToArray(data);
-                }
-            } else {
-                log.info("no reader available for use!");
+            while ((nextLine = fileReader.readNext()) != null && count < 4) {
+                data.add(nextLine);
+                count++;
             }
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        } catch (BiffException e) {
-            log.error(e.getMessage());
+
+            return convertListToArray(data);
+
+        } else if (readerToUse == FileLoader.SHEET_READER) {
+            // read the file using the Sheet reader from jxl library
+            Workbook w;
+
+            File f = new File(fileName);
+            if (!f.isHidden()) {
+                w = Workbook.getWorkbook(f);
+                // Get the first sheet
+                for (Sheet s : w.getSheets()) {
+                    int rowCount = Math.min(5, s.getRows());
+
+                    if (s.getRows() > 1) {
+                        for (int row = 1; row < rowCount; row++) {
+                            String[] nextLine = new String[s.getColumns()];
+
+                            for (int col = 0; col < s.getColumns(); col++) {
+                                nextLine[col] = s.getCell(col, row).getContents();
+                            }
+                            data.add(nextLine);
+                        }
+                    }
+                    break;
+                }
+                return convertListToArray(data);
+            }
+        } else {
+            log.info("no reader available for use!");
+            throw new NoAvailableLoaderException("no reader available for use for this file");
         }
 
-        return null;
+        return convertListToArray(data);
     }
 
     private String[][] convertListToArray(List<String[]> list) {
-        String[][] converted = new String[4][];
+        String[][] converted = new String[list.size()][];
 
         for (int listItem = 0; listItem < list.size(); listItem++) {
             converted[listItem] = list.get(listItem);
         }
-
         return converted;
     }
 

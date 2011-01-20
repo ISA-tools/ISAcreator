@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.formatmappingutility;
 
+import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.isatools.isacreator.common.FileSelectionPanel;
@@ -56,6 +57,7 @@ import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.TreeView;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -93,6 +95,9 @@ public class MappingUtilView extends DataEntryWrapper {
     private ISAcreatorMenu menuPanels;
     private String fileBeingMapped;
     private JFileChooser jfc;
+
+    private WorkingScreen workingProgressScreen;
+    private Component lastPage;
 
     private String[] fileColumns;
     private int reader;
@@ -138,6 +143,9 @@ public class MappingUtilView extends DataEntryWrapper {
         createWestPanel(logo, mappingInfo);
 
         createSouthPanel();
+
+        workingProgressScreen = new WorkingScreen();
+        workingProgressScreen.createGUI();
 
         status = new JLabel();
         previousPage = new Stack<HistoryComponent>();
@@ -263,42 +271,53 @@ public class MappingUtilView extends DataEntryWrapper {
             public void mousePressed(MouseEvent mouseEvent) {
                 nextButton.setIcon(next);
 
-                if (useMapping.isSelected()) {
+                Thread loadFile = new Thread(new Runnable() {
+                    public void run() {
+                        if (useMapping.isSelected()) {
 
-                    if (!savedMappingsFile.getSelectedFilePath().trim().equals("")) {
+                            if (!savedMappingsFile.getSelectedFilePath().trim().equals("")) {
 
-                        MappingXMLLoader loader = new MappingXMLLoader(savedMappingsFile.getSelectedFilePath());
-                        try {
-                            preExistingMapping = loader.loadMappings();
-                        } catch (XmlException e) {
-                            log.error(e.getMessage());
-                            statusLab.setText("<html>problem found in xml for saved mapping: " + e.getMessage() + " </html>");
-                            return;
-                        } catch (IOException e) {
-                            log.error(e.getMessage());
-                            statusLab.setText("<html>problem found when resolving file for saved mapping: " + e.getMessage() + " </html>");
-                            return;
+                                MappingXMLLoader loader = new MappingXMLLoader(savedMappingsFile.getSelectedFilePath());
+                                try {
+                                    preExistingMapping = loader.loadMappings();
+                                } catch (XmlException e) {
+                                    log.error(e.getMessage());
+                                    statusLab.setText("<html>problem found in xml for saved mapping: " + e.getMessage() + " </html>");
+                                    setCurrentPage(lastPage);
+                                    return;
+                                } catch (IOException e) {
+                                    log.error(e.getMessage());
+                                    statusLab.setText("<html>problem found when resolving file for saved mapping: " + e.getMessage() + " </html>");
+                                    setCurrentPage(lastPage);
+                                    return;
+                                }
+                            } else {
+                                statusLab.setText("<html>please select a file containing previous mappings...</html>");
+                                setCurrentPage(lastPage);
+                                return;
+                            }
+                        } else {
+                            log.info("Mapping is not selected");
+                            statusLab.setText("");
                         }
-                    } else {
-                        statusLab.setText("<html>please select a file containing previous mappings...</html>");
-                        return;
+
+                        if (fileToMapFSP.getSelectedFilePath() != null && !fileToMapFSP.getSelectedFilePath().trim().equals("")) {
+                            previousPage.push(new HistoryComponent(finalLayout, listeners));
+                            statusLab.setText("");
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    setCurrentPage(createAssayUsedPanel(fileToMapFSP.getSelectedFilePath()));
+                                }
+                            });
+                        } else {
+                            statusLab.setText("<html>please <strong>select</strong> a file to map!</html>");
+                            setCurrentPage(lastPage);
+                        }
                     }
-                } else {
-                    log.info("Mapping is not selected");
-                    statusLab.setText("");
-                }
-
-                if (fileToMapFSP.getSelectedFilePath() != null && !fileToMapFSP.getSelectedFilePath().trim().equals("")) {
-                    previousPage.push(new HistoryComponent(finalLayout, listeners));
-                    statusLab.setText("");
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            setCurrentPage(createAssayUsedPanel(fileToMapFSP.getSelectedFilePath()));
-                        }
-                    });
-                } else {
-                    statusLab.setText("<html>please <strong>select</strong> a file to map!</html>");
-                }
+                });
+                lastPage = currentPage;
+                setCurrentPage(workingProgressScreen);
+                loadFile.start();
 
 
             }
@@ -373,7 +392,7 @@ public class MappingUtilView extends DataEntryWrapper {
 
                 tableNameToASO = new HashMap<String, org.isatools.isacreator.formatmappingutility.AssaySelection>();
 
-                SwingUtilities.invokeLater(new Runnable() {
+                Thread loadFileProcess = new Thread(new Runnable() {
                     public void run() {
                         // attempt to load the supplied fileToMap/directory...
                         Loader l = new Loader();
@@ -398,15 +417,28 @@ public class MappingUtilView extends DataEntryWrapper {
                             // will iterate around the assays to be defined.
                             setCurrentPage(createMappings(-1, getTableReferenceObject("", "[Sample]"), fileColumns, fileName, reader));
                         } catch (NoAvailableLoaderException e) {
+                            setCurrentPage(lastPage);
                             log.error("No loader available for file format!");
+                            // todo inform user about this!
                         } catch (MultipleExtensionsException e) {
+                            setCurrentPage(lastPage);
                             log.error("There are files with different extensions in the selected folder! This is not allowed.");
+                            // todo inform user about this!
+                        } catch (BiffException e) {
+                            setCurrentPage(lastPage);
+                            log.error(e.getMessage());
+                            // todo inform user about this!
+                        } catch (IOException e) {
+                            setCurrentPage(lastPage);
+                            log.error(e.getMessage());
+                            // todo inform user about this!
                         }
                     }
                 });
-
+                lastPage = currentPage;
+                setCurrentPage(workingProgressScreen);
+                loadFileProcess.start();
             }
-
         };
 
         assignListenerToLabel(nextButton, listeners[1]);
@@ -449,11 +481,12 @@ public class MappingUtilView extends DataEntryWrapper {
      */
     private JLayeredPane createMappings(final int sequence, final TableReferenceObject tableReference,
                                         final String[] columnsToBeMappedTo,
-                                        final String fileName, final int readerToUse) {
+                                        final String fileName, final int readerToUse) throws BiffException, IOException, NoAvailableLoaderException {
 
         fixedMappings = sequence == -1 ? new HashMap<String, MappedElement>() : fixedMappings;
 
         final MappingEntryGUI mappingTableGUI = new MappingEntryGUI(tableReference, columnsToBeMappedTo, fileName, readerToUse, preExistingMapping, fixedMappings);
+        mappingTableGUI.performPreliminaryLoading();
         mappingTableGUI.createGUI();
         mappingTableGUI.expandColumnToolbox();
         mappingTableGUI.setSize(new Dimension((int) (menuPanels.getWidth() * 0.80), (int) (menuPanels.getHeight() * 0.90)));
@@ -499,34 +532,38 @@ public class MappingUtilView extends DataEntryWrapper {
 
             public void mousePressed(MouseEvent mouseEvent) {
                 // call mapping function!
-                final MappingLogic mu = new MappingLogic(mappingTableGUI.getTreeInfo(), tableReference, readerToUse);
-
-                TableReferenceObject populatedTRO = mu.doMapping(fileName, readerToUse);
-
-
-                // whenever we create the mappings now, we now add the mappings in a Map which
-                // point to the populated tros for each of the assays to be defined and the study
-                // sample file to be defined!
-                if (sequence == -1) {
-                    fixedMappings.put("Sample Name", mappingTableGUI.getMappingNodeForField("Sample Name"));
-                    definitions.put(MappingObject.STUDY_SAMPLE, populatedTRO);
-                } else {
-                    tableNameToASO.put(populatedTRO.getTableName(), assaysToBeDefined.get(sequence));
-                    definitions.put(populatedTRO.getTableName(), populatedTRO);
-                }
-
-                // at this point, we want to populate a Map relating field names
-                // with ISAFieldMappings for output at a later stage in XML format.
-                mappingsToSave.putAll(mappingTableGUI.createMappingRefs());
-
-                nextButton.setIcon(next);
-                previousPage.push(new HistoryComponent(finalPanel, listeners));
-
-                SwingUtilities.invokeLater(new Runnable() {
+                Thread mappingThread = new Thread(new Runnable() {
                     public void run() {
+
+                        final MappingLogic mu = new MappingLogic(mappingTableGUI.getTreeInfo(), tableReference, readerToUse);
+
+                        TableReferenceObject populatedTRO = mu.doMapping(fileName, readerToUse);
+
+                        // whenever we create the mappings now, we now add the mappings in a Map which
+                        // point to the populated tros for each of the assays to be defined and the study
+                        // sample file to be defined!
+                        if (sequence == -1) {
+                            fixedMappings.put("Sample Name", mappingTableGUI.getMappingNodeForField("Sample Name"));
+                            definitions.put(MappingObject.STUDY_SAMPLE, populatedTRO);
+                        } else {
+                            tableNameToASO.put(populatedTRO.getTableName(), assaysToBeDefined.get(sequence));
+                            definitions.put(populatedTRO.getTableName(), populatedTRO);
+                        }
+
+                        // at this point, we want to populate a Map relating field names
+                        // with ISAFieldMappings for output at a later stage in XML format.
+                        mappingsToSave.putAll(mappingTableGUI.createMappingRefs());
+
+                        nextButton.setIcon(next);
+                        previousPage.push(new HistoryComponent(finalPanel, listeners));
+
                         setCurrentPage(createMappingVisualization(sequence + 1, fileName, mu.getVisMapping()));
                     }
                 });
+
+                setCurrentPage(workingProgressScreen);
+                mappingThread.start();
+
             }
 
         };
@@ -618,17 +655,34 @@ public class MappingUtilView extends DataEntryWrapper {
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-
                 nextButton.setIcon(next);
-
-                if (sequence <= assaysToBeDefined.size() - 1) {
-                    org.isatools.isacreator.formatmappingutility.AssaySelection aso = assaysToBeDefined.get(sequence);
-                    String nextMeasurement = aso.getMeasurement();
-                    String nextTechnology = aso.getTechnology();
-                    setCurrentPage(createMappings(sequence, getTableReferenceObject(nextTechnology, nextMeasurement), fileColumns, filename, reader));
-                } else {
-                    setCurrentPage(createSaveMappings(filename));
-                }
+                Thread performMappingProcess = new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            if (sequence <= assaysToBeDefined.size() - 1) {
+                                org.isatools.isacreator.formatmappingutility.AssaySelection aso = assaysToBeDefined.get(sequence);
+                                String nextMeasurement = aso.getMeasurement();
+                                String nextTechnology = aso.getTechnology();
+                                setCurrentPage(createMappings(sequence,
+                                        getTableReferenceObject(nextTechnology, nextMeasurement), fileColumns, filename, reader));
+                            } else {
+                                setCurrentPage(createSaveMappings(filename));
+                            }
+                        } catch (BiffException e) {
+                            setCurrentPage(lastPage);
+                            log.error(e.getMessage());
+                        } catch (IOException e) {
+                            setCurrentPage(lastPage);
+                            log.error(e.getMessage());
+                        } catch (NoAvailableLoaderException e) {
+                            setCurrentPage(lastPage);
+                            log.error(e.getMessage());
+                        }
+                    }
+                });
+                lastPage = currentPage;
+                setCurrentPage(workingProgressScreen);
+                performMappingProcess.start();
             }
         };
         assignListenerToLabel(nextButton, listeners[1]);
@@ -715,6 +769,7 @@ public class MappingUtilView extends DataEntryWrapper {
 
             public void mousePressed(MouseEvent mouseEvent) {
                 // save the mapping
+
                 MappingXMLCreator mappingCreator = new MappingXMLCreator();
                 try {
                     if (useMapping.isSelected()) {
@@ -784,24 +839,23 @@ public class MappingUtilView extends DataEntryWrapper {
             public void mousePressed(MouseEvent mouseEvent) {
 
                 nextButton.setIcon(next);
-
-                inv = MappingLogic.createInvestigation(definitions, tableNameToASO, dep);
-                // now we need to construct the investigation from the defined table reference objects and the
-                inv.setUserInterface(new InvestigationDataEntry(inv, dep));
-                dep.createGUIFromSource(inv);
-
-                previousPage.push(new HistoryComponent(finalPanel, listeners));
-
-                SwingUtilities.invokeLater(new Runnable() {
+                Thread performMappingLogic = new Thread(new Runnable() {
                     public void run() {
+                        inv = MappingLogic.createInvestigation(definitions, tableNameToASO, dep);
+                        // now we need to construct the investigation from the defined table reference objects and the
+                        inv.setUserInterface(new InvestigationDataEntry(inv, dep));
+                        dep.createGUIFromSource(inv);
+
+                        previousPage.push(new HistoryComponent(finalPanel, listeners));
                         menuPanels.getMain().hideGlassPane();
                         menuPanels.getMain().setCurDataEntryPanel(dep);
                         menuPanels.getMain().setCurrentPage(dep);
-
                         // todo clear object space
-
                     }
                 });
+
+                setCurrentPage(workingProgressScreen);
+                performMappingLogic.start();
             }
         };
 
