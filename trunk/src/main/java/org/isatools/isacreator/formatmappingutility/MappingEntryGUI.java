@@ -62,7 +62,6 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -186,7 +185,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         status = UIHelper.createLabel("", UIHelper.VER_11_PLAIN, UIHelper.RED_COLOR, JLabel.CENTER);
         statusPanel.add(status);
 
-        add(statusPanel, BorderLayout.SOUTH);        
+        add(statusPanel, BorderLayout.SOUTH);
     }
 
     public JComponent createTree() {
@@ -477,12 +476,12 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
 
     /**
-     * Pulls out first 4 rows of the table to display
+     * Pulls out first rows (up to 4) of the table to display
      *
      * @return 2D data array
      */
     private String[][] processTable() {
-        String[][] data = new String[4][];
+        List<String[]> data = new ArrayList<String[]>();
         try {
             if (readerToUse == FileLoader.CSV_READER_CSV || readerToUse == FileLoader.CSV_READER_TXT) {
 
@@ -493,17 +492,13 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                 fileReader.readNext();
                 String[] nextLine;
                 int count = 0;
-                while ((nextLine = fileReader.readNext()) != null && count < 5) {
 
-                    // we don't want the column names as well!
-                    if (count != 0) {
-                        // we decrement count since we're skipping 0.
-                        data[count - 1] = nextLine;
-                    }
+                while ((nextLine = fileReader.readNext()) != null && count < 5) {
+                    data.add(nextLine);
                     count++;
                 }
 
-                return data;
+                return convertListToArray(data);
 
             } else if (readerToUse == FileLoader.SHEET_READER) {
                 // read the file using the Sheet reader from jxl library
@@ -513,21 +508,23 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                 if (!f.isHidden()) {
                     w = Workbook.getWorkbook(f);
                     // Get the first sheet
+
                     for (Sheet s : w.getSheets()) {
+                        int rowCount = Math.min(5, s.getRows());
 
                         if (s.getRows() > 1) {
-                            for (int row = 1; row < 5; row++) {
+                            for (int row = 1; row < rowCount; row++) {
                                 String[] nextLine = new String[s.getColumns()];
 
                                 for (int col = 0; col < s.getColumns(); col++) {
                                     nextLine[col] = s.getCell(col, row).getContents();
                                 }
-                                data[row - 1] = nextLine;
+                                data.add(nextLine);
                             }
                         }
                         break;
                     }
-                    return data;
+                    return convertListToArray(data);
                 }
             } else {
                 log.info("no reader available for use!");
@@ -541,7 +538,15 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         return null;
     }
 
+    private String[][] convertListToArray(List<String[]> list) {
+        String[][] converted = new String[4][];
 
+        for (int listItem = 0; listItem < list.size(); listItem++) {
+            converted[listItem] = list.get(listItem);
+        }
+
+        return converted;
+    }
 
 
     public Map<String, ISAFieldMapping> createMappingRefs() {
