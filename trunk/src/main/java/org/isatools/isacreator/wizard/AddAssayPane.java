@@ -87,7 +87,7 @@ public class AddAssayPane extends JPanel {
     private UserProfile up;
     private MouseListener[] listeners;
 
-    public AddAssayPane(DataEntryWrapper dew, Study study, List<TempFactors> factorsToAdd, File arrayDesignsFile,
+    public AddAssayPane(DataEntryWrapper dew, Study study, List<TempFactors> factorsToAdd,
                         Map<Integer, TreatmentReplicate> treatmentGroups, DataEntryEnvironment dep, UserProfile up) {
         this.dew = dew;
         this.up = up;
@@ -96,7 +96,7 @@ public class AddAssayPane extends JPanel {
         this.treatmentGroups = treatmentGroups;
         this.dep = dep;
         assaysToDefine = study.getAssays().values();
-        this.arrayDesignsFile = arrayDesignsFile;
+
         algorithmsToRun = new ArrayList<CreationAlgorithm>();
         sampleNameValues = new ListOrderedMap<String, GeneratedSampleDetails>();
         listeners = new MouseListener[2];
@@ -119,18 +119,13 @@ public class AddAssayPane extends JPanel {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
         centerPanel.setOpaque(false);
-
-
         centerPanel.add(Box.createVerticalStrut(15));
-
-        String[] arrayDesigns = retrieveArrayDesigns(arrayDesignsFile);
 
         String sourceNameFormat = dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
 
         for (Assay a : assaysToDefine) {
             if (a.getTechnologyType().equalsIgnoreCase("dna microarray")) {
-                MicroarrayCreationAlgorithm maAlg = new MicroarrayCreationAlgorithm(arrayDesigns,
-                        study, a, factorsToAdd, treatmentGroups,
+                MicroarrayCreationAlgorithm maAlg = new MicroarrayCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
                         new TableReferenceObject(dep.getParentFrame().selectTROForUserSelection(
                                 a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat);
@@ -165,9 +160,9 @@ public class AddAssayPane extends JPanel {
     public void createSouthPanel() {
         DataEntryWrapper.backButton.setIcon(DataEntryWrapper.back);
         listeners[0] = new MouseAdapter() {
-
+            // todo add timer here to ensure that the algorithm isn't run twice!
             public void mousePressed(MouseEvent event) {
-                firePropertyChange("canceledAssayCreation", "going back", "assaydef");
+                firePropertyChange("canceledAssayCreation", "cancelling", "assaydef");
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -184,6 +179,7 @@ public class AddAssayPane extends JPanel {
         listeners[1] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                // todo add timer here to ensure that the algorithm isn't run twice!
                 for (CreationAlgorithm ca : algorithmsToRun) {
                     // possible way to create a study sample file is to take the set of all study sample information then adding
                     // it to the row data for a study sample
@@ -194,7 +190,7 @@ public class AddAssayPane extends JPanel {
                     }
                 }
 
-                firePropertyChange("finishedAssayCreation", "", "finished");
+                firePropertyChange("finishedAssayCreation", "notfinished", "finished");
                 // after which all assays should be populated with data :o)
             }
 

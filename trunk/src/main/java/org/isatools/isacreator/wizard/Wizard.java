@@ -1343,13 +1343,12 @@ public class Wizard extends DataEntryWrapper {
                 String factorValueUnits = aFactorInfo[3];
 
                 //check to ensure that mandatory fields have been entered...
-                if (
-                        ((factorName != null) && !factorName.trim().equals(""))
-                                &&
-                                ((factorType != null) && !factorType.trim().equals(""))
-                                &&
-                                ((factorValues != null) &&
-                                        !factorValues.trim().equals(""))) {
+                if (((factorName != null) && !factorName.trim().equals(""))
+                        &&
+                        ((factorType != null) && !factorType.trim().equals(""))
+                        &&
+                        ((factorValues != null) &&
+                                !factorValues.trim().equals(""))) {
                     String[] studyFactorLevels = factorValues.split(";");
 
                     List<TimeUnitPair> factorLevels = new ArrayList<TimeUnitPair>();
@@ -1393,7 +1392,6 @@ public class Wizard extends DataEntryWrapper {
                             factorLevels));
                 } else {
                     // check to see if all items are empty, if so, this is not an error.
-
                     if (factorName != null && factorType != null && factorValues != null) {
                         status.setText(
                                 "<html><p><b>missing factor information</b> factor name, type & values must not be empty</p></html>");
