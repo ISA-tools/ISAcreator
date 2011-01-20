@@ -250,7 +250,7 @@ public class InvestigationDataEntry extends DataEntryForm {
         contactFields.add(new SubFormField("Person Email", SubFormField.STRING));
         contactFields.add(new SubFormField("Person Phone", SubFormField.STRING));
         contactFields.add(new SubFormField("Person Fax", SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Address", SubFormField.STRING));
+        contactFields.add(new SubFormField("Person Address", SubFormField.LONG_STRING));
         contactFields.add(new SubFormField("Person Affiliation",
                 SubFormField.STRING));
         contactFields.add(new SubFormField("Person Roles",
