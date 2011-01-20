@@ -38,7 +38,6 @@
 package org.isatools.isacreator.wizard;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
-import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.RoundedBorder;
 import org.isatools.isacreator.model.Assay;
@@ -66,9 +65,8 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     private ImageIcon addRecordIcon, removeIcon;
 
     private JCheckBox dyeSwapUsed;
-    private List<AutoFilterCombo> arrayDesignsUsed;
-    private AutoFilterCombo newArrayDesign;
-    private String[] arrayDesignData;
+    private List<JTextField> arrayDesignsUsed;
+    private JTextField newArrayDesign;
     private String sourceNameFormat;
     private Assay assay;
     private Map<Integer, TreatmentReplicate> treatmentGroups;
@@ -80,7 +78,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     private LabelCapture label2Capture;
     private String institution;
 
-    public MicroarrayCreationAlgorithm(String[] arrayDesignData, Study study,
+    public MicroarrayCreationAlgorithm(Study study,
                                        Assay assay, List<TempFactors> factorsToAdd,
                                        Map<Integer, TreatmentReplicate> treatmentGroups,
                                        TableReferenceObject buildingModel, String institution,
@@ -89,11 +87,11 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
 
         super(buildingModel, study, factorsToAdd);
         this.assay = assay;
-        this.arrayDesignData = arrayDesignData;
+
         this.sourceNameFormat = sourceNameFormat;
         this.factorsToAdd = factorsToAdd;
         this.buildingModel = buildingModel;
-        this.arrayDesignsUsed = new ArrayList<AutoFilterCombo>();
+        this.arrayDesignsUsed = new ArrayList<JTextField>();
         this.treatmentGroups = treatmentGroups;
         this.institution = institution;
 
@@ -127,9 +125,9 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     private List<String> getSelectedArrayDesigns() {
         List<String> arrayDesignsAsString = new ArrayList<String>();
 
-        for (AutoFilterCombo afc : arrayDesignsUsed) {
-            if (afc.getSelectedItem() != null) {
-                arrayDesignsAsString.add(afc.getSelectedItem().toString());
+        for (JTextField afc : arrayDesignsUsed) {
+            if (afc != null) {
+                arrayDesignsAsString.add(afc.getText() == null ? "" : afc.getText());
             }
         }
 
@@ -273,7 +271,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         arrayDesignsContainer.setOpaque(false);
 
-        newArrayDesign = new AutoFilterCombo(arrayDesignData, true);
+        newArrayDesign = new JTextField();
         UIHelper.renderComponent(newArrayDesign, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         newArrayDesign.setPreferredSize(new Dimension(70, 30));
 
@@ -289,7 +287,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         addButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                newArrayDesign = new AutoFilterCombo(arrayDesignData, true);
+                newArrayDesign = new JTextField();
                 UIHelper.renderComponent(newArrayDesign, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
                 newArrayDesign.setPreferredSize(new Dimension(70, 30));
                 arrayDesignsUsed.add(newArrayDesign);
@@ -375,8 +373,9 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                              labelNum++) {
                             for (int i : colsToUse) {
                                 String nextDataToAdd = tableStructure.get(i)[1] == null ? "" : tableStructure.get(i)[1]; // try and insert a template item
+                                nextDataToAdd = nextDataToAdd.trim();
 
-                                if (nextDataToAdd.trim().equals("")) {
+                                if (nextDataToAdd.equals("")) {
                                     if (tableStructure.get(i)[0].toLowerCase()
                                             .equals("factors")) {
                                         row.append(treatmentGroups.get(groups).getTreatmentGroup());

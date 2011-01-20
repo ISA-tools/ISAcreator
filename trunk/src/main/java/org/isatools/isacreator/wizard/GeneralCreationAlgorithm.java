@@ -51,8 +51,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -263,9 +263,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
         UIHelper.renderComponent(addButton, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         addButton.setVerticalAlignment(JLabel.TOP);
-        addButton.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        addButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1));
@@ -276,14 +274,6 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                 generalQuestionCont.revalidate();
             }
 
-            public void mouseReleased(MouseEvent event) {
-            }
-
-            public void mouseEntered(MouseEvent event) {
-            }
-
-            public void mouseExited(MouseEvent event) {
-            }
         });
 
         addButton.setToolTipText(
@@ -294,9 +284,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                 JLabel.RIGHT);
         removeButton.setVerticalAlignment(JLabel.TOP);
         UIHelper.renderComponent(removeButton, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
-        removeButton.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        removeButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 if (extractDetails.size() > 1) {
@@ -308,14 +296,6 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                 }
             }
 
-            public void mouseReleased(MouseEvent event) {
-            }
-
-            public void mouseEntered(MouseEvent event) {
-            }
-
-            public void mouseExited(MouseEvent event) {
-            }
         });
         removeButton.setToolTipText(
                 "<html><b>remove previously added sample</b><p>remove the sample field last added</p></html>");

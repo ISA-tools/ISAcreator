@@ -53,7 +53,7 @@ import java.util.Set;
  * Creation Algorithm Interface
  */
 public abstract class CreationAlgorithm extends JPanel {
-    protected Set<String> factorsToAddSet = null;
+
     protected List<String> headers = new ArrayList<String>();
     protected Set<Integer> colsToUse;
     protected TableReferenceObject buildingModel;
@@ -73,6 +73,7 @@ public abstract class CreationAlgorithm extends JPanel {
 
     protected void runAlgorithm() {
         // Retrieve a list of string values dictating where elements are supposed to occur in a table.
+        System.out.println("Running algorithm");
         tableStructure = buildingModel.getTableStructure();
         headers = new ArrayList<String>();
         colsToUse = new ListOrderedSet<Integer>();
@@ -86,8 +87,7 @@ public abstract class CreationAlgorithm extends JPanel {
                 }
             } else if (tableStructure.get(i)[0].toLowerCase().contains("factor value[")) {
                 // doing nothing with this factor
-            } else if (tableStructure.get(i)[0].toLowerCase()
-                    .contains("characteristics[")) {
+            } else if (tableStructure.get(i)[0].toLowerCase().contains("characteristics[")) {
 
                 String newChar = tableStructure.get(i)[0];
 
@@ -114,7 +114,6 @@ public abstract class CreationAlgorithm extends JPanel {
             if (!tup.getUnit().trim().equals("")) {
                 headers.add("Unit");
                 unitAdded = true;
-
                 break;
             }
         }

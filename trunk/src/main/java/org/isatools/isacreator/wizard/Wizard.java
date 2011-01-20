@@ -38,7 +38,6 @@
 package org.isatools.isacreator.wizard;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.HistoryComponent;
@@ -60,7 +59,7 @@ import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
-import org.isatools.isacreator.utils.GeneralUtils;
+import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -90,10 +89,6 @@ import java.util.List;
 public class Wizard extends DataEntryWrapper {
 
     private static final Logger log = Logger.getLogger(Wizard.class.getName());
-
-    private static String ARRAY_DESIGNS_FILE_LOC = "Data" + File.separator +
-            "arraydesigns.txt";
-    private static String ARRAY_DESIGNS_DOWNLOAD_LOC = "http://www.ebi.ac.uk/microarray-as/aer/report?cmd=arraydesignlist";
 
     private static FinaliseStudyCreationListener finaliseStudy;
 
@@ -131,6 +126,8 @@ public class Wizard extends DataEntryWrapper {
     private Stack<HistoryComponent> previousPage;
     private Component initialPane;
     private UserProfile currentUser;
+    private WorkingScreen workingProgressScreen;
+    private Component lastPage;
 
 
     public Wizard(final ISAcreatorMenu menuPanels) {
@@ -145,6 +142,9 @@ public class Wizard extends DataEntryWrapper {
         tmpVals = new HashSet<String>();
         status = new JLabel();
         previousPage = new Stack<HistoryComponent>();
+
+        workingProgressScreen = new WorkingScreen();
+        workingProgressScreen.createGUI();
 
         mainMenu.getMain().hideGlassPane();
 
@@ -261,11 +261,6 @@ public class Wizard extends DataEntryWrapper {
 
         JLabel organismLab = UIHelper.createLabel("organism used *");
 
-        File arrayDesignsFile = new File(ARRAY_DESIGNS_FILE_LOC);
-
-        if (!arrayDesignsFile.exists()) {
-            GeneralUtils.downloadFile(ARRAY_DESIGNS_DOWNLOAD_LOC, ARRAY_DESIGNS_FILE_LOC);
-        }
 
         organism = new JTextField();
         organism.setBorder(UIHelper.STD_ETCHED_BORDER);
@@ -333,6 +328,7 @@ public class Wizard extends DataEntryWrapper {
                 status.setText("<html>please enter a study id</html>");
                 studyId.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
                 studyId.requestFocus();
+                setCurrentPage(lastPage);
                 return;
             } else {
                 studyId.setBackground(UIHelper.BG_COLOR);
@@ -342,6 +338,7 @@ public class Wizard extends DataEntryWrapper {
                 status.setText("<html>please enter a study title</html>");
                 studyTitle.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
                 studyTitle.requestFocus();
+                setCurrentPage(lastPage);
                 return;
             } else {
                 studyTitle.setBackground(UIHelper.BG_COLOR);
@@ -350,6 +347,7 @@ public class Wizard extends DataEntryWrapper {
             if (studyDescription.getText().trim().equals("")) {
                 status.setText("<html>please enter a study description</html>");
                 studyDescription.requestFocus();
+                setCurrentPage(lastPage);
                 return;
             }
 
@@ -358,6 +356,7 @@ public class Wizard extends DataEntryWrapper {
                 status.setText("<html>please enter a valid organism</html>");
                 organism.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
                 organism.requestFocus();
+                setCurrentPage(lastPage);
                 return;
             } else {
                 organism.setBackground(UIHelper.BG_COLOR);
@@ -365,6 +364,7 @@ public class Wizard extends DataEntryWrapper {
 
             if (studyBeingEdited.getAssays().size() == 0) {
                 status.setText("<html>no <b>assays</b> have been defined!</html>");
+                setCurrentPage(lastPage);
                 return;
             }
 
@@ -372,11 +372,11 @@ public class Wizard extends DataEntryWrapper {
                 if ((Integer.valueOf(numTreatmentGroups.getText()) > 0)) {
                     if (Integer.valueOf(numTreatmentGroups.getText()) > groups.size()) {
                         status.setText(
-                                "<html>the factors and respective levels could never create the number of " +
+                                "<html>the factors and respective levels could not create the number of " +
                                         "factors that you have have specified in the no. treatment groups field.</html>");
                         numTreatmentGroups.requestFocus();
                         numTreatmentGroups.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
-
+                        setCurrentPage(lastPage);
                         return;
                     } else {
                         numTreatmentGroups.setBackground(UIHelper.BG_COLOR);
@@ -386,6 +386,7 @@ public class Wizard extends DataEntryWrapper {
                             "<html>invalid value for the number of treatment groups. value must be numeric and greater than 0!</html>");
                     numTreatmentGroups.requestFocus();
                     numTreatmentGroups.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
+                    setCurrentPage(lastPage);
                     return;
                 }
             } else {
@@ -393,6 +394,7 @@ public class Wizard extends DataEntryWrapper {
                         "<html>please enter a value for the number of treatment groups. value must be numeric and greater than 0!</html>");
                 numTreatmentGroups.requestFocus();
                 numTreatmentGroups.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
+                setCurrentPage(lastPage);
                 return;
             }
 
@@ -405,6 +407,7 @@ public class Wizard extends DataEntryWrapper {
                             "<html>invalid value for the number of samples per group. value must be numeric and greater than 0!</html>");
                     numSamplesPerGroup.requestFocus();
                     numSamplesPerGroup.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
+                    setCurrentPage(lastPage);
 
                     return;
                 }
@@ -413,6 +416,7 @@ public class Wizard extends DataEntryWrapper {
                         "<html>please enter a value for the number of samples per group. value must be numeric and greater than 0!</html>");
                 numSamplesPerGroup.requestFocus();
                 numSamplesPerGroup.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
+                setCurrentPage(lastPage);
                 return;
             }
 
@@ -426,14 +430,19 @@ public class Wizard extends DataEntryWrapper {
                         public void propertyChange(
                                 PropertyChangeEvent event) {
 
-                            final Map<Integer, TreatmentReplicate> refinedGroups = (Map<Integer, TreatmentReplicate>) event.getNewValue();
+
+                            Map<Integer, TreatmentReplicate> refinedGroups;
+                            if (event.getNewValue() != null) {
+
+                                refinedGroups = (Map<Integer, TreatmentReplicate>) event.getNewValue();
+                            } else {
+
+                                refinedGroups = new HashMap<Integer, TreatmentReplicate>();
+                            }
 
                             previousPage.push(new HistoryComponent(finalPane, selectTreatmentGroups.getListeners()));
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    showAddAssayPane(refinedGroups);
-                                }
-                            });
+
+                            showAddAssayPane(refinedGroups);
                         }
                     });
 
@@ -557,22 +566,33 @@ public class Wizard extends DataEntryWrapper {
         listeners[1] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                studyBeingEdited = new Study(studyId.getText(),
-                        studyTitle.getText(), "", "",
-                        studyDescription.getText(),
-                        "s_" + studyId.getText() + ".txt");
 
-                try {
-                    boolean showExitWizard = numberOfStudies > 0;
-                    createData(new HistoryComponent(finalPane, listeners, showExitWizard));
-                    numTreatmentGroups.setBackground(UIHelper.BG_COLOR);
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
-                    status.setText(
-                            "<html>" + nfe.toString() + "</html>");
-                    numTreatmentGroups.requestFocus();
-                    numTreatmentGroups.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
-                }
+                Thread performStudyCreation = new Thread(new Runnable() {
+                    public void run() {
+                        studyBeingEdited = new Study(studyId.getText(),
+                                studyTitle.getText(), "", "",
+                                studyDescription.getText(),
+                                "s_" + studyId.getText() + ".txt");
+
+                        try {
+                            boolean showExitWizard = numberOfStudies > 0;
+                            lastPage = currentPage;
+                            createData(new HistoryComponent(finalPane, listeners, showExitWizard));
+                            numTreatmentGroups.setBackground(UIHelper.BG_COLOR);
+                        } catch (NumberFormatException nfe) {
+                            nfe.printStackTrace();
+                            status.setText(
+                                    "<html>" + nfe.toString() + "</html>");
+                            numTreatmentGroups.requestFocus();
+                            numTreatmentGroups.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
+                        }
+                    }
+                });
+
+                setCurrentPage(workingProgressScreen);
+                performStudyCreation.start();
+
+
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -688,7 +708,8 @@ public class Wizard extends DataEntryWrapper {
         JPanel invTitleContainer = createFieldPanel(1, 2);
 
         JLabel invTitleLab = UIHelper.createLabel("investigation title: *");
-        invTitleLab.setHorizontalAlignment(JLabel.LEFT);
+        invTitleLab.setHorizontalAlignment(SwingConstants.LEFT);
+        invTitleLab.setVerticalAlignment(SwingConstants.TOP);
         invTitleLab.setPreferredSize(new Dimension(175, 25));
 
         invTitle = new JTextField(20);
@@ -831,24 +852,31 @@ public class Wizard extends DataEntryWrapper {
                             if (!invDescription.getText().trim()
                                     .equals("")) {
                                 // create new investigation and change view to first study to be defined.
-                                investigationDefinition = new Investigation("",
-                                        invTitle.getText(),
-                                        invDescription.getText(),
-                                        invSubmission.getText(),
-                                        invPubReleaseDate.getText());
 
-                                numberStudiesToDefine = Integer.valueOf(howManyStudiesVal.getText());
 
-                                dep.setInvestigation(investigationDefinition);
-
-                                previousPage.push(new HistoryComponent(finalPane, listeners));
-                                SwingUtilities.invokeLater(new Runnable() {
+                                Thread performLoad = new Thread(new Runnable() {
                                     public void run() {
+                                        investigationDefinition = new Investigation("",
+                                                invTitle.getText(),
+                                                invDescription.getText(),
+                                                invSubmission.getText(),
+                                                invPubReleaseDate.getText());
+
+                                        numberStudiesToDefine = Integer.valueOf(howManyStudiesVal.getText());
+
+                                        dep.setInvestigation(investigationDefinition);
+
+                                        previousPage.push(new HistoryComponent(finalPane, listeners));
                                         nextButton.setIcon(next);
+
+                                        System.out.println("going to next page");
+
                                         setCurrentPage(createDefineStudyPanel("study 1 of " + howManyStudiesVal.getText()));
                                     }
                                 });
 
+                                setCurrentPage(workingProgressScreen);
+                                performLoad.start();
                             } else {
                                 status.setText(
                                         "<html><p>the <b>investigation description</b> is missing. this is a required field!</p></html>");
@@ -866,17 +894,21 @@ public class Wizard extends DataEntryWrapper {
                     } else {
                         if (Integer.valueOf(howManyStudiesVal.getText()) > 0) {
                             // create new investigation and change view to first study to be defined.
-                            investigationDefinition = new Investigation("Inv_001",
-                                    "Investigation", "", "", "");
-                            dep.setInvestigation(investigationDefinition);
-                            previousPage.push(new HistoryComponent(finalPane, listeners));
-                            SwingUtilities.invokeLater(new Runnable() {
+                            Thread performLoad = new Thread(new Runnable() {
                                 public void run() {
+                                    investigationDefinition = new Investigation("Inv_001",
+                                            "Investigation", "", "", "");
+                                    dep.setInvestigation(investigationDefinition);
+                                    previousPage.push(new HistoryComponent(finalPane, listeners));
+
                                     status.setText("");
+                                    System.out.println("going to next page");
                                     setCurrentPage(createDefineStudyPanel(
-                                            "study 1 of " + howManyStudiesVal.getText()));
+                                            "study definition"));
                                 }
                             });
+                            setCurrentPage(workingProgressScreen);
+                            performLoad.start();
                         }
                     }
                     numberStudiesToDefine = Integer.valueOf(howManyStudiesVal.getText());
@@ -1028,59 +1060,69 @@ public class Wizard extends DataEntryWrapper {
         return factorSubForm;
     }
 
-    private void finaliseStudyEntry(boolean fromAAP) {
-        StudyDataEntry sde = new StudyDataEntry(dep, studyBeingEdited);
+    private void finaliseStudyEntry(final boolean fromAAP) {
 
-        studyBeingEdited.setUI(sde);
+        Thread finaliseStudy = new Thread(new Runnable() {
+            public void run() {
+                StudyDataEntry sde = new StudyDataEntry(dep, studyBeingEdited);
 
-        Assay studySample = new Assay("s_" + studyId.getText() + ".txt",
-                null);
+                studyBeingEdited.setUI(sde);
 
-        if (fromAAP) {
-            StudySampleCreationAlgorithm ssca = new StudySampleCreationAlgorithm(studyBeingEdited,
-                    studySample, factorsToAdd, aap.getSampleNameValues(),
-                    organism.getText(),
-                    dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
-            ssca.runAlgorithm();
-        } else {
-            studySample.setTableReferenceObject(dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
-        }
+                Assay studySample = new Assay("s_" + studyId.getText() + ".txt",
+                        null);
 
-        studyBeingEdited.setStudySamples(studySample);
-
-        studyBeingEdited.getStudySample().setUserInterface(sde);
-
-        for (Assay a : studyBeingEdited.getAssays().values()) {
-            investigationDefinition.addToAssays(a.getAssayReference(),
-                    studyBeingEdited.getStudyId());
-
-            if (a.getTableReferenceObject() == null) {
-                TableReferenceObject temp = dep.getParentFrame().selectTROForUserSelection(a.getMeasurementEndpoint(),
-                        a.getTechnologyType());
-
-                if (temp != null) {
-                    TableReferenceObject assayRef = new TableReferenceObject(temp.getTableFields());
-                    a.setTableReferenceObject(assayRef);
+                if (fromAAP) {
+                    StudySampleCreationAlgorithm ssca = new StudySampleCreationAlgorithm(studyBeingEdited,
+                            studySample, factorsToAdd, aap.getSampleNameValues(),
+                            organism.getText(),
+                            dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
+                    ssca.runAlgorithm();
                 } else {
-                    status.setText(
-                            "the selected combination of endpoint and technology type does not exist!");
-                    status.setFont(UIHelper.VER_12_BOLD);
-
-                    return;
+                    studySample.setTableReferenceObject(dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
                 }
+
+                studyBeingEdited.setStudySamples(studySample);
+
+                studyBeingEdited.getStudySample().setUserInterface(sde);
+
+                for (Assay a : studyBeingEdited.getAssays().values()) {
+                    investigationDefinition.addToAssays(a.getAssayReference(),
+                            studyBeingEdited.getStudyId());
+
+                    if (a.getTableReferenceObject() == null) {
+                        TableReferenceObject temp = dep.getParentFrame().selectTROForUserSelection(a.getMeasurementEndpoint(),
+                                a.getTechnologyType());
+
+                        if (temp != null) {
+                            TableReferenceObject assayRef = new TableReferenceObject(temp.getTableFields());
+                            a.setTableReferenceObject(assayRef);
+                        } else {
+                            status.setText(
+                                    "the selected combination of endpoint and technology type does not exist!");
+                            status.setFont(UIHelper.VER_12_BOLD);
+
+                            return;
+                        }
+                    }
+
+                    a.setUserInterface(sde);
+                }
+
+                investigationDefinition.addStudy(studyBeingEdited);
+
+                //if more studies to define, then define them, else show created thing!
+                previousPage.push(new HistoryComponent(aap, aap.getListeners()));
+                setCurrentPage(visualizeCurrentStudy());
             }
+        });
 
-            a.setUserInterface(sde);
-        }
+        setCurrentPage(workingProgressScreen);
+        finaliseStudy.start();
 
-        investigationDefinition.addStudy(studyBeingEdited);
-
-        //if more studies to define, then define them, else show created thing!
-        previousPage.push(new HistoryComponent(aap, aap.getListeners()));
-        setCurrentPage(visualizeCurrentStudy());
     }
 
     private JLayeredPane visualizeCurrentStudy() {
+
         ExperimentVisualization expViz = new ExperimentVisualization(studyBeingEdited);
         expViz.setSize(600, 600);
         expViz.createGUI();
@@ -1090,10 +1132,7 @@ public class Wizard extends DataEntryWrapper {
 
         final MouseListener[] listeners = new MouseListener[2];
 
-        listeners[0] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[0] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 backButton.setIcon(backOver);
@@ -1115,17 +1154,11 @@ public class Wizard extends DataEntryWrapper {
                 investigationDefinition.getStudies().remove(studyBeingEdited.getStudyId());
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         };
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[1] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 nextButton.setIcon(nextOver);
@@ -1148,9 +1181,7 @@ public class Wizard extends DataEntryWrapper {
                 }
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
 
-            }
         };
 
         assignListenerToLabel(nextButton, listeners[1]);
@@ -1160,6 +1191,8 @@ public class Wizard extends DataEntryWrapper {
     }
 
     private JLayeredPane showDonePage() {
+        setCurrentPage(workingProgressScreen);
+
         JPanel container = new JPanel(new BorderLayout());
         container.setSize(500, 400);
         JLabel completedIm = new JLabel(completedInfo);
@@ -1171,10 +1204,7 @@ public class Wizard extends DataEntryWrapper {
         final MouseListener[] listeners = new MouseListener[2];
 
         backButton.setIcon(wizard);
-        listeners[0] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[0] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 backButton.setIcon(wizardOver);
@@ -1192,18 +1222,11 @@ public class Wizard extends DataEntryWrapper {
                     }
                 });
             }
-
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         };
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[1] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 nextButton.setIcon(nextOver);
@@ -1229,73 +1252,12 @@ public class Wizard extends DataEntryWrapper {
                 });
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         };
 
         assignListenerToLabel(nextButton, listeners[1]);
 
         return finalPane;
 
-    }
-
-    private Map<Integer, String> getGroupFactors(List<TempFactors> factors) {
-
-        List<String> tempList1 = new ArrayList<String>();
-        List<String> tempList2 = new ArrayList<String>();
-        List<String> finalList = new ArrayList<String>();
-
-        for (TempFactors factor : factors) {
-            boolean isUnit = false;
-
-            for (TimeUnitPair tup : factor.getFactorLevels()) {
-                if (!tup.getUnit().equals("")) {
-                    isUnit = true;
-
-                    break;
-                }
-            }
-
-            for (TimeUnitPair tup : factor.getFactorLevels()) {
-                if (isUnit) {
-                    tempList1.add(tup.getTime() + "\t" + tup.getUnit());
-                } else {
-                    tempList1.add(tup.getTime());
-                }
-            }
-
-            if (finalList.size() == 0) {
-                for (String s : tempList1) {
-                    finalList.add(s);
-                }
-
-                tempList1.clear();
-            } else {
-                for (String f : finalList) {
-                    for (String t : tempList1) {
-                        tempList2.add(f + "\t" + t);
-                    }
-                }
-
-                finalList.clear();
-
-                for (String s : tempList2) {
-                    finalList.add(s);
-                }
-
-                tempList1.clear();
-                tempList2.clear();
-            }
-        }
-
-        Map<Integer, String> groups = new ListOrderedMap<Integer, String>();
-
-        for (int i = 0; i < finalList.size(); i++) {
-            groups.put(i, finalList.get(i));
-        }
-
-        return groups;
     }
 
 
@@ -1449,7 +1411,7 @@ public class Wizard extends DataEntryWrapper {
                 }
             }
 
-            studyTreatmentGroups = getGroupFactors(factorsToAdd);
+            studyTreatmentGroups = Utils.getGroupFactors(factorsToAdd);
 
             return true;
         } else {
@@ -1461,22 +1423,29 @@ public class Wizard extends DataEntryWrapper {
         }
     }
 
-    private void showAddAssayPane(Map<Integer, TreatmentReplicate> treatmentGroups) {
+    private void showAddAssayPane(final Map<Integer, TreatmentReplicate> treatmentGroups) {
 
-        if (assayDefinitionRequired()) {
-            aap = new AddAssayPane(this, studyBeingEdited, factorsToAdd,
-                    new File(ARRAY_DESIGNS_FILE_LOC), treatmentGroups, dep, currentUser);
-            aap.createGUI();
-            aap.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);
-            aap.addPropertyChangeListener("canceledAssayCreation", new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent event) {
-                    showPreviousPage(previousPage.pop());
+        Thread createStudyThread = new Thread(new Runnable() {
+            public void run() {
+                if (assayDefinitionRequired()) {
+                    aap = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, dep, currentUser);
+                    aap.createGUI();
+                    aap.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);
+                    aap.addPropertyChangeListener("canceledAssayCreation", new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent event) {
+                            showPreviousPage(previousPage.pop());
+                        }
+                    });
+                    setCurrentPage(aap);
+                } else {
+                    finaliseStudyEntry(false);
                 }
-            });
-            setCurrentPage(aap);
-        } else {
-            finaliseStudyEntry(false);
-        }
+            }
+        });
+
+        createStudyThread.start();
+        setCurrentPage(workingProgressScreen);
+
     }
 
     public void showHideInvestigationDefPanel(int value) {
@@ -1491,6 +1460,7 @@ public class Wizard extends DataEntryWrapper {
 
     class FinaliseStudyCreationListener implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent event) {
+            System.out.println("finalising study creation");
             finaliseStudyEntry(true);
         }
     }

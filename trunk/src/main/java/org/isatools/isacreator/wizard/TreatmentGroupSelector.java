@@ -45,10 +45,7 @@ import org.isatools.isacreator.gui.DataEntryWrapper;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -156,16 +153,11 @@ public class TreatmentGroupSelector extends JPanel {
 
 
         DataEntryWrapper.backButton.setIcon(DataEntryWrapper.back);
-        listeners[0] = new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        listeners[0] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 firePropertyChange("treatmentGroupsNotSelected", "",
                         "treatment");
-            }
-
-            public void mouseReleased(MouseEvent event) {
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -179,15 +171,14 @@ public class TreatmentGroupSelector extends JPanel {
 
         dew.assignListenerToLabel(DataEntryWrapper.backButton, listeners[0]);
 
-        listeners[1] = new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        listeners[1] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 String checkValidResult = checkValidTreatments();
                 int numberOfCheckedItems = getNumberOfCheckedItems();
                 if (checkValidResult == null) {
                     if (numberOfCheckedItems == numTreatmentGroupsSpecified) {
+
                         Map<Integer, TreatmentReplicate> selectedGroups = new HashMap<Integer, TreatmentReplicate>();
 
                         int count = 0;
@@ -213,9 +204,6 @@ public class TreatmentGroupSelector extends JPanel {
                 } else {
                     status.setText(checkValidResult);
                 }
-            }
-
-            public void mouseReleased(MouseEvent event) {
             }
 
             public void mouseEntered(MouseEvent event) {
