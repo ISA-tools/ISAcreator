@@ -1562,6 +1562,7 @@ public class Spreadsheet extends JComponent implements
 
                             putStringOnClipboard(autofillContents);
                             paste(startRow + 1, startCol, true);
+
                         }
                     }
                 }
@@ -1754,8 +1755,9 @@ public class Spreadsheet extends JComponent implements
                 }
                 spreadsheetModel.extendedFromString(trstring, '\t', affectedRange);
                 spreadsheetModel.extendedSetSelection(affectedRange);
-            }
-            catch (Exception e) {
+
+                table.repaint();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -1934,7 +1936,7 @@ public class Spreadsheet extends JComponent implements
      * @return DataEntryPanel
      */
     public DataEntryEnvironment getDataEntryEnv
-            () {
+    () {
         return dataEntryEnv;
     }
 
@@ -1945,7 +1947,7 @@ public class Spreadsheet extends JComponent implements
      * @return Set of files defined in the spreadsheet
      */
     public Set<String> getFilesDefinedInTable
-            () {
+    () {
         Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
         Set<String> files = new HashSet<String>();
 
@@ -1978,9 +1980,9 @@ public class Spreadsheet extends JComponent implements
      * @return A vector of strings containing headers - set to vector since the values will be instantly suitable for a ComboBox for example.
      */
     public Vector<String> getHeaders
-            (
-                    boolean needColNo,
-                    boolean unique) {
+    (
+            boolean needColNo,
+            boolean unique) {
         Vector<String> headerList = new Vector<String>();
 
         for (int i = 0; i < spreadsheetModel.getColumnCount(); i++) {
@@ -2014,7 +2016,7 @@ public class Spreadsheet extends JComponent implements
      * @return Set<String> containing the Ontologies defined in the Spreadsheet.
      */
     public Set<String> getOntologiesDefinedInTable
-            () {
+    () {
         Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
 
         HashSet<String> ontologySources = new HashSet<String>();
@@ -2054,7 +2056,7 @@ public class Spreadsheet extends JComponent implements
      * @return MainGUI object.
      */
     public AniSheetableJFrame getParentFrame
-            () {
+    () {
         return dataEntryEnv.getParentFrame();
     }
 
@@ -2064,7 +2066,7 @@ public class Spreadsheet extends JComponent implements
      * @return the StudyDataEntry object for the current Spreadsheet
      */
     public StudyDataEntry getSDE
-            () {
+    () {
         return sde;
     }
 
@@ -2074,7 +2076,7 @@ public class Spreadsheet extends JComponent implements
      * @return the JTable component
      */
     public JTable getTable
-            () {
+    () {
         return table;
     }
 
@@ -2084,7 +2086,7 @@ public class Spreadsheet extends JComponent implements
      * @return SpreadsheetModel for current table.
      */
     public SpreadsheetModel getTableModel
-            () {
+    () {
         return spreadsheetModel;
     }
 
@@ -2140,7 +2142,7 @@ public class Spreadsheet extends JComponent implements
      * @param data - data to be entered.
      */
     public void populateTable
-            (List<List<String>> data) {
+    (List<List<String>> data) {
         addRows(data.size(), false);
 
         int dataSize = data.size();
@@ -2170,10 +2172,10 @@ public class Spreadsheet extends JComponent implements
      * @param columnName -> name of column where the popup was called.
      */
     private void popupMenu
-            (JComponent
-                    jc, final int x,
-             final int y, String
-                    columnName) {
+    (JComponent
+             jc, final int x,
+     final int y, String
+            columnName) {
         final JPopupMenu popup = new JPopupMenu("Utilities");
         popup.setLightWeightPopupEnabled(false);
         popup.setBackground(new Color(0, 104, 56, 50));
@@ -2754,7 +2756,7 @@ public class Spreadsheet extends JComponent implements
 
     public void propertyChange
             (PropertyChangeEvent
-                    event) {
+                     event) {
         if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
             dataEntryEnv.getParentFrame().hideSheet();
@@ -2864,8 +2866,8 @@ public class Spreadsheet extends JComponent implements
      * @param colName - Name of column to be removed.
      */
     public void removeColumnByName
-            (String
-                    colName) {
+    (String
+             colName) {
         Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
 
         while (columns.hasMoreElements()) {
@@ -2888,8 +2890,8 @@ public class Spreadsheet extends JComponent implements
      * @param col - Column to be removed
      */
     public void removeColumnFromDependencies
-            (TableColumn
-                    col) {
+    (TableColumn
+             col) {
         boolean removingParent = false;
         TableColumn toRemove = null;
         TableColumn parentColumn = null;
@@ -2984,8 +2986,8 @@ public class Spreadsheet extends JComponent implements
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
     private OntologyObject searchUserHistory
-            (String
-                    uniqueId) {
+    (String
+             uniqueId) {
         return dataEntryEnv.getUserHistory().get(uniqueId);
     }
 
@@ -2995,8 +2997,8 @@ public class Spreadsheet extends JComponent implements
      * @param l The listener to add
      */
     public void addSelectionListener
-            (SpreadsheetSelectionListener
-                    l) {
+    (SpreadsheetSelectionListener
+             l) {
         listenerList.add(SpreadsheetSelectionListener.class, l);
     }
 
@@ -3006,8 +3008,8 @@ public class Spreadsheet extends JComponent implements
      * @param l The listener to add
      */
     public void addUndoableEditListener
-            (UndoableEditListener
-                    l) {
+    (UndoableEditListener
+             l) {
         spreadsheetHistory.addUndoableEditListener(l);
     }
 
@@ -3131,8 +3133,8 @@ public class Spreadsheet extends JComponent implements
      * @param toShow can be any one of four static values from the AddColumnGUI class, e.g. ADD_FACTOR_COLUMN, or ADD_COMMENT_COLUMN.
      */
     private void showAddColumnsGUI
-            (
-                    int toShow) {
+    (
+            int toShow) {
         final AddColumnGUI goingToDisplay;
 
         switch (toShow) {
@@ -3179,7 +3181,7 @@ public class Spreadsheet extends JComponent implements
      * Displays an error message when a user tries to delete more than one column at a time.
      */
     private void showColumnErrorMessage
-            () {
+    () {
         if (!(table.getSelectedColumns().length > 1)) {
             deleteColumn(table.getSelectedColumn());
         } else {
@@ -3197,7 +3199,7 @@ public class Spreadsheet extends JComponent implements
      * Displays the MultipleSortGUI
      */
     private void showMultipleColumnSortGUI
-            () {
+    () {
         msGUI.updateAllCombos();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -3231,7 +3233,7 @@ public class Spreadsheet extends JComponent implements
      * Displays the AddMultipleRowsGUI
      */
     private void showMultipleRowsGUI
-            () {
+    () {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 dataEntryEnv.getParentFrame().showJDialogAsSheet(amrGUI);
