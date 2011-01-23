@@ -100,7 +100,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
     private JRadioButton useRecommendedOntologies;
     private JRadioButton useOntologies;
 
-
     private ExtendedJList historyList;
     private JComboBox searchBy;
     private JTextField searchField;
@@ -119,7 +118,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
     private boolean multipleTermsAllowed;
     private OntologyConsumer consumer;
     private ViewTermDefinitionUI viewTermDefinition;
-
 
     /**
      * OntologySelectionTool constructor.

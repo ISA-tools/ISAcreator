@@ -68,9 +68,6 @@ public class FileSelectionPanel extends JPanel {
     private Font textFont;
     private Color textColor;
 
-    public FileSelectionPanel(String text) {
-        this(text, null);
-    }
 
     public FileSelectionPanel(String text, JFileChooser fileChooser) {
         this(text, fileChooser, UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, OPEN);
@@ -176,5 +173,24 @@ public class FileSelectionPanel extends JPanel {
 
     private JPanel getInstance() {
         return this;
+    }
+
+    public boolean notEmpty() {
+        return getSelectedFilePath() != null && !getSelectedFilePath().trim().equals("");
+
+    }
+
+    public boolean checkFileExtensionValid(String... validExtensions) {
+        if (getSelectedFilePath().contains(".")) {
+            String extension = getSelectedFilePath().substring(getSelectedFilePath().lastIndexOf(".") + 1);
+
+            for (String validExtension : validExtensions) {
+                if (validExtension.equalsIgnoreCase(extension)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

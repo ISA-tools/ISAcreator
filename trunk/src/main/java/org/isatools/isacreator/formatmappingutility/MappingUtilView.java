@@ -96,6 +96,8 @@ public class MappingUtilView extends DataEntryWrapper {
     private String fileBeingMapped;
     private JFileChooser jfc;
 
+    private ErrorDisplay errorPanel;
+
     private WorkingScreen workingProgressScreen;
     private Component lastPage;
 
@@ -140,12 +142,15 @@ public class MappingUtilView extends DataEntryWrapper {
 
         menuPanels.getMain().hideGlassPane();
 
+
         createWestPanel(logo, mappingInfo);
 
         createSouthPanel();
 
         workingProgressScreen = new WorkingScreen();
         workingProgressScreen.createGUI();
+
+        setupErrorPanel();
 
         status = new JLabel();
         previousPage = new Stack<HistoryComponent>();
@@ -301,7 +306,7 @@ public class MappingUtilView extends DataEntryWrapper {
                             statusLab.setText("");
                         }
 
-                        if (fileToMapFSP.getSelectedFilePath() != null && !fileToMapFSP.getSelectedFilePath().trim().equals("")) {
+                        if (fileToMapFSP.notEmpty()) {
                             previousPage.push(new HistoryComponent(finalLayout, listeners));
                             statusLab.setText("");
                             SwingUtilities.invokeLater(new Runnable() {
@@ -315,9 +320,15 @@ public class MappingUtilView extends DataEntryWrapper {
                         }
                     }
                 });
-                lastPage = currentPage;
-                setCurrentPage(workingProgressScreen);
-                loadFile.start();
+
+                if (fileToMapFSP.notEmpty() && fileToMapFSP.checkFileExtensionValid("xls", "csv", "txt")) {
+                    statusLab.setText("");
+                    lastPage = currentPage;
+                    setCurrentPage(workingProgressScreen);
+                    loadFile.start();
+                } else {
+                    statusLab.setText("<html>please select a file with the extension <strong>.xls</strong>, <strong>.csv</strong> or <strong>.txt</strong>...</html>");
+                }
 
 
             }
@@ -418,20 +429,47 @@ public class MappingUtilView extends DataEntryWrapper {
                             setCurrentPage(createMappings(-1, getTableReferenceObject("", "[Sample]"), fileColumns, fileName, reader));
                         } catch (NoAvailableLoaderException e) {
                             setCurrentPage(lastPage);
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
+                                }
+                            });
+
                             log.error("No loader available for file format!");
-                            // todo inform user about this!
+
                         } catch (MultipleExtensionsException e) {
                             setCurrentPage(lastPage);
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
+                                }
+                            });
+
                             log.error("There are files with different extensions in the selected folder! This is not allowed.");
-                            // todo inform user about this!
+
                         } catch (BiffException e) {
                             setCurrentPage(lastPage);
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
+                                }
+                            });
+
                             log.error(e.getMessage());
-                            // todo inform user about this!
                         } catch (IOException e) {
                             setCurrentPage(lastPage);
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
+                                }
+                            });
+
                             log.error(e.getMessage());
-                            // todo inform user about this!
+
                         }
                     }
                 });
@@ -685,6 +723,7 @@ public class MappingUtilView extends DataEntryWrapper {
                 performMappingProcess.start();
             }
         };
+
         assignListenerToLabel(nextButton, listeners[1]);
         return finalPanel;
     }
@@ -882,6 +921,16 @@ public class MappingUtilView extends DataEntryWrapper {
 
         assignListenerToLabel(nextButton, listeners[1]);
         return finalPanel;
+
+    }
+
+    private void setupErrorPanel() {
+        errorPanel = new ErrorDisplay();
+        errorPanel.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent event) {
+                menuPanels.getMain().getGlassPane().setVisible(false);
+            }
+        });
 
     }
 }
