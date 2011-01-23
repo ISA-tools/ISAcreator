@@ -430,43 +430,26 @@ public class MappingUtilView extends DataEntryWrapper {
                         } catch (NoAvailableLoaderException e) {
                             setCurrentPage(lastPage);
 
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
-                                }
-                            });
+                            showErrorPanel();
 
                             log.error("No loader available for file format!");
 
                         } catch (MultipleExtensionsException e) {
                             setCurrentPage(lastPage);
 
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
-                                }
-                            });
+                            showErrorPanel();
 
                             log.error("There are files with different extensions in the selected folder! This is not allowed.");
 
                         } catch (BiffException e) {
                             setCurrentPage(lastPage);
-
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
-                                }
-                            });
+                            showErrorPanel();
 
                             log.error(e.getMessage());
                         } catch (IOException e) {
                             setCurrentPage(lastPage);
 
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    menuPanels.getMain().setGlassPanelContents(errorPanel);
-                                }
-                            });
+                            showErrorPanel();
 
                             log.error(e.getMessage());
 
@@ -932,5 +915,13 @@ public class MappingUtilView extends DataEntryWrapper {
             }
         });
 
+    }
+
+    private void showErrorPanel() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                menuPanels.getMain().setGlassPanelContents(errorPanel);
+            }
+        });
     }
 }
