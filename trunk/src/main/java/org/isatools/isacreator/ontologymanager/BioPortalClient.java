@@ -297,7 +297,7 @@ public class BioPortalClient implements OntologyService {
     public Map<String, String> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder) {
 
         term = correctTermForHTTPTransport(term);
-        String searchString = REST_URL + "search/" + term + "/?ontologyids=" + constructSourceStringFromAllowedOntologies();
+        String searchString = REST_URL + "search/" + term + "/?ontologyids=" + (((source == null) || source.trim().equalsIgnoreCase("")) ? constructSourceStringFromAllowedOntologies() : source);
         log.info("search string " + searchString);
 
         Map<String, String> searchResult = downloadAndProcessBranch(term, searchString);
@@ -519,8 +519,7 @@ public class BioPortalClient implements OntologyService {
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;
-        }
-        finally {
+        } finally {
             try {
                 if (os != null) {
                     os.close();
