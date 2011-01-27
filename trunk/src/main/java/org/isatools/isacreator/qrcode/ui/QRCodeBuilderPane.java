@@ -39,8 +39,8 @@ package org.isatools.isacreator.qrcode.ui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.formatmappingutility.MappingBuilderUI;
-import org.isatools.isacreator.formatmappingutility.MappingChoice;
+import org.isatools.isacreator.formatmappingutility.ui.MappingBuilderUI;
+import org.isatools.isacreator.formatmappingutility.ui.MappingChoice;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 

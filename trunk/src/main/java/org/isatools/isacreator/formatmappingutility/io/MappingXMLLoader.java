@@ -39,8 +39,8 @@ package org.isatools.isacreator.formatmappingutility.io;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
-import org.isatools.isacreator.formatmappingutility.MappingField;
-import org.isatools.isacreator.formatmappingutility.MappingTypes;
+import org.isatools.isacreator.formatmappingutility.logic.MappingTypes;
+import org.isatools.isacreator.formatmappingutility.ui.MappingField;
 import org.isatools.isacreator.mapping.schema.*;
 
 import java.io.File;

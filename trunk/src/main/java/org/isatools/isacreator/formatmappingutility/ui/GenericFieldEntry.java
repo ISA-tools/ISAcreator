@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.RoundedBorder;
@@ -98,11 +98,11 @@ public class GenericFieldEntry extends JPanel {
         add(fieldInfo);
     }
 
-    boolean useField() {
+    public boolean useField() {
         return useField.isSelected();
     }
 
-    MappingBuilderUI getFieldBuilder() {
+    public MappingBuilderUI getFieldBuilder() {
         return fieldBuilder;
     }
 

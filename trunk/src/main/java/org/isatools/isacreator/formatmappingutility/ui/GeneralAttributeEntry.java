@@ -35,15 +35,15 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * @author Eamonn Maguire
@@ -51,100 +51,98 @@ import java.awt.event.ActionListener;
  */
 
 
-public class NormalFieldEntry extends MappingInformation {
+public class GeneralAttributeEntry extends MappingInformation {
     private String fieldName;
     private String[] columnsToBeMappedTo;
-    private ISAFieldMapping preExistingMapping;
-    private MappingBuilderUI formatBuider;
-    private JCheckBox mapTo;
+    private ISAFieldMapping mapping;
 
-    public NormalFieldEntry(String fieldName, String[] columnsToBeMappedTo) {
+    private NormalFieldEntry normalFieldEntry;
+    private GenericFieldEntry unitField;
+
+
+    public GeneralAttributeEntry(String fieldName, String[] columnsToBeMappedTo) {
         this(fieldName, columnsToBeMappedTo, null);
     }
 
-    public NormalFieldEntry(String fieldName, String[] columnsToBeMappedTo, ISAFieldMapping preExistingMapping) {
+    public GeneralAttributeEntry(String fieldName, String[] columnsToBeMappedTo, ISAFieldMapping mapping) {
         this.fieldName = fieldName;
         this.columnsToBeMappedTo = columnsToBeMappedTo;
-        this.preExistingMapping = preExistingMapping;
+        this.mapping = mapping;
         createGUI();
     }
 
     void createGUI() {
-        setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
+        setLayout(new BorderLayout());
+
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.PAGE_AXIS));
 
-        if (fieldName != null) {
-            final JPanel fieldNameInfoPanel = new JPanel(new GridLayout(1, 1));
-            JPanel fieldNameInfo = new JPanel();
-            fieldNameInfo.setLayout(new BoxLayout(fieldNameInfo, BoxLayout.LINE_AXIS));
+        if (mapping != null) {
+            normalFieldEntry = new NormalFieldEntry(fieldName, columnsToBeMappedTo, mapping);
+        } else {
+            normalFieldEntry = new NormalFieldEntry(fieldName, columnsToBeMappedTo);
+        }
 
-            JPanel mapToCont = new JPanel(new GridLayout(1, 1));
-            mapTo = new JCheckBox("map to field from incoming file?", false);
-            mapTo.setHorizontalAlignment(JCheckBox.LEFT);
+        northPanel.add(normalFieldEntry);
 
-            if (fieldName.equals("Sample Name") || fieldName.equals("Source Name")) {
-                mapTo.setSelected(true);
-                mapTo.setVisible(false);
-            } else {
-                mapTo.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        fieldNameInfoPanel.setVisible(mapTo.isSelected());
-                        formatBuider.setVisible(mapTo.isSelected());
-                        firePropertyChange("changeInWhetherToMap", "", "new");
-                        fieldNameInfoPanel.revalidate();
-                    }
-                });
-
-                UIHelper.renderComponent(mapTo, UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
-
-                mapToCont.add(mapTo);
-                northPanel.add(mapToCont);
+        normalFieldEntry.addPropertyChangeListener("changeInWhetherToMap", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                unitField.setVisible(normalFieldEntry.isMappedTo());
             }
+        });
 
-
-            fieldNameInfo.add(UIHelper.createLabel("define mapping for ", UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, JLabel.LEFT));
-            fieldNameInfo.add(UIHelper.createLabel(fieldName, UIHelper.VER_12_BOLD, UIHelper.LIGHT_GREEN_COLOR, JLabel.LEFT));
-
-            fieldNameInfoPanel.add(fieldNameInfo);
-            fieldNameInfoPanel.setVisible(mapTo.isSelected());
-
-            northPanel.add(fieldNameInfoPanel);
+        if (mapping != null) {
+            if (mapping.hasUnit()) {
+                unitField = new GenericFieldEntry(fieldName, columnsToBeMappedTo, mapping.getUnit());
+            } else {
+                unitField = new GenericFieldEntry("Unit", columnsToBeMappedTo);
+            }
+        } else {
+            unitField = new GenericFieldEntry("Unit", columnsToBeMappedTo);
         }
 
-        if (preExistingMapping != null) {
-            mapTo.setSelected(true);
-        }
+        unitField.setVisible(normalFieldEntry.isMappedTo());
 
-        formatBuider = new MappingBuilderUI(columnsToBeMappedTo,
-                preExistingMapping != null ? preExistingMapping.getField() : null);
+        // makes things centralise on screen...
+        JPanel unitPanelWrapper = new JPanel(new GridLayout(1, 1));
+        unitPanelWrapper.add(unitField);
 
-        formatBuider.setVisible(mapTo.isSelected());
-        northPanel.add(formatBuider);
+        northPanel.add(unitPanelWrapper);
         add(northPanel, BorderLayout.NORTH);
     }
 
-    public MappingBuilderUI getFormatBuider() {
-        return formatBuider;
+    public NormalFieldEntry getNormalFieldEntry() {
+        return normalFieldEntry;
+    }
+
+    public GenericFieldEntry getUnitPanel() {
+        return unitField;
     }
 
     public boolean isMappedTo() {
-        return mapTo.isSelected();
+        return normalFieldEntry.isMappedTo();
     }
 
     public void disableEnableComponents(boolean disableEnable) {
-        for (MappingChoice mc : formatBuider.getMappings()) {
+        normalFieldEntry.disableEnableComponents(disableEnable);
+        for (MappingChoice mc : unitField.getFieldBuilder().getMappings()) {
             mc.disableEnableComponents(disableEnable);
         }
     }
 
     public ISAFieldMapping createISAFieldMapping() {
         if (isMappedTo()) {
-            ISAFieldMapping mapping = new ISAFieldMapping();
-            mapping.setField(getFormatBuider().getISAFieldsForMapping());
+            ISAFieldMapping mapping = normalFieldEntry.createISAFieldMapping();
+            if (unitField.useField()) {
+                mapping.setUnit(unitField.getFieldBuilder().getISAFieldsForMapping());
+            }
             return mapping;
         }
         return null;
+    }
+
+    public String getFieldName() {
+        return fieldName;
     }
 }

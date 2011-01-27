@@ -60,12 +60,10 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
 
-public class MergeFilesUtil extends DataEntryWrapper {
+public class MergeFilesUI extends DataEntryWrapper {
 
     @InjectedResource
     private ImageIcon logo, selectFilesHeader, defineInvestigationHeader, overviewHeader, mergeCompleteHeader,
@@ -86,7 +84,7 @@ public class MergeFilesUtil extends DataEntryWrapper {
     private JComponent dropDownPR;
     private JComponent dropDownSD;
 
-    public MergeFilesUtil(final ISAcreatorMenu menuPanels) {
+    public MergeFilesUI(final ISAcreatorMenu menuPanels) {
         super();
 
         ResourceInjector.get("mergeutil-package.style").inject(this);
@@ -212,10 +210,11 @@ public class MergeFilesUtil extends DataEntryWrapper {
                 String isatab2Path = isatab2.getSelectedFilePath().trim();
 
                 if (!isatab1Path.equals("")) {
-                    if (checkDirectoryForISATAB(isatab1Path)) {
+                    if (Utils.checkDirectoryForISATAB(isatab1Path)) {
                         if (!isatab2Path.equals("")) {
-                            if (checkDirectoryForISATAB(isatab2Path)) {
-                                if (!checkForConflictingFiles(isatab1Path, isatab2Path)) {
+                            if (Utils.checkDirectoryForISATAB(isatab2Path)) {
+
+                                if (!Utils.checkForConflictingFiles(isatab1Path, isatab2Path)) {
                                     if (!mergedFileName.getText().trim().equals("")) {
 
                                         SwingUtilities.invokeLater(new Runnable() {
@@ -499,9 +498,7 @@ public class MergeFilesUtil extends DataEntryWrapper {
 
         final MouseListener[] listeners = new MouseListener[2];
 
-        listeners[0] = new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        listeners[0] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 // go back to the create isatab menu
@@ -513,10 +510,6 @@ public class MergeFilesUtil extends DataEntryWrapper {
                         setCurrentPage(hc.getDisplayComponent());
                     }
                 });
-            }
-
-            public void mouseReleased(MouseEvent event) {
-
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -536,9 +529,7 @@ public class MergeFilesUtil extends DataEntryWrapper {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        listeners[1] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
 
@@ -576,10 +567,6 @@ public class MergeFilesUtil extends DataEntryWrapper {
                 }
             }
 
-            public void mouseReleased(MouseEvent event) {
-
-            }
-
             public void mouseEntered(MouseEvent event) {
                 nextButton.setIcon(nextOver);
             }
@@ -600,32 +587,6 @@ public class MergeFilesUtil extends DataEntryWrapper {
         status.revalidate();
     }
 
-    private boolean checkForConflictingFiles(String isa1Dir, String isa2Dir) {
-
-        File dir1 = new File(isa1Dir);
-        File dir2 = new File(isa2Dir);
-        File[] dir1Files = dir1.listFiles();
-        File[] dir2Files = dir2.listFiles();
-
-        Set<String> fileNames = new HashSet<String>();
-
-        for (File f : dir1Files) {
-            if (!f.getName().startsWith("i_")) {
-                fileNames.add(f.getName());
-            }
-        }
-
-        for (File f : dir2Files) {
-            if (fileNames.contains(f.getName())) {
-                return true;
-            } else {
-                if (!f.getName().startsWith("i_")) {
-                    fileNames.add(f.getName());
-                }
-            }
-        }
-        return false;
-    }
 
     /**
      * Method merges two isatab files into one record
@@ -727,10 +688,7 @@ public class MergeFilesUtil extends DataEntryWrapper {
 
         final MouseListener[] listeners = new MouseListener[2];
 
-        listeners[0] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[0] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 backButton.setIcon(backOver);
@@ -749,17 +707,11 @@ public class MergeFilesUtil extends DataEntryWrapper {
                 setCurrentPage(hc.getDisplayComponent());
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         };
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[1] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 nextButton.setIcon(nextOver);
@@ -775,9 +727,6 @@ public class MergeFilesUtil extends DataEntryWrapper {
                 setCurrentPage(showDonePage(inv1));
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         };
 
         assignListenerToLabel(nextButton, listeners[1]);
@@ -798,10 +747,7 @@ public class MergeFilesUtil extends DataEntryWrapper {
         final MouseListener[] listeners = new MouseListener[2];
 
         backButton.setIcon(back);
-        listeners[0] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[0] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 backButton.setIcon(backOver);
@@ -822,17 +768,11 @@ public class MergeFilesUtil extends DataEntryWrapper {
                 });
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         };
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        listeners[1] = new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
                 nextButton.setIcon(nextOver);
@@ -856,36 +796,10 @@ public class MergeFilesUtil extends DataEntryWrapper {
                 });
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         };
 
         assignListenerToLabel(nextButton, listeners[1]);
 
         return finalPane;
-
     }
-
-    /**
-     * Check directory to determine if an investigation file exists (given naming convention of i_<<name>>.txt) <- simply a preliminary check!
-     *
-     * @param dir - Directory to be searched
-     * @return boolean determining if the current directory contains an investigation file
-     */
-    private boolean checkDirectoryForISATAB(String dir) {
-        File candidateFile = new File(dir);
-
-        if (candidateFile.isDirectory()) {
-            File[] directoryContents = candidateFile.listFiles();
-            for (File f : directoryContents) {
-                if (f.getName().toLowerCase().startsWith("i_")) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return false;
-    }
-
 }

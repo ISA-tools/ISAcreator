@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.ui;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.CustomSplitPaneDivider;
 import org.isatools.isacreator.effects.ExpandingPanel;
+import org.isatools.isacreator.formatmappingutility.exceptions.NoAvailableLoaderException;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 import org.isatools.isacreator.formatmappingutility.io.SavedMappings;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;

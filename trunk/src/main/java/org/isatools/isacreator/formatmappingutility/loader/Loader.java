@@ -37,8 +37,8 @@
 
 package org.isatools.isacreator.formatmappingutility.loader;
 
-import org.isatools.isacreator.formatmappingutility.MultipleExtensionsException;
-import org.isatools.isacreator.formatmappingutility.NoAvailableLoaderException;
+import org.isatools.isacreator.formatmappingutility.exceptions.MultipleExtensionsException;
+import org.isatools.isacreator.formatmappingutility.exceptions.NoAvailableLoaderException;
 
 import java.io.File;
 import java.util.HashSet;

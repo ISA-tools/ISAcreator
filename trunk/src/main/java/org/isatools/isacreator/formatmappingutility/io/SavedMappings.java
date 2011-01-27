@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.formatmappingutility.io;
 
-import org.isatools.isacreator.formatmappingutility.MappingField;
+import org.isatools.isacreator.formatmappingutility.ui.MappingField;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.qrcode.utils;
 
-import org.isatools.isacreator.formatmappingutility.MappingChoice;
+import org.isatools.isacreator.formatmappingutility.ui.MappingChoice;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;

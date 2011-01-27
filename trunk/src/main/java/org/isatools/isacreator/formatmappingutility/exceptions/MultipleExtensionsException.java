@@ -35,37 +35,18 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
-
-import org.jdesktop.fuse.InjectedResource;
-import org.jdesktop.fuse.ResourceInjector;
-
-import javax.swing.*;
-import java.awt.*;
+package org.isatools.isacreator.formatmappingutility.exceptions;
 
 /**
- * Created by the ISA team
- *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 21/01/2011
- *         Time: 19:12
+ * @author Eamonn Maguire
+ * @date May 13, 2009
  */
-public class ErrorDisplay extends JPanel {
 
-    @InjectedResource
-    private ImageIcon errorPage;
 
-    public ErrorDisplay() {
-        ResourceInjector.get("formatmappingutility-package.style").inject(this);
+public class MultipleExtensionsException extends Exception {
 
-        setPreferredSize(new Dimension(347, 236));
-        setLayout(new BorderLayout());
-        setOpaque(false);
-        createGUI();
+    public MultipleExtensionsException(String message) {
+        super(message);
     }
 
-    private void createGUI() {
-        add(new JLabel(errorPage));
-    }
 }

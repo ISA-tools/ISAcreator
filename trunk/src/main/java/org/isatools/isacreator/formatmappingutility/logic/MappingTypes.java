@@ -35,18 +35,37 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.logic;
 
 /**
  * @author Eamonn Maguire
- * @date May 13, 2009
+ * @date Jun 12, 2009
  */
+public enum MappingTypes {
 
+    DATA_FIELD("data column"), LITERAL("literal");
 
-public class NoAvailableLoaderException extends Exception {
+    public final String type;
 
-    public NoAvailableLoaderException(String s) {
-        super(s);
+    private MappingTypes(String type) {
+        this.type = type;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return getType();
+    }
+
+    public static MappingTypes resolveTypeFromString(String value) {
+        for (MappingTypes mt : values()) {
+            if (mt.getType().equalsIgnoreCase(value)) {
+                return mt;
+            }
+        }
+        return null;
+    }
 }

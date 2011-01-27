@@ -35,57 +35,18 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.exceptions;
 
 /**
- * AssaySelectionObject
- *
  * @author Eamonn Maguire
- * @date Oct 6, 2009
+ * @date May 13, 2009
  */
 
 
-public class AssaySelection implements Comparable {
-    private String measurement;
-    private String technology;
+public class NoAvailableLoaderException extends Exception {
 
-
-    AssaySelection(String measurement, String technology) {
-
-        this.measurement = measurement;
-        this.technology = technology;
+    public NoAvailableLoaderException(String s) {
+        super(s);
     }
 
-    public String getMeasurement() {
-        return measurement;
-    }
-
-    public String getTechnology() {
-        return technology;
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer assayDesc = new StringBuffer();
-
-        assayDesc.append("<html>");
-        assayDesc.append("<strong>").append(getMeasurement()).append("</strong>");
-
-        if (!getTechnology().equals(AssaySelectionUI.NO_TECHNOLOGY_TEXT)) {
-            assayDesc.append(" using ");
-            assayDesc.append("<strong>").append(getTechnology()).append("</strong>");
-        }
-
-        assayDesc.append("</html>");
-
-        return assayDesc.toString();
-    }
-
-    public int compareTo(Object o) {
-        if (toString().compareTo(o.toString()) == 0) {
-            return 0;
-        }
-        return -1;
-    }
 }
-

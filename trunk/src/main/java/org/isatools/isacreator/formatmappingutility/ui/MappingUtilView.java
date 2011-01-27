@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.ui;
 
 import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
@@ -44,12 +44,15 @@ import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.formatmappingutility.exceptions.MultipleExtensionsException;
+import org.isatools.isacreator.formatmappingutility.exceptions.NoAvailableLoaderException;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 import org.isatools.isacreator.formatmappingutility.io.MappingXMLCreator;
 import org.isatools.isacreator.formatmappingutility.io.MappingXMLLoader;
 import org.isatools.isacreator.formatmappingutility.io.SavedMappings;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.loader.Loader;
+import org.isatools.isacreator.formatmappingutility.logic.MappingLogic;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
@@ -401,7 +404,7 @@ public class MappingUtilView extends DataEntryWrapper {
                 previousPage.push(new HistoryComponent(finalPanel, listeners));
                 assaysToBeDefined = assaySelection.getAssaysToDefine();
 
-                tableNameToASO = new HashMap<String, org.isatools.isacreator.formatmappingutility.AssaySelection>();
+                tableNameToASO = new HashMap<String, AssaySelection>();
 
                 Thread loadFileProcess = new Thread(new Runnable() {
                     public void run() {
@@ -475,7 +478,7 @@ public class MappingUtilView extends DataEntryWrapper {
         if (sequence < 0) {
             toReturn.append("study sample file");
         } else {
-            org.isatools.isacreator.formatmappingutility.AssaySelection aso = assaysToBeDefined.get(sequence);
+            AssaySelection aso = assaysToBeDefined.get(sequence);
             String measurement = aso.getMeasurement();
             String technology = aso.getTechnology();
             toReturn.append(measurement);
@@ -681,7 +684,7 @@ public class MappingUtilView extends DataEntryWrapper {
                     public void run() {
                         try {
                             if (sequence <= assaysToBeDefined.size() - 1) {
-                                org.isatools.isacreator.formatmappingutility.AssaySelection aso = assaysToBeDefined.get(sequence);
+                                AssaySelection aso = assaysToBeDefined.get(sequence);
                                 String nextMeasurement = aso.getMeasurement();
                                 String nextTechnology = aso.getTechnology();
                                 setCurrentPage(createMappings(sequence,

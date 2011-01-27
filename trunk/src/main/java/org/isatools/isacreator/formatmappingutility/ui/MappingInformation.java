@@ -35,18 +35,22 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.ui;
+
+import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
+
+import javax.swing.*;
 
 /**
  * @author Eamonn Maguire
- * @date May 13, 2009
+ * @date Jun 12, 2009
  */
+public abstract class MappingInformation extends JLayeredPane {
 
+    public abstract boolean isMappedTo();
 
-public class MultipleExtensionsException extends Exception {
+    public abstract void disableEnableComponents(boolean disableEnable);
 
-    public MultipleExtensionsException(String message) {
-        super(message);
-    }
+    public abstract ISAFieldMapping createISAFieldMapping();
 
 }

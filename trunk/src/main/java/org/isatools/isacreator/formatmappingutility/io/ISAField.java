@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.formatmappingutility.io;
 
-import org.isatools.isacreator.formatmappingutility.MappingTypes;
+import org.isatools.isacreator.formatmappingutility.logic.MappingTypes;
 
 /**
  * ISAField

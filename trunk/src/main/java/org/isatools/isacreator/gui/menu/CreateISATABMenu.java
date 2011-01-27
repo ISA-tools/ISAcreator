@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.gui.menu;
 
-import org.isatools.isacreator.formatmappingutility.MappingUtilView;
+import org.isatools.isacreator.formatmappingutility.ui.MappingUtilView;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.wizard.Wizard;
 import org.jdesktop.fuse.InjectedResource;

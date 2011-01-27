@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility;
+package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
@@ -46,69 +46,63 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
+ * ProtocolEntryPanel
+ *
  * @author Eamonn Maguire
- * @date Jun 12, 2009
+ * @date Oct 6, 2009
  */
 
 
-public class GeneralAttributeEntry extends MappingInformation {
+public class ProtocolFieldEntry extends MappingInformation {
+
+
     private String fieldName;
     private String[] columnsToBeMappedTo;
-    private ISAFieldMapping mapping;
+    private ISAFieldMapping mappings;
 
     private NormalFieldEntry normalFieldEntry;
-    private GenericFieldEntry unitField;
+    private GenericFieldEntry performerEntry;
+    private GenericFieldEntry dateEntry;
 
 
-    public GeneralAttributeEntry(String fieldName, String[] columnsToBeMappedTo) {
+    public ProtocolFieldEntry(String fieldName, String[] columnsToBeMappedTo) {
         this(fieldName, columnsToBeMappedTo, null);
     }
 
-    public GeneralAttributeEntry(String fieldName, String[] columnsToBeMappedTo, ISAFieldMapping mapping) {
+    public ProtocolFieldEntry(String fieldName, String[] columnsToBeMappedTo, ISAFieldMapping mappings) {
         this.fieldName = fieldName;
         this.columnsToBeMappedTo = columnsToBeMappedTo;
-        this.mapping = mapping;
+        this.mappings = mappings;
         createGUI();
     }
 
     void createGUI() {
+
         setBackground(UIHelper.BG_COLOR);
         setLayout(new BorderLayout());
 
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.PAGE_AXIS));
 
-        if (mapping != null) {
-            normalFieldEntry = new NormalFieldEntry(fieldName, columnsToBeMappedTo, mapping);
-        } else {
-            normalFieldEntry = new NormalFieldEntry(fieldName, columnsToBeMappedTo);
-        }
+        normalFieldEntry = new NormalFieldEntry(fieldName, columnsToBeMappedTo, mappings);
 
         northPanel.add(normalFieldEntry);
 
         normalFieldEntry.addPropertyChangeListener("changeInWhetherToMap", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                unitField.setVisible(normalFieldEntry.isMappedTo());
+                performerEntry.setVisible(normalFieldEntry.isMappedTo());
+                dateEntry.setVisible(normalFieldEntry.isMappedTo());
             }
         });
 
-        if (mapping != null) {
-            if (mapping.hasUnit()) {
-                unitField = new GenericFieldEntry(fieldName, columnsToBeMappedTo, mapping.getUnit());
-            } else {
-                unitField = new GenericFieldEntry("Unit", columnsToBeMappedTo);
-            }
-        } else {
-            unitField = new GenericFieldEntry("Unit", columnsToBeMappedTo);
-        }
+        performerEntry = new GenericFieldEntry("Provider", columnsToBeMappedTo, mappings != null ? mappings.hasProvider() ? mappings.getPerformer() : null : null);
+        performerEntry.setVisible(normalFieldEntry.isMappedTo());
 
-        unitField.setVisible(normalFieldEntry.isMappedTo());
+        dateEntry = new GenericFieldEntry("Date", columnsToBeMappedTo, mappings != null ? mappings.hasDate() ? mappings.getDate() : null : null);
+        dateEntry.setVisible(normalFieldEntry.isMappedTo());
 
-        // makes things centralise on screen...
-        JPanel unitPanelWrapper = new JPanel(new GridLayout(1, 1));
-        unitPanelWrapper.add(unitField);
-
-        northPanel.add(unitPanelWrapper);
+        northPanel.add(UIHelper.wrapComponentInPanel(performerEntry));
+        northPanel.add(UIHelper.wrapComponentInPanel(dateEntry));
         add(northPanel, BorderLayout.NORTH);
     }
 
@@ -116,9 +110,14 @@ public class GeneralAttributeEntry extends MappingInformation {
         return normalFieldEntry;
     }
 
-    public GenericFieldEntry getUnitPanel() {
-        return unitField;
+    public GenericFieldEntry getPerformerPanel() {
+        return performerEntry;
     }
+
+    public GenericFieldEntry getDatePanel() {
+        return dateEntry;
+    }
+
 
     public boolean isMappedTo() {
         return normalFieldEntry.isMappedTo();
@@ -126,23 +125,29 @@ public class GeneralAttributeEntry extends MappingInformation {
 
     public void disableEnableComponents(boolean disableEnable) {
         normalFieldEntry.disableEnableComponents(disableEnable);
-        for (MappingChoice mc : unitField.getFieldBuilder().getMappings()) {
+        for (MappingChoice mc : performerEntry.getFieldBuilder().getMappings()) {
             mc.disableEnableComponents(disableEnable);
         }
+        for (MappingChoice mc : dateEntry.getFieldBuilder().getMappings()) {
+            mc.disableEnableComponents(disableEnable);
+        }
+
     }
 
     public ISAFieldMapping createISAFieldMapping() {
         if (isMappedTo()) {
             ISAFieldMapping mapping = normalFieldEntry.createISAFieldMapping();
-            if (unitField.useField()) {
-                mapping.setUnit(unitField.getFieldBuilder().getISAFieldsForMapping());
+
+            if (performerEntry.useField()) {
+                mapping.setPerformer(performerEntry.getFieldBuilder().getISAFieldsForMapping());
+            }
+
+            if (dateEntry.useField()) {
+                mapping.setPerformer(dateEntry.getFieldBuilder().getISAFieldsForMapping());
             }
             return mapping;
         }
         return null;
     }
 
-    public String getFieldName() {
-        return fieldName;
-    }
 }
