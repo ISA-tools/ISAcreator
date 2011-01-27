@@ -50,12 +50,10 @@ import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.Accep
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalClassBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalSearchBeanResultHandler;
+import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,15 +63,12 @@ import java.util.Map;
 public class BioPortalClient implements OntologyService {
     private static final Logger log = Logger.getLogger(BioPortalClient.class.getName());
 
-    public static final String DOWNLOAD_ONTOLOGY_LOC = "Data" + File.separator + "ontologies" + File.separator;
     public static final int PARENTS = 0;
+
     public static final int CHILDREN = 1;
 
     public static final String REST_URL = "http://rest.bioontology.org/bioportal/";
 
-    public static final String DOWNLOAD_FILE_LOC = "Data" + File.separator + "ontologies_matching_";
-
-    private static final String EXT = ".xml";
 
     private boolean doneOntologyCheck = false;
     private boolean allowRetry = true;
@@ -104,28 +99,28 @@ public class BioPortalClient implements OntologyService {
         String searchString = REST_URL + "ontologies";
 
         resetRetryFlag();
-        downloadFile(searchString, DOWNLOAD_FILE_LOC + "ontologies" + EXT);
+        DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
         BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
-        List<Ontology> ontologies = parser.parseFile(DOWNLOAD_FILE_LOC + "ontologies" + EXT);
+        List<Ontology> ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
-        deleteFile(DOWNLOAD_FILE_LOC + "ontologies" + EXT);
+        DownloadUtils.deleteFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
         return ontologies;
     }
 
     public Ontology getOntologyById(String ontologyId) {
         String searchString = REST_URL + "virtual/ontology/" + ontologyId;
-        String downloadLocation = DOWNLOAD_FILE_LOC + "ontology-info-" + ontologyId + EXT;
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology-info-" + ontologyId + DownloadUtils.XML_EXT;
 
-        downloadFile(searchString, downloadLocation);
+        DownloadUtils.downloadFile(searchString, downloadLocation);
 
         BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
         List<Ontology> ontologies = parser.parseFile(downloadLocation);
 
-        deleteFile(downloadLocation);
+        DownloadUtils.deleteFile(downloadLocation);
 
         if (ontologies != null && !ontologies.isEmpty()) {
             return ontologies.get(0);
@@ -190,10 +185,10 @@ public class BioPortalClient implements OntologyService {
 
         log.info("Getting term information for " + termAccession + " -> " + searchString);
 
-        String downloadLocation = DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + EXT;
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + DownloadUtils.XML_EXT;
 
         resetRetryFlag();
-        downloadFile(searchString, downloadLocation);
+        DownloadUtils.downloadFile(searchString, downloadLocation);
 
         File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation), "http://bioontology.org/bioportal/classBeanSchema#", "<success>");
 
@@ -203,8 +198,8 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalOntology result = handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
 
-            deleteFile(downloadLocation);
-            deleteFile(fileWithNameSpace.getAbsolutePath());
+            DownloadUtils.deleteFile(downloadLocation);
+            DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
             return result;
         } else {
             return null;
@@ -215,7 +210,7 @@ public class BioPortalClient implements OntologyService {
         String searchString = REST_URL + "ontologies";
 
         resetRetryFlag();
-        downloadFile(searchString, "Data/ontology_" + id + EXT);
+        DownloadUtils.downloadFile(searchString, "Data/ontology_" + id + DownloadUtils.XML_EXT);
 
         return null;
     }
@@ -270,10 +265,10 @@ public class BioPortalClient implements OntologyService {
 
 
     private Map<String, String> downloadAndProcessBranch(String term, String searchString) {
-        String downloadLocation = DOWNLOAD_FILE_LOC + term + EXT;
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + term + DownloadUtils.XML_EXT;
 
         resetRetryFlag();
-        downloadFile(searchString, downloadLocation);
+        DownloadUtils.downloadFile(searchString, downloadLocation);
 
         BioPortalSearchBeanResultHandler handler = new BioPortalSearchBeanResultHandler();
 
@@ -282,8 +277,8 @@ public class BioPortalClient implements OntologyService {
         if (fileWithNameSpace != null) {
             Map<String, BioPortalOntology> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
 
-            deleteFile(downloadLocation);
-            deleteFile(fileWithNameSpace.getAbsolutePath());
+            DownloadUtils.deleteFile(downloadLocation);
+            DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
             updateOntologyManagerWithOntologyInformation();
 
@@ -347,10 +342,10 @@ public class BioPortalClient implements OntologyService {
 
             String searchString = REST_URL + "concepts/" + ontology + "/root";
 
-            String downloadLocation = DOWNLOAD_FILE_LOC + ontology + "-roots" + EXT;
+            String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-roots" + DownloadUtils.XML_EXT;
 
             resetRetryFlag();
-            downloadFile(searchString, downloadLocation);
+            DownloadUtils.downloadFile(searchString, downloadLocation);
 
             File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation), "http://bioontology.org/bioportal/classBeanSchema#", "<success>");
 
@@ -366,8 +361,8 @@ public class BioPortalClient implements OntologyService {
                 cachedNodeChildrenQueries.put(ontology, processedResult);
             }
 
-            deleteFile(downloadLocation);
-            deleteFile(fileWithNameSpace.getAbsolutePath());
+            DownloadUtils.deleteFile(downloadLocation);
+            DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
             return processedResult;
         } else {
@@ -407,9 +402,9 @@ public class BioPortalClient implements OntologyService {
 
             String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents" : "children") + "/" + ontology + "/" + termAccession + "?level=1";
 
-            String downloadLocation = DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + EXT;
+            String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + DownloadUtils.XML_EXT;
             resetRetryFlag();
-            downloadFile(searchString, downloadLocation);
+            DownloadUtils.downloadFile(searchString, downloadLocation);
 
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
@@ -428,8 +423,8 @@ public class BioPortalClient implements OntologyService {
                     cachedNodeChildrenQueries.put(ontology + "-" + termAccession, processedResult);
                 }
 
-                deleteFile(downloadLocation);
-                deleteFile(fileWithNameSpace.getAbsolutePath());
+                DownloadUtils.deleteFile(downloadLocation);
+                DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
                 return processedResult;
             } else {
                 return new HashMap<String, String>();
@@ -451,10 +446,10 @@ public class BioPortalClient implements OntologyService {
     public Map<String, String> getAllTermParents(String termAccession, String ontology) {
         String searchString = REST_URL + "concepts/rootpath/" + ontology + "/" + termAccession;
 
-        String downloadLocation = DOWNLOAD_FILE_LOC + ontology + "-all-parents-" + termAccession + EXT;
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-all-parents-" + termAccession + DownloadUtils.XML_EXT;
 
         resetRetryFlag();
-        downloadFile(searchString, downloadLocation);
+        DownloadUtils.downloadFile(searchString, downloadLocation);
 
         File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation), "http://bioontology.org/bioportal/classBeanSchema#", "<success>");
 
@@ -462,8 +457,8 @@ public class BioPortalClient implements OntologyService {
 
         Map<String, String> result = handler.parseOntologyParentPathFile(fileWithNameSpace.getAbsolutePath());
 
-        deleteFile(downloadLocation);
-        deleteFile(fileWithNameSpace.getAbsolutePath());
+        DownloadUtils.deleteFile(downloadLocation);
+        DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
         return result;
     }
@@ -476,77 +471,11 @@ public class BioPortalClient implements OntologyService {
         return term.replaceAll("[\\s]+", "%20");
     }
 
-    private boolean downloadFile(String fileLocation, String downloadLocation) {
-        URL url;
-        OutputStream os = null;
-        InputStream is = null;
-
-        try {
-            url = new URL(fileLocation);
-
-            URLConnection urlConn = url.openConnection();
-            urlConn.setReadTimeout(10000);
-            urlConn.setUseCaches(true);
-
-            is = urlConn.getInputStream();
-
-            os = new BufferedOutputStream(new FileOutputStream(downloadLocation));
-
-            byte[] inputBuffer = new byte[1024];
-            int numBytesRead;
-
-            while ((numBytesRead = is.read(inputBuffer)) != -1) {
-                os.write(inputBuffer, 0, numBytesRead);
-            }
-
-            return true;
-        } catch (MalformedURLException e) {
-            log.error("url malformed: " + e.getMessage());
-            return false;
-        } catch (FileNotFoundException e) {
-            log.error("file not found" + e.getMessage());
-            return false;
-        } catch (IOException e) {
-            log.error("io exception caught" + e.getMessage());
-            // we allow one retry attempt due to problems with BioPortal not always serving
-            // back results on the first attempt!
-            if (allowRetry) {
-                log.info("attempting retry");
-                allowRetry = false;
-                downloadFile(fileLocation, downloadLocation);
-            }
-            return false;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
-        } finally {
-            try {
-                if (os != null) {
-                    os.close();
-                }
-
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException ioe) {
-                log.error("io exception caught: " + ioe.getMessage());
-
-            }
-        }
-    }
-
-    private void deleteFile(String file) {
-        File f = new File(file);
-        if (f.exists()) {
-            f.delete();
-        }
-    }
-
 
     public void downloadOntology(Ontology ontology) {
         String searchString = REST_URL + "ontologies/download/" + ontology.getOntologyVersion();
 
-        File downloadDir = new File(DOWNLOAD_ONTOLOGY_LOC);
+        File downloadDir = new File(DownloadUtils.DOWNLOAD_ONTOLOGY_LOC);
         if (!downloadDir.exists()) {
             downloadDir.mkdir();
         }
@@ -555,7 +484,7 @@ public class BioPortalClient implements OntologyService {
         // only download an ontology file if it doesn't already exist!
         if (!new File(fileDownload).exists()) {
             resetRetryFlag();
-            downloadFile(searchString, fileDownload);
+            DownloadUtils.downloadFile(searchString, fileDownload);
         }
 
     }
@@ -608,16 +537,5 @@ public class BioPortalClient implements OntologyService {
         }
         return convertedMap;
     }
-
-//	public static void main(String[] args) {
-//		BioPortalClient bpc = new BioPortalClient();
-//
-//		Map<String, String> result = bpc.getTermsByPartialNameFromSource("oil", "", false);
-//
-//		for (String accession : result.keySet()) {
-//			System.out.println(result.get(accession) + " (" + accession + ")");
-//		}
-//	}
-
 
 }
