@@ -37,10 +37,10 @@
 
 package org.isatools.isacreator.qrcode.ui;
 
+import org.isatools.isacreator.common.SelectOutputDirectoryDialog;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.common.SelectOutputDirectoryDialog;
 import org.isatools.isacreator.qrcode.html.HTMLCreator;
 import org.isatools.isacreator.qrcode.logic.CodeGenerator;
 import org.isatools.isacreator.qrcode.logic.QRCode;
@@ -84,11 +84,12 @@ public class QRCodeGeneratorUI extends JDialog {
 
     }
 
-    private int selectedSection = HELP;
 
     public static final int QR_CODE_VIEW = 0;
     public static final int QR_CODE_BUILDER = 1;
     public static final int HELP = 2;
+
+    private int selectedSection = HELP;
 
     @InjectedResource
     private ImageIcon qrCodeGeneratorLogo, qrCodeViewIcon, qrCodeViewOver, qrCodeBuilderIcon,
@@ -202,21 +203,21 @@ public class QRCodeGeneratorUI extends JDialog {
                     @Override
                     public void mouseEntered
                             (MouseEvent
-                                    mouseEvent) {
+                                     mouseEvent) {
                         qrBuilderButton.setIcon(qrCodeBuilderIconOver);
                     }
 
                     @Override
                     public void mouseExited
                             (MouseEvent
-                                    mouseEvent) {
+                                     mouseEvent) {
                         qrBuilderButton.setIcon(selectedSection == QR_CODE_BUILDER ? qrCodeBuilderIconOver : qrCodeBuilderIcon);
                     }
 
                     @Override
                     public void mousePressed
                             (MouseEvent
-                                    mouseEvent) {
+                                     mouseEvent) {
                         resetButtons();
                         qrBuilderButton.setIcon(qrCodeBuilderIconOver);
                         selectedSection = QR_CODE_BUILDER;
@@ -269,21 +270,21 @@ public class QRCodeGeneratorUI extends JDialog {
                     @Override
                     public void mouseEntered
                             (MouseEvent
-                                    mouseEvent) {
+                                     mouseEvent) {
                         helpButton.setIcon(helpIconOver);
                     }
 
                     @Override
                     public void mouseExited
                             (MouseEvent
-                                    mouseEvent) {
+                                     mouseEvent) {
                         helpButton.setIcon(selectedSection == HELP ? helpIconOver : helpIcon);
                     }
 
                     @Override
                     public void mousePressed
                             (MouseEvent
-                                    mouseEvent) {
+                                     mouseEvent) {
                         resetButtons();
                         selectedSection = HELP;
                         helpButton.setIcon(helpIconOver);

@@ -60,7 +60,6 @@ public class BioPortalAnnotatorResultHandler {
 
                     if (annotatorResult != null) {
 
-
                         String originalTerm = originalTextToAnnotate.substring(annotatorResult.getStartIndex() - 1, annotatorResult.getEndIndex());
 
                         if (!result.containsKey(originalTerm)) {
@@ -93,13 +92,7 @@ public class BioPortalAnnotatorResultHandler {
             ontologyTerm.setOntologyTermName(concept.getPreferredName());
             ontologyTerm.setOntologyVersionId(concept.getLocalOntologyId().toString());
 
-
-            System.out.println("searching ontologies for : " + concept.getLocalOntologyId());
-
             Ontology ontologySource = ontologies.get(concept.getLocalOntologyId().toString());
-
-
-            System.out.println("Ontology source: " + ontologySource);
 
             return new AnnotatorResult(ontologyTerm, ontologySource, new Integer(annotation.getScore().toString()),
                     new Integer(annotation.getContext().getFrom().toString()), new Integer(annotation.getContext().getTo().toString()));
