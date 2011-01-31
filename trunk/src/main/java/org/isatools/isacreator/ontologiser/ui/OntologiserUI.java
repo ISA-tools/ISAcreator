@@ -50,8 +50,9 @@ public class OntologiserUI extends JFrame {
 
     @InjectedResource
     private ImageIcon termTaggerLogo, termTaggerIcon, termTaggerIconOver, helpIcon, helpIconOver, closeWindowIcon,
-            closeWindowIconOver, doneIcon, doneIconOver, working;
+            closeWindowIconOver, doneIcon, doneIconOver, buttonPanelFiller, working;
 
+    private OntologiserAnnotationPane annotationPane;
     private OntologyHelpPane helpPane;
     private ConfirmationDialog confirmChoice;
     private ISAcreator isacreatorEnvironment;
@@ -68,7 +69,7 @@ public class OntologiserUI extends JFrame {
         setBackground(UIHelper.BG_COLOR);
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(600, 425));
+        setPreferredSize(new Dimension(600, 450));
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
 
 
@@ -76,7 +77,7 @@ public class OntologiserUI extends JFrame {
 
         swappableContainer = new JPanel();
         swappableContainer.setBorder(new EmptyBorder(1, 1, 1, 1));
-        swappableContainer.setPreferredSize(new Dimension(600, 325));
+        swappableContainer.setPreferredSize(new Dimension(600, 350));
         helpPane = new OntologyHelpPane();
         helpPane.createGUI();
 
@@ -112,35 +113,39 @@ public class OntologiserUI extends JFrame {
                 termTaggerButton.setIcon(termTaggerIconOver);
                 selectedSection = TERM_TAGGER_VIEW;
 
-//                if (apiHook == null) {
-//                    // display message informing user to build up the QR code contents first.
-//                    swapContainers(UIHelper.wrapComponentInPanel(new JLabel(builderFirst)));
-//                } else {
-//                    Thread performer = new Thread(new Runnable() {
-//                        public void run() {
-//                            generatedQRCodes = CodeGenerator.createQRCodeImage(apiHook.generateEncodeInfo(builderPane.getMappings()), new Dimension(100, 100));
-//                            viewerPane = new QRCodeViewerPane(studyId, generatedQRCodes);
-//                            SwingUtilities.invokeLater(new Runnable() {
-//                                public void run() {
-//                                    viewerPane.createGUI();
-//                                    swapContainers(viewerPane);
-//                                }
-//                            });
-//                        }
-//
-//                    });
-//                    swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
-//                    performer.start();
-//                }
+
+                Thread performer = new Thread(new Runnable() {
+                    public void run() {
+                        if (annotationPane == null) {
+                            // todo call API module to get all unannotated Ontology entries from the spreadsheet
+
+                            annotationPane = new OntologiserAnnotationPane(null);
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    annotationPane.createGUI();
+                                }
+                            });
+                        }
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                swapContainers(annotationPane);
+                            }
+                        });
+                    }
+
+                });
+
+                swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
+                performer.start();
             }
         }
 
         );
 
 
-        helpButton = new
-
-                JLabel(helpIconOver);
+        helpButton = new JLabel(helpIconOver);
 
         helpButton.setHorizontalAlignment(SwingConstants.LEFT);
         helpButton.addMouseListener(new
@@ -195,8 +200,7 @@ public class OntologiserUI extends JFrame {
     }
 
     private Container createSouthPanel() {
-        JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.setBackground(UIHelper.BG_COLOR);
+        Box southPanel = Box.createHorizontalBox();
 
         final JLabel closeButton = new JLabel(closeWindowIcon);
         closeButton.addMouseListener(new MouseAdapter() {
@@ -266,8 +270,9 @@ public class OntologiserUI extends JFrame {
             }
         });
 
-        southPanel.add(closeButton, BorderLayout.WEST);
-        southPanel.add(export, BorderLayout.EAST);
+        southPanel.add(closeButton);
+        southPanel.add(new JLabel(buttonPanelFiller));
+        southPanel.add(export);
 
         return southPanel;
     }

@@ -1,6 +1,7 @@
 package org.isatools.isacreator.ontologiser.ui;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
@@ -17,8 +18,8 @@ import java.awt.*;
 public class OntologyHelpPane extends JPanel {
 
 
-//    @InjectedResource
-//    private ImageIcon helpImage;
+    @InjectedResource
+    private ImageIcon helpImage;
 
     public OntologyHelpPane() {
         ResourceInjector.get("ontologiser-generator-package.style").inject(this);
@@ -28,7 +29,7 @@ public class OntologyHelpPane extends JPanel {
 
     public void createGUI() {
 
-//        JLabel helpContainer = new JLabel(helpImage);
-//        add(UIHelper.wrapComponentInPanel(helpContainer));
+        JLabel helpContainer = new JLabel(helpImage);
+        add(UIHelper.wrapComponentInPanel(helpContainer));
     }
 }

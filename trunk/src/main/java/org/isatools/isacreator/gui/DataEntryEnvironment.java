@@ -247,7 +247,7 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
 
             return overviewTreeRoot;
         } else {
-            overviewTreeRoot = new DefaultMutableTreeNode("Create a Study");
+            overviewTreeRoot = new DefaultMutableTreeNode("No studies added yet...");
             setCurrentPage(emptySubmissionFiller);
 
             return overviewTreeRoot;

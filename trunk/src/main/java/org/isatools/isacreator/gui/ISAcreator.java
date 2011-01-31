@@ -51,7 +51,6 @@ import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.OutputISAFiles;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileIO;
-import org.isatools.isacreator.mgrast.ui.MGRastUI;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologymanager.OntologyConsumer;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
@@ -489,12 +488,9 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         menuBar.add(view);
 
-
-        // todo plugins menu...this will need to be autopopulated at some stage with plugin jars from other users.
-
         JMenu plugins = new JMenu("plugins");
 
-        JMenu exporters = new JMenu("exporters");
+        JMenu exporters = new JMenu("Sample Tracking");
         exporters.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -502,10 +498,10 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
             }
         });
 
-        JMenu mgRastExport = new JMenu("export study to mg-rast");
-        mgRastExport.setIcon(mgRastIcon);
-        menusRequiringStudyIds.put("mgrast", mgRastExport);
-        exporters.add(mgRastExport);
+//        JMenu mgRastExport = new JMenu("export study to mg-rast");
+//        mgRastExport.setIcon(mgRastIcon);
+//        menusRequiringStudyIds.put("mgrast", mgRastExport);
+//        exporters.add(mgRastExport);
 
         JMenu qrCodeExport = new JMenu("generate QR codes for Study samples");
         qrCodeExport.setIcon(qrCodeIcon);
@@ -579,30 +575,30 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                 for (final String study_id : studies) {
 
                     JMenuItem item = new JMenuItem(study_id);
-                    if (menuType.equals("mgrast")) {
-                        item.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent e) {
-
-                                final MGRastUI mgRastUI = new MGRastUI(ISAcreator.this);
-
-
-                                Thread loader = new Thread(new Runnable() {
-                                    public void run() {
-                                        SwingUtilities.invokeLater(new Runnable() {
-                                            public void run() {
-                                                mgRastUI.createGUI();
-                                                showJDialogAsSheet(mgRastUI);
-                                                maskOutMouseEvents();
-                                            }
-                                        });
-
-                                        mgRastUI.loadAndMapData(study_id);
-                                    }
-                                });
-                                loader.start();
-                            }
-                        });
-                    } else if (menuType.equalsIgnoreCase("qr")) {
+//                    if (menuType.equals("mgrast")) {
+//                        item.addActionListener(new ActionListener() {
+//                            public void actionPerformed(ActionEvent e) {
+//
+//                                final MGRastUI mgRastUI = new MGRastUI(ISAcreator.this);
+//
+//
+//                                Thread loader = new Thread(new Runnable() {
+//                                    public void run() {
+//                                        SwingUtilities.invokeLater(new Runnable() {
+//                                            public void run() {
+//                                                mgRastUI.createGUI();
+//                                                showJDialogAsSheet(mgRastUI);
+//                                                maskOutMouseEvents();
+//                                            }
+//                                        });
+//
+//                                        mgRastUI.loadAndMapData(study_id);
+//                                    }
+//                                });
+//                                loader.start();
+//                            }
+//                        });
+                    if (menuType.equalsIgnoreCase("qr")) {
                         item.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
 
