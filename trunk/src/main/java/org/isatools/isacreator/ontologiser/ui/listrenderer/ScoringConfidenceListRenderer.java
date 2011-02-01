@@ -1,8 +1,7 @@
-package org.isatools.isacreator.ontologiser.ui;
+package org.isatools.isacreator.ontologiser.ui.listrenderer;
 
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.mgrast.model.FieldMapping;
-import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
+import org.isatools.isacreator.ontologiser.model.SuggestedAnnotationListItem;
 import org.isatools.isacreator.ontologymanager.bioportal.model.ScoringConfidence;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -23,8 +22,7 @@ public class ScoringConfidenceListRenderer extends JComponent
         implements ListCellRenderer {
 
     @InjectedResource
-    private ImageIcon oneHundredPercent, seventyFivePercent,
-            fiftyPercent, twentyFivePercent, zeroPercent;
+    private ImageIcon high, medium, low;
 
     private DefaultListCellRenderer listCellRenderer;
 
@@ -32,9 +30,15 @@ public class ScoringConfidenceListRenderer extends JComponent
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        ResourceInjector.get("exporters-package.style").inject(this);
+        ResourceInjector.get("ontologiser-generator-package.style").inject(this);
 
-        add(new ConfidenceLevelCellImage(), BorderLayout.WEST);
+        Box indicators = Box.createHorizontalBox();
+        indicators.setBackground(UIHelper.BG_COLOR);
+
+        indicators.add(new CheckedCellImage());
+        indicators.add(new ConfidenceLevelCellImage());
+
+        add(indicators, BorderLayout.WEST);
 
         listCellRenderer = new DefaultListCellRenderer();
 
@@ -52,14 +56,28 @@ public class ScoringConfidenceListRenderer extends JComponent
         Component[] components = getComponents();
 
         for (Component c : components) {
+
             ((JComponent) c).setToolTipText(value.toString());
-            if (c instanceof ConfidenceLevelCellImage) {
-                if (value instanceof FieldMapping) {
-                    ((ConfidenceLevelCellImage) c).setConfidenceLevel((AnnotatorResult) value);
+
+            if (c instanceof Box) {
+                for (Component panelComponent : ((Box) c).getComponents()) {
+
+                    if (panelComponent instanceof ConfidenceLevelCellImage) {
+                        if (value instanceof SuggestedAnnotationListItem) {
+                            ((ConfidenceLevelCellImage) panelComponent).setConfidenceLevel((SuggestedAnnotationListItem) value);
+                        }
+                    }
+
+                    if (panelComponent instanceof CheckedCellImage) {
+                        if (value instanceof SuggestedAnnotationListItem) {
+                            ((CheckedCellImage) panelComponent).checkIsIdEntered((SuggestedAnnotationListItem) value);
+                        }
+                    }
                 }
             } else {
+
                 if (selected) {
-                    c.setForeground(UIHelper.GREY_COLOR);
+                    c.setForeground(UIHelper.DARK_GREEN_COLOR);
                     c.setBackground(UIHelper.BG_COLOR);
                     c.setFont(UIHelper.VER_11_BOLD);
 
@@ -82,25 +100,25 @@ public class ScoringConfidenceListRenderer extends JComponent
 
         ConfidenceLevelCellImage() {
             setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-            itemSelectedIndicator = new JLabel(zeroPercent);
+            itemSelectedIndicator = new JLabel(medium);
 
             add(itemSelectedIndicator);
             add(Box.createHorizontalStrut(2));
         }
 
-        public void setConfidenceLevel(AnnotatorResult fieldMapping) {
+        public void setConfidenceLevel(SuggestedAnnotationListItem fieldMapping) {
 
-            ScoringConfidence level = fieldMapping.getSocringConfidenceLevel();
+            ScoringConfidence level = fieldMapping.getAnnotatorResult().getScoringConfidenceLevel();
 
             if (level == ScoringConfidence.HIGH) {
-                itemSelectedIndicator.setIcon(oneHundredPercent);
+                itemSelectedIndicator.setIcon(high);
             } else if (level == ScoringConfidence.MEDIUM) {
-                itemSelectedIndicator.setIcon(seventyFivePercent);
+                itemSelectedIndicator.setIcon(medium);
             } else if (level == ScoringConfidence.LOW) {
-                itemSelectedIndicator.setIcon(fiftyPercent);
-            } else if (level == ScoringConfidence.NONE) {
-                itemSelectedIndicator.setIcon(zeroPercent);
+                itemSelectedIndicator.setIcon(low);
             }
         }
     }
+
+
 }

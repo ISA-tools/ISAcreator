@@ -4,9 +4,10 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.mgrast.ui.ExternalIdListCellRenderer;
-import org.isatools.isacreator.mgrast.ui.MappingConfidenceListCellRenderer;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
+import org.isatools.isacreator.ontologiser.model.SuggestedAnnotationListItem;
+import org.isatools.isacreator.ontologiser.ui.listrenderer.OntologyAssignedListRenderer;
+import org.isatools.isacreator.ontologiser.ui.listrenderer.ScoringConfidenceListRenderer;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologyselectiontool.ViewTermDefinitionUI;
 import org.jdesktop.fuse.InjectedResource;
@@ -17,6 +18,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +40,8 @@ public class OntologiserAnnotationPane extends JPanel {
 
     private Map<String, Map<String, AnnotatorResult>> searchMatches;
 
+    private Map<OntologisedResult, List<SuggestedAnnotationListItem>> annotations;
+
 
     @InjectedResource
     private ImageIcon optionsIcon, clearAnnotationsIcon, clearAnnotationsIconOver,
@@ -45,9 +53,12 @@ public class OntologiserAnnotationPane extends JPanel {
 
     private JLabel useSuggestedButton, clearAnnotationsButton;
 
+    private OntologisedResult currentlySelectedOntologyTerm;
+
     public OntologiserAnnotationPane(Map<String, Map<String, AnnotatorResult>> searchMatches) {
         ResourceInjector.get("ontologiser-generator-package.style").inject(this);
         this.searchMatches = searchMatches;
+        this.annotations = new HashMap<OntologisedResult, List<SuggestedAnnotationListItem>>();
     }
 
     public void createGUI() {
@@ -57,7 +68,7 @@ public class OntologiserAnnotationPane extends JPanel {
         definitionUI = new ViewTermDefinitionUI();
 
         createOptionsPanel();
-
+        createListPanels();
     }
 
     private void createOptionsPanel() {
@@ -114,42 +125,73 @@ public class OntologiserAnnotationPane extends JPanel {
         // create 2 list panels and a definition panel
         Box listPanel = Box.createHorizontalBox();
 
-        freeTextList = new ExtendedJList(new ExternalIdListCellRenderer(), true);
+        freeTextList = new ExtendedJList(new OntologyAssignedListRenderer(), true);
         initiateFreeTextListContents();
+
+        freeTextList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                currentlySelectedOntologyTerm = (OntologisedResult) propertyChangeEvent.getNewValue();
+                if (suggestedTermsList != null) {
+
+                    updateOntologySuggestionsForFreetextTerm();
+
+                    if (currentlySelectedOntologyTerm.getAssignedOntology() == null) {
+                        suggestedTermsList.clearSelection();
+//                        checkAndDisplayAppropriateQuestion(currentlySelectedField.getMgRastTermMappedTo());
+                    } else {
+                        suggestedTermsList.setSelectedValue(currentlySelectedOntologyTerm.getAssignedOntology(), true);
+                    }
+                }
+            }
+        });
 
         listPanel.add(createListPanel(freeTextList));
 
-        suggestedTermsList = new ExtendedJList(new MappingConfidenceListCellRenderer(), true);
+        suggestedTermsList = new ExtendedJList(new ScoringConfidenceListRenderer(), false);
+
+        suggestedTermsList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                SuggestedAnnotationListItem selectedItem = (SuggestedAnnotationListItem) suggestedTermsList.getSelectedValue();
+
+                clearAnnotation(currentlySelectedOntologyTerm);
+
+                currentlySelectedOntologyTerm.setAssignedOntology(selectedItem.getAnnotatorResult());
+
+                System.out.println("\t Adding mapping to : " + currentlySelectedOntologyTerm);
+                selectedItem.setMappedTo(currentlySelectedOntologyTerm);
+
+                // should clear other selections to ensure that other suggested terms are not mapping to the ontology result too
+            }
+        });
 
         listPanel.add(createListPanel(suggestedTermsList));
 
         listPanel.add(definitionUI);
 
-
+        add(listPanel, BorderLayout.CENTER);
     }
 
     private JPanel createListPanel(ExtendedJList list) {
 
-
         JPanel listContainer = new JPanel(new BorderLayout());
-        listContainer.setPreferredSize(new Dimension(290, 300));
+        listContainer.setPreferredSize(new Dimension(200, 300));
         listContainer.setBackground(UIHelper.BG_COLOR);
 
-        JScrollPane mgRastConceptScroller = new JScrollPane(list,
+        JScrollPane scrollPane = new JScrollPane(list,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        mgRastConceptScroller.setBorder(new EmptyBorder(1, 1, 1, 1));
+        scrollPane.setBorder(new EmptyBorder(1, 1, 1, 1));
 
-        IAppWidgetFactory.makeIAppScrollPane(mgRastConceptScroller);
+        IAppWidgetFactory.makeIAppScrollPane(scrollPane);
 
-        UIHelper.renderComponent(list.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
+        UIHelper.renderComponent(list.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         Box fieldContainer = Box.createHorizontalBox();
         fieldContainer.add(list.getFilterField());
         fieldContainer.add(new ClearFieldUtility(list.getFilterField()));
 
         listContainer.add(fieldContainer, BorderLayout.NORTH);
-        listContainer.add(mgRastConceptScroller, BorderLayout.CENTER);
+        listContainer.add(scrollPane, BorderLayout.CENTER);
 
         return listContainer;
     }
@@ -168,16 +210,27 @@ public class OntologiserAnnotationPane extends JPanel {
         if (freeTextList.getSelectedIndex() != -1) {
             OntologisedResult ontologyResult = (OntologisedResult) freeTextList.getSelectedValue();
 
-            for (String ontologyId : searchMatches.get(ontologyResult.getFreeTextTerm()).keySet()) {
-                AnnotatorResult annotatorResult = searchMatches.get(ontologyResult.getFreeTextTerm()).get(ontologyId);
 
-                suggestedTermsList.addItem(annotatorResult);
+            if (!annotations.containsKey(ontologyResult)) {
+
+                annotations.put(ontologyResult, new ArrayList<SuggestedAnnotationListItem>());
+
+                for (String ontologyId : searchMatches.get(ontologyResult.getFreeTextTerm()).keySet()) {
+                    SuggestedAnnotationListItem annotatorResult = new SuggestedAnnotationListItem(searchMatches.get(ontologyResult.getFreeTextTerm()).get(ontologyId));
+                    annotations.get(ontologyResult).add(annotatorResult);
+                }
             }
 
-            if (suggestedTermsList.getItems().size() > 0) {
-                if (ontologyResult.getAssignedOntology() != null) {
-                    suggestedTermsList.setSelectedValue(ontologyResult.getAssignedOntology(), true);
-                }
+            for (SuggestedAnnotationListItem listItem : annotations.get(ontologyResult)) {
+                suggestedTermsList.addItem(listItem);
+            }
+        }
+    }
+
+    private void clearAnnotation(OntologisedResult ontologisedResult) {
+        if (annotations.get(ontologisedResult) != null) {
+            for (SuggestedAnnotationListItem listItem : annotations.get(ontologisedResult)) {
+                listItem.setMappedTo(null);
             }
         }
     }

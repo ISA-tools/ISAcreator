@@ -3,6 +3,8 @@ package org.isatools.isacreator.ontologiser.ui;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.ontologiser.logic.impl.AnnotatorSearchClient;
+import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -14,6 +16,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by the ISA team
@@ -37,8 +42,8 @@ public class OntologiserUI extends JFrame {
                 OntologyHelpPane.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
         ResourceInjector.get("common-package.style").load(
                 OntologyHelpPane.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("exporters-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/exporters-package.properties"));
+        ResourceInjector.get("ontologyselectiontool-package.style").load(
+                OntologyHelpPane.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
 
     }
 
@@ -119,7 +124,7 @@ public class OntologiserUI extends JFrame {
                         if (annotationPane == null) {
                             // todo call API module to get all unannotated Ontology entries from the spreadsheet
 
-                            annotationPane = new OntologiserAnnotationPane(null);
+                            annotationPane = new OntologiserAnnotationPane(getTestData());
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
@@ -302,6 +307,18 @@ public class OntologiserUI extends JFrame {
     public static void main(String[] args) {
         OntologiserUI ui = new OntologiserUI(null, "assay");
         ui.createGUI();
+    }
+
+    public Map<String, Map<String, AnnotatorResult>> getTestData() {
+
+        AnnotatorSearchClient sc = new AnnotatorSearchClient();
+
+        Set<String> testTerms = new HashSet<String>();
+        testTerms.add("CY3");
+        testTerms.add("DOSE");
+        testTerms.add("ASSAY");
+
+        return sc.searchForTerms(testTerms);
     }
 
 

@@ -10,7 +10,7 @@ import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
  *         Date: 31/01/2011
  *         Time: 16:30
  */
-public class OntologisedResult {
+public class OntologisedResult implements OntologiserListItems {
 
     private String freeTextTerm;
     private AnnotatorResult assignedOntology = null;
@@ -27,7 +27,16 @@ public class OntologisedResult {
         return assignedOntology;
     }
 
+    public boolean displayAsChecked() {
+        return assignedOntology != null;
+    }
+
     public void setAssignedOntology(AnnotatorResult assignedOntology) {
         this.assignedOntology = assignedOntology;
+    }
+
+    @Override
+    public String toString() {
+        return freeTextTerm;
     }
 }

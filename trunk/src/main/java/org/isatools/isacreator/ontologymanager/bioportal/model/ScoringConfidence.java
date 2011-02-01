@@ -10,5 +10,5 @@ package org.isatools.isacreator.ontologymanager.bioportal.model;
  */
 public enum ScoringConfidence {
 
-    HIGH, MEDIUM, LOW, NONE;
+    HIGH, MEDIUM, LOW;
 }

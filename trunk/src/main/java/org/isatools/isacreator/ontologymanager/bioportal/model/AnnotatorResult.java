@@ -50,7 +50,12 @@ public class AnnotatorResult {
     }
 
     // TODO Properly calculate the score confidence
-    public ScoringConfidence getSocringConfidenceLevel() {
+    public ScoringConfidence getScoringConfidenceLevel() {
         return ScoringConfidence.MEDIUM;
+    }
+
+    @Override
+    public String toString() {
+        return ontologyTerm.getOntologyTermName() + " (" + ontologyTerm.getOntologySourceAccession() + ")";
     }
 }

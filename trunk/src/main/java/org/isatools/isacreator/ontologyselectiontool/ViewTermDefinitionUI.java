@@ -83,11 +83,9 @@ public class ViewTermDefinitionUI extends JPanel {
         setPreferredSize(PANE_SIZE);
         setBackground(Color.WHITE);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createGUI();
-            }
-        });
+
+        createGUI();
+
     }
 
     public void createGUI() {
