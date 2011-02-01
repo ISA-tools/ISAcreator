@@ -74,7 +74,7 @@ public class OntologiserUI extends JFrame {
         setBackground(UIHelper.BG_COLOR);
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(600, 450));
+        setPreferredSize(new Dimension(600, 500));
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
 
 

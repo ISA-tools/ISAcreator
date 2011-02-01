@@ -91,7 +91,7 @@ public class ViewTermDefinitionUI extends JPanel {
     public void createGUI() {
         swappableContainer = new JPanel(new BorderLayout());
         swappableContainer.setBackground(UIHelper.BG_COLOR);
-        swappableContainer.setPreferredSize(new Dimension(240, 270));
+        swappableContainer.setPreferredSize(new Dimension(200, 270));
         swappableContainer.add(new JLabel(placeHolder));
         add(swappableContainer, BorderLayout.CENTER);
     }

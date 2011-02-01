@@ -67,7 +67,7 @@ public class ExternalIdListCellRenderer extends JComponent
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        ResourceInjector.get("exporters-package.style").inject(this);
+        ResourceInjector.get("exporter-package.style").inject(this);
 
         add(new IDEnteredListCellmage(), BorderLayout.WEST);
 
