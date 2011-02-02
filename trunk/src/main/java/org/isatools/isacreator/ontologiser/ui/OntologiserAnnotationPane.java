@@ -1,12 +1,14 @@
 package org.isatools.isacreator.ontologiser.ui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import com.sun.tools.javac.util.Pair;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.ontologiser.logic.ScoreAnalysisUtility;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
-import org.isatools.isacreator.ontologiser.model.SuggestedAnnotationListItem;
+import org.isatools.isacreator.ontologiser.model.SuggestedAnnotation;
 import org.isatools.isacreator.ontologiser.ui.listrenderer.OntologyAssignedListRenderer;
 import org.isatools.isacreator.ontologiser.ui.listrenderer.ScoringConfidenceListRenderer;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
@@ -18,8 +20,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -42,12 +42,11 @@ public class OntologiserAnnotationPane extends JPanel {
 
     private Map<String, Map<String, AnnotatorResult>> searchMatches;
 
-    private Map<OntologisedResult, List<SuggestedAnnotationListItem>> annotations;
+    private Map<OntologisedResult, List<SuggestedAnnotation>> annotations;
 
 
     @InjectedResource
-    private ImageIcon optionsIcon, clearAnnotationsIcon, clearAnnotationsIconOver,
-            useSuggestedIcon, useSuggestedIconOver, confidenceKey;
+    private ImageIcon confidenceKey;
 
     private ExtendedJList freeTextList, suggestedTermsList;
 
@@ -60,7 +59,7 @@ public class OntologiserAnnotationPane extends JPanel {
     public OntologiserAnnotationPane(Map<String, Map<String, AnnotatorResult>> searchMatches) {
         ResourceInjector.get("ontologiser-generator-package.style").inject(this);
         this.searchMatches = searchMatches;
-        this.annotations = new HashMap<OntologisedResult, List<SuggestedAnnotationListItem>>();
+        this.annotations = new HashMap<OntologisedResult, List<SuggestedAnnotation>>();
     }
 
     public void createGUI() {
@@ -69,61 +68,11 @@ public class OntologiserAnnotationPane extends JPanel {
 
         definitionUI = new ViewTermDefinitionUI();
 
-        createOptionsPanel();
         createListPanels();
+
+        updateOntologySuggestionsForFreetextTerm();
     }
 
-    private void createOptionsPanel() {
-        Box optionsPanel = Box.createHorizontalBox();
-
-        useSuggestedButton = new JLabel(useSuggestedIcon);
-        useSuggestedButton.setHorizontalAlignment(SwingConstants.LEFT);
-        useSuggestedButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                useSuggestedButton.setIcon(useSuggestedIconOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                useSuggestedButton.setIcon(useSuggestedIcon);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                useSuggestedButton.setIcon(useSuggestedIcon);
-                autoAnnotate();
-            }
-        });
-
-        clearAnnotationsButton = new JLabel(clearAnnotationsIcon);
-        clearAnnotationsButton.setHorizontalAlignment(SwingConstants.LEFT);
-        clearAnnotationsButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                clearAnnotationsButton.setIcon(clearAnnotationsIconOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                clearAnnotationsButton.setIcon(clearAnnotationsIcon);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                clearAnnotationsButton.setIcon(clearAnnotationsIcon);
-                clearAnnotation();
-            }
-        });
-
-        optionsPanel.add(new JLabel(optionsIcon));
-        optionsPanel.add(useSuggestedButton);
-        optionsPanel.add(clearAnnotationsButton);
-
-        optionsPanel.setAlignmentX(SwingConstants.LEFT);
-
-        add(optionsPanel, BorderLayout.NORTH);
-    }
 
     private void createListPanels() {
         // create 2 list panels and a definition panel
@@ -155,12 +104,14 @@ public class OntologiserAnnotationPane extends JPanel {
 
         suggestedTermsList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                SuggestedAnnotationListItem selectedItem = (SuggestedAnnotationListItem) suggestedTermsList.getSelectedValue();
+                SuggestedAnnotation selectedItem = (SuggestedAnnotation) suggestedTermsList.getSelectedValue();
 
                 setAnnotation(selectedItem, currentlySelectedOntologyTerm);
+                repaint();
                 // should clear other selections to ensure that other suggested terms are not mapping to the ontology result too
             }
         });
+
 
         JPanel suggestedTermListContainer = createListPanel(suggestedTermsList, "Suggested terms");
         suggestedTermListContainer.add(new JLabel(confidenceKey), BorderLayout.SOUTH);
@@ -207,17 +158,18 @@ public class OntologiserAnnotationPane extends JPanel {
     private void initiateFreeTextListContents() {
         for (String freeTextValue : searchMatches.keySet()) {
 
-
             OntologisedResult ontologisedResult = new OntologisedResult(freeTextValue);
 
             freeTextList.addItem(ontologisedResult);
 
-            annotations.put(ontologisedResult, new ArrayList<SuggestedAnnotationListItem>());
+            annotations.put(ontologisedResult, new ArrayList<SuggestedAnnotation>());
 
             for (String ontologyId : searchMatches.get(ontologisedResult.getFreeTextTerm()).keySet()) {
-                SuggestedAnnotationListItem annotatorResult = new SuggestedAnnotationListItem(searchMatches.get(ontologisedResult.getFreeTextTerm()).get(ontologyId));
+                SuggestedAnnotation annotatorResult = new SuggestedAnnotation(searchMatches.get(ontologisedResult.getFreeTextTerm()).get(ontologyId));
                 annotations.get(ontologisedResult).add(annotatorResult);
             }
+
+            ScoreAnalysisUtility.assignConfidenceLevels(annotations.get(ontologisedResult));
         }
     }
 
@@ -228,57 +180,49 @@ public class OntologiserAnnotationPane extends JPanel {
         if (freeTextList.getSelectedIndex() != -1) {
             OntologisedResult ontologyResult = (OntologisedResult) freeTextList.getSelectedValue();
 
-            for (SuggestedAnnotationListItem listItem : annotations.get(ontologyResult)) {
+            for (SuggestedAnnotation listItem : annotations.get(ontologyResult)) {
                 suggestedTermsList.addItem(listItem);
             }
         }
+
     }
 
-    private void clearAnnotation() {
+    public void clearAnnotation() {
         for (OntologisedResult ontologisedResult : annotations.keySet()) {
 
             if (annotations.containsKey(ontologisedResult)) {
-                for (SuggestedAnnotationListItem listItem : annotations.get(ontologisedResult)) {
+                for (SuggestedAnnotation listItem : annotations.get(ontologisedResult)) {
                     listItem.setMappedTo(null);
                 }
             }
 
             ontologisedResult.setAssignedOntology(null);
         }
-
         repaint();
     }
 
     private void clearAnnotation(OntologisedResult ontologisedResult) {
         if (annotations.get(ontologisedResult) != null) {
-            for (SuggestedAnnotationListItem listItem : annotations.get(ontologisedResult)) {
+            for (SuggestedAnnotation listItem : annotations.get(ontologisedResult)) {
                 listItem.setMappedTo(null);
             }
         }
     }
 
-    private void autoAnnotate() {
+    public void autoAnnotate() {
         for (OntologisedResult ontologisedResult : annotations.keySet()) {
-            System.out.println("Ontologised Result: " + ontologisedResult.getFreeTextTerm());
-            int maxScore = Integer.MIN_VALUE;
-            SuggestedAnnotationListItem suggestedAnnotation = null;
 
-            for (SuggestedAnnotationListItem listItem : annotations.get(ontologisedResult)) {
-                System.out.println("\tPossible annotation: " + listItem.getAnnotatorResult().toString() + " - > score = " + listItem.getAnnotatorResult().getScore());
-                if (listItem.getAnnotatorResult().getScore() > maxScore) {
-                    maxScore = listItem.getAnnotatorResult().getScore();
-                    suggestedAnnotation = listItem;
-                }
-            }
+            ScoreAnalysisUtility analysisUtility = new ScoreAnalysisUtility();
 
-            setAnnotation(suggestedAnnotation, ontologisedResult);
+            Pair<Integer, SuggestedAnnotation> maxResult = analysisUtility.getMaxScore(annotations.get(ontologisedResult));
+
+            setAnnotation(maxResult.snd, ontologisedResult);
         }
 
         repaint();
-
     }
 
-    private void setAnnotation(SuggestedAnnotationListItem selectedAnnnotationItem, OntologisedResult ontologisedResult) {
+    private void setAnnotation(SuggestedAnnotation selectedAnnnotationItem, OntologisedResult ontologisedResult) {
         clearAnnotation(ontologisedResult);
 
         ontologisedResult.setAssignedOntology(selectedAnnnotationItem.getAnnotatorResult());

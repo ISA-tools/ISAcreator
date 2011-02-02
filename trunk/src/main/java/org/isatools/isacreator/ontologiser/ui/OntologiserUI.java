@@ -32,6 +32,7 @@ public class OntologiserUI extends JFrame {
 
     public static final int TERM_TAGGER_VIEW = 0;
     public static final int HELP = 1;
+    public static final int VISUALISATION = 2;
 
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
@@ -48,13 +49,20 @@ public class OntologiserUI extends JFrame {
     }
 
     private JPanel swappableContainer;
+
     private JLabel termTaggerButton;
+    // functions
+    private JLabel visualiseButton;
+    private JLabel suggestButton;
+    private JLabel clearAllButton;
+
     private JLabel helpButton;
 
     private int selectedSection = HELP;
 
     @InjectedResource
-    private ImageIcon termTaggerLogo, termTaggerIcon, termTaggerIconOver, helpIcon, helpIconOver, closeWindowIcon,
+    private ImageIcon termTaggerLogo, termTaggerIcon, termTaggerIconOver, visualiseInactiveIcon, visualiseIcon, visualiseIconOver,
+            suggestInactiveIcon, suggestIcon, suggestIconOver, clearAllInactiveIcon, clearAllIcon, clearAllIconOver, helpIcon, helpIconOver, closeWindowIcon,
             closeWindowIconOver, doneIcon, doneIconOver, buttonPanelFiller, working;
 
     private OntologiserAnnotationPane annotationPane;
@@ -116,6 +124,10 @@ public class OntologiserUI extends JFrame {
             public void mousePressed(MouseEvent mouseEvent) {
                 resetButtons();
                 termTaggerButton.setIcon(termTaggerIconOver);
+                visualiseButton.setIcon(visualiseInactiveIcon);
+                suggestButton.setIcon(suggestInactiveIcon);
+                clearAllButton.setIcon(clearAllInactiveIcon);
+
                 selectedSection = TERM_TAGGER_VIEW;
 
 
@@ -136,6 +148,11 @@ public class OntologiserUI extends JFrame {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 swapContainers(annotationPane);
+
+                                termTaggerButton.setIcon(termTaggerIconOver);
+                                visualiseButton.setIcon(visualiseIcon);
+                                suggestButton.setIcon(suggestIcon);
+                                clearAllButton.setIcon(clearAllIcon);
                             }
                         });
                     }
@@ -145,10 +162,77 @@ public class OntologiserUI extends JFrame {
                 swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
                 performer.start();
             }
-        }
+        });
 
-        );
+        visualiseButton = new JLabel(visualiseInactiveIcon);
+        visualiseButton.setHorizontalAlignment(SwingConstants.LEFT);
+        visualiseButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                visualiseButton.setIcon((selectedSection == TERM_TAGGER_VIEW || selectedSection == VISUALISATION) ? visualiseIconOver : visualiseInactiveIcon);
+            }
 
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                visualiseButton.setIcon((selectedSection == TERM_TAGGER_VIEW || selectedSection == VISUALISATION) ? visualiseIcon : visualiseInactiveIcon);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                if (visualiseButton.getIcon() != visualiseInactiveIcon) {
+
+                    visualiseButton.setIcon(visualiseIcon);
+                    selectedSection = VISUALISATION;
+                    // todo show visualisation...
+                }
+            }
+        });
+
+
+        suggestButton = new JLabel(suggestInactiveIcon);
+        suggestButton.setHorizontalAlignment(SwingConstants.LEFT);
+        suggestButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                suggestButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? suggestIconOver : suggestInactiveIcon);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                suggestButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? suggestIcon : suggestInactiveIcon);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                if (suggestButton.getIcon() != suggestInactiveIcon) {
+
+                    suggestButton.setIcon(suggestIcon);
+                    annotationPane.autoAnnotate();
+                }
+            }
+        });
+
+        clearAllButton = new JLabel(clearAllInactiveIcon);
+        clearAllButton.setHorizontalAlignment(SwingConstants.LEFT);
+        clearAllButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                clearAllButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? clearAllIconOver : clearAllInactiveIcon);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                clearAllButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? clearAllIcon : clearAllInactiveIcon);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                if (clearAllButton.getIcon() != clearAllInactiveIcon) {
+                    clearAllButton.setIcon(clearAllIcon);
+                    annotationPane.clearAnnotation();
+                }
+            }
+        });
 
         helpButton = new JLabel(helpIconOver);
 
@@ -165,8 +249,7 @@ public class OntologiserUI extends JFrame {
 
                     @Override
                     public void mouseExited
-                            (MouseEvent
-                                     mouseEvent) {
+                            (MouseEvent mouseEvent) {
                         helpButton.setIcon(selectedSection == HELP ? helpIconOver : helpIcon);
                     }
 
@@ -198,6 +281,9 @@ public class OntologiserUI extends JFrame {
         );
 
         topPanel.add(termTaggerButton);
+        topPanel.add(visualiseButton);
+        topPanel.add(suggestButton);
+        topPanel.add(clearAllButton);
         topPanel.add(helpButton);
         topPanel.add(new JLabel(termTaggerLogo));
 
@@ -293,6 +379,11 @@ public class OntologiserUI extends JFrame {
     private void resetButtons() {
         termTaggerButton.setIcon(termTaggerIcon);
         helpButton.setIcon(helpIcon);
+
+        visualiseButton.setIcon(visualiseInactiveIcon);
+        suggestButton.setIcon(suggestInactiveIcon);
+        clearAllButton.setIcon(clearAllInactiveIcon);
+
     }
 
     private void swapContainers(Container newContainer) {

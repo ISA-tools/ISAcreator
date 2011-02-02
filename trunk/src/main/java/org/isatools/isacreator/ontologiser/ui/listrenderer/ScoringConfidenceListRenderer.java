@@ -1,7 +1,7 @@
 package org.isatools.isacreator.ontologiser.ui.listrenderer;
 
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.ontologiser.model.SuggestedAnnotationListItem;
+import org.isatools.isacreator.ontologiser.model.SuggestedAnnotation;
 import org.isatools.isacreator.ontologymanager.bioportal.model.ScoringConfidence;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -63,14 +63,14 @@ public class ScoringConfidenceListRenderer extends JComponent
                 for (Component panelComponent : ((Box) c).getComponents()) {
 
                     if (panelComponent instanceof ConfidenceLevelCellImage) {
-                        if (value instanceof SuggestedAnnotationListItem) {
-                            ((ConfidenceLevelCellImage) panelComponent).setConfidenceLevel((SuggestedAnnotationListItem) value);
+                        if (value instanceof SuggestedAnnotation) {
+                            ((ConfidenceLevelCellImage) panelComponent).setConfidenceLevel((SuggestedAnnotation) value);
                         }
                     }
 
                     if (panelComponent instanceof CheckedCellImage) {
-                        if (value instanceof SuggestedAnnotationListItem) {
-                            ((CheckedCellImage) panelComponent).checkIsIdEntered((SuggestedAnnotationListItem) value);
+                        if (value instanceof SuggestedAnnotation) {
+                            ((CheckedCellImage) panelComponent).checkIsIdEntered((SuggestedAnnotation) value);
                         }
                     }
                 }
@@ -106,7 +106,7 @@ public class ScoringConfidenceListRenderer extends JComponent
             add(Box.createHorizontalStrut(2));
         }
 
-        public void setConfidenceLevel(SuggestedAnnotationListItem fieldMapping) {
+        public void setConfidenceLevel(SuggestedAnnotation fieldMapping) {
 
             ScoringConfidence level = fieldMapping.getAnnotatorResult().getScoringConfidenceLevel();
 

@@ -10,12 +10,12 @@ import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
  *         Date: 01/02/2011
  *         Time: 11:22
  */
-public class SuggestedAnnotationListItem implements OntologiserListItems {
+public class SuggestedAnnotation implements OntologiserListItems {
 
     private OntologisedResult mappedTo;
     private AnnotatorResult annotatorResult;
 
-    public SuggestedAnnotationListItem(AnnotatorResult annotatorResult) {
+    public SuggestedAnnotation(AnnotatorResult annotatorResult) {
         this.annotatorResult = annotatorResult;
     }
 

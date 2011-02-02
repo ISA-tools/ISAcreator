@@ -19,7 +19,7 @@ public class AnnotatorResult {
     private int startIndex;
     private int endIndex;
 
-    private ScoringConfidence confidenceLevel;
+    private ScoringConfidence confidenceLevel = ScoringConfidence.MEDIUM;
 
     public AnnotatorResult(BioPortalOntology ontologyTerm, Ontology ontologySource, int score, int startIndex, int endIndex) {
         this.ontologyTerm = ontologyTerm;
@@ -51,7 +51,11 @@ public class AnnotatorResult {
 
     // TODO Properly calculate the score confidence
     public ScoringConfidence getScoringConfidenceLevel() {
-        return ScoringConfidence.MEDIUM;
+        return confidenceLevel;
+    }
+
+    public void setScoringConfidence(ScoringConfidence confidence) {
+        this.confidenceLevel = confidence;
     }
 
     @Override
