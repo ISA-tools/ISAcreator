@@ -1825,6 +1825,8 @@ public class Spreadsheet extends JComponent implements
      * @param removeEmptyColumns - should empty columns be removed from the submission?
      * @throws java.io.FileNotFoundException - never thrown since the file is created if it doesn't exist, and over written if
      *                                       it already exists
+     *                                       <p/>
+     *                                       todo Move this code into a utils class
      */
     public boolean exportTable(File f, String separator, boolean removeEmptyColumns)
             throws FileNotFoundException {
@@ -1945,6 +1947,8 @@ public class Spreadsheet extends JComponent implements
      * in the ISArchive for submission to the index.
      *
      * @return Set of files defined in the spreadsheet
+     *         <p/>
+     *         todo move to spreadsheetutils class
      */
     public Set<String> getFilesDefinedInTable
     () {
@@ -2015,8 +2019,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @return Set<String> containing the Ontologies defined in the Spreadsheet.
      */
-    public Set<String> getOntologiesDefinedInTable
-    () {
+    public Set<String> getOntologiesDefinedInTable() {
         Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
 
         HashSet<String> ontologySources = new HashSet<String>();

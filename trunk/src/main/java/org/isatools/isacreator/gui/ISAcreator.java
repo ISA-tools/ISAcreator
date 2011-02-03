@@ -52,6 +52,8 @@ import org.isatools.isacreator.io.OutputISAFiles;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileIO;
 import org.isatools.isacreator.model.Investigation;
+import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
+import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
 import org.isatools.isacreator.ontologymanager.OntologyConsumer;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
@@ -488,27 +490,35 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         menuBar.add(view);
 
-        JMenu plugins = new JMenu("plugins");
+        JMenu plugins = new JMenu("utilities");
 
-        JMenu exporters = new JMenu("Sample Tracking");
-        exporters.addMouseListener(new MouseAdapter() {
+
+        JMenu sampleTracking = new JMenu("Sample Tracking");
+        sampleTracking.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
                 updateExportList();
             }
         });
 
-//        JMenu mgRastExport = new JMenu("export study to mg-rast");
-//        mgRastExport.setIcon(mgRastIcon);
-//        menusRequiringStudyIds.put("mgrast", mgRastExport);
-//        exporters.add(mgRastExport);
+        JMenuItem tagInvestigation = new JMenuItem("Autotagging");
+        tagInvestigation.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                OntologiserUI ontologiserUI = new OntologiserUI(ISAcreator.this, new InvestigationAdaptor(getDataEntryEnvironment().getInvestigation()));
+                ontologiserUI.createGUI();
+
+                showJDialogAsSheet(ontologiserUI);
+            }
+        });
 
         JMenu qrCodeExport = new JMenu("generate QR codes for Study samples");
         qrCodeExport.setIcon(qrCodeIcon);
         menusRequiringStudyIds.put("qr", qrCodeExport);
-        exporters.add(qrCodeExport);
+        sampleTracking.add(qrCodeExport);
 
-        plugins.add(exporters);
+        plugins.add(sampleTracking);
+        plugins.add(tagInvestigation);
 
         menuBar.add(plugins);
 

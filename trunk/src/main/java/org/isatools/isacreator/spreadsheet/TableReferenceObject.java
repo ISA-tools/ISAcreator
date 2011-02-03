@@ -254,6 +254,7 @@ public class TableReferenceObject implements Serializable {
                 fieldLookup.get(colName).isAcceptsFileLocations();
     }
 
+
     public boolean acceptsMultipleValues(String colName) {
         return fieldLookup.get(colName).isAcceptsMultipleValues();
     }
@@ -271,7 +272,7 @@ public class TableReferenceObject implements Serializable {
         int prevValLoc = -1;
 
         for (int i = 0; i < headers.length; i++) {
-             String s;
+            String s;
             if (i < rowData.length) {
                 s = rowData[i];
             } else {

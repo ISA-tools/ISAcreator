@@ -35,14 +35,16 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.spreadsheet.utils;
+package org.isatools.isacreator.apiutils;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
+import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
+import org.isatools.isacreator.spreadsheet.Utils;
 
-import java.util.Map;
-import java.util.Set;
+import javax.swing.table.TableColumn;
+import java.util.*;
 
 /**
  * SpreadsheetUtils
@@ -139,5 +141,74 @@ public class SpreadsheetUtils {
         }
 
         return data;
+    }
+
+    /**
+     * Gets the freetext terms (which ideally should be ontology terms) in a Spreadsheet object
+     *
+     * @param spreadsheet @see Spreadsheet
+     * @return Map<Column Name, Set<Column Values>>
+     */
+    public static Map<String, Set<String>> getFreetextInSpreadsheet(Spreadsheet spreadsheet) {
+        Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+
+        Map<String, Set<String>> columnToFreeText = new HashMap<String, Set<String>>();
+
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+
+            if (spreadsheet.getTableReferenceObject().getClassType(tc.getHeaderValue().toString().trim())
+                    == DataTypes.ONTOLOGY_TERM) {
+
+                int colIndex = Utils.convertModelIndexToView(spreadsheet.getTable(), tc.getModelIndex());
+
+                for (int row = 0; row < spreadsheet.getTable().getRowCount(); row++) {
+
+                    String columnValue = (spreadsheet.getTable().getValueAt(row, colIndex) == null) ? ""
+                            : spreadsheet.getTable().getValueAt(row,
+                            colIndex).toString();
+
+                    if (columnValue != null && !columnValue.trim().equals("")) {
+                        if (!columnToFreeText.containsKey(tc.getHeaderValue().toString())) {
+                            columnToFreeText.put(tc.getHeaderValue().toString(), new HashSet<String>());
+                        }
+                        columnToFreeText.get(tc.getHeaderValue().toString()).add(columnValue);
+                    }
+                }
+            }
+        }
+
+        return columnToFreeText;
+    }
+
+    /**
+     * Method returns a Set of all the files defined in a spreadsheet. These locations are used to zip up the data files
+     * in the ISArchive for submission to the index.
+     *
+     * @return Set of files defined in the spreadsheet
+     */
+    public static Set<String> getFilesDefinedInTable(Spreadsheet spreadsheet) {
+        Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+        Set<String> files = new HashSet<String>();
+
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+
+            if (spreadsheet.getTableReferenceObject().acceptsFileLocations(tc.getHeaderValue().toString())) {
+                int colIndex = Utils.convertModelIndexToView(spreadsheet.getTable(), tc.getModelIndex());
+
+                for (int row = 0; row < spreadsheet.getTable().getRowCount(); row++) {
+                    String s = (spreadsheet.getTable().getValueAt(row, colIndex) == null) ? ""
+                            : spreadsheet.getTable().getValueAt(row,
+                            colIndex).toString();
+
+                    if (s != null && !s.trim().equals("")) {
+                        files.add(s);
+                    }
+                }
+            }
+        }
+
+        return files;
     }
 }

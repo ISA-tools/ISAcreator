@@ -37,11 +37,11 @@
 
 package org.isatools.isacreator.qrcode.utils;
 
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.formatmappingutility.ui.MappingChoice;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.utils.SpreadsheetUtils;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import java.util.*;

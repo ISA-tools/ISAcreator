@@ -3,6 +3,7 @@ package org.isatools.isacreator.ontologiser.ui;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.ontologiser.adaptors.ContentAdaptor;
 import org.isatools.isacreator.ontologiser.logic.impl.AnnotatorSearchClient;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.jdesktop.fuse.InjectedResource;
@@ -16,9 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by the ISA team
@@ -28,7 +27,7 @@ import java.util.Set;
  *         Date: 26/01/2011
  *         Time: 11:13
  */
-public class OntologiserUI extends JFrame {
+public class OntologiserUI extends JDialog {
 
     public static final int TERM_TAGGER_VIEW = 0;
     public static final int HELP = 1;
@@ -58,6 +57,8 @@ public class OntologiserUI extends JFrame {
 
     private JLabel helpButton;
 
+    private ContentAdaptor content;
+
     private int selectedSection = HELP;
 
     @InjectedResource
@@ -69,11 +70,11 @@ public class OntologiserUI extends JFrame {
     private OntologyHelpPane helpPane;
     private ConfirmationDialog confirmChoice;
     private ISAcreator isacreatorEnvironment;
-    private String currentAssay;
 
-    public OntologiserUI(ISAcreator isacreatorEnvironment, String currentAssay) {
+
+    public OntologiserUI(ISAcreator isacreatorEnvironment, ContentAdaptor content) {
         this.isacreatorEnvironment = isacreatorEnvironment;
-        this.currentAssay = currentAssay;
+        this.content = content;
     }
 
     public void createGUI() {
@@ -100,8 +101,6 @@ public class OntologiserUI extends JFrame {
         add(createSouthPanel(), BorderLayout.SOUTH);
 
         pack();
-        setVisible(true);
-
     }
 
     private Container createTopPanel() {
@@ -133,28 +132,38 @@ public class OntologiserUI extends JFrame {
 
                 Thread performer = new Thread(new Runnable() {
                     public void run() {
-                        if (annotationPane == null) {
-                            // todo call API module to get all unannotated Ontology entries from the spreadsheet
 
-                            annotationPane = new OntologiserAnnotationPane(getTestData());
+                        Map<String, Map<String, AnnotatorResult>> terms = getTerms();
+
+                        boolean haveTerms = terms != null;
+
+                        if (haveTerms) {
+
+                            if (annotationPane == null) {
+
+                                annotationPane = new OntologiserAnnotationPane(terms);
+
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        annotationPane.createGUI();
+                                    }
+                                });
+                            }
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
-                                    annotationPane.createGUI();
+                                    swapContainers(annotationPane);
+
+                                    termTaggerButton.setIcon(termTaggerIconOver);
+                                    visualiseButton.setIcon(visualiseIcon);
+                                    suggestButton.setIcon(suggestIcon);
+                                    clearAllButton.setIcon(clearAllIcon);
                                 }
                             });
+                        } else {
+                            // todo add info pane saying there are no terms to annotate
+                            swapContainers(helpPane);
                         }
-
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                swapContainers(annotationPane);
-
-                                termTaggerButton.setIcon(termTaggerIconOver);
-                                visualiseButton.setIcon(visualiseIcon);
-                                suggestButton.setIcon(suggestIcon);
-                                clearAllButton.setIcon(clearAllIcon);
-                            }
-                        });
                     }
 
                 });
@@ -395,21 +404,18 @@ public class OntologiserUI extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        OntologiserUI ui = new OntologiserUI(null, "assay");
-        ui.createGUI();
-    }
-
-    public Map<String, Map<String, AnnotatorResult>> getTestData() {
+    public Map<String, Map<String, AnnotatorResult>> getTerms() {
 
         AnnotatorSearchClient sc = new AnnotatorSearchClient();
 
-        Set<String> testTerms = new HashSet<String>();
-        testTerms.add("CY3");
-        testTerms.add("DOSE");
-        testTerms.add("ASSAY");
+        if (content != null && content.getTerms().size() > 0) {
 
-        return sc.searchForTerms(testTerms);
+            return sc.searchForTerms(content.getTerms());
+
+        }
+
+        return null;
+
     }
 
 
