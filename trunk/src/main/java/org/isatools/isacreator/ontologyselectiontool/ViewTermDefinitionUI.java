@@ -155,7 +155,7 @@ public class ViewTermDefinitionUI extends JPanel {
                 }
             }
         } else {
-            labelContent += "connection to the ontology service failed. term definition retrieval was unsuccessful!";
+            labelContent += "<p>No definition found for this term! Unfortunately, not all terms have their definitions supplied!</p>";
         }
 
         labelContent += "</body></html>";
@@ -168,19 +168,22 @@ public class ViewTermDefinitionUI extends JPanel {
     private Map<String, String> sortMap(Map<String, String> toSort) {
         Map<String, String> sortedMap = new ListOrderedMap<String, String>();
 
-        Set<String> keys = toSort.keySet();
+        if (toSort != null) {
 
-        java.util.List<String> sortedKeys = new ArrayList<String>();
-        for (String key : keys) {
-            if (key != null) {
-                sortedKeys.add(key);
+            Set<String> keys = toSort.keySet();
+
+            java.util.List<String> sortedKeys = new ArrayList<String>();
+            for (String key : keys) {
+                if (key != null) {
+                    sortedKeys.add(key);
+                }
             }
-        }
 
-        Collections.sort(sortedKeys);
+            Collections.sort(sortedKeys);
 
-        for (String key : sortedKeys) {
-            sortedMap.put(key, toSort.get(key));
+            for (String key : sortedKeys) {
+                sortedMap.put(key, toSort.get(key));
+            }
         }
 
         return sortedMap;
@@ -188,6 +191,10 @@ public class ViewTermDefinitionUI extends JPanel {
 
 
     public void setContent(OntologyBranch term, String searchOntology, OntologyService ontologyService) {
+
+        System.out.println("Searching for on this ontology -> " + searchOntology);
+        System.out.println("For this term: branchIdentifier: " + term.getBranchIdentifier() + " & branch name:" + term.getBranchName());
+
         setCurrentPage(new JLabel(LOADING));
         performSearch(term, searchOntology, ontologyService);
     }

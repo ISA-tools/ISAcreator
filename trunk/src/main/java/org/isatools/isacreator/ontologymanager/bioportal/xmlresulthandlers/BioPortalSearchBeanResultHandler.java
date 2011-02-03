@@ -99,6 +99,7 @@ public class BioPortalSearchBeanResultHandler {
         ontology.setOntologyVersionId(searchResult.getOntologyVersionId());
         ontology.setOntologyTermName(searchResult.getPreferredName());
 
+
         if (searchResult.getOntologyId().equals(AcceptedOntologies.NCI_THESAURUS.getOntologyID())) {
             ontology.setOntologySourceAccession(AcceptedOntologies.NCI_THESAURUS.getOntologyAbbreviation() + ":"
                     + searchResult.getConceptIdShort());

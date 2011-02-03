@@ -82,7 +82,7 @@ public class OntologiserUI extends JFrame {
         setBackground(UIHelper.BG_COLOR);
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(600, 500));
+        setPreferredSize(new Dimension(650, 500));
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
 
 
@@ -90,7 +90,7 @@ public class OntologiserUI extends JFrame {
 
         swappableContainer = new JPanel();
         swappableContainer.setBorder(new EmptyBorder(1, 1, 1, 1));
-        swappableContainer.setPreferredSize(new Dimension(600, 350));
+        swappableContainer.setPreferredSize(new Dimension(650, 350));
         helpPane = new OntologyHelpPane();
         helpPane.createGUI();
 

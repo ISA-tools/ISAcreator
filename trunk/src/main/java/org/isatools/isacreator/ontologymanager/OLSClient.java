@@ -176,7 +176,6 @@ public class OLSClient implements OntologyService {
                                                                String source, boolean reverseOrder) {
         Map<String, String> answer = new HashMap<String, String>();
 
-
         try {
             QueryServiceLocator locator = new QueryServiceLocator();
             Query service = locator.getOntologyQuery();
@@ -306,7 +305,7 @@ public class OLSClient implements OntologyService {
             Map<String, String> subSearchResult = null;
 
             if (ro.getBranchToSearchUnder() == null) {
-                
+
                 subSearchResult = getTermsByPartialNameFromSource(term, ro.getOntology().getOntologyAbbreviation(), false);
 
             } else {

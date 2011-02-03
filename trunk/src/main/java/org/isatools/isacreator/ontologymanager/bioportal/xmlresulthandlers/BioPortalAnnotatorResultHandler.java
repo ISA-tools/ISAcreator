@@ -88,6 +88,8 @@ public class BioPortalAnnotatorResultHandler {
 
         if (ontologies.containsKey(concept.getLocalOntologyId().toString())) {
             BioPortalOntology ontologyTerm = new BioPortalOntology();
+
+            ontologyTerm.setOntologySourceAccession(concept.getLocalConceptId());
             ontologyTerm.setOntologyPurl(concept.getFullId());
             ontologyTerm.setOntologyTermName(concept.getPreferredName());
             ontologyTerm.setOntologyVersionId(concept.getLocalOntologyId().toString());

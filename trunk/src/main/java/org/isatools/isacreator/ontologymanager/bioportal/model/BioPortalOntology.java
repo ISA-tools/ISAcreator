@@ -79,6 +79,11 @@ public class BioPortalOntology {
     }
 
     public void setOntologySourceAccession(String conceptIdShort) {
+
+        if (conceptIdShort.contains("/")) {
+            conceptIdShort = conceptIdShort.substring(conceptIdShort.lastIndexOf("/") + 1);
+        }
+
         this.ontologySourceAccession = conceptIdShort;
         // we set this as the accession by default in case the xml does not contain all of the information.
         if (ontologyTermName == null) {

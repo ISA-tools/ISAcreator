@@ -42,15 +42,15 @@ import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.RoundedBorder;
-import org.isatools.isacreator.formatmappingutility.tablebrowser.IncomingFileBrowser;
-import org.isatools.isacreator.settings.OntologySettings;
+import org.jdesktop.fuse.InjectedResource;
+import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -67,17 +67,11 @@ import java.util.Map;
 
 public class AssaySelectionUI extends JPanel {
 
-    static final ImageIcon REMOVE = new ImageIcon(OntologySettings.class.getResource("/images/settings/remove.png"));
-    static final ImageIcon REMOVE_OVER = new ImageIcon(OntologySettings.class.getResource("/images/settings/remove_over.png"));
-    static final ImageIcon CONFIRM_DELETION = new ImageIcon(OntologySettings.class.getResource("/images/settings/confirm.png"));
-    static final ImageIcon CONFIRM_DELETION_OVER = new ImageIcon(OntologySettings.class.getResource("/images/settings/confirm_over.png"));
-    static final ImageIcon CANCEL_DELETION = new ImageIcon(OntologySettings.class.getResource("/images/settings/cancel.png"));
-    static final ImageIcon CANCEL_DELETION_OVER = new ImageIcon(OntologySettings.class.getResource("/images/settings/cancel_over.png"));
-    static final ImageIcon SELECT = new ImageIcon(IncomingFileBrowser.class.getResource("/images/formatmapper/select_button.png"));
-    static final ImageIcon SELECT_OVER = new ImageIcon(IncomingFileBrowser.class.getResource("/images/formatmapper/select_button_over.png"));
-
-
     public final static String NO_TECHNOLOGY_TEXT = "no technology required";
+
+    @InjectedResource
+    private ImageIcon confidenceKey, removeIcon, removeIconOver, confirmIcon, confirmIconOver,
+            cancelIcon, cancelIconOver, selectIcon, selectIconOver;
 
     private ExtendedJList assayMeasurementList;
     private ExtendedJList assayTechnologyList;
@@ -91,11 +85,14 @@ public class AssaySelectionUI extends JPanel {
     public AssaySelectionUI(Map<String, java.util.List<String>> measToAllowedTechnologies) {
         this.measToAllowedTechnologies = measToAllowedTechnologies;
 
-        setLayout(new BorderLayout());
-        setSize(new Dimension(400, 400));
+        ResourceInjector.get("formatmappingutility-package.style").inject(this);
+
     }
 
     public void createGUI() {
+        setLayout(new BorderLayout());
+        setSize(new Dimension(400, 400));
+
         // need to create a gui with two panels on the left hand side for selection of the
         // measurement and technology and one panel on the right hand side showing which ontologies
         // have been selected!
@@ -181,31 +178,24 @@ public class AssaySelectionUI extends JPanel {
 
         assaySelectionPanel.add(technologyContainer);
 
-        selectAssay = new JLabel(SELECT);
-        selectAssay.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        selectAssay = new JLabel(selectIcon);
+        selectAssay.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
-                selectAssay.setIcon(SELECT_OVER);
+                selectAssay.setIcon(selectIconOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                selectAssay.setIcon(SELECT);
+                selectAssay.setIcon(selectIcon);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-                selectAssay.setIcon(SELECT);
+                selectAssay.setIcon(selectIcon);
 
                 String measurement = assayMeasurementList.getSelectedValue().toString();
                 String technology = assayTechnologyList.getSelectedValue().toString();
 
                 addToSelectedAssays(new AssaySelection(measurement, technology));
-            }
-
-            public void mouseReleased(MouseEvent mouseEvent) {
-
             }
         });
 
@@ -253,28 +243,22 @@ public class AssaySelectionUI extends JPanel {
         JPanel removeButtonPanel = new JPanel(new BorderLayout());
         removeButtonPanel.setOpaque(false);
 
-        removeAssay = new JLabel(REMOVE);
-        removeAssay.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        removeAssay = new JLabel(removeIcon);
+        removeAssay.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
-                removeAssay.setIcon(REMOVE_OVER);
+                removeAssay.setIcon(removeIconOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                removeAssay.setIcon(REMOVE);
+                removeAssay.setIcon(removeIcon);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-                removeAssay.setIcon(REMOVE);
+                removeAssay.setIcon(removeIcon);
                 confirmDeletionContainer.setVisible(true);
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         });
 
         removeAssay.setVisible(false);
@@ -328,57 +312,45 @@ public class AssaySelectionUI extends JPanel {
         confirmDeletionContainer.setOpaque(false);
         confirmDeletionContainer.setVisible(false);
 
-        final JLabel confirmRemovalButton = new JLabel(CONFIRM_DELETION);
+        final JLabel confirmRemovalButton = new JLabel(confirmIcon);
 
-        confirmRemovalButton.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        confirmRemovalButton.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
-                confirmRemovalButton.setIcon(CONFIRM_DELETION_OVER);
+                confirmRemovalButton.setIcon(confirmIconOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                confirmRemovalButton.setIcon(CONFIRM_DELETION);
+                confirmRemovalButton.setIcon(confirmIcon);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-                confirmRemovalButton.setIcon(CONFIRM_DELETION);
+                confirmRemovalButton.setIcon(confirmIcon);
                 confirmDeletionContainer.setVisible(false);
                 removeAssay.setVisible(false);
                 deleteItem(selectedAssaysList.getSelectedIndex());
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         });
 
-        final JLabel cancelRemovalButton = new JLabel(CANCEL_DELETION);
+        final JLabel cancelRemovalButton = new JLabel(cancelIcon);
 
-        cancelRemovalButton.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        cancelRemovalButton.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
-                cancelRemovalButton.setIcon(CANCEL_DELETION_OVER);
+                cancelRemovalButton.setIcon(cancelIconOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                cancelRemovalButton.setIcon(CANCEL_DELETION);
+                cancelRemovalButton.setIcon(cancelIcon);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-                cancelRemovalButton.setIcon(CANCEL_DELETION);
+                cancelRemovalButton.setIcon(cancelIcon);
                 confirmDeletionContainer.setVisible(false);
                 removeAssay.setVisible(false);
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         });
 
         confirmDeletionContainer.add(confirmRemovalButton);
