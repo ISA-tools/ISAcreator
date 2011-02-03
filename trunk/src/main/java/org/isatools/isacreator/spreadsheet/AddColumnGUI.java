@@ -296,7 +296,7 @@ public class AddColumnGUI extends JDialog {
         unitFieldCont.add(stdFieldLab);
 
         final DropDownComponent ontologyDropDown = createOntologyDropDown(unitField,
-                false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "", UNIT_ONTOLOGY, "Unit Ontology"))));
+                false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("1112", "", UNIT_ONTOLOGY, "Unit Ontology"))));
         unitFieldCont.add(ontologyDropDown);
 
         JPanel determineUnitRequired = new JPanel(new GridLayout(1, 2));
