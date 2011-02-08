@@ -154,7 +154,7 @@ public class OntologiserAnnotationPane extends JPanel {
     private JPanel createListPanel(ExtendedJList list, String listTitle) {
 
         JPanel listContainer = new JPanel(new BorderLayout());
-        listContainer.setPreferredSize(new Dimension(220, 350));
+        listContainer.setPreferredSize(new Dimension(220, 340));
         listContainer.setBackground(UIHelper.BG_COLOR);
 
         JScrollPane scrollPane = new JScrollPane(list,

@@ -5,6 +5,7 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -28,13 +29,14 @@ public class InvestigationAdaptor implements ContentAdaptor {
 
     public InvestigationAdaptor(Investigation investigation) {
         this.investigation = investigation;
+        assayToTerms = new HashMap<Assay, Set<String>>();
     }
 
     public void replaceTerms(Set<OntologisedResult> annotations) {
-        // todo
-        for (OntologisedResult annotation : annotations) {
-
-        }
+        // todo replace terms in sheet
+//        for (OntologisedResult annotation : annotations) {
+//
+//        }
     }
 
     public Set<String> getTerms() {
