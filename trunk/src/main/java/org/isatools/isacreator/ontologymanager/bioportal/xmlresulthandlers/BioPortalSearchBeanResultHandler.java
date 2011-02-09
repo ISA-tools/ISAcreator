@@ -84,7 +84,10 @@ public class BioPortalSearchBeanResultHandler {
 
                 for (SearchResultListDocument.SearchResultList searchResult : searchResults) {
                     for (SearchBeanDocument.SearchBean searchBean : searchResult.getSearchBeanArray()) {
-                        result.addToResult(createBioPortalOntologyFromSearchResult(searchBean), false);
+                        BioPortalOntology ontology = createBioPortalOntologyFromSearchResult(searchBean);
+                        if (ontology != null) {
+                            result.addToResult(ontology, false);
+                        }
                     }
                 }
             }
@@ -96,20 +99,33 @@ public class BioPortalSearchBeanResultHandler {
     private BioPortalOntology createBioPortalOntologyFromSearchResult(SearchBeanDocument.SearchBean searchResult) {
         BioPortalOntology ontology = new BioPortalOntology();
 
-        ontology.setOntologyVersionId(searchResult.getOntologyVersionId());
-        ontology.setOntologyTermName(searchResult.getPreferredName());
-
-
-        if (searchResult.getOntologyId().equals(AcceptedOntologies.NCI_THESAURUS.getOntologyID())) {
-            ontology.setOntologySourceAccession(AcceptedOntologies.NCI_THESAURUS.getOntologyAbbreviation() + ":"
-                    + searchResult.getConceptIdShort());
-        } else {
-            ontology.setOntologySourceAccession(searchResult.getConceptId());
+        if (AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()) != null) {
+            ontology.setOntologyVersionId(searchResult.getOntologyVersionId());
+            ontology.setOntologyTermName(searchResult.getPreferredName());
+            ontology.setOntologySource(AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()));
+            ontology.setOntologySourceAccession(processSourceAccession(searchResult.getConceptIdShort(), ontology.getOntologySource()));
+            ontology.setOntologyPurl(searchResult.getConceptId());
+            return ontology;
         }
-        ontology.setOntologySource(searchResult.getOntologyId());
-        ontology.setOntologyPurl(searchResult.getConceptId());
 
-        return ontology;
+        return null;
+    }
+
+    /**
+     * Removes some elements from the conceptIds on some terms so they function properly.
+     *
+     * @param sourceAccession something like UO#UO:0000129
+     * @return cleaned version e.g. UO:0000129
+     */
+    private String processSourceAccession(String sourceAccession, String source) {
+        if (sourceAccession.contains("#")) {
+            sourceAccession = sourceAccession.substring(sourceAccession.lastIndexOf("#") + 1);
+        }
+
+        if (!sourceAccession.toLowerCase().contains(source.toLowerCase() + ":")) {
+            sourceAccession = source + ":" + sourceAccession;
+        }
+        return sourceAccession;
     }
 
 }

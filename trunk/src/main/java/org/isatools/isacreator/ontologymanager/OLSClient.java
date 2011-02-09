@@ -181,11 +181,6 @@ public class OLSClient implements OntologyService {
             Query service = locator.getOntologyQuery();
             Map<String, String> matchingTerms = service.getTermsByName(term, source, reverseOrder);
 
-            System.out.println("found the following terms in OLS:");
-            for (String accession : matchingTerms.keySet()) {
-                System.out.println("\t accession: " + accession + " -> " + matchingTerms.get(accession));
-            }
-
             if (matchingTerms != null) {
                 answer = matchingTerms;
             }

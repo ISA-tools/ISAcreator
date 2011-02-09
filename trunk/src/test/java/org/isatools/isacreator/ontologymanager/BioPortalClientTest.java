@@ -56,10 +56,10 @@ import static org.junit.Assert.assertTrue;
 public class BioPortalClientTest {
 
     private static BioPortalClient client = new BioPortalClient();
-    public static String testOntologyID = "1353";
+    public static String testOntologyID = "1136";
     public static String testTermAccession = "421563008";
-    public static String testOntologyVersion = "44777";
-    public static String testSearchTerm = "medicine";
+    public static String testOntologyVersion = "45155";
+    public static String testSearchTerm = "dose";
 
     @Test
     public void getAllOntologies() {
@@ -70,7 +70,9 @@ public class BioPortalClientTest {
         assertTrue("Oh no! No returned ontologies (empty result)! ", ontologies.size() > 0);
 
         System.out.println("Found " + ontologies.size() + " ontologies \n");
-
+        for (Ontology ontology : ontologies) {
+            System.out.println(ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel() + " -> " + ontology.getOntologyVersion());
+        }
     }
 
     @Test
@@ -102,6 +104,10 @@ public class BioPortalClientTest {
         Map<String, String> result = client.getTermsByPartialNameFromSource(testSearchTerm, testOntologyID, false);
 
         assertTrue("No results found for " + testSearchTerm + " in " + testOntologyID, result.size() > 0);
+
+        for (String key : result.keySet()) {
+            System.out.println(key + " -> " + result.get(key));
+        }
 
         System.out.println("Found " + result.values().size() + " matches...\n");
     }

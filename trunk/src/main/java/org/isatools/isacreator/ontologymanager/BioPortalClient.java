@@ -105,7 +105,7 @@ public class BioPortalClient implements OntologyService {
 
         List<Ontology> ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
-        DownloadUtils.deleteFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
+//        DownloadUtils.deleteFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
         return ontologies;
     }
@@ -183,7 +183,8 @@ public class BioPortalClient implements OntologyService {
     private BioPortalOntology performMetadataQuery(String termAccession, String ontology) {
         String searchString = REST_URL + "concepts/" + ontology + "/" + termAccession;
 
-        System.out.println(searchString);
+        System.out.println("Search string is: " + searchString);
+        log.info("Search string is: " + searchString);
 
         log.info("Getting term information for " + termAccession + " -> " + searchString);
 
@@ -279,7 +280,7 @@ public class BioPortalClient implements OntologyService {
         if (fileWithNameSpace != null) {
             Map<String, BioPortalOntology> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
 
-            DownloadUtils.deleteFile(downloadLocation);
+//            DownloadUtils.deleteFile(downloadLocation);
             DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
             updateOntologyManagerWithOntologyInformation();

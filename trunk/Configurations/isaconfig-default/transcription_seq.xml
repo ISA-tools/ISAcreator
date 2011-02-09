@@ -2,6 +2,7 @@
     <isatab-configuration table-name="transcription_seq">
         <measurement term-label="transcription profiling" term-accession="0000424" source-abbreviation="OBI"/>
         <technology term-label="nucleotide sequencing" term-accession="" source-abbreviation="OBI"/>
+
         <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="false"
                is-required="true">
             <description>Samples represent major outputs resulting from a protocol application other than the special
@@ -11,6 +12,7 @@
             <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]
             </generated-value-template>
         </field>
+
         <protocol-field protocol-type="nucleic acid extraction"/>
         <field header="Extract Name" data-type="String" is-file-field="false" is-multiple-value="false"
                is-required="true">
