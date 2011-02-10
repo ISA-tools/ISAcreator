@@ -186,8 +186,10 @@ public class TableReferenceObject implements Serializable {
         Set<String> parameters = new HashSet<String>();
         for (String p : parts) {
             if (p.contains(lookFor)) {
-                String parameter = p.substring(p.indexOf("[") + 1, p.lastIndexOf("]"));
-                parameters.add(parameter);
+                if (p.contains("[")) {
+                    String parameter = p.substring(p.indexOf("[") + 1, p.lastIndexOf("]"));
+                    parameters.add(parameter);
+                }
             }
         }
 
