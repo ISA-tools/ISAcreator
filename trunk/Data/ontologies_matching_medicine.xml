@@ -1,0 +1,2956 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<success>
+  <accessedResource>/bioportal/search/medicine/</accessedResource>
+  <accessDate>2011-02-09 05:37:08.272 PST</accessDate>
+  <data>
+    <page>
+      <pageNum>1</pageNum>
+      <numPages>1</numPages>
+      <pageSize>293</pageSize>
+      <numResultsPage>293</numResultsPage>
+      <numResultsTotal>293</numResultsTotal>
+      <contents class="org.ncbo.stanford.bean.search.SearchResultListBean">
+        <searchResultList>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/2533004</conceptId>
+            <conceptIdShort>2533004</conceptIdShort>
+            <preferredName>Drug</preferredName>
+            <contents>Medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/349365008</conceptId>
+            <conceptIdShort>349365008</conceptIdShort>
+            <preferredName>Herbal medicine</preferredName>
+            <contents>Herbal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/349363001</conceptId>
+            <conceptIdShort>349363001</conceptIdShort>
+            <preferredName>Homeopathic medicine</preferredName>
+            <contents>Homeopathic medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/419192003</conceptId>
+            <conceptIdShort>419192003</conceptIdShort>
+            <preferredName>Internal medicine</preferredName>
+            <contents>Internal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/408448007</conceptId>
+            <conceptIdShort>408448007</conceptIdShort>
+            <preferredName>Tropical medicine</preferredName>
+            <contents>Tropical medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/145684005</conceptId>
+            <conceptIdShort>145684005</conceptIdShort>
+            <preferredName>(Radiology &amp;/or physics in medicine) or (radiology) or (X-rays)</preferredName>
+            <contents>Physics in medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/168491007</conceptId>
+            <conceptIdShort>168491007</conceptIdShort>
+            <preferredName>(Radiology &amp;/or physics in medicine) or (radiology) or (X-rays)</preferredName>
+            <contents>Physics in medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/349364007</conceptId>
+            <conceptIdShort>349364007</conceptIdShort>
+            <preferredName>Anthroposophical medicine</preferredName>
+            <contents>Anthroposophical medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/439062004</conceptId>
+            <conceptIdShort>439062004</conceptIdShort>
+            <preferredName>Anthroposophical medicine regime</preferredName>
+            <contents>Anthroposophical medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393367009</conceptId>
+            <conceptIdShort>393367009</conceptIdShort>
+            <preferredName>Audiological medicine</preferredName>
+            <contents>Audiological medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394317008</conceptId>
+            <conceptIdShort>394317008</conceptIdShort>
+            <preferredName>Audiological medicine</preferredName>
+            <contents>Audiological medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394578005</conceptId>
+            <conceptIdShort>394578005</conceptIdShort>
+            <preferredName>Audiological medicine</preferredName>
+            <contents>Audiological medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393412009</conceptId>
+            <conceptIdShort>393412009</conceptIdShort>
+            <preferredName>Community medicine</preferredName>
+            <contents>Community medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394362007</conceptId>
+            <conceptIdShort>394362007</conceptIdShort>
+            <preferredName>Community medicine</preferredName>
+            <contents>Community medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394581000</conceptId>
+            <conceptIdShort>394581000</conceptIdShort>
+            <preferredName>Community medicine</preferredName>
+            <contents>Community medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/408475000</conceptId>
+            <conceptIdShort>408475000</conceptIdShort>
+            <preferredName>Diabetic medicine</preferredName>
+            <contents>Diabetic medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/410005002</conceptId>
+            <conceptIdShort>410005002</conceptIdShort>
+            <preferredName>Dive medicine</preferredName>
+            <contents>Dive medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/419772000</conceptId>
+            <conceptIdShort>419772000</conceptIdShort>
+            <preferredName>Family practice</preferredName>
+            <contents>Family medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393361005</conceptId>
+            <conceptIdShort>393361005</conceptIdShort>
+            <preferredName>General medicine</preferredName>
+            <contents>General medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394311009</conceptId>
+            <conceptIdShort>394311009</conceptIdShort>
+            <preferredName>General medicine</preferredName>
+            <contents>General medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394802001</conceptId>
+            <conceptIdShort>394802001</conceptIdShort>
+            <preferredName>General medicine</preferredName>
+            <contents>General medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393386001</conceptId>
+            <conceptIdShort>393386001</conceptIdShort>
+            <preferredName>Geriatric medicine</preferredName>
+            <contents>Geriatric medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394336003</conceptId>
+            <conceptIdShort>394336003</conceptIdShort>
+            <preferredName>Geriatric medicine</preferredName>
+            <contents>Geriatric medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394811001</conceptId>
+            <conceptIdShort>394811001</conceptIdShort>
+            <preferredName>Geriatric medicine</preferredName>
+            <contents>Geriatric medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/416269009</conceptId>
+            <conceptIdShort>416269009</conceptIdShort>
+            <preferredName>Manual medicine</preferredName>
+            <contents>Manual medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/410001006</conceptId>
+            <conceptIdShort>410001006</conceptIdShort>
+            <preferredName>Military medicine</preferredName>
+            <contents>Military medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/439809005</conceptId>
+            <conceptIdShort>439809005</conceptIdShort>
+            <preferredName>Naturopathy</preferredName>
+            <contents>Naturopathic medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394589003</conceptId>
+            <conceptIdShort>394589003</conceptIdShort>
+            <preferredName>Nephrology</preferredName>
+            <contents>Renal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394649004</conceptId>
+            <conceptIdShort>394649004</conceptIdShort>
+            <preferredName>Nuclear medicine - specialty</preferredName>
+            <contents>Nuclear medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108291002</conceptId>
+            <conceptIdShort>108291002</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure</preferredName>
+            <contents>Nuclear medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/371572003</conceptId>
+            <conceptIdShort>371572003</conceptIdShort>
+            <preferredName>Nuclear medicine procedure</preferredName>
+            <contents>Nuclear medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393413004</conceptId>
+            <conceptIdShort>393413004</conceptIdShort>
+            <preferredName>Occupational medicine</preferredName>
+            <contents>Occupational medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394363002</conceptId>
+            <conceptIdShort>394363002</conceptIdShort>
+            <preferredName>Occupational medicine</preferredName>
+            <contents>Occupational medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394821009</conceptId>
+            <conceptIdShort>394821009</conceptIdShort>
+            <preferredName>Occupational medicine</preferredName>
+            <contents>Occupational medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393372000</conceptId>
+            <conceptIdShort>393372000</conceptIdShort>
+            <preferredName>Palliative medicine</preferredName>
+            <contents>Palliative medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394322008</conceptId>
+            <conceptIdShort>394322008</conceptIdShort>
+            <preferredName>Palliative medicine</preferredName>
+            <contents>Palliative medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394806003</conceptId>
+            <conceptIdShort>394806003</conceptIdShort>
+            <preferredName>Palliative medicine</preferredName>
+            <contents>Palliative medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/409968004</conceptId>
+            <conceptIdShort>409968004</conceptIdShort>
+            <preferredName>Preventive medicine</preferredName>
+            <contents>Preventive medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/418112009</conceptId>
+            <conceptIdShort>418112009</conceptIdShort>
+            <preferredName>Pulmonary medicine</preferredName>
+            <contents>Chest medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393375003</conceptId>
+            <conceptIdShort>393375003</conceptIdShort>
+            <preferredName>Thoracic medicine</preferredName>
+            <contents>Thoracic medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394325005</conceptId>
+            <conceptIdShort>394325005</conceptIdShort>
+            <preferredName>Thoracic medicine</preferredName>
+            <contents>Thoracic medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394590007</conceptId>
+            <conceptIdShort>394590007</conceptIdShort>
+            <preferredName>Thoracic medicine</preferredName>
+            <contents>Thoracic medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394819004</conceptId>
+            <conceptIdShort>394819004</conceptIdShort>
+            <preferredName>Transfusion medicine</preferredName>
+            <contents>Transfusion medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/280984005</conceptId>
+            <conceptIdShort>280984005</conceptIdShort>
+            <preferredName>Abuse of herbal medicine</preferredName>
+            <contents>Abuse of herbal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305281005</conceptId>
+            <conceptIdShort>305281005</conceptIdShort>
+            <preferredName>Admission by nuclear medicine physician</preferredName>
+            <contents>Admission by nuclear medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305358005</conceptId>
+            <conceptIdShort>305358005</conceptIdShort>
+            <preferredName>Admission to chest medicine department</preferredName>
+            <contents>Admission to chest medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305380008</conceptId>
+            <conceptIdShort>305380008</conceptIdShort>
+            <preferredName>Admission to nuclear medicine department</preferredName>
+            <contents>Admission to nuclear medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305360007</conceptId>
+            <conceptIdShort>305360007</conceptIdShort>
+            <preferredName>Admission to respiratory medicine department</preferredName>
+            <contents>Admission to respiratory medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305359002</conceptId>
+            <conceptIdShort>305359002</conceptIdShort>
+            <preferredName>Admission to thoracic medicine department</preferredName>
+            <contents>Admission to thoracic medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183475003</conceptId>
+            <conceptIdShort>183475003</conceptIdShort>
+            <preferredName>Admit renal medicine emergency</preferredName>
+            <contents>Admit renal medicine emergency</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309916007</conceptId>
+            <conceptIdShort>309916007</conceptIdShort>
+            <preferredName>Chest medicine department</preferredName>
+            <contents>Chest medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310037002</conceptId>
+            <conceptIdShort>310037002</conceptIdShort>
+            <preferredName>Chest medicine service</preferredName>
+            <contents>Chest medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/252686005</conceptId>
+            <conceptIdShort>252686005</conceptIdShort>
+            <preferredName>Clinical genitourinary medicine test</preferredName>
+            <contents>Clinical genitourinary medicine test</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/421563008</conceptId>
+            <conceptIdShort>421563008</conceptIdShort>
+            <preferredName>Complementary medicine dose form</preferredName>
+            <contents>Complementary medicine dose form</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306435004</conceptId>
+            <conceptIdShort>306435004</conceptIdShort>
+            <preferredName>Discharge by genitourinary medicine physician</preferredName>
+            <contents>Discharge by genitourinary medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306441006</conceptId>
+            <conceptIdShort>306441006</conceptIdShort>
+            <preferredName>Discharge by nuclear medicine physician</preferredName>
+            <contents>Discharge by nuclear medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306527004</conceptId>
+            <conceptIdShort>306527004</conceptIdShort>
+            <preferredName>Discharge by professional allied to medicine</preferredName>
+            <contents>Discharge by professional allied to medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/11949008</conceptId>
+            <conceptIdShort>11949008</conceptIdShort>
+            <preferredName>Erosion of teeth due to medicine</preferredName>
+            <contents>Erosion of teeth due to medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309358003</conceptId>
+            <conceptIdShort>309358003</conceptIdShort>
+            <preferredName>Genitourinary medicine physician</preferredName>
+            <contents>Genitourinary medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/100750004</conceptId>
+            <conceptIdShort>100750004</conceptIdShort>
+            <preferredName>HAPPY JACK MANGE MEDICINE</preferredName>
+            <contents>HAPPY JACK MANGE MEDICINE</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/292756000</conceptId>
+            <conceptIdShort>292756000</conceptIdShort>
+            <preferredName>Herbal medicine adverse reaction</preferredName>
+            <contents>Herbal medicine adverse reaction</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/294295004</conceptId>
+            <conceptIdShort>294295004</conceptIdShort>
+            <preferredName>Herbal medicine allergy</preferredName>
+            <contents>Herbal medicine allergy</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/292754002</conceptId>
+            <conceptIdShort>292754002</conceptIdShort>
+            <preferredName>Homeopathic medicine adverse reaction</preferredName>
+            <contents>Homeopathic medicine adverse reaction</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/294293006</conceptId>
+            <conceptIdShort>294293006</conceptIdShort>
+            <preferredName>Homeopathic medicine allergy</preferredName>
+            <contents>Homeopathic medicine allergy</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/39677007</conceptId>
+            <conceptIdShort>39677007</conceptIdShort>
+            <preferredName>Internal medicine specialist</preferredName>
+            <contents>Internal medicine specialist</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183768000</conceptId>
+            <conceptIdShort>183768000</conceptIdShort>
+            <preferredName>Listed for General Medicine admission</preferredName>
+            <contents>Listed for General Medicine admission</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/303882005</conceptId>
+            <conceptIdShort>303882005</conceptIdShort>
+            <preferredName>Nuclear medicine CNS study</preferredName>
+            <contents>Nuclear medicine CNS study</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309938009</conceptId>
+            <conceptIdShort>309938009</conceptIdShort>
+            <preferredName>Nuclear medicine department</preferredName>
+            <contents>Nuclear medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310058008</conceptId>
+            <conceptIdShort>310058008</conceptIdShort>
+            <preferredName>Nuclear medicine service</preferredName>
+            <contents>Nuclear medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/80933006</conceptId>
+            <conceptIdShort>80933006</conceptIdShort>
+            <preferredName>Nuclear medicine specialist</preferredName>
+            <contents>Nuclear medicine specialist</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/303861004</conceptId>
+            <conceptIdShort>303861004</conceptIdShort>
+            <preferredName>Nuclear medicine study of function</preferredName>
+            <contents>Nuclear medicine study of function</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/303859008</conceptId>
+            <conceptIdShort>303859008</conceptIdShort>
+            <preferredName>Nuclear medicine study of systems</preferredName>
+            <contents>Nuclear medicine study of systems</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/71318009</conceptId>
+            <conceptIdShort>71318009</conceptIdShort>
+            <preferredName>Physical medicine consultation and report</preferredName>
+            <contents>Physical medicine consultation and report</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/66500008</conceptId>
+            <conceptIdShort>66500008</conceptIdShort>
+            <preferredName>Physical medicine procedure</preferredName>
+            <contents>Physical medicine procedure</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/72817007</conceptId>
+            <conceptIdShort>72817007</conceptIdShort>
+            <preferredName>Physical medicine ultrasound treatment</preferredName>
+            <contents>Physical medicine ultrasound treatment</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310081005</conceptId>
+            <conceptIdShort>310081005</conceptIdShort>
+            <preferredName>Professional allied to medicine service</preferredName>
+            <contents>Professional allied to medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/271310000</conceptId>
+            <conceptIdShort>271310000</conceptIdShort>
+            <preferredName>Radiology/physics in medicine</preferredName>
+            <contents>Radiology/physics in medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306112007</conceptId>
+            <conceptIdShort>306112007</conceptIdShort>
+            <preferredName>Referral to chest medicine service</preferredName>
+            <contents>Referral to chest medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306287003</conceptId>
+            <conceptIdShort>306287003</conceptIdShort>
+            <preferredName>Referral to nuclear medicine physician</preferredName>
+            <contents>Referral to nuclear medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306126003</conceptId>
+            <conceptIdShort>306126003</conceptIdShort>
+            <preferredName>Referral to nuclear medicine service</preferredName>
+            <contents>Referral to nuclear medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306344004</conceptId>
+            <conceptIdShort>306344004</conceptIdShort>
+            <preferredName>Referral to professional allied to medicine</preferredName>
+            <contents>Referral to professional allied to medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306114008</conceptId>
+            <conceptIdShort>306114008</conceptIdShort>
+            <preferredName>Referral to respiratory medicine service</preferredName>
+            <contents>Referral to respiratory medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306113002</conceptId>
+            <conceptIdShort>306113002</conceptIdShort>
+            <preferredName>Referral to thoracic medicine service</preferredName>
+            <contents>Referral to thoracic medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/303860003</conceptId>
+            <conceptIdShort>303860003</conceptIdShort>
+            <preferredName>Regional nuclear medicine</preferredName>
+            <contents>Regional nuclear medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309918008</conceptId>
+            <conceptIdShort>309918008</conceptIdShort>
+            <preferredName>Respiratory medicine department</preferredName>
+            <contents>Respiratory medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310039004</conceptId>
+            <conceptIdShort>310039004</conceptIdShort>
+            <preferredName>Respiratory medicine service</preferredName>
+            <contents>Respiratory medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305803000</conceptId>
+            <conceptIdShort>305803000</conceptIdShort>
+            <preferredName>Seen by chest medicine - service</preferredName>
+            <contents>Seen by chest medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305818004</conceptId>
+            <conceptIdShort>305818004</conceptIdShort>
+            <preferredName>Seen by genitourinary medicine - service</preferredName>
+            <contents>Seen by genitourinary medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305823004</conceptId>
+            <conceptIdShort>305823004</conceptIdShort>
+            <preferredName>Seen by nuclear medicine - service</preferredName>
+            <contents>Seen by nuclear medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305685007</conceptId>
+            <conceptIdShort>305685007</conceptIdShort>
+            <preferredName>Seen by nuclear medicine physician</preferredName>
+            <contents>Seen by nuclear medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305762001</conceptId>
+            <conceptIdShort>305762001</conceptIdShort>
+            <preferredName>Seen by professional allied to medicine</preferredName>
+            <contents>Seen by professional allied to medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305805007</conceptId>
+            <conceptIdShort>305805007</conceptIdShort>
+            <preferredName>Seen by respiratory medicine - service</preferredName>
+            <contents>Seen by respiratory medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305804006</conceptId>
+            <conceptIdShort>305804006</conceptIdShort>
+            <preferredName>Seen by thoracic medicine - service</preferredName>
+            <contents>Seen by thoracic medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/185180001</conceptId>
+            <conceptIdShort>185180001</conceptIdShort>
+            <preferredName>Seen in GU medicine clinic</preferredName>
+            <contents>Seen in GU medicine clinic</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/303862006</conceptId>
+            <conceptIdShort>303862006</conceptIdShort>
+            <preferredName>Specific nuclear medicine studies</preferredName>
+            <contents>Specific nuclear medicine studies</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309917003</conceptId>
+            <conceptIdShort>309917003</conceptIdShort>
+            <preferredName>Thoracic medicine department</preferredName>
+            <contents>Thoracic medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310038007</conceptId>
+            <conceptIdShort>310038007</conceptIdShort>
+            <preferredName>Thoracic medicine service</preferredName>
+            <contents>Thoracic medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/441548002</conceptId>
+            <conceptIdShort>441548002</conceptIdShort>
+            <preferredName>Tropical medicine department</preferredName>
+            <contents>Tropical medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/216968008</conceptId>
+            <conceptIdShort>216968008</conceptIdShort>
+            <preferredName>(Nonadministration of necessary drug or medicine) or (drug not available)</preferredName>
+            <contents>Nonadministration of necessary drug or medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/296525009</conceptId>
+            <conceptIdShort>296525009</conceptIdShort>
+            <preferredName>Accidental alternative medicine overdose</preferredName>
+            <contents>Accidental alternative medicine overdose</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/291419007</conceptId>
+            <conceptIdShort>291419007</conceptIdShort>
+            <preferredName>Accidental alternative medicine poisoning</preferredName>
+            <contents>Accidental alternative medicine poisoning</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305263007</conceptId>
+            <conceptIdShort>305263007</conceptIdShort>
+            <preferredName>Admission by care of the elderly physician</preferredName>
+            <contents>Admission by geriatric medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305276001</conceptId>
+            <conceptIdShort>305276001</conceptIdShort>
+            <preferredName>Admission by genitourinary medicine physician</preferredName>
+            <contents>Admission by genitourinary medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305375004</conceptId>
+            <conceptIdShort>305375004</conceptIdShort>
+            <preferredName>Admission to care of the elderly department</preferredName>
+            <contents>Admission to geriatric medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305374000</conceptId>
+            <conceptIdShort>305374000</conceptIdShort>
+            <preferredName>Admission to genitourinary medicine department</preferredName>
+            <contents>Admission to genitourinary medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/151712007</conceptId>
+            <conceptIdShort>151712007</conceptIdShort>
+            <preferredName>Admit renal medicine emergency</preferredName>
+            <contents>Admit renal medicine emergency</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/418501001</conceptId>
+            <conceptIdShort>418501001</conceptIdShort>
+            <preferredName>Alternative medicine agent</preferredName>
+            <contents>Alternative medicine agent (substance)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/296524008</conceptId>
+            <conceptIdShort>296524008</conceptIdShort>
+            <preferredName>Alternative medicine overdose</preferredName>
+            <contents>Alternative medicine overdose (disorder)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/291418004</conceptId>
+            <conceptIdShort>291418004</conceptIdShort>
+            <preferredName>Alternative medicine poisoning</preferredName>
+            <contents>Alternative medicine poisoning (disorder)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/292755001</conceptId>
+            <conceptIdShort>292755001</conceptIdShort>
+            <preferredName>Anthroposophical medicine adverse reaction</preferredName>
+            <contents>Anthroposophical medicine adverse reaction</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/294294000</conceptId>
+            <conceptIdShort>294294000</conceptIdShort>
+            <preferredName>Anthroposophical medicine allergy</preferredName>
+            <contents>Anthroposophical medicine allergy (disorder)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309933000</conceptId>
+            <conceptIdShort>309933000</conceptIdShort>
+            <preferredName>Care of the elderly department</preferredName>
+            <contents>Geriatric medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310053004</conceptId>
+            <conceptIdShort>310053004</conceptIdShort>
+            <preferredName>Care of the elderly service</preferredName>
+            <contents>Geriatric medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/151978007</conceptId>
+            <conceptIdShort>151978007</conceptIdShort>
+            <preferredName>Chest medicine D.V. done</preferredName>
+            <contents>Chest medicine D.V. done</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183748006</conceptId>
+            <conceptIdShort>183748006</conceptIdShort>
+            <preferredName>Chest medicine domiciliary visit done</preferredName>
+            <contents>Chest medicine D.V. done</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183719000</conceptId>
+            <conceptIdShort>183719000</conceptIdShort>
+            <preferredName>Chest medicine domiciliary visit requested</preferredName>
+            <contents>Chest medicine D.V. requested</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393109002</conceptId>
+            <conceptIdShort>393109002</conceptIdShort>
+            <preferredName>Chinese herbal medicine</preferredName>
+            <contents>Chinese herbal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394060007</conceptId>
+            <conceptIdShort>394060007</conceptIdShort>
+            <preferredName>Chinese herbal medicine</preferredName>
+            <contents>Chinese herbal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/395114000</conceptId>
+            <conceptIdShort>395114000</conceptIdShort>
+            <preferredName>Chinese herbal medicine</preferredName>
+            <contents>Chinese herbal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/225423004</conceptId>
+            <conceptIdShort>225423004</conceptIdShort>
+            <preferredName>Complementary therapy</preferredName>
+            <contents>Alternative medicine therapy</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/77519009</conceptId>
+            <conceptIdShort>77519009</conceptIdShort>
+            <preferredName>Complication of preventive medicine procedure</preferredName>
+            <contents>Complication of preventive medicine procedure</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/31108002</conceptId>
+            <conceptIdShort>31108002</conceptIdShort>
+            <preferredName>Consultation for laboratory medicine</preferredName>
+            <contents>Consultation for laboratory medicine (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/418194009</conceptId>
+            <conceptIdShort>418194009</conceptIdShort>
+            <preferredName>Contains an aspirin-like medicine</preferredName>
+            <contents>Contains an aspirin-like medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/408478003</conceptId>
+            <conceptIdShort>408478003</conceptIdShort>
+            <preferredName>Critical care medicine</preferredName>
+            <contents>Critical care medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393387005</conceptId>
+            <conceptIdShort>393387005</conceptIdShort>
+            <preferredName>Dental medicine specialties</preferredName>
+            <contents>Dental medicine specialties</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394337007</conceptId>
+            <conceptIdShort>394337007</conceptIdShort>
+            <preferredName>Dental medicine specialties</preferredName>
+            <contents>Dental medicine specialties</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394812008</conceptId>
+            <conceptIdShort>394812008</conceptIdShort>
+            <preferredName>Dental medicine specialties</preferredName>
+            <contents>Dental medicine specialties</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/146426005</conceptId>
+            <conceptIdShort>146426005</conceptIdShort>
+            <preferredName>Diagn. nuclear medicine NOS</preferredName>
+            <contents>Diagn. nuclear medicine NOS</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/146339005</conceptId>
+            <conceptIdShort>146339005</conceptIdShort>
+            <preferredName>Diagnostic nuclear medicine (&amp; various isotope studies)</preferredName>
+            <contents>Diagnostic nuclear medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/169122008</conceptId>
+            <conceptIdShort>169122008</conceptIdShort>
+            <preferredName>Diagnostic nuclear medicine (&amp; various isotope studies)</preferredName>
+            <contents>Diagnostic nuclear medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/169207008</conceptId>
+            <conceptIdShort>169207008</conceptIdShort>
+            <preferredName>Diagnostic nuclear medicine NOS</preferredName>
+            <contents>Diagn. nuclear medicine NOS</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306436003</conceptId>
+            <conceptIdShort>306436003</conceptIdShort>
+            <preferredName>Discharge by care of the elderly physician</preferredName>
+            <contents>Discharge by geriatric medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/62247001</conceptId>
+            <conceptIdShort>62247001</conceptIdShort>
+            <preferredName>Family medicine specialist</preferredName>
+            <contents>Family medicine specialist</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/151968009</conceptId>
+            <conceptIdShort>151968009</conceptIdShort>
+            <preferredName>General medicine D.V. done</preferredName>
+            <contents>General medicine D.V. done</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183738009</conceptId>
+            <conceptIdShort>183738009</conceptIdShort>
+            <preferredName>General medicine domiciliary visit done</preferredName>
+            <contents>General medicine D.V. done</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183709006</conceptId>
+            <conceptIdShort>183709006</conceptIdShort>
+            <preferredName>General medicine domiciliary visit requested</preferredName>
+            <contents>Gen medicine D.V. requested</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393377006</conceptId>
+            <conceptIdShort>393377006</conceptIdShort>
+            <preferredName>Genito-urinary medicine</preferredName>
+            <contents>Genito-urinary medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394327002</conceptId>
+            <conceptIdShort>394327002</conceptIdShort>
+            <preferredName>Genito-urinary medicine</preferredName>
+            <contents>Genito-urinary medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394808002</conceptId>
+            <conceptIdShort>394808002</conceptIdShort>
+            <preferredName>Genito-urinary medicine</preferredName>
+            <contents>Genito-urinary medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/431654006</conceptId>
+            <conceptIdShort>431654006</conceptIdShort>
+            <preferredName>Genitourinary medicine clinic</preferredName>
+            <contents>Genitourinary medicine clinic (environment)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309932005</conceptId>
+            <conceptIdShort>309932005</conceptIdShort>
+            <preferredName>Genitourinary medicine department</preferredName>
+            <contents>Genitourinary medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310052009</conceptId>
+            <conceptIdShort>310052009</conceptIdShort>
+            <preferredName>Genitourinary medicine service</preferredName>
+            <contents>Genitourinary medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/90655003</conceptId>
+            <conceptIdShort>90655003</conceptIdShort>
+            <preferredName>Geriatrics specialist</preferredName>
+            <contents>Geriatric medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/32142009</conceptId>
+            <conceptIdShort>32142009</conceptIdShort>
+            <preferredName>Group preventive medicine education</preferredName>
+            <contents>Group preventive medicine counseling</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/418165002</conceptId>
+            <conceptIdShort>418165002</conceptIdShort>
+            <preferredName>Herbal medicine agent</preferredName>
+            <contents>Herbal medicine agent (substance)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/418465006</conceptId>
+            <conceptIdShort>418465006</conceptIdShort>
+            <preferredName>Homeopathic medicine agent</preferredName>
+            <contents>Homeopathic medicine agent (substance)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/37667001</conceptId>
+            <conceptIdShort>37667001</conceptIdShort>
+            <preferredName>Individual preventive medicine education</preferredName>
+            <contents>Individual preventive medicine counseling</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/296527001</conceptId>
+            <conceptIdShort>296527001</conceptIdShort>
+            <preferredName>Intentional alternative medicine overdose</preferredName>
+            <contents>Intentional alternative medicine overdose</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/291420001</conceptId>
+            <conceptIdShort>291420001</conceptIdShort>
+            <preferredName>Intentional alternative medicine poisoning</preferredName>
+            <contents>Intentional alternative medicine poisoning</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/61246008</conceptId>
+            <conceptIdShort>61246008</conceptIdShort>
+            <preferredName>Laboratory medicine specialist</preferredName>
+            <contents>Laboratory medicine specialist (occupation)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/151997007</conceptId>
+            <conceptIdShort>151997007</conceptIdShort>
+            <preferredName>Listed for Gen Medicine admiss</preferredName>
+            <contents>Listed for Gen Medicine admiss</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/395005007</conceptId>
+            <conceptIdShort>395005007</conceptIdShort>
+            <preferredName>Medicine labeling amended</preferredName>
+            <contents>Medicine labelling amended</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/395004006</conceptId>
+            <conceptIdShort>395004006</conceptIdShort>
+            <preferredName>Medicine labeling inadequate</preferredName>
+            <contents>Medicine labelling inadequate (finding)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393117005</conceptId>
+            <conceptIdShort>393117005</conceptIdShort>
+            <preferredName>Medicine labelling amended</preferredName>
+            <contents>Medicine labelling amended (finding)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394068000</conceptId>
+            <conceptIdShort>394068000</conceptIdShort>
+            <preferredName>Medicine labelling amended</preferredName>
+            <contents>Medicine labelling amended (situation)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393116001</conceptId>
+            <conceptIdShort>393116001</conceptIdShort>
+            <preferredName>Medicine labelling inadequate</preferredName>
+            <contents>Medicine labelling inadequate (finding)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394067005</conceptId>
+            <conceptIdShort>394067005</conceptIdShort>
+            <preferredName>Medicine labelling inadequate</preferredName>
+            <contents>Medicine labelling inadequate (situation)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/409137002</conceptId>
+            <conceptIdShort>409137002</conceptIdShort>
+            <preferredName>No known drug allergies</preferredName>
+            <contents>No known medicine allergy</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/157879006</conceptId>
+            <conceptIdShort>157879006</conceptIdShort>
+            <preferredName>Nonadministration of necessary drug or medicine</preferredName>
+            <contents>Nonadministration of necessary drug or medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/269696000</conceptId>
+            <conceptIdShort>269696000</conceptIdShort>
+            <preferredName>Nonadministration of necessary drug or medicine</preferredName>
+            <contents>Nonadministration of necessary drug or medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/393380007</conceptId>
+            <conceptIdShort>393380007</conceptIdShort>
+            <preferredName>Nuclear medicine - specialty</preferredName>
+            <contents>Nuclear medicine - specialty</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/394330009</conceptId>
+            <conceptIdShort>394330009</conceptIdShort>
+            <preferredName>Nuclear medicine - specialty</preferredName>
+            <contents>Nuclear medicine - specialty</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/399019003</conceptId>
+            <conceptIdShort>399019003</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure</preferredName>
+            <contents>Diagnostic nuclear medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108294005</conceptId>
+            <conceptIdShort>108294005</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on cardiovascular system</preferredName>
+            <contents>Nuclear medicine cardiovascular study</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/373205008</conceptId>
+            <conceptIdShort>373205008</conceptIdShort>
+            <preferredName>Nuclear medicine imaging procedure</preferredName>
+            <contents>Nuclear medicine imaging procedure</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/23537009</conceptId>
+            <conceptIdShort>23537009</conceptIdShort>
+            <preferredName>Nuclear medicine procedure</preferredName>
+            <contents>Nuclear medicine procedure (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/399361003</conceptId>
+            <conceptIdShort>399361003</conceptIdShort>
+            <preferredName>Nuclear medicine projection</preferredName>
+            <contents>Nuclear medicine projection</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/363244004</conceptId>
+            <conceptIdShort>363244004</conceptIdShort>
+            <preferredName>Nuclear medicine study by site</preferredName>
+            <contents>Nuclear medicine study by site</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/416304004</conceptId>
+            <conceptIdShort>416304004</conceptIdShort>
+            <preferredName>Osteopathic manipulative medicine</preferredName>
+            <contents>Osteopathic manipulative medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/419917007</conceptId>
+            <conceptIdShort>419917007</conceptIdShort>
+            <preferredName>Pediatric emergency medicine</preferredName>
+            <contents>Paediatric emergency medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/420223003</conceptId>
+            <conceptIdShort>420223003</conceptIdShort>
+            <preferredName>Pediatric medicine department</preferredName>
+            <contents>Paediatric medicine department</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/419170002</conceptId>
+            <conceptIdShort>419170002</conceptIdShort>
+            <preferredName>Pediatric pulmonology</preferredName>
+            <contents>Paediatric chest medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/61369008</conceptId>
+            <conceptIdShort>61369008</conceptIdShort>
+            <preferredName>Physical medicine iontophoresis</preferredName>
+            <contents>Physical medicine iontophoresis -RETIRED-</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/66219002</conceptId>
+            <conceptIdShort>66219002</conceptIdShort>
+            <preferredName>Physical medicine neuromuscular training</preferredName>
+            <contents>Physical medicine neuromuscular reeducation</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/60256002</conceptId>
+            <conceptIdShort>60256002</conceptIdShort>
+            <preferredName>Physical medicine service</preferredName>
+            <contents>Physical medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/24430003</conceptId>
+            <conceptIdShort>24430003</conceptIdShort>
+            <preferredName>Physical medicine specialist</preferredName>
+            <contents>Physical medicine specialist</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/309398001</conceptId>
+            <conceptIdShort>309398001</conceptIdShort>
+            <preferredName>Profession allied to medicine</preferredName>
+            <contents>PAM - Profession allied to medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/408440000</conceptId>
+            <conceptIdShort>408440000</conceptIdShort>
+            <preferredName>Public health medicine</preferredName>
+            <contents>Public health medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/310115006</conceptId>
+            <conceptIdShort>310115006</conceptIdShort>
+            <preferredName>Public health service</preferredName>
+            <contents>Community medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/55550006</conceptId>
+            <conceptIdShort>55550006</conceptIdShort>
+            <preferredName>Radioisotope study of central nervous system</preferredName>
+            <contents>Nuclear medicine CNS study</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305976005</conceptId>
+            <conceptIdShort>305976005</conceptIdShort>
+            <preferredName>Referral by care of the elderly physician</preferredName>
+            <contents>Referral by geriatric medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305975009</conceptId>
+            <conceptIdShort>305975009</conceptIdShort>
+            <preferredName>Referral by genitourinary medicine physician</preferredName>
+            <contents>Referral by genitourinary medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305980000</conceptId>
+            <conceptIdShort>305980000</conceptIdShort>
+            <preferredName>Referral by nuclear medicine physician</preferredName>
+            <contents>Referral by nuclear medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306056005</conceptId>
+            <conceptIdShort>306056005</conceptIdShort>
+            <preferredName>Referral by professional allied to medicine</preferredName>
+            <contents>Referral by professional allied to medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306233009</conceptId>
+            <conceptIdShort>306233009</conceptIdShort>
+            <preferredName>Referral for care of the elderly domiciliary visit</preferredName>
+            <contents>Referral for geriatric medicine DV</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183522000</conceptId>
+            <conceptIdShort>183522000</conceptIdShort>
+            <preferredName>Referral to care of the elderly service</preferredName>
+            <contents>Referral to geriatric medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306123006</conceptId>
+            <conceptIdShort>306123006</conceptIdShort>
+            <preferredName>Referral to genitourinary medicine service</preferredName>
+            <contents>Referral to genitourinary medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306151002</conceptId>
+            <conceptIdShort>306151002</conceptIdShort>
+            <preferredName>Referral to public health service</preferredName>
+            <contents>Referral to community medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305819007</conceptId>
+            <conceptIdShort>305819007</conceptIdShort>
+            <preferredName>Seen by care of the elderly - service</preferredName>
+            <contents>Seen by geriatric medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305680002</conceptId>
+            <conceptIdShort>305680002</conceptIdShort>
+            <preferredName>Seen by care of the elderly physician</preferredName>
+            <contents>Seen by geriatric medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305679000</conceptId>
+            <conceptIdShort>305679000</conceptIdShort>
+            <preferredName>Seen by genitourinary medicine physician</preferredName>
+            <contents>Seen by genitourinary medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305872006</conceptId>
+            <conceptIdShort>305872006</conceptIdShort>
+            <preferredName>Seen by public health - service</preferredName>
+            <contents>Seen by community medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/440580005</conceptId>
+            <conceptIdShort>440580005</conceptIdShort>
+            <preferredName>Seen in fetal medicine clinic</preferredName>
+            <contents>Seen in fetal medicine clinic</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/153384005</conceptId>
+            <conceptIdShort>153384005</conceptIdShort>
+            <preferredName>Seen in GU medicine clinic</preferredName>
+            <contents>Seen in GU medicine clinic</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/419974005</conceptId>
+            <conceptIdShort>419974005</conceptIdShort>
+            <preferredName>This medicine may color the urine</preferredName>
+            <contents>This medicine may color the urine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/104075000</conceptId>
+            <conceptIdShort>104075000</conceptIdShort>
+            <preferredName>Transfusion medicine service</preferredName>
+            <contents>Transfusion medicine service (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/304709002</conceptId>
+            <conceptIdShort>304709002</conceptIdShort>
+            <preferredName>Attitudes towards doctors and medicine scale</preferredName>
+            <contents>Attitudes towards doctors and medicine scale</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/65981005</conceptId>
+            <conceptIdShort>65981005</conceptIdShort>
+            <preferredName>Consultation in laboratory medicine for test interpretation</preferredName>
+            <contents>Consultation in laboratory medicine for test interpretation</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/373632006</conceptId>
+            <conceptIdShort>373632006</conceptIdShort>
+            <preferredName>Diagnostic imaging and nuclear medicine procedures</preferredName>
+            <contents>Diagnostic imaging and nuclear medicine procedures</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/399319009</conceptId>
+            <conceptIdShort>399319009</conceptIdShort>
+            <preferredName>Diagnostic imaging and nuclear medicine procedures</preferredName>
+            <contents>Diagnostic imaging and nuclear medicine procedures</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306575009</conceptId>
+            <conceptIdShort>306575009</conceptIdShort>
+            <preferredName>Discharge from chest medicine service</preferredName>
+            <contents>Discharge from chest medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306596002</conceptId>
+            <conceptIdShort>306596002</conceptIdShort>
+            <preferredName>Discharge from nuclear medicine service</preferredName>
+            <contents>Discharge from nuclear medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306576005</conceptId>
+            <conceptIdShort>306576005</conceptIdShort>
+            <preferredName>Discharge from respiratory medicine service</preferredName>
+            <contents>Discharge from respiratory medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306577001</conceptId>
+            <conceptIdShort>306577001</conceptIdShort>
+            <preferredName>Discharge from thoracic medicine service</preferredName>
+            <contents>Discharge from thoracic medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/55948006</conceptId>
+            <conceptIdShort>55948006</conceptIdShort>
+            <preferredName>Free-standing family medicine clinic</preferredName>
+            <contents>Free-standing family medicine clinic</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/412753004</conceptId>
+            <conceptIdShort>412753004</conceptIdShort>
+            <preferredName>Medicine labeling large print required</preferredName>
+            <contents>Medicine labeling large print required</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/183509008</conceptId>
+            <conceptIdShort>183509008</conceptIdShort>
+            <preferredName>Non-urgent renal medicine admission</preferredName>
+            <contents>Non-urgent renal medicine admission</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/428573000</conceptId>
+            <conceptIdShort>428573000</conceptIdShort>
+            <preferredName>Referral to diagnostic nuclear medicine service</preferredName>
+            <contents>Referral to diagnostic nuclear medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306153004</conceptId>
+            <conceptIdShort>306153004</conceptIdShort>
+            <preferredName>Referral to professional allied to medicine service</preferredName>
+            <contents>Referral to professional allied to medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305824005</conceptId>
+            <conceptIdShort>305824005</conceptIdShort>
+            <preferredName>Seen by palliative care medicine - service</preferredName>
+            <contents>Seen by palliative care medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305838003</conceptId>
+            <conceptIdShort>305838003</conceptIdShort>
+            <preferredName>Seen by professional allied to medicine - service</preferredName>
+            <contents>Seen by professional allied to medicine - service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305495006</conceptId>
+            <conceptIdShort>305495006</conceptIdShort>
+            <preferredName>Under care of nuclear medicine physician</preferredName>
+            <contents>Under care of nuclear medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305590004</conceptId>
+            <conceptIdShort>305590004</conceptIdShort>
+            <preferredName>Under care of professional allied to medicine</preferredName>
+            <contents>Under care of professional allied to medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/403750002</conceptId>
+            <conceptIdShort>403750002</conceptIdShort>
+            <preferredName>Adverse cutaneous reaction to herbal medicine</preferredName>
+            <contents>Adverse cutaneous reaction to herbal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/403752005</conceptId>
+            <conceptIdShort>403752005</conceptIdShort>
+            <preferredName>Adverse cutaneous reaction to homeopathic medicine</preferredName>
+            <contents>Adverse cutaneous reaction to homoeopathic medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/296528006</conceptId>
+            <conceptIdShort>296528006</conceptIdShort>
+            <preferredName>Alternative medicine overdose of undetermined intent</preferredName>
+            <contents>Alternative medicine overdose of undetermined intent</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/291421002</conceptId>
+            <conceptIdShort>291421002</conceptIdShort>
+            <preferredName>Alternative medicine poisoning of undetermined intent</preferredName>
+            <contents>Alternative medicine poisoning of undetermined intent</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/421661004</conceptId>
+            <conceptIdShort>421661004</conceptIdShort>
+            <preferredName>Blood banking and transfusion medicine (specialty)</preferredName>
+            <contents>Blood banking and transfusion medicine (specialty)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/151949006</conceptId>
+            <conceptIdShort>151949006</conceptIdShort>
+            <preferredName>Chest medicine domiciliary visit requested</preferredName>
+            <contents>Chest medicine domiciliary visit requested</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/86062001</conceptId>
+            <conceptIdShort>86062001</conceptIdShort>
+            <preferredName>Contact dermatitis due to drugs AND/OR medicine</preferredName>
+            <contents>Contact dermatitis due to drugs AND/OR medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306592000</conceptId>
+            <conceptIdShort>306592000</conceptIdShort>
+            <preferredName>Discharge from care of the elderly service</preferredName>
+            <contents>Discharge from geriatric medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306591007</conceptId>
+            <conceptIdShort>306591007</conceptIdShort>
+            <preferredName>Discharge from genitourinary medicine service</preferredName>
+            <contents>Discharge from genitourinary medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/13656005</conceptId>
+            <conceptIdShort>13656005</conceptIdShort>
+            <preferredName>Free-standing physical medicine clinic</preferredName>
+            <contents>Free-standing physical medicine clinic</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/151939008</conceptId>
+            <conceptIdShort>151939008</conceptIdShort>
+            <preferredName>General medicine domiciliary visit requested</preferredName>
+            <contents>General medicine domiciliary visit requested</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/151745007</conceptId>
+            <conceptIdShort>151745007</conceptIdShort>
+            <preferredName>Non-urgent renal medicine admission</preferredName>
+            <contents>Non-urgent renal medicine admission</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/445418005</conceptId>
+            <conceptIdShort>445418005</conceptIdShort>
+            <preferredName>Professional allied to medicine clinical report</preferredName>
+            <contents>Professional allied to medicine clinical report</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/7562007</conceptId>
+            <conceptIdShort>7562007</conceptIdShort>
+            <preferredName>Radioisotope study of endocrine system</preferredName>
+            <contents>Endocrine diagnostic nuclear medicine procedure</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/429201005</conceptId>
+            <conceptIdShort>429201005</conceptIdShort>
+            <preferredName>Referral to therapeutic nuclear medicine service</preferredName>
+            <contents>Referral to therapeutic nuclear medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305490001</conceptId>
+            <conceptIdShort>305490001</conceptIdShort>
+            <preferredName>Under care of care of the elderly physician</preferredName>
+            <contents>Under care of geriatric medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/305489005</conceptId>
+            <conceptIdShort>305489005</conceptIdShort>
+            <preferredName>Under care of genitourinary medicine physician</preferredName>
+            <contents>Under care of genitourinary medicine physician</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/219073004</conceptId>
+            <conceptIdShort>219073004</conceptIdShort>
+            <preferredName>Adverse reaction to other drug or medicine NOS</preferredName>
+            <contents>Adverse reaction to other drug or medicine NOS</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/306621007</conceptId>
+            <conceptIdShort>306621007</conceptIdShort>
+            <preferredName>Discharge from professionals allied to medicine service</preferredName>
+            <contents>Discharge from professionals allied to medicine service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/31628002</conceptId>
+            <conceptIdShort>31628002</conceptIdShort>
+            <preferredName>Hospital-based outpatient family medicine clinic</preferredName>
+            <contents>Hospital-based outpatient family medicine clinic</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108299000</conceptId>
+            <conceptIdShort>108299000</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on genitourinary system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on genitourinary system</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108293004</conceptId>
+            <conceptIdShort>108293004</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on respiratory system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on respiratory system</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/55947001</conceptId>
+            <conceptIdShort>55947001</conceptIdShort>
+            <preferredName>Physical medicine initial examination and planning for rehabilitation program</preferredName>
+            <contents>Physical medicine initial examination and planning for rehabilitation program</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/61488002</conceptId>
+            <conceptIdShort>61488002</conceptIdShort>
+            <preferredName>Physical medicine initial examination for orthotic program</preferredName>
+            <contents>Physical medicine initial examination for orthotic program</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/25928001</conceptId>
+            <conceptIdShort>25928001</conceptIdShort>
+            <preferredName>Physical medicine initial examination for prosthetic program</preferredName>
+            <contents>Physical medicine initial examination for prosthetic program</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/387856000</conceptId>
+            <conceptIdShort>387856000</conceptIdShort>
+            <preferredName>Physical medicine massage, initial 30 minutes</preferredName>
+            <contents>Physical medicine massage, initial 30 minutes</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/35044000</conceptId>
+            <conceptIdShort>35044000</conceptIdShort>
+            <preferredName>Physical medicine treatment with electrical manual stimulation</preferredName>
+            <contents>Physical medicine treatment with electrical manual stimulation</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/219120002</conceptId>
+            <conceptIdShort>219120002</conceptIdShort>
+            <preferredName>Suicide and selfinflicted poisoning by drug or medicine NOS</preferredName>
+            <contents>Suicide and selfinflicted poisoning by drug or medicine NOS</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/223273001</conceptId>
+            <conceptIdShort>223273001</conceptIdShort>
+            <preferredName>[X]Physical medicine devices associated with adverse incidents</preferredName>
+            <contents>[X]Physical medicine devices associated with adverse incidents</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/403751003</conceptId>
+            <conceptIdShort>403751003</conceptIdShort>
+            <preferredName>Adverse cutaneous reaction to chinese traditional herbal medicine</preferredName>
+            <contents>Adverse cutaneous reaction to chinese traditional herbal medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/81119003</conceptId>
+            <conceptIdShort>81119003</conceptIdShort>
+            <preferredName>Dermatitis due to drug AND/OR medicine taken internally</preferredName>
+            <contents>Dermatitis due to drug AND/OR medicine taken internally (disorder)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/21825005</conceptId>
+            <conceptIdShort>21825005</conceptIdShort>
+            <preferredName>Diathermy</preferredName>
+            <contents>Physical medicine diathermy treatment to one area</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/67236001</conceptId>
+            <conceptIdShort>67236001</conceptIdShort>
+            <preferredName>Hospital-based outpatient physical medicine clinic</preferredName>
+            <contents>Hospital-based outpatient physical medicine clinic</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/113133001</conceptId>
+            <conceptIdShort>113133001</conceptIdShort>
+            <preferredName>Hydrotherapy with whirlpool bath</preferredName>
+            <contents>Physical medicine treatment to one area with whirlpool bath</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/43670004</conceptId>
+            <conceptIdShort>43670004</conceptIdShort>
+            <preferredName>Massage physiotherapy</preferredName>
+            <contents>Physical medicine massage, initial 30 minutes</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/47902005</conceptId>
+            <conceptIdShort>47902005</conceptIdShort>
+            <preferredName>Microwave diathermy</preferredName>
+            <contents>Physical medicine microwave treatment to one area</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108296007</conceptId>
+            <conceptIdShort>108296007</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on endocrine AND/OR hematopoietic system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on endocrine AND/OR haematopoietic system</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108297003</conceptId>
+            <conceptIdShort>108297003</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on endocrine system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on endocrine system (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108295006</conceptId>
+            <conceptIdShort>108295006</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on gastrointestinal system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on gastrointestinal system (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108298008</conceptId>
+            <conceptIdShort>108298008</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on hematopoietic system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on haematopoietic system</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108292009</conceptId>
+            <conceptIdShort>108292009</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on musculoskeletal system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on musculoskeletal system (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108300008</conceptId>
+            <conceptIdShort>108300008</conceptIdShort>
+            <preferredName>Nuclear medicine diagnostic procedure on nervous system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on nervous system (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/9044004</conceptId>
+            <conceptIdShort>9044004</conceptIdShort>
+            <preferredName>Physical medicine evaluation and review for orthotic program</preferredName>
+            <contents>Physical medicine evaluation and review for orthotic program</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/64111008</conceptId>
+            <conceptIdShort>64111008</conceptIdShort>
+            <preferredName>Physical medicine evaluation and review for prosthetic program</preferredName>
+            <contents>Physical medicine evaluation and review for prosthetic program</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/57139001</conceptId>
+            <conceptIdShort>57139001</conceptIdShort>
+            <preferredName>Physical medicine service to one body area</preferredName>
+            <contents>Physical medicine service to one body area (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/48530002</conceptId>
+            <conceptIdShort>48530002</conceptIdShort>
+            <preferredName>Physical medicine service to three or more body areas</preferredName>
+            <contents>Physical medicine service to three or more body areas</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/23027005</conceptId>
+            <conceptIdShort>23027005</conceptIdShort>
+            <preferredName>Physical medicine service to two body areas</preferredName>
+            <contents>Physical medicine service to two body areas (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108225002</conceptId>
+            <conceptIdShort>108225002</conceptIdShort>
+            <preferredName>Preventive medicine counselling AND/OR risk factor evaluation service</preferredName>
+            <contents>Preventive medicine counseling AND/OR risk factor evaluation service</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/53585008</conceptId>
+            <conceptIdShort>53585008</conceptIdShort>
+            <preferredName>Radioisotope study of gastrointestinal system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on gastrointestinal system</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/41842006</conceptId>
+            <conceptIdShort>41842006</conceptIdShort>
+            <preferredName>Radioisotope study of hematopoietic system</preferredName>
+            <contents>Nuclear medicine diagnostic procedure on haematopoietic system</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/85825007</conceptId>
+            <conceptIdShort>85825007</conceptIdShort>
+            <preferredName>Therapeutic application of vasopneumatic device</preferredName>
+            <contents>Physical medicine treatment to one area with vasopneumatic device</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/27827008</conceptId>
+            <conceptIdShort>27827008</conceptIdShort>
+            <preferredName>Therapeutic paraffin bath</preferredName>
+            <contents>Physical medicine treatment to one area with paraffin bath</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/223274007</conceptId>
+            <conceptIdShort>223274007</conceptIdShort>
+            <preferredName>[X]Physical medicine devices associated with adverse incidents, diagnostic and monitoring devices</preferredName>
+            <contents>[X]Physical medicine devices associated with adverse incidents, diagnostic and monitoring devices</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/206028001</conceptId>
+            <conceptIdShort>206028001</conceptIdShort>
+            <preferredName>Fetus or neonate affected by placental or breast transfer of medicine NEC</preferredName>
+            <contents>Fetus or neonate affected by placental or breast transfer of medicine NEC</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/79536006</conceptId>
+            <conceptIdShort>79536006</conceptIdShort>
+            <preferredName>Physical medicine, initial examination, evaluation and treatment program planning</preferredName>
+            <contents>Physical medicine, initial examination, evaluation and treatment program planning</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/8552003</conceptId>
+            <conceptIdShort>8552003</conceptIdShort>
+            <preferredName>Physical medicine, initial examination, review and planning of physiotherapy program or procedure</preferredName>
+            <contents>Physical medicine, initial examination, review and planning of physiotherapy program or procedure</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/419444006</conceptId>
+            <conceptIdShort>419444006</conceptIdShort>
+            <preferredName>Do not stop taking this medicine except on your doctor&apos;s advice</preferredName>
+            <contents>Do not stop taking this medicine except on your doctor&apos;s advice (qualifier value)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/418281004</conceptId>
+            <conceptIdShort>418281004</conceptIdShort>
+            <preferredName>Do not take anything containing aspirin while taking this medicine</preferredName>
+            <contents>Do not take anything containing aspirin while taking this medicine (qualifier value)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/420110001</conceptId>
+            <conceptIdShort>420110001</conceptIdShort>
+            <preferredName>Do not take indigestion remedies at the same time of day as this medicine</preferredName>
+            <contents>Do not take indigestion remedies at the same time of day as this medicine (qualifier value)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/108272002</conceptId>
+            <conceptIdShort>108272002</conceptIdShort>
+            <preferredName>Radiology, radiotherapy, nuclear medicine AND/OR ultrasound procedure, technique AND/OR service</preferredName>
+            <contents>Radiology, radiotherapy, nuclear medicine AND/OR ultrasound procedure, technique AND/OR service (procedure)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/418849000</conceptId>
+            <conceptIdShort>418849000</conceptIdShort>
+            <preferredName>Warning. Follow the printed instructions you have been given with this medicine</preferredName>
+            <contents>Warning. Follow the printed instructions you have been given with this medicine</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/420082003</conceptId>
+            <conceptIdShort>420082003</conceptIdShort>
+            <preferredName>Do not take indigestion remedies or medicines containing iron or zinc at the same time of day as this medicine</preferredName>
+            <contents>Do not take indigestion remedies or medicines containing iron or zinc at the same time of day as this medicine (qualifier value)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/419115000</conceptId>
+            <conceptIdShort>419115000</conceptIdShort>
+            <preferredName>Do not take milk, indigestion remedies, or medicines containing iron or zinc at the same time of day as this medicine</preferredName>
+            <contents>Do not take milk, indigestion remedies, or medicines containing iron or zinc at the same time of day as this medicine (qualifier value)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/223276009</conceptId>
+            <conceptIdShort>223276009</conceptIdShort>
+            <preferredName>[X]Physical medicine devices associated with adverse incidents, prosthetic and other implants, materials and accessory devices</preferredName>
+            <contents>[X]Physical medicine devices associated with adverse incidents, prosthetic and other implants, materials and accessory devices</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/223277000</conceptId>
+            <conceptIdShort>223277000</conceptIdShort>
+            <preferredName>[X]Physical medicine devices associated with adverse incidents, surgical instruments materials and devices (including sutures)</preferredName>
+            <contents>[X]Physical medicine devices associated with adverse incidents, surgical instruments materials and devices (including sutures)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/223275008</conceptId>
+            <conceptIdShort>223275008</conceptIdShort>
+            <preferredName>[X]Physical medicine devices associated with adverse incidents, therapeutic (nonsurgical) and rehabilitative devices</preferredName>
+            <contents>[X]Physical medicine devices associated with adverse incidents, therapeutic (nonsurgical) and rehabilitative devices</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/223278005</conceptId>
+            <conceptIdShort>223278005</conceptIdShort>
+            <preferredName>[X]Physical medicine devices associated with adverse incidents, miscellaneous devices, not elsewhere classified</preferredName>
+            <contents>[X]Physical medicine devices associated with adverse incidents, miscellaneous devices, not elsewhere classified (disorder)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/350084001</conceptId>
+            <conceptIdShort>350084001</conceptIdShort>
+            <preferredName>Alternative medicines</preferredName>
+            <contents>Alternative medicines</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/292753008</conceptId>
+            <conceptIdShort>292753008</conceptIdShort>
+            <preferredName>Alternative medicines adverse reaction</preferredName>
+            <contents>Alternative medicines adverse reaction</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/219187002</conceptId>
+            <conceptIdShort>219187002</conceptIdShort>
+            <preferredName>Assault by poisoning by drugs or medicines</preferredName>
+            <contents>Assault by poisoning by drugs or medicines</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/294292001</conceptId>
+            <conceptIdShort>294292001</conceptIdShort>
+            <preferredName>Alternative medicines allergy</preferredName>
+            <contents>Alternative medicines allergy (disorder)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/385986009</conceptId>
+            <conceptIdShort>385986009</conceptIdShort>
+            <preferredName>Organizing medicines for self-administration</preferredName>
+            <contents>Organising medicines for self-administration</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/216461007</conceptId>
+            <conceptIdShort>216461007</conceptIdShort>
+            <preferredName>(Accidental poison by drugs, medicines and biologicals) or (cause of accidental overdose )</preferredName>
+            <contents>Accidental poisoning by drugs, medicines and biologicals</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/269688005</conceptId>
+            <conceptIdShort>269688005</conceptIdShort>
+            <preferredName>Accidental poisoning by drugs, medicines and biologicals</preferredName>
+            <contents>Accidental poisoning by drugs, medicines and biologicals</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/219061004</conceptId>
+            <conceptIdShort>219061004</conceptIdShort>
+            <preferredName>Adverse reaction to other drugs and medicines</preferredName>
+            <contents>Adverse reaction to other drugs and medicines</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/219067000</conceptId>
+            <conceptIdShort>219067000</conceptIdShort>
+            <preferredName>Adverse reaction to other drugs and medicines</preferredName>
+            <contents>Adverse reaction to other drugs and medicines</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/64595005</conceptId>
+            <conceptIdShort>64595005</conceptIdShort>
+            <preferredName>Ulcer of esophagus due to ingestion of medicines</preferredName>
+            <contents>Ulcer of esophagus due to ingestion of medicines</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/219119008</conceptId>
+            <conceptIdShort>219119008</conceptIdShort>
+            <preferredName>Suicide and selfinflicted poisoning by other drugs and medicines</preferredName>
+            <contents>Suicide and selfinflicted poisoning by other drugs and medicines</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/218256004</conceptId>
+            <conceptIdShort>218256004</conceptIdShort>
+            <preferredName>Drugs, medicines and biological substances causing adverse effects in therapeutic use</preferredName>
+            <contents>Drugs, medicines and biological substances causing adverse effects in therapeutic use</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <conceptId>http://purl.bioontology.org/ontology/SNOMEDCT/158007008</conceptId>
+            <conceptIdShort>158007008</conceptIdShort>
+            <preferredName>Drugs, medicines and biological substances causing adverse effects in therapeutic use</preferredName>
+            <contents>Drugs, medicines and biological substances causing adverse effects in therapeutic use (event)</contents>
+          </searchBean>
+        </searchResultList>
+        <ontologyHitList>
+          <ontologyHitBean>
+            <ontologyVersionId>44777</ontologyVersionId>
+            <ontologyId>1353</ontologyId>
+            <ontologyDisplayLabel>SNOMED Clinical Terms</ontologyDisplayLabel>
+            <numHits>293</numHits>
+          </ontologyHitBean>
+        </ontologyHitList>
+      </contents>
+    </page>
+  </data>
+</success>

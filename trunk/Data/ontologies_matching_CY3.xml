@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<success>
+  <accessedResource>/bioportal/search/cy3/</accessedResource>
+  <accessDate>2011-02-09 07:45:41.894 PST</accessDate>
+  <data>
+    <page>
+      <pageNum>1</pageNum>
+      <numPages>1</numPages>
+      <pageSize>8</pageSize>
+      <numResultsPage>8</numResultsPage>
+      <numResultsTotal>8</numResultsTotal>
+      <contents class="org.ncbo.stanford.bean.search.SearchResultListBean">
+        <searchResultList>
+          <searchBean>
+            <ontologyVersionId>44899</ontologyVersionId>
+            <ontologyId>1123</ontologyId>
+            <ontologyDisplayLabel>Ontology for Biomedical Investigations</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://purl.org/obo/owl/CHEBI#CHEBI_37987</conceptId>
+            <conceptIdShort>chebi:CHEBI_37987</conceptIdShort>
+            <preferredName>Cy3 dye</preferredName>
+            <contents>Cy3 dye</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>45026</ontologyVersionId>
+            <ontologyId>1007</ontologyId>
+            <ontologyDisplayLabel>Chemical entities of biological interest</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <objectType>class</objectType>
+            <conceptId>http://purl.obolibrary.org/obo/CHEBI_37987</conceptId>
+            <conceptIdShort>CHEBI:37987</conceptIdShort>
+            <preferredName>Cy3 dye</preferredName>
+            <contents>Cy3 dye</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>45026</ontologyVersionId>
+            <ontologyId>1007</ontologyId>
+            <ontologyDisplayLabel>Chemical entities of biological interest</ontologyDisplayLabel>
+            <recordType>csynonym</recordType>
+            <objectType>class</objectType>
+            <conceptId>http://purl.obolibrary.org/obo/CHEBI_37990</conceptId>
+            <conceptIdShort>CHEBI:37990</conceptIdShort>
+            <preferredName>Cy3-bifunctional dye zwitterion</preferredName>
+            <contents>Cy3 dye</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>42693</ontologyVersionId>
+            <ontologyId>1032</ontologyId>
+            <ontologyDisplayLabel>NCI Thesaurus</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <conceptId>http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#CY30</conceptId>
+            <conceptIdShort>CY30</conceptIdShort>
+            <preferredName>CY30</preferredName>
+            <contents>CY30</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>45026</ontologyVersionId>
+            <ontologyId>1007</ontologyId>
+            <ontologyDisplayLabel>Chemical entities of biological interest</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <objectType>class</objectType>
+            <conceptId>http://purl.obolibrary.org/obo/CHEBI_52002</conceptId>
+            <conceptIdShort>CHEBI:52002</conceptIdShort>
+            <preferredName>Cy3.5 dye</preferredName>
+            <contents>Cy3.5 dye</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>45026</ontologyVersionId>
+            <ontologyId>1007</ontologyId>
+            <ontologyDisplayLabel>Chemical entities of biological interest</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <objectType>class</objectType>
+            <conceptId>http://purl.obolibrary.org/obo/CHEBI_38045</conceptId>
+            <conceptIdShort>CHEBI:38045</conceptIdShort>
+            <preferredName>Cy3-monofunctional dye(1-)</preferredName>
+            <contents>Cy3-monofunctional dye(1-)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>45026</ontologyVersionId>
+            <ontologyId>1007</ontologyId>
+            <ontologyDisplayLabel>Chemical entities of biological interest</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <objectType>class</objectType>
+            <conceptId>http://purl.obolibrary.org/obo/CHEBI_38046</conceptId>
+            <conceptIdShort>CHEBI:38046</conceptIdShort>
+            <preferredName>Cy3-bifunctional dye(1-)</preferredName>
+            <contents>Cy3-bifunctional dye(1-)</contents>
+          </searchBean>
+          <searchBean>
+            <ontologyVersionId>45026</ontologyVersionId>
+            <ontologyId>1007</ontologyId>
+            <ontologyDisplayLabel>Chemical entities of biological interest</ontologyDisplayLabel>
+            <recordType>apreferredname</recordType>
+            <objectType>class</objectType>
+            <conceptId>http://purl.obolibrary.org/obo/CHEBI_52004</conceptId>
+            <conceptIdShort>CHEBI:52004</conceptIdShort>
+            <preferredName>Cy3B dye NHS ester</preferredName>
+            <contents>Cy3B dye NHS ester</contents>
+          </searchBean>
+        </searchResultList>
+        <ontologyHitList>
+          <ontologyHitBean>
+            <ontologyVersionId>45026</ontologyVersionId>
+            <ontologyId>1007</ontologyId>
+            <ontologyDisplayLabel>Chemical entities of biological interest</ontologyDisplayLabel>
+            <numHits>6</numHits>
+          </ontologyHitBean>
+          <ontologyHitBean>
+            <ontologyVersionId>42693</ontologyVersionId>
+            <ontologyId>1032</ontologyId>
+            <ontologyDisplayLabel>NCI Thesaurus</ontologyDisplayLabel>
+            <numHits>1</numHits>
+          </ontologyHitBean>
+          <ontologyHitBean>
+            <ontologyVersionId>44899</ontologyVersionId>
+            <ontologyId>1123</ontologyId>
+            <ontologyDisplayLabel>Ontology for Biomedical Investigations</ontologyDisplayLabel>
+            <numHits>1</numHits>
+          </ontologyHitBean>
+        </ontologyHitList>
+      </contents>
+    </page>
+  </data>
+</success>

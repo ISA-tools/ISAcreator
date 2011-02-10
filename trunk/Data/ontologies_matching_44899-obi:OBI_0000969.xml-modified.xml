@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<success xmlns="http://bioontology.org/bioportal/classBeanSchema#">
+  <accessedResource>/bioportal/concepts/44899/obi:OBI_0000969</accessedResource>
+  <accessDate>2011-02-09 07:39:15.431 PST</accessDate>
+  <data>
+    <classBean>
+      <id>obi:OBI_0000969</id>
+      <fullId>http://purl.obolibrary.org/obo/OBI_0000969</fullId>
+      <label>dose specification</label>
+      <type>class</type>
+      <definitions>
+        <string>a directive information entity that describes the dose that will be administered to a target</string>
+      </definitions>
+      <relations>
+        <entry>
+          <string>InstanceCount</string>
+          <int>0</int>
+        </entry>
+        <entry>
+          <string>RdfType</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>SubClass</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>rdfs:label</string>
+          <list>
+            <string>dose specification</string>
+          </list>
+        </entry>
+        <entry>
+          <string>example of usage</string>
+          <list>
+            <string>a protocol specifying to administer 1 ml of vaccine to a mouse</string>
+          </list>
+        </entry>
+        <entry>
+          <string>rdfs:subClassOf</string>
+          <list>
+            <classBean>
+              <id>obi:IAO_0000033</id>
+              <fullId>http://purl.obolibrary.org/obo/IAO_0000033</fullId>
+              <label>directive information entity</label>
+              <type>class</type>
+              <relations/>
+            </classBean>
+          </list>
+        </entry>
+        <entry>
+          <string>ChildCount</string>
+          <int>0</int>
+        </entry>
+        <entry>
+          <string>has curation status</string>
+          <list>
+            <instanceBean>
+              <id>obi:IAO_0000123</id>
+              <fullId>http://purl.obolibrary.org/obo/IAO_0000123</fullId>
+              <label>metadata incomplete</label>
+              <relations/>
+              <instanceType>
+                <list>
+                  <classBean>
+                    <id>owl:Thing</id>
+                    <fullId>http://www.w3.org/2002/07/owl#Thing</fullId>
+                    <label>owl:Thing</label>
+                    <type>class</type>
+                    <relations/>
+                  </classBean>
+                  <classBean>
+                    <id>obi:IAO_0000078</id>
+                    <fullId>http://purl.obolibrary.org/obo/IAO_0000078</fullId>
+                    <label>curation status specification</label>
+                    <type>class</type>
+                    <relations/>
+                  </classBean>
+                </list>
+              </instanceType>
+            </instanceBean>
+          </list>
+        </entry>
+        <entry>
+          <string>editor preferred term</string>
+          <list>
+            <string>dose specification</string>
+          </list>
+        </entry>
+        <entry>
+          <string>SuperClass</string>
+          <list>
+            <classBean>
+              <id>obi:IAO_0000033</id>
+              <fullId>http://purl.obolibrary.org/obo/IAO_0000033</fullId>
+              <label>directive information entity</label>
+              <type>class</type>
+              <definitions>
+                <string>An information content entity whose concretizations indicate to their bearer how to realize them in a process.</string>
+              </definitions>
+              <authors>
+                <string>~#en PERSON: Alan Ruttenberg</string>
+                <string>~#en PERSON: Bjoern Peters</string>
+              </authors>
+              <relations>
+                <entry>
+                  <string>InstanceCount</string>
+                  <int>0</int>
+                </entry>
+                <entry>
+                  <string>RdfType</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>rdfs:label</string>
+                  <list>
+                    <string>directive information entity</string>
+                  </list>
+                </entry>
+                <entry>
+                  <string>rdfs:subClassOf</string>
+                  <list>
+                    <classBean>
+                      <id>obi:IAO_0000030</id>
+                      <fullId>http://purl.obolibrary.org/obo/IAO_0000030</fullId>
+                      <label>information content entity</label>
+                      <type>class</type>
+                      <relations/>
+                    </classBean>
+                    <instanceBean>
+                      <id>@A31356_d3ec738d_b065_4ff1_a3b0_4ebf00db3d2b</id>
+                      <fullId>@A31356_d3ec738d_b065_4ff1_a3b0_4ebf00db3d2b</fullId>
+                      <label>&apos;is about&apos; some realizable_entity</label>
+                      <relations/>
+                      <instanceType>
+                        <list>
+                          <classBean>
+                            <id>owl:SomeValuesFromRestriction</id>
+                            <fullId>http://www.w3.org/2002/07/owl#SomeValuesFromRestriction</fullId>
+                            <label>owl:SomeValuesFromRestriction</label>
+                            <type>class</type>
+                            <relations/>
+                          </classBean>
+                        </list>
+                      </instanceType>
+                    </instanceBean>
+                  </list>
+                </entry>
+                <entry>
+                  <string>ChildCount</string>
+                  <int>11</int>
+                </entry>
+                <entry>
+                  <string>editor note</string>
+                  <list>
+                    <string>Werner pushed back on calling it realizable information entity as it isn&apos;t realizable. However this name isn&apos;t right either. An example would be a recipe. The realizable entity would be a plan, but the information entity isn&apos;t about the plan, it, once concretized, *is* the plan. -Alan</string>
+                    <string>2009-03-16: provenance: a term realizable information entity was proposed for OBI (OBI_0000337) , edited by the PlanAndPlannedProcess branch. Original definition was  &quot;is the specification of a process that can be
+concretized and realized by an actor&quot; with alternative term  &quot;instruction&quot;.It has been subsequently moved to IAO where the objective for which the original term was defined was satisfied with the definitionof this, different, term.</string>
+                    <string>8/6/2009 Alan Ruttenberg: Changed label from &quot;information entity about a realizable&quot; after discussions at ICBO</string>
+                  </list>
+                </entry>
+                <entry>
+                  <string>has curation status</string>
+                  <list>
+                    <instanceBean>
+                      <id>obi:IAO_0000123</id>
+                      <fullId>http://purl.obolibrary.org/obo/IAO_0000123</fullId>
+                      <label>metadata incomplete</label>
+                      <relations/>
+                      <instanceType>
+                        <list>
+                          <classBean>
+                            <id>owl:Thing</id>
+                            <fullId>http://www.w3.org/2002/07/owl#Thing</fullId>
+                            <label>owl:Thing</label>
+                            <type>class</type>
+                            <relations/>
+                          </classBean>
+                          <classBean>
+                            <id>obi:IAO_0000078</id>
+                            <fullId>http://purl.obolibrary.org/obo/IAO_0000078</fullId>
+                            <label>curation status specification</label>
+                            <type>class</type>
+                            <relations/>
+                          </classBean>
+                        </list>
+                      </instanceType>
+                    </instanceBean>
+                  </list>
+                </entry>
+              </relations>
+            </classBean>
+          </list>
+        </entry>
+      </relations>
+    </classBean>
+  </data>
+</success>
