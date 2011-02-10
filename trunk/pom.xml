@@ -185,20 +185,20 @@
                         </configuration>
                     </execution>
 
-                    <execution>
-                        <id>NCBI-Taxon</id>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <packageName>gov.nih.nlm.ncbi.www.soap.eutils</packageName>
-                            <wsdlUrls>
-                                <wsdlUrl>http://eutils.ncbi.nlm.nih.gov/soap/v2.0/efetch_taxon.wsdl</wsdlUrl>
-                            </wsdlUrls>
-                            <sourceDestDir>target/generated/ncbitaxonomy</sourceDestDir>
-                            <staleFile>${project.build.directory}/jaxws/stale/wsdl.ncbi.done</staleFile>
-                        </configuration>
-                    </execution>
+                    <!--<execution>-->
+                    <!--<id>NCBI-Taxon</id>-->
+                    <!--<goals>-->
+                    <!--<goal>wsimport</goal>-->
+                    <!--</goals>-->
+                    <!--<configuration>-->
+                    <!--<packageName>gov.nih.nlm.ncbi.www.soap.eutils</packageName>-->
+                    <!--<wsdlUrls>-->
+                    <!--<wsdlUrl>http://eutils.ncbi.nlm.nih.gov/soap/v2.0/efetch_taxon.wsdl</wsdlUrl>-->
+                    <!--</wsdlUrls>-->
+                    <!--<sourceDestDir>target/generated/ncbitaxonomy</sourceDestDir>-->
+                    <!--<staleFile>${project.build.directory}/jaxws/stale/wsdl.ncbi.done</staleFile>-->
+                    <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
 
                 <dependencies>

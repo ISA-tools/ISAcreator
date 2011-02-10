@@ -122,7 +122,7 @@ public class BioPortalSearchBeanResultHandler {
             sourceAccession = sourceAccession.substring(sourceAccession.lastIndexOf("#") + 1);
         }
 
-        if (!sourceAccession.toLowerCase().contains(source.toLowerCase() + ":")) {
+        if (!sourceAccession.toLowerCase().contains(":")) {
             sourceAccession = source + ":" + sourceAccession;
         }
         return sourceAccession;
