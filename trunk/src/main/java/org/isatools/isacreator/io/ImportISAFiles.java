@@ -361,18 +361,6 @@ public class ImportISAFiles {
 
         System.out.println("Checking " + f.getAbsolutePath());
 
-        /*
-                  Structure should be of form:
-                      Ontology Source References
-                      Investigation definition
-                          Study Definition
-                              Study description
-                              Factors
-                              Assays
-                              Protocols
-                              Contacts
-                          ... more studies following same format
-                   */
         List<String> fileStructure = new ArrayList<String>();
 
         ISAPropertiesLoader ipl = new ISAPropertiesLoader();
@@ -795,7 +783,7 @@ public class ImportISAFiles {
         int count = 0;
         String[] nextLine;
         String[] invData = new String[numLines];
-        //todo throw invalid inv file exception telling
+
         while ((count < numLines) &&
                 ((nextLine = csvReader.readNext()) != null)) {
 
