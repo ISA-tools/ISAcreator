@@ -2346,20 +2346,6 @@ public class Spreadsheet extends JComponent implements
             }
         });
 
-        JMenuItem addProvider = new JMenuItem("Add Provider");
-        addProvider.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-
-                TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
-                        "Provider", "Provider of this data", DataTypes.STRING, "",
-                        false, false, false);
-
-                addFieldToReferenceObject(fo);
-
-                addColumnAfterPosition("Provider", null, -1);
-            }
-        });
 
         addColumn.add(addSampleName);
         addColumn.add(addMaterialType);
@@ -2392,6 +2378,9 @@ public class Spreadsheet extends JComponent implements
             }
         }
 
+        // todo add fields to the list which are allowed to appear multiple times. Code should be integrated
+        // with the above line...
+
         addColumn.add(new JSeparator());
 
         addColumn.add(addCharacteristic);
@@ -2419,8 +2408,6 @@ public class Spreadsheet extends JComponent implements
             addColumn.add(addDate);
             addColumn.add(addPerformer);
         }
-
-        addColumn.add(addProvider);
 
         JMenuItem deleteColumn = new JMenuItem("Remove Column");
         deleteColumn.addActionListener(new ActionListener() {
