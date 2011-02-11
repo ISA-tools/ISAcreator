@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.wizard;
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.RoundedBorder;
@@ -140,8 +141,14 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         microArrayQuestionCont.setOpaque(false);
 
-        JLabel info = new JLabel("<html><b>" + assay.getMeasurementEndpoint() +
-                "</b> using <b>" + assay.getTechnologyType() + "</b></html>",
+        StringBuffer text = new StringBuffer("<html><b>" + assay.getMeasurementEndpoint() +
+                "</b> using <b>" + assay.getTechnologyType() + "</b>");
+
+        if (!StringUtils.isEmpty(assay.getAssayPlatform())) {
+            text.append(" on <b>").append(assay.getAssayPlatform()).append("</b>");
+        }
+
+        JLabel info = new JLabel(text.append("</html>").toString(),
                 JLabel.LEFT);
 
         UIHelper.renderComponent(info, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
