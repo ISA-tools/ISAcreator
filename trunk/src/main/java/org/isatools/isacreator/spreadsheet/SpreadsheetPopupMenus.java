@@ -428,8 +428,13 @@ public class SpreadsheetPopupMenus {
         popup.add(new JSeparator());
         popup.add(clearField);
         popup.add(new JSeparator());
-        popup.add(mapFilesToDirectory);
-        popup.add(new JSeparator());
+
+        // only show the resolve file names item if the current column is a file.
+        if (spreadsheet.getTableReferenceObject().acceptsFileLocations(columnName)) {
+            popup.add(mapFilesToDirectory);
+            popup.add(new JSeparator());
+        }
+
         popup.add(highlightGroups);
         if (spreadsheet.highlightActive) {
             popup.add(removeHighlight);
