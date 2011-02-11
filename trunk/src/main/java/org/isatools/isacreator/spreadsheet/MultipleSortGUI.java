@@ -162,7 +162,7 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
                         secondaryAscending = false;
                     }
 
-                    st.performMultipleSort(primaryCol, secondaryCol, primaryAscending, secondaryAscending);
+                    st.getSpreadsheetFunctions().performMultipleSort(primaryCol, secondaryCol, primaryAscending, secondaryAscending);
                     st.getParentFrame().hideSheet();
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null,

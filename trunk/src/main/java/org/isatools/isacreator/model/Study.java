@@ -361,12 +361,12 @@ public class Study {
      */
     public void removeFactor(String factorName) {
         for (String key : assays.keySet()) {
-            assays.get(key).getSpreadsheetUI().getTable()
+            assays.get(key).getSpreadsheetUI().getTable().getSpreadsheetFunctions()
                     .removeColumnByName("Factor Value[" + factorName + "]");
         }
 
         studySampleRecord.getSpreadsheetUI().getTable()
-                .removeColumnByName("Factor Value[" + factorName + "]");
+                .getSpreadsheetFunctions().removeColumnByName("Factor Value[" + factorName + "]");
 
         Factor toRemove = null;
 
@@ -439,13 +439,13 @@ public class Study {
 
         for (String key : assays.keySet()) {
             assays.get(key).getSpreadsheetUI().getTable()
-                    .substituteHeaderNames(previousFactorName, newFactorName);
+                    .getSpreadsheetFunctions().substituteHeaderNames(previousFactorName, newFactorName);
             System.out.print(".");
         }
 
         studySampleRecord.getSpreadsheetUI().getTable()
-                .substituteHeaderNames(previousFactorName,
-                        newFactorName);
+                .getSpreadsheetFunctions().substituteHeaderNames(previousFactorName,
+                newFactorName);
     }
 
     /**
@@ -458,13 +458,13 @@ public class Study {
                                  String newProtocolName) {
         for (String key : assays.keySet()) {
             assays.get(key).getSpreadsheetUI().getTable()
-                    .susbstituteTermsInColumn("Protocol REF",
-                            previousProtocolName, newProtocolName);
+                    .getSpreadsheetFunctions().susbstituteTermsInColumn("Protocol REF",
+                    previousProtocolName, newProtocolName);
         }
 
         studySampleRecord.getSpreadsheetUI().getTable()
-                .susbstituteTermsInColumn("Protocol REF",
-                        previousProtocolName, newProtocolName);
+                .getSpreadsheetFunctions().susbstituteTermsInColumn("Protocol REF",
+                previousProtocolName, newProtocolName);
 
         if (newProtocolName.equals("")) {
             // we are removing the protocol

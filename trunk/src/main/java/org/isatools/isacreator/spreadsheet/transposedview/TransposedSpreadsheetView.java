@@ -368,10 +368,10 @@ public class TransposedSpreadsheetView extends JDialog {
                         int rowDifference;
                         if ((rowDifference = (transposedSpreadsheetSubform.getScrollTable().getColumnCount()
                                 - transposedSpreadsheetModel.getSpreadsheet().getTableModel().getRowCount())) > 0) {
-                            transposedSpreadsheetModel.getSpreadsheet().addRows(rowDifference, false);
+                            transposedSpreadsheetModel.getSpreadsheet().getSpreadsheetFunctions().addRows(rowDifference, false);
                         }
                         // start at column 1 since the first column is for the row number
-                        transposedSpreadsheetModel.getSpreadsheet().paste(0, 1, true);
+                        transposedSpreadsheetModel.getSpreadsheet().getSpreadsheetFunctions().paste(0, 1, true);
 
                         closeWindow();
                     }

@@ -71,7 +71,7 @@ public class AddMultipleRowsGUI extends JDialog {
             int i = Integer.parseInt(numRowsTxt.getText());
 
             if ((i < Spreadsheet.MAX_ROWS) && ((i + st.getTable().getRowCount()) <= Spreadsheet.MAX_ROWS)) {
-                st.addRows(i, false);
+                st.getSpreadsheetFunctions().addRows(i, false);
                 st.getParentFrame().hideSheet();
             } else {
                 numRowsTxt.setText("Max rows = " + Spreadsheet.MAX_ROWS);

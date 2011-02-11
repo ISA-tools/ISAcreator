@@ -420,9 +420,9 @@ public class AddColumnGUI extends JDialog {
                             colName, typeAsText + " value", DataTypes.STRING,
                             "", false, false, false);
 
-                    st.addFieldToReferenceObject(charFo);
+                    st.getSpreadsheetFunctions().addFieldToReferenceObject(charFo);
 
-                    st.addColumnAfterPosition(colName, null, -1);
+                    st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, -1);
 
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -473,17 +473,17 @@ public class AddColumnGUI extends JDialog {
 
                         String colName = typeAsText + "[" + toAdd + "]";
 
-                        if (!st.checkColumnExists(colName)) {
+                        if (!st.getSpreadsheetFunctions().checkColumnExists(colName)) {
                             boolean useOntology = qualitativeOp.isSelected();
                             DataTypes type = useOntology ? DataTypes.ONTOLOGY_TERM
                                     : DataTypes.STRING;
                             TableFieldObject charFo = new TableFieldObject(st.getColumnCount(),
                                     colName, typeAsText + " value", type,
                                     "", false, false, false);
-                            st.addFieldToReferenceObject(charFo);
+                            st.getSpreadsheetFunctions().addFieldToReferenceObject(charFo);
 
                             if (!toAdd.equals("")) {
-                                st.addColumnAfterPosition(colName, null, -1);
+                                st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, -1);
                             }
 
                             if (quantativeOp.isSelected()) {
@@ -492,8 +492,8 @@ public class AddColumnGUI extends JDialog {
                                         "Unit for definition of value",
                                         DataTypes.ONTOLOGY_TERM, "", false, false,
                                         false);
-                                st.addFieldToReferenceObject(unitFo);
-                                st.addColumnAfterPosition("Unit",
+                                st.getSpreadsheetFunctions().addFieldToReferenceObject(unitFo);
+                                st.getSpreadsheetFunctions().addColumnAfterPosition("Unit",
                                         unitField.getText(), -1);
                             }
 

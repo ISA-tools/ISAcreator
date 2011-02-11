@@ -48,18 +48,15 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.TableFieldObject;
 import org.isatools.isacreator.effects.AniSheetableJFrame;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
-import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
-import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetModel;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetView;
-import org.isatools.isacreator.utils.GeneralUtils;
 import org.isatools.isacreator.utils.TableConsistencyChecker;
 import org.isatools.isacreator.visualization.TableGroupInfo;
 import org.jdesktop.fuse.InjectedResource;
@@ -74,18 +71,12 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.util.*;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Spreadsheet class.
@@ -104,14 +95,14 @@ public class Spreadsheet extends JComponent implements
     public static final int MAX_ROWS = 32000;
     public static FileSelectCellEditor fileSelectEditor;
     private static EmptyBorder emtpyBorder = new EmptyBorder(1, 1, 1, 1);
-    private static DateCellEditor dateEditor;
+    protected static DateCellEditor dateEditor;
 
     public static final int SWITCH_ABSOLUTE = 0;
     public static final int SWITCH_RELATIVE = 1;
-    private static final int DEFAULT_STATE = 2;
-    private static final int DELETING_COLUMN = 3;
-    private static final int DELETING_ROW = 4;
-    private static final int INITIAL_ROWS = 50;
+    protected static final int DEFAULT_STATE = 2;
+    protected static final int DELETING_COLUMN = 3;
+    protected static final int DELETING_ROW = 4;
+    protected static final int INITIAL_ROWS = 50;
 
 
     static {
@@ -123,7 +114,7 @@ public class Spreadsheet extends JComponent implements
     }
 
     @InjectedResource
-    private ImageIcon addRowButton, addRowButtonOver, deleteRowButton, deleteRowButtonOver, deleteColumnButton, deleteColumnButtonOver,
+    protected ImageIcon addRowButton, addRowButtonOver, deleteRowButton, deleteRowButtonOver, deleteColumnButton, deleteColumnButtonOver,
             multipleSortButton, multipleSortButtonOver, copyColDownButton, copyColDownButtonOver, copyRowDownButton,
             copyRowDownButtonOver, addProtocolButton, addProtocolButtonOver, addFactorButton, addFactorButtonOver,
             addCharacteristicButton, addCharacteristicButtonOver, addParameterButton, addParameterButtonOver, undoButton,
@@ -135,39 +126,43 @@ public class Spreadsheet extends JComponent implements
 
     //map provides a way of tracking where unit fields belong in the table, so even columns are moved around by the user,
     // they are moved by the user, the software still knows where they belong when it comes to outputting the ISATAB files!!
-    private Map<TableColumn, List<TableColumn>> columnDependencies;
+    protected Map<TableColumn, List<TableColumn>> columnDependencies;
     private JLabel addCharacteristic, addFactor, addParameter, addProtocol, addRow, copyColDown, copyRowDown, deleteColumn,
             deleteRow, multipleSort, undo, redo, transpose;
 
-    private JOptionPane optionPane;
+    protected JOptionPane optionPane;
     private CustomTable table;
     private MultipleSortGUI msGUI;
     private TransposedSpreadsheetView tsv;
     private TableGroupInfo tgi;
-    private SpreadsheetColumnRenderer renderer = new SpreadsheetColumnRenderer();
-    private SpreadsheetModel spreadsheetModel;
-    private StudyDataEntry sde;
-    private AssaySpreadsheet ade;
-    private TableReferenceObject tro;
-    private Vector<String> columns;
-    private Vector<Object> rows;
-    private int[] rowsToDelete;
-    private int curColDelete = -1;
-    private int currentState = DEFAULT_STATE;
-    private int previouslyAddedCharacteristicPosition = -1;
-    private int startCol = -1;
-    private int startRow = -1;
+    protected SpreadsheetColumnRenderer renderer = new SpreadsheetColumnRenderer();
+    protected SpreadsheetModel spreadsheetModel;
+    private StudyDataEntry studyDataEntryEnvironment;
+    private AssaySpreadsheet assayDataEntryEnvironment;
+    private TableReferenceObject tableReferenceObject;
+    protected Vector<String> columns;
+    protected Vector<Object> rows;
+    protected int[] rowsToDelete;
+    protected int curColDelete = -1;
+    protected int currentState = DEFAULT_STATE;
+    protected int previouslyAddedCharacteristicPosition = -1;
+    protected int startCol = -1;
+    protected int startRow = -1;
     private Map<String, String> absRelFileMappings;
-    private Set<String> hiddenColumns;
-    private String title;
-    private boolean highlightActive = false;
+    protected Set<String> hiddenColumns;
+    private String spreadsheetTitle;
+    protected boolean highlightActive = false;
     private TableConsistencyChecker tcc;
 
-    // Objects required for the undo function to work.
-    private Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
-    private SpreadsheetHistory spreadsheetHistory = new SpreadsheetHistory();
+    private SpreadsheetPopupMenus spreadsheetPopups;
 
-    private UndoManager um = new UndoManager() {
+    protected SpreadsheetFunctions spreadsheetFunctions;
+
+    // Objects required for the undo function to work.
+    protected Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
+    protected SpreadsheetHistory spreadsheetHistory = new SpreadsheetHistory();
+
+    protected UndoManager um = new UndoManager() {
         public void undoableEditHappened(UndoableEditEvent e) {
             super.undoableEditHappened(e);
             undo.setEnabled(canUndo());
@@ -205,34 +200,41 @@ public class Spreadsheet extends JComponent implements
     /**
      * Spreadsheet Constructor.
      *
-     * @param tro   - Reference Object to build the table with.
-     * @param sde   - StudyDataEntry. Used to retrieve factors and protocols which have been entered.
-     * @param title - name to display on the spreadsheet...
-     * @param ade   - The assay data entry object :o)
+     * @param tableReferenceObject      - Reference Object to build the table with.
+     * @param studyDataEntryEnvironment - StudyDataEntry. Used to retrieve factors and protocols which have been entered.
+     * @param spreadsheetTitle          - name to display on the spreadsheet...
+     * @param assayDataEntryEnvironment - The assay data entry object :o)
      */
-    public Spreadsheet(final TableReferenceObject tro, StudyDataEntry sde, String title, AssaySpreadsheet ade) {
-        this.sde = sde;
-        this.ade = ade;
-        this.dataEntryEnv = sde.getDEP();
-        this.title = title;
-
+    public Spreadsheet(final TableReferenceObject tableReferenceObject, StudyDataEntry studyDataEntryEnvironment, String spreadsheetTitle, AssaySpreadsheet assayDataEntryEnvironment) {
         ResourceInjector.get("spreadsheet-package.style").inject(this);
+
+        this.studyDataEntryEnvironment = studyDataEntryEnvironment;
+        this.assayDataEntryEnvironment = assayDataEntryEnvironment;
+        this.dataEntryEnv = studyDataEntryEnvironment.getDEP();
+        this.spreadsheetTitle = spreadsheetTitle;
+        this.tableReferenceObject = tableReferenceObject;
+
+        spreadsheetPopups = new SpreadsheetPopupMenus(this);
+        spreadsheetFunctions = new SpreadsheetFunctions(this);
 
         columnDependencies = new HashMap<TableColumn, List<TableColumn>>();
         Collections.synchronizedMap(columnDependencies);
         hiddenColumns = new HashSet<String>();
-        this.tro = tro;
 
         setLayout(new BorderLayout());
 
+        instantiateSpreadsheet();
+    }
+
+    public void instantiateSpreadsheet() {
         // create a spreadsheet model which overrides two methods that allow the reference model for the spreadsheet to
         // control which columns can be deleted, and which cannot.
-        spreadsheetModel = new SpreadsheetModel(tro) {
+        spreadsheetModel = new SpreadsheetModel(tableReferenceObject) {
             //@overrides
             public Class getColumnClass(int colNo) {
                 String colName = getColumnName(colNo);
 
-                Class c = tro.getColumnType(colName).getMapping();
+                Class c = tableReferenceObject.getColumnType(colName).getMapping();
 
                 if (c == DataTypes.DATE.getMapping()) {
                     c = DataTypes.STRING.getMapping();
@@ -245,14 +247,12 @@ public class Spreadsheet extends JComponent implements
             public boolean isCellEditable(int row, int col) {
                 String colName = getColumnName(col);
                 //consult reference model to ascertain whether or not the column is editable
-                return tro.getColumnEditable(colName);
+                return tableReferenceObject.getColumnEditable(colName);
             }
 
             public void setValueAt(Object obj, int row, int col) {
                 super.setValueAt(obj, row, col);
             }
-
-
         };
 
         spreadsheetHistory.setTableModel(spreadsheetModel);
@@ -261,10 +261,10 @@ public class Spreadsheet extends JComponent implements
 
         rows = new Vector<Object>();
 
-        if (tro.getPreDefinedHeaders() != null) {
-            columns = tro.getPreDefinedHeaders();
+        if (tableReferenceObject.getPreDefinedHeaders() != null) {
+            columns = tableReferenceObject.getPreDefinedHeaders();
         } else {
-            columns = tro.getHeaders();
+            columns = tableReferenceObject.getHeaders();
         }
 
         spreadsheetModel.setDataVector(rows, columns);
@@ -274,34 +274,34 @@ public class Spreadsheet extends JComponent implements
 
         spreadsheetModel.setTable(table);
 
-        if (tro.getData() != null) {
-            populateTable(tro.getData());
-            rebuildDependencies(tro.getColumnDependencies());
+        if (tableReferenceObject.getData() != null) {
+            populateTable(tableReferenceObject.getData());
+            rebuildDependencies(tableReferenceObject.getColumnDependencies());
         } else {
             // populate table with some empty fields.
-            addRows(INITIAL_ROWS, true);
+            spreadsheetFunctions.addRows(INITIAL_ROWS, true);
 
-            List<Protocol> protocols = tro.constructProtocolObjects();
+            List<Protocol> protocols = tableReferenceObject.constructProtocolObjects();
             if (protocols.size() > 0) {
                 for (Protocol p : protocols) {
-                    sde.getStudy().addProtocol(p);
+                    studyDataEntryEnvironment.getStudy().addProtocol(p);
                 }
-                sde.reformProtocols();
+                studyDataEntryEnvironment.reformProtocols();
             }
 
-            List<Factor> factors = tro.constructFactorObjects();
+            List<Factor> factors = tableReferenceObject.constructFactorObjects();
 
             if (factors.size() > 0) {
                 for (Factor f : factors) {
-                    sde.getStudy().addFactor(f);
+                    studyDataEntryEnvironment.getStudy().addFactor(f);
                 }
-                sde.reformFactors();
+                studyDataEntryEnvironment.reformFactors();
             }
         }
 
 
-        if (tro.getDefinedOntologies().size() > 0) {
-            for (OntologyObject oo : tro.getDefinedOntologies().values()) {
+        if (tableReferenceObject.getDefinedOntologies().size() > 0) {
+            for (OntologyObject oo : tableReferenceObject.getDefinedOntologies().values()) {
                 dataEntryEnv.getUserHistory().put(oo.getUniqueId(), oo);
             }
         }
@@ -329,11 +329,15 @@ public class Spreadsheet extends JComponent implements
         addUndoableEditListener(um);
     }
 
+    public SpreadsheetFunctions getSpreadsheetFunctions() {
+        return spreadsheetFunctions;
+    }
+
     public String getAssignedUnitForColumn(int columnIndex, int rowNo) {
 
         int[] convertedColumnIndex = Utils.convertSelectedColumnsToModelIndices(table, new int[]{columnIndex});
 
-        Set<Integer> dependentColumns = tro.getColumnDependencies().get(convertedColumnIndex[0]);
+        Set<Integer> dependentColumns = tableReferenceObject.getColumnDependencies().get(convertedColumnIndex[0]);
 
         String value = "";
         if (dependentColumns != null) {
@@ -346,8 +350,8 @@ public class Spreadsheet extends JComponent implements
         return value;
     }
 
-    public String getTitle() {
-        return title;
+    public String getSpreadsheetTitle() {
+        return spreadsheetTitle;
     }
 
     /**
@@ -442,289 +446,6 @@ public class Spreadsheet extends JComponent implements
 
 
     /**
-     * Recovers cell editor for a field for attachment to a column
-     *
-     * @param col - Column to attach a custom cell editor to
-     */
-    @SuppressWarnings({"ConstantConditions"})
-    private void addCellEditor(TableColumn col) {
-        ValidationObject vo = tro.getValidationConstraints(col.getHeaderValue()
-                .toString());
-        DataTypes classType = tro.getColumnType(col.getHeaderValue().toString());
-
-        if (vo != null && classType == DataTypes.STRING) {
-            StringValidation sv = ((StringValidation) vo);
-            col.setCellEditor(new StringEditor(sv));
-            return;
-        }
-
-        if (col.getHeaderValue().toString().equals("Protocol REF")) {
-            col.setCellEditor(new FilterableListCellEditor(sde.getStudy()));
-            return;
-        }
-
-        if (tro.getClassType(col.getHeaderValue().toString()) == DataTypes.ONTOLOGY_TERM) {
-            col.setCellEditor(new OntologyCellEditor(dataEntryEnv.getParentFrame(),
-                    tro.acceptsMultipleValues(col.getHeaderValue().toString()),
-                    tro.getRecommendedSource(col.getHeaderValue().toString())));
-            return;
-        }
-
-        if (tro.getClassType(col.getHeaderValue().toString()) == DataTypes.LIST) {
-            col.setCellEditor(new FilterableListCellEditor(tro.getListItems(col.getHeaderValue().toString())));
-            return;
-        }
-
-        if (tro.getClassType(col.getHeaderValue().toString())
-                == DataTypes.DATE) {
-            col.setCellEditor(dateEditor);
-
-            return;
-        }
-
-        if (tro.getClassType(col.getHeaderValue().toString()) == DataTypes.BOOLEAN) {
-            col.setCellEditor(new StringEditor(new StringValidation("true|yes|TRUE|YES|NO|FALSE|no|false", "not a valid boolean!"), true));
-            return;
-        }
-
-        if ((classType == DataTypes.STRING) &&
-                tro.acceptsFileLocations(col.getHeaderValue().toString())) {
-            col.setCellEditor(fileSelectEditor);
-            return;
-        }
-
-
-        if (classType == DataTypes.INTEGER) {
-            col.setCellEditor(new StringEditor(new StringValidation("[0-9]+", "Please enter an integer value!"), true));
-            return;
-        }
-
-        if (classType == DataTypes.DOUBLE) {
-            col.setCellEditor(new StringEditor(new StringValidation("[0-9]+[.]{0,1}[0-9]*", "Please enter a double value!"), true));
-            return;
-        }
-
-        col.setCellEditor(new StringEditor(new StringValidation(".*", "")));
-    }
-
-    /**
-     * Adds a column to the table with a specified name
-     *
-     * @param headerLabel - name of column to be added
-     */
-    public void addColumn(Object headerLabel) {
-        SpreadsheetModel model = (SpreadsheetModel) table.getModel();
-        TableColumn col = new TableColumn(table.getModel().getColumnCount());
-        col.setHeaderValue(headerLabel);
-        col.setPreferredWidth(calcColWidths(headerLabel.toString()));
-
-        // add a cell editor (if available to the column)
-        addCellEditor(col);
-
-        table.addColumn(col);
-
-        model.addColumn(headerLabel.toString());
-        model.fireTableStructureChanged();
-
-        table.getColumnModel().getColumn(table.getColumnCount() - 1)
-                .setHeaderRenderer(renderer);
-
-        if (table.getRowCount() > 0) {
-            table.setValueAt(tro.getDefaultValue(headerLabel.toString()), 0,
-                    table.getColumnCount() - 1);
-            copyColumnDownwards(0, table.getColumnCount() - 1);
-            tro.getDefaultValue(headerLabel.toString());
-        }
-    }
-
-    /**
-     * Add a column after the currently selected column
-     *
-     * @param headerLabel             - name of column to add.
-     * @param fixedVal                - initial value to populate column with, if any.
-     * @param currentlySelectedColumn - place in table to add the column after.
-     */
-    public void addColumnAfterPosition(Object headerLabel, String fixedVal,
-                                       int currentlySelectedColumn) {
-
-        if (currentlySelectedColumn == -1) {
-            currentlySelectedColumn = (table.getSelectedColumn() == -1)
-                    ? (table.getColumnCount() - 1) : table.getSelectedColumn();
-        }
-
-        SpreadsheetModel model = (SpreadsheetModel) table.getModel();
-
-        TableColumn col = new TableColumn(table.getModel().getColumnCount());
-        col.setHeaderValue(headerLabel);
-        col.setPreferredWidth(calcColWidths(headerLabel.toString()));
-        col.setHeaderRenderer(renderer);
-
-        addCellEditor(col);
-
-        model.addToColumns(headerLabel.toString());
-        model.addColumn(col);
-
-        table.addColumn(col);
-
-        model.fireTableStructureChanged();
-        model.fireTableDataChanged();
-
-        // now move the column into it's correct position
-        int stopValue = headerLabel.toString().equals("Unit")
-                ? (previouslyAddedCharacteristicPosition + 1)
-                : (currentlySelectedColumn + 1);
-
-        for (int i = table.getColumnCount() - 1; i > stopValue; i--) {
-            table.getColumnModel().moveColumn(i - 1, i);
-        }
-
-
-        if (headerLabel.toString().equals("Unit")) {
-            addColumnToDependencies(table.getColumnModel()
-                    .getColumn(previouslyAddedCharacteristicPosition),
-                    col);
-        } else if (headerLabel.toString().contains("Parameter")) {
-            addColumnToDependencies(table.getColumnModel()
-                    .getColumn(currentlySelectedColumn),
-                    col);
-        }
-
-
-        if (headerLabel.toString().contains("Characteristics") ||
-                headerLabel.toString().contains("Factor") ||
-                headerLabel.toString().contains("Parameter")) {
-            previouslyAddedCharacteristicPosition = stopValue;
-        }
-
-        fixedVal = fixedVal == null ? "" : fixedVal;
-        if (fixedVal != null && table.getRowCount() > 0) {
-            table.setValueAt(fixedVal, 0, stopValue);
-            copyColumnDownwards(0, stopValue);
-        }
-
-        table.addNotify();
-    }
-
-    /**
-     * Adds a Dependent column (dependentCol) to a Parent Column (parentCol) list of columns.
-     *
-     * @param parentCol    - Parent Column
-     * @param dependentCol - Column Dependent on Parent e.g. Unit to a factor.
-     */
-    public void addColumnToDependencies(TableColumn parentCol,
-                                        TableColumn dependentCol) {
-        if (!columnDependencies.containsKey(parentCol)) {
-            columnDependencies.put(parentCol, new ArrayList<TableColumn>());
-        }
-
-        if (dependentCol != null) {
-            columnDependencies.get(parentCol).add(dependentCol);
-        }
-    }
-
-    /**
-     * Add an Array of columns to the columns vector.
-     *
-     * @param colName - Array of column names to be added to the spreadsheet.
-     */
-    public void addColumns(String[] colName) {
-
-        for (String aColName : colName) {
-            columns.addElement(aColName);
-        }
-    }
-
-    /**
-     * Add a field to the TableReferenceObject
-     *
-     * @param fo - Field object to add.
-     */
-    public void addFieldToReferenceObject(TableFieldObject fo) {
-        tro.addField(fo);
-    }
-
-    public void addRow() {
-        Vector r;
-        r = createBlankElement(false);
-        rows.addElement(r);
-        table.addNotify();
-    }
-
-
-    /**
-     * Add rows to the table
-     *
-     * @param number            - number of rows to add.
-     * @param creatingFromEmpty - whether or not the rows have been added at the very start.
-     */
-    public synchronized void addRows(int number, boolean creatingFromEmpty) {
-        for (int i = 0; i < number; i++) {
-            // need to create separate references.
-            Vector<SpreadsheetCell> r = createBlankElement(creatingFromEmpty);
-            rows.addElement(r);
-        }
-
-        spreadsheetModel.fireTableStructureChanged();
-        table.addNotify();
-        spreadsheetModel.updateRowCount();
-    }
-
-    private void insertRowInPosition(int selectedRow) {
-        // insert row
-        addRows(1, false);
-
-        // cut cell range from selected row downwards
-        int[] rows = Utils.getArrayOfVals(selectedRow, spreadsheetModel.getRowCount() - 2);
-        int[] cols = Utils.getArrayOfVals(1, spreadsheetModel.getColumnCount() - 1);
-        SpreadsheetCellRange toMove = new SpreadsheetCellRange(rows, Utils.convertSelectedColumnsToModelIndices(table, cols));
-
-        doCopy(true, toMove);
-
-        paste((selectedRow + 1), 1, false);
-
-        spreadsheetModel.setSelection(new SpreadsheetCellRange(new int[]{selectedRow}, cols));
-
-    }
-
-
-    /**
-     * Harsh and extremely inaccurate way of calculating column width. Will change to use FontMetrics.
-     *
-     * @param colName - Name of column to check
-     * @return an int for the width of the column.
-     */
-    private int calcColWidths(String colName) {
-        return (int) (((colName.length() + 3) * 8) * 1.20);
-    }
-
-    /**
-     * Change a file name in the spreadsheet to a new one.
-     *
-     * @param prevFileName Previously used file name
-     * @param newFileName  New file name to be used.
-     */
-    public void changeFileName(String prevFileName, String newFileName) {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        while (columns.hasMoreElements()) {
-            TableColumn tc = columns.nextElement();
-
-            if (tro.acceptsFileLocations(tc.getHeaderValue().toString())) {
-                int colIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
-                for (int row = 0; row < table.getRowCount(); row++) {
-                    String s = (table.getValueAt(row, colIndex) == null) ? ""
-                            : table.getValueAt(row,
-                            colIndex).toString();
-
-                    if (s != null && !s.trim().equals("") && s.equals(prevFileName)) {
-                        table.setValueAt(newFileName, row, colIndex);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * This method checks through the spreadsheet to determine whether or not all the required fields defined in the configuration
      * have been filled in. If they have not been filled in, an ErrorLocator is logged and returned in a List of ErrorLocator objects!
      *
@@ -740,7 +461,7 @@ public class Spreadsheet extends JComponent implements
         while (columns.hasMoreElements()) {
             TableColumn tc = columns.nextElement();
             int columnViewIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
-            if (tro.isRequired(tc.getHeaderValue().toString())) {
+            if (tableReferenceObject.isRequired(tc.getHeaderValue().toString())) {
                 for (int row = 0; row < spreadsheetModel.getRowCount(); row++) {
 
 
@@ -751,7 +472,7 @@ public class Spreadsheet extends JComponent implements
                     if (value.equals("")) {
                         // a required value has not been filled! therefore report the index of the row and column as well as the calling]
                         // location and message!
-                        archiveOutputErrors.add(new ArchiveOutputError("Data missing for " + tc.getHeaderValue().toString() + " at record " + row, ade, tc.getHeaderValue().toString(), row, columnViewIndex));
+                        archiveOutputErrors.add(new ArchiveOutputError("Data missing for " + tc.getHeaderValue().toString() + " at record " + row, assayDataEntryEnvironment, tc.getHeaderValue().toString(), row, columnViewIndex));
                     }
                 }
             }
@@ -774,7 +495,7 @@ public class Spreadsheet extends JComponent implements
         while (columns.hasMoreElements()) {
             TableColumn tc = columns.nextElement();
 
-            if (tro.acceptsFileLocations(tc.getHeaderValue().toString())) {
+            if (tableReferenceObject.acceptsFileLocations(tc.getHeaderValue().toString())) {
                 int colIndex = tc.getModelIndex();
 
                 for (int row = 0; row < spreadsheetModel.getRowCount(); row++) {
@@ -818,140 +539,6 @@ public class Spreadsheet extends JComponent implements
         }
     }
 
-    /**
-     * Check to see if a column with a given name exists.
-     *
-     * @param colName name of column to check for.
-     * @return true if it exists, false otherwise.
-     */
-    public boolean checkColumnExists(String colName) {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        while (columns.hasMoreElements()) {
-            TableColumn col = columns.nextElement();
-
-            if (col.getHeaderValue().toString().equals(colName)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void clearCells(int startRow, int startCol, int endRow, int endCol) {
-        int[] rows = Utils.getArrayOfVals(startRow, endRow);
-        int[] columns = Utils.getArrayOfVals(startCol, endCol);
-
-        SpreadsheetCellRange affectedRange = new SpreadsheetCellRange(rows, Utils.convertSelectedColumnsToModelIndices(table, columns));
-
-        spreadsheetHistory.add(affectedRange);
-
-        fill(affectedRange, "");
-    }
-
-
-    private int convertViewRowToModel(int row) {
-        return spreadsheetModel.getIndexes()[row];
-    }
-
-    private void copyColumnDownwards(int rowId, int colInd) {
-        int convColIndex = toModel(colInd);
-        String val = spreadsheetModel.getValueAt(rowId, convColIndex).toString();
-        fill(new SpreadsheetCellRange(rowId, table.getRowCount(), convColIndex, convColIndex), val);
-    }
-
-    public int toModel(int vColIndex) {
-        if (vColIndex >= table.getColumnCount()) {
-            return -1;
-        }
-        return table.getColumnModel().getColumn(vColIndex).getModelIndex();
-    }
-
-    /**
-     * Copy the contents of a row downwards.
-     *
-     * @param rowId - row to copy from
-     */
-    private void copyRowDownwards(int rowId) {
-        // if there is a row selected
-        if (rowId > -1) {
-            String rowRepresentationAsString = getRowAsString(rowId);
-            StringBuffer totalRepresentation = new StringBuffer("");
-            int numRows = spreadsheetModel.getRowCount() - rowId;
-
-            for (int i = 0; i < numRows; i++) {
-                totalRepresentation.append(rowRepresentationAsString).append(System.getProperty("line.separator"));
-            }
-
-            int[] rows = Utils.getArrayOfVals(rowId, table.getRowCount() - 1);
-            int[] cols = Utils.getArrayOfVals(1, table.getColumnCount() - 1);
-
-            SpreadsheetCellRange affectedRange = new SpreadsheetCellRange(rows, Utils.convertSelectedColumnsToModelIndices(table, cols));
-
-            spreadsheetHistory.add(affectedRange);
-            spreadsheetModel.extendedFromString(totalRepresentation.toString(), '\t', affectedRange);
-
-        }
-
-    }
-
-    private String getRowAsString(int rowId) {
-        StringBuffer rowRepresentation = new StringBuffer("");
-        for (int col = 1; col < table.getColumnCount(); col++) {
-            if (col != table.getColumnCount() - 1) {
-                rowRepresentation.append(table.getValueAt(rowId, col)).append("\t");
-            }
-        }
-
-        return rowRepresentation.toString();
-    }
-
-    /**
-     * Fill a range of cells with a given value (or formula)
-     *
-     * @param range The range to fill
-     * @param value The value to fill. Should begin with '=' for a formula.
-     */
-    public void fill(SpreadsheetCellRange range, String value) {
-        CellEditor editor = table.getCellEditor();
-        if (editor != null) {
-            editor.cancelCellEditing();
-        }
-        spreadsheetHistory.add(range);
-        spreadsheetModel.fillRange(range, value);
-        spreadsheetModel.fireTableDataChanged();
-    }
-
-    /**
-     * Creates blank elements (or those including default data) into the rows being added
-     * todo check this again and make sure the proper values are being obtained for default values.
-     *
-     * @param creatingFromEmpty - whether or not the rows have been added at the very start.
-     * @return Vector containing elements to be added to the row.
-     */
-    private Vector<SpreadsheetCell> createBlankElement(boolean creatingFromEmpty) {
-        Vector<SpreadsheetCell> columnValues = new Vector<SpreadsheetCell>();
-        int totalColumns = spreadsheetModel.getColumnCount();
-        int curRowNo = spreadsheetModel.getRowCount();
-
-        // if we don't find a field, we should skip over the index? Or we include a padding factor which can change depending
-        // on if a field isn't found in the current position. i.e, starts off at -1, then can change to zero.
-        for (int columnIndex = 0; columnIndex < totalColumns; columnIndex++) {
-            String colName = spreadsheetModel.getColumnName(columnIndex);
-            // Col 0 = Row Number
-            if (colName.equals(TableReferenceObject.ROW_NO_TEXT)) {
-                columnValues.addElement(new SpreadsheetCell(String.valueOf(curRowNo + 1)));
-            } else {
-                // / Else, all other columns are data. We can fairly safely put this data in as a String for now. But maybe
-                // we should use the previous code since it covered more cases. If it works after modification, I can
-                // put the previous code back in again.
-                String value = tro.getDefaultValue(columnIndex);
-                columnValues.addElement(new SpreadsheetCell(creatingFromEmpty ? value : ""));
-            }
-        }
-        return columnValues;
-    }
-
 
     /**
      * Create the Button panel - a panel which contains graphical representations of the options available
@@ -990,9 +577,9 @@ public class Spreadsheet extends JComponent implements
                 deleteRow.setIcon(deleteRowButton);
                 if (table.getSelectedRow() != -1) {
                     if (!(table.getSelectedRowCount() > 1)) {
-                        deleteRow(table.getSelectedRow());
+                        spreadsheetFunctions.deleteRow(table.getSelectedRow());
                     } else {
-                        deleteRow(table.getSelectedRows());
+                        spreadsheetFunctions.deleteRow(table.getSelectedRows());
                     }
 
                 }
@@ -1015,7 +602,7 @@ public class Spreadsheet extends JComponent implements
             public void mousePressed(MouseEvent mouseEvent) {
                 deleteColumn.setIcon(deleteColumnButton);
                 if (!(table.getSelectedColumns().length > 1)) {
-                    deleteColumn(table.getSelectedColumn());
+                    spreadsheetFunctions.deleteColumn(table.getSelectedColumn());
                 } else {
                     showColumnErrorMessage();
                 }
@@ -1082,7 +669,7 @@ public class Spreadsheet extends JComponent implements
                                 int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
                                 dataEntryEnv.getParentFrame().hideSheet();
                                 if (lastOptionAnswer == JOptionPane.YES_OPTION) {
-                                    copyColumnDownwards(row, col);
+                                    spreadsheetFunctions.copyColumnDownwards(row, col);
                                 }
                             }
                         }
@@ -1127,7 +714,7 @@ public class Spreadsheet extends JComponent implements
                             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
                             dataEntryEnv.getParentFrame().hideSheet();
                             if (lastOptionAnswer == JOptionPane.YES_OPTION) {
-                                copyRowDownwards(row);
+                                spreadsheetFunctions.copyRowDownwards(row);
                             }
                         }
                     }
@@ -1156,11 +743,11 @@ public class Spreadsheet extends JComponent implements
                         "Protocol REF", "Protocol used for experiment", DataTypes.LIST, "",
                         false, false, false);
 
-                fo.setFieldList(sde.getProtocolNames());
+                fo.setFieldList(studyDataEntryEnvironment.getProtocolNames());
 
-                addFieldToReferenceObject(fo);
+                spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                addColumnAfterPosition("Protocol REF", null, -1);
+                spreadsheetFunctions.addColumnAfterPosition("Protocol REF", null, -1);
             }
         });
 
@@ -1320,7 +907,7 @@ public class Spreadsheet extends JComponent implements
         JPanel labelContainer = new JPanel(new GridLayout(1, 1));
         labelContainer.setBackground(UIHelper.BG_COLOR);
 
-        JLabel lab = UIHelper.createLabel(title, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, JLabel.RIGHT);
+        JLabel lab = UIHelper.createLabel(spreadsheetTitle, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, JLabel.RIGHT);
         lab.setBackground(UIHelper.BG_COLOR);
         lab.setVerticalAlignment(JLabel.CENTER);
         lab.setPreferredSize(new Dimension(200, 30));
@@ -1334,480 +921,12 @@ public class Spreadsheet extends JComponent implements
     }
 
     /**
-     * Delete column given an index.
-     *
-     * @param vColIndex - column to remove.
-     */
-    private void deleteColumn(int vColIndex) {
-        curColDelete = vColIndex;
-        currentState = DELETING_COLUMN;
-
-        TableColumn col = table.getColumnModel().getColumn(curColDelete);
-
-
-        if (!col.getHeaderValue().toString().equals(TableReferenceObject.ROW_NO_TEXT)) {
-            if (tro.isRequired(col.getHeaderValue().toString()) && !areMultipleOccurences(col.getHeaderValue().toString())) {
-                optionPane = new JOptionPane("<html>This column can not be deleted due to it being a required field in this assay!</html>",
-                        JOptionPane.OK_OPTION);
-                optionPane.setIcon(requiredColumnWarningIcon);
-                UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-                optionPane.addPropertyChangeListener(new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent event) {
-                        if (event.getPropertyName()
-                                .equals(JOptionPane.VALUE_PROPERTY)) {
-                            dataEntryEnv.getParentFrame().hideSheet();
-                        }
-                    }
-                });
-                dataEntryEnv.getParentFrame()
-                        .showJDialogAsSheet(optionPane.createDialog(this,
-                                "Can not delete"));
-            } else {
-                optionPane = new JOptionPane("<html>Are you sure you want to delete this column? <p>This Action can not be undone!</p></html>",
-                        JOptionPane.INFORMATION_MESSAGE,
-                        JOptionPane.YES_NO_OPTION,
-                        confirmRemoveColumnIcon);
-                UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-                optionPane.addPropertyChangeListener(this);
-                dataEntryEnv.getParentFrame()
-                        .showJDialogAsSheet(optionPane.createDialog(this,
-                                "Confirm Delete Column"));
-            }
-        }
-    }
-
-    private boolean areMultipleOccurences(String colName) {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        int count = 0;
-        while (columns.hasMoreElements()) {
-            TableColumn col = columns.nextElement();
-
-            if (col.getHeaderValue().equals(colName)) {
-                count++;
-                if (count > 1) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Delete multiple rows
-     *
-     * @param index - array of ints containing indexes to remove.
-     */
-    private void deleteRow(int[] index) {
-        rowsToDelete = index;
-        currentState = DELETING_ROW;
-
-        optionPane = new JOptionPane("<html>Are you sure you want to delete these rows? <p>This Action can not be undone!</p></html>",
-                JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION,
-                confirmRemoveRowIcon);
-        optionPane.addPropertyChangeListener(this);
-        UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-        dataEntryEnv.getParentFrame()
-                .showJDialogAsSheet(optionPane.createDialog(this,
-                        "Confirm Delete Rows"));
-    }
-
-    /**
-     * Delete a row with a given index.
-     *
-     * @param index - index of row to remove
-     */
-    private void deleteRow(int index) {
-        rowsToDelete = new int[]{index};
-        currentState = DELETING_ROW;
-
-        optionPane = new JOptionPane("<html>Are you sure you want to delete this row? <p>This Action can not be undone!</p></html>",
-                JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION,
-                confirmRemoveRowIcon);
-        optionPane.addPropertyChangeListener(this);
-        UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-        dataEntryEnv.getParentFrame()
-                .showJDialogAsSheet(optionPane.createDialog(this,
-                        "Confirm Delete Rows"));
-    }
-
-    /**
-     * Creates a popup when the user has dragged across cells which allows the user to autofill the columns
-     * (based on values dragged from), copy the selection, or clear the fields.
-     *
-     * @param jc - Parent Component to display popup in.
-     * @param x  - x position to display popup in
-     * @param y  - y position for where to display popup.
-     */
-    private void dragCellPopupMenu(JComponent jc, final int x, final int y) {
-        final JPopupMenu popup = new JPopupMenu("Utilities");
-        popup.setLightWeightPopupEnabled(false);
-        popup.setBackground(new Color(0, 104, 56, 50));
-        jc.add(popup);
-
-        JMenuItem autoIncrementCells = new JMenuItem("Autofill");
-        autoIncrementCells.setForeground(UIHelper.DARK_GREEN_COLOR);
-        autoIncrementCells.setBackground(UIHelper.BG_COLOR);
-
-        autoIncrementCells.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                if (table.getValueAt(startRow, startCol) != null) {
-                    int endRow = table.rowAtPoint(new Point(x, y));
-                    if (!table.getColumnModel().getColumn(startCol)
-                            .getHeaderValue().toString()
-                            .contains(TableReferenceObject.ROW_NO_TEXT)) {
-
-                        String startVal = table.getValueAt(startRow, startCol).toString();
-                        Pattern p = Pattern.compile("[[0-9]*.]*[0-9]+");
-                        Matcher m = p.matcher(startVal);
-                        int finalStartIndex = -1;
-                        int finalStopIndex = -1;
-
-                        while (m.find()) {
-                            finalStartIndex = m.start();
-                            finalStopIndex = m.end();
-                        }
-
-                        if (finalStartIndex != -1) {
-                            String startVal2 = "";
-                            int finalStartIndex2 = -1;
-                            int finalStopIndex2 = -1;
-
-                            if (table.getValueAt(startRow + 1, startCol) != null) {
-                                // we have a 2nd value to determine the increment with
-                                startVal2 = table.getValueAt(startRow + 1,
-                                        startCol).toString();
-
-                                if (!startVal2.equals("")) {
-                                    m = p.matcher(startVal2);
-
-                                    while (m.find()) {
-                                        finalStartIndex2 = m.start();
-                                        finalStopIndex2 = m.end();
-                                    }
-                                }
-                            }
-
-                            String strippedStartVal = startVal.substring(0,
-                                    finalStartIndex);
-
-                            boolean unconventionalFormatting = false;
-
-                            double valToIncrement;
-                            try {
-                                valToIncrement = Double.valueOf(startVal.substring(
-                                        finalStartIndex, finalStopIndex));
-                            } catch (NumberFormatException nfe) {
-                                // in the event where there is a strange value e.g. 1.254.213, then we need to take the last value as the incrementer!
-                                valToIncrement = Double.valueOf(startVal.substring(startVal.lastIndexOf(".") + 1));
-                                strippedStartVal = startVal.substring(0, startVal.lastIndexOf(".") + 1);
-                                unconventionalFormatting = true;
-                            }
-                            double difference = 0;
-
-                            if (finalStartIndex2 != -1) {
-
-                                double valToIncrement2;
-                                try {
-                                    valToIncrement2 = Double.valueOf(startVal2.substring(
-                                            finalStartIndex2, finalStopIndex2));
-                                } catch (NumberFormatException nfe) {
-                                    // in the event where there is a strange value e.g. 1.254.213, then we need to take the last value as the incrementer!
-                                    valToIncrement2 = Double.valueOf(startVal2.substring(startVal2.lastIndexOf(".") + 1));
-                                }
-
-                                difference = valToIncrement2 -
-                                        valToIncrement;
-                                valToIncrement = valToIncrement2;
-                            } else {
-                                valToIncrement = valToIncrement + 1;
-                            }
-
-                            String autofillContents = "";
-
-                            for (int row = startRow + 1; row <= endRow; row++) {
-                                String strValOfInc = String.valueOf(valToIncrement);
-                                strValOfInc = strValOfInc.endsWith(".0") ? strValOfInc.substring(0, strValOfInc.length() - 2) : strValOfInc;
-
-                                autofillContents += strippedStartVal + strValOfInc;
-                                if (row != endRow) {
-                                    autofillContents += "\n";
-                                }
-
-                                if (finalStartIndex2 != -1) {
-                                    valToIncrement += difference;
-                                    if (valToIncrement < 0 && unconventionalFormatting) {
-                                        // positify it! :o) this is the behaviour in excel
-                                        valToIncrement *= -1;
-                                        difference *= -1;
-                                    }
-                                    valToIncrement = Utils.formatDoubleValue(startVal, valToIncrement);
-                                } else {
-                                    valToIncrement++;
-                                }
-                            }
-                            putStringOnClipboard(autofillContents);
-                            paste(startRow + 1, startCol, true);
-                        } else {
-                            // fill as string
-                            String autofillContents = "";
-
-                            for (int row = startRow + 1; row <= endRow; row++) {
-                                autofillContents += startVal;
-                                if (row != endRow) {
-                                    autofillContents += "\n";
-                                }
-                            }
-
-                            putStringOnClipboard(autofillContents);
-                            paste(startRow + 1, startCol, true);
-
-                        }
-                    }
-                }
-            }
-        });
-
-        JMenuItem mapFilesToDirectory = new JMenuItem("Resolve file names");
-        mapFilesToDirectory.setToolTipText("<html>" +
-                "<strong>resolve file names</strong>" +
-                "<p>you can select a directory and <strong>ISAcreator</strong> will resolve the correct,</p> " +
-                "<p>absolute file location (where possible!)</p>" +
-                "</html>");
-
-        mapFilesToDirectory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                resolveFileLocations();
-            }
-        });
-
-        JMenuItem copyData = new JMenuItem("Copy selection");
-        copyData.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                copy();
-            }
-        });
-
-        JMenuItem clearData = new JMenuItem("Clear fields");
-        clearData.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                if (!table.getColumnModel().getColumn(startCol)
-                        .getHeaderValue().toString().contains("Row")) {
-
-                    clearCells(startRow, startCol,
-                            table.rowAtPoint(new Point(x, y)),
-                            table.columnAtPoint(new Point(x, y)));
-                }
-            }
-        });
-
-        JMenuItem close = new JMenuItem("Close");
-        close.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                popup.setVisible(false);
-            }
-        });
-
-        popup.add(autoIncrementCells);
-        popup.add(new JSeparator());
-        popup.add(mapFilesToDirectory);
-        popup.add(new JSeparator());
-        popup.add(copyData);
-        popup.add(clearData);
-        popup.add(new JSeparator());
-        popup.add(close);
-
-        popup.show(jc, x, y);
-    }
-
-    private void putStringOnClipboard(String toPlace) {
-        StringSelection stsel = new StringSelection(toPlace);
-        system.setContents(stsel, stsel);
-    }
-
-    private boolean checkIsEmpty(TableColumn tc) {
-        int colIndex = tc.getModelIndex();
-        int viewIndex = Utils.convertModelIndexToView(table, colIndex);
-        for (int rowNo = 0; rowNo < table.getRowCount(); rowNo++) {
-            if (table.getValueAt(rowNo, viewIndex) != null && !table.getValueAt(rowNo, viewIndex).equals("")) {
-                return false;
-            }
-
-        }
-        return true;
-    }
-
-    private void resolveFileLocations() {
-        int[] selectedRows = table.getSelectedRows();
-        int selectedColumn = table.getSelectedColumn();
-
-        JFileChooser fileLocChooser = new JFileChooser();
-        fileLocChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-        fileLocChooser.setDialogTitle("Select directory to search through");
-        fileLocChooser.setApproveButtonText("Select directory");
-
-        if (fileLocChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File dir = fileLocChooser.getSelectedFile();
-
-            String[] files = new String[selectedRows.length];
-
-            for (int row = 0; row < selectedRows.length; row++) {
-                files[row] = table.getValueAt(selectedRows[row], selectedColumn).toString();
-            }
-
-            FileLocationMapperUtil fmu = new FileLocationMapperUtil();
-            Map<String, String> result = fmu.findProperFileLocations(files, dir);
-
-            for (int selectedRow : selectedRows) {
-                String candidateVal = table.getValueAt(selectedRow, selectedColumn).toString();
-                if (result.keySet().contains(candidateVal)) {
-                    table.setValueAt(result.get(candidateVal), selectedRow, selectedColumn);
-                }
-            }
-        }
-
-        // otherwise, do nothing
-    }
-
-
-    /**
-     * Perfroms a clipboard function of COPY
-     */
-    public void copy() {
-        doCopy(false, null); //sets isCut to false
-    }
-
-    /**
-     * Perfroms a clipboard function of cutting (COPY + CLEAR)
-     */
-    public void cut() {
-        doCopy(true, null); //sets isCut to true
-    }
-
-    /**
-     * Performs a clipboard function of pasting
-     *
-     * @param startRow - Where pasting is to start. If from selected row, supply -1 as a parameter
-     * @param startCol - Where pasting is to start. If from selected column, supply -1 as a parameter
-     */
-    public void paste(int startRow, int startCol, boolean storeInHistory) {
-        CellEditor editor = table.getCellEditor();
-        if (editor != null) {
-            editor.cancelCellEditing();
-        }
-
-        startRow = (startRow == -1) ? table.getSelectedRow() : startRow;
-        startCol = (startCol == -1) ? table.getSelectedColumn() : startCol;
-
-        //checks if anything is selected
-        if (startRow != -1) {
-            try {
-                String trstring = (String) (system.getContents(this).getTransferData(DataFlavor.stringFlavor));
-
-                SpreadsheetCellPoint size = SpreadsheetModel.getSize(trstring, '\t');
-
-
-                int rowSpaceToFill = (size.getRow());
-
-                int endRow = Math.min(table.getRowCount() - 1, (startRow + size.getRow()) - 1);
-                int endCol = Math.min(table.getColumnCount() - 1, (startCol + size.getCol()) - 1);
-
-                int colSpaceToFill = (endCol - startCol) + 1;
-
-                int[] colRange = new int[colSpaceToFill];
-                int[] rowRange = new int[rowSpaceToFill];
-                if (colSpaceToFill > 0) {
-
-                    colRange = new int[colSpaceToFill];
-                    int startVal = 0;
-                    for (int val = startCol; val <= endCol; val++) {
-                        colRange[startVal] = val;
-                        startVal++;
-                    }
-                }
-
-                if (rowSpaceToFill > 0) {
-                    rowRange = new int[rowSpaceToFill];
-                    int startVal = 0;
-                    for (int val = startRow; val <= endRow; val++) {
-                        rowRange[startVal] = val;
-                        startVal++;
-                    }
-                }
-
-                if (colRange.length == 0) {
-                    colRange = new int[1];
-                    colRange[0] = startCol;
-                }
-
-                if (rowRange.length == 0) {
-                    rowRange = new int[1];
-                    rowRange[0] = startRow;
-                }
-
-                SpreadsheetCellRange affectedRange = new SpreadsheetCellRange(rowRange, Utils.convertSelectedColumnsToModelIndices(table, colRange));
-
-                // add to history
-                if (storeInHistory) {
-                    spreadsheetHistory.add(affectedRange);
-                }
-                spreadsheetModel.extendedFromString(trstring, '\t', affectedRange);
-                spreadsheetModel.extendedSetSelection(affectedRange);
-
-                table.repaint();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-    /**
-     * Performs a clipboard function of cut/copy
-     *
-     * @param isCut true for cut, false for copy
-     */
-
-    private void doCopy(boolean isCut, SpreadsheetCellRange toUse) {
-        CellEditor editor = table.getCellEditor();
-        if (editor != null) {
-            editor.cancelCellEditing();
-        }
-        boolean modifiedCellRange = false;
-        if (table.getSelectedRowCount() != 0 || toUse != null) {
-            if (toUse == null) {
-
-                toUse = new SpreadsheetCellRange(table.getSelectedRows(), Utils.convertSelectedColumnsToModelIndices(table, table.getSelectedColumns()));
-                modifiedCellRange = true;
-            }
-
-            if (isCut && modifiedCellRange) {
-                spreadsheetHistory.add(toUse);
-            }
-
-            String str = spreadsheetModel.extendedToString(toUse, '\t');
-            log.info("copying \n" + str);
-            StringSelection stsel = new StringSelection(str);
-            system.setContents(stsel, stsel);
-
-            if (isCut) {
-                spreadsheetModel.clearRange(toUse);
-            }
-        } else {
-            log.info("no rows are selected so no copying has taken place.");
-        }
-
-    }
-
-    /**
      * Reorders the columns defined in the table to ensure that parameters occur the protocol ref they were added with and
      *
      * @param fileName - the name of the file being checked!
      * @return whether or not the table is consistent
      */
-    private boolean checkTableColumnOrderBad(String fileName) {
+    protected boolean checkTableColumnOrderBad(String fileName) {
         tcc = new TableConsistencyChecker();
         // return true if ok, false if not
         return tcc.runInspection(fileName, table, columnDependencies);
@@ -1815,120 +934,6 @@ public class Spreadsheet extends JComponent implements
 
     public TableConsistencyChecker getTableConsistencyChecker() {
         return tcc;
-    }
-
-    /**
-     * Exports current Table into a CSV or TAB file depending on separator chosen.
-     *
-     * @param f                  File to be written to
-     * @param separator          -> "\t" for tab separation or "," for CSV
-     * @param removeEmptyColumns - should empty columns be removed from the submission?
-     * @throws java.io.FileNotFoundException - never thrown since the file is created if it doesn't exist, and over written if
-     *                                       it already exists
-     *                                       <p/>
-     *                                       todo Move this code into a utils class
-     */
-    public boolean exportTable(File f, String separator, boolean removeEmptyColumns)
-            throws FileNotFoundException {
-        PrintStream ps = new PrintStream(f);
-
-        Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
-
-        Map<String, OntologyObject> history = dataEntryEnv.getUserHistory();
-
-        for (int col = 1; col < table.getColumnCount(); col++) {
-            TableColumn tc = table.getColumnModel().getColumn(col);
-            // only hide columns which are empty and that are not necessarily required!
-            if (removeEmptyColumns && checkIsEmpty(tc) && !tro.isRequired(tc.getHeaderValue().toString())) {
-                emptyColumns.add(tc);
-            } else {
-                if (col == 1) {
-                    ps.print("\"" + tc.getHeaderValue() + "\"");
-                } else {
-                    ps.print(separator + "\"" + tc.getHeaderValue() + "\"");
-                }
-
-                if (tc.getCellEditor() instanceof OntologyCellEditor ||
-                        tc.getHeaderValue().toString().equalsIgnoreCase("unit")) {
-                    ps.print(separator + "\"Term Source REF\"");
-                    ps.print(separator + "\"Term Accession Number\"");
-                }
-            }
-        }
-
-        ps.print("\n");
-
-        // write out each column
-        for (int rows = 0; rows < table.getRowCount(); rows++) {
-            String rowInfo = "";
-
-            for (int cols = 1; cols < table.getColumnCount(); cols++) {
-                // the value to be output to the field
-                TableColumn tc = table.getColumnModel().getColumn(cols);
-
-                if (!emptyColumns.contains(tc)) {
-                    String val;
-
-                    // where the term came from if there is an ontology term.
-                    String source = "";
-                    String toAdd;
-
-                    if (table.getValueAt(rows, cols) != null) {
-                        val = table.getValueAt(rows, cols).toString();
-
-                        if (tc.getCellEditor() instanceof OntologyCellEditor ||
-                                tc.getHeaderValue().toString()
-                                        .equalsIgnoreCase("unit")) {
-
-
-                            String termAccession = "";
-
-                            if (!GeneralUtils.isValueURL(val)) {
-                                OntologyObject oo = history.get(val);
-
-                                if (oo != null) {
-                                    termAccession = oo.getTermAccession();
-                                }
-
-                                if (val.contains(":")) {
-                                    source = val.substring(0, val.indexOf(":"));
-                                    val = val.substring(val.indexOf(":") + 1);
-                                }
-                            }
-
-                            toAdd = "\"" + val + "\"" + separator + "\"" + source + "\"" + separator +
-                                    "\"" + termAccession + "\"";
-                        } else {
-                            toAdd = "\"" + val + "\"";
-                        }
-                    } else {
-                        if (tc.getCellEditor() instanceof OntologyCellEditor ||
-                                tc.getHeaderValue().toString()
-                                        .equalsIgnoreCase("unit")) {
-                            // add triple separated value for term : source : accession triple
-                            toAdd = "\"\"" + separator + "\"\"" + separator + "\"\"";
-                        } else {
-                            toAdd = "\"\"";
-                        }
-                    }
-
-                    // only add the row separator if we are not adding the last column!
-                    if (cols == table.getColumnCount() - 1) {
-                        rowInfo += toAdd;
-                    } else {
-                        rowInfo += (toAdd + separator);
-                    }
-                }
-            }
-
-            if (rowInfo.length() > 0) {
-                ps.println(rowInfo);
-            }
-        }
-
-        ps.close();
-
-        return checkTableColumnOrderBad(f.getName());
     }
 
 
@@ -1942,39 +947,6 @@ public class Spreadsheet extends JComponent implements
         return dataEntryEnv;
     }
 
-    /**
-     * Method returns a Set of all the files defined in a spreadsheet. These locations are used to zip up the data files
-     * in the ISArchive for submission to the index.
-     *
-     * @return Set of files defined in the spreadsheet
-     *         <p/>
-     *         todo move to spreadsheetutils class
-     */
-    public Set<String> getFilesDefinedInTable
-    () {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-        Set<String> files = new HashSet<String>();
-
-        while (columns.hasMoreElements()) {
-            TableColumn tc = columns.nextElement();
-
-            if (tro.acceptsFileLocations(tc.getHeaderValue().toString())) {
-                int colIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
-
-                for (int row = 0; row < table.getRowCount(); row++) {
-                    String s = (table.getValueAt(row, colIndex) == null) ? ""
-                            : table.getValueAt(row,
-                            colIndex).toString();
-
-                    if (s != null && !s.trim().equals("")) {
-                        files.add(s);
-                    }
-                }
-            }
-        }
-
-        return files;
-    }
 
     /**
      * Return a list of the current column headers
@@ -2027,7 +999,7 @@ public class Spreadsheet extends JComponent implements
         while (columns.hasMoreElements()) {
             TableColumn tc = columns.nextElement();
 
-            if (tro.getClassType(tc.getHeaderValue().toString().trim())
+            if (tableReferenceObject.getClassType(tc.getHeaderValue().toString().trim())
                     == DataTypes.ONTOLOGY_TERM ||
                     tc.getHeaderValue().toString().trim()
                             .equalsIgnoreCase("unit")) {
@@ -2070,7 +1042,7 @@ public class Spreadsheet extends JComponent implements
      */
     public StudyDataEntry getSDE
     () {
-        return sde;
+        return studyDataEntryEnvironment;
     }
 
     /**
@@ -2078,8 +1050,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @return the JTable component
      */
-    public JTable getTable
-    () {
+    public CustomTable getTable() {
         return table;
     }
 
@@ -2099,7 +1070,7 @@ public class Spreadsheet extends JComponent implements
      * @return - TableReferenceObject defining current table.
      */
     public TableReferenceObject getTableReferenceObject() {
-        return tro;
+        return tableReferenceObject;
     }
 
     public void mouseClicked(MouseEvent event) {
@@ -2121,7 +1092,7 @@ public class Spreadsheet extends JComponent implements
                         .getColumn(table.columnAtPoint(
                                 event.getPoint())).getHeaderValue().toString();
                 SwingUtilities.convertPointFromScreen(event.getPoint(), table);
-                popupMenu(table, event.getX() + 10, event.getY() + 10, columnName);
+                spreadsheetPopups.popupMenu(table, event.getX() + 10, event.getY() + 10, columnName);
             }
 
             if (SwingUtilities.isLeftMouseButton(event)) {
@@ -2135,7 +1106,7 @@ public class Spreadsheet extends JComponent implements
 
         if (SwingUtilities.isLeftMouseButton(event) && (table.rowAtPoint(event.getPoint()) - startRow) > 1) {
             SwingUtilities.convertPointFromScreen(event.getPoint(), table);
-            dragCellPopupMenu(table, event.getX(), event.getY());
+            spreadsheetPopups.dragCellPopupMenu(table, event.getX(), event.getY());
         }
     }
 
@@ -2146,7 +1117,7 @@ public class Spreadsheet extends JComponent implements
      */
     public void populateTable
     (List<List<String>> data) {
-        addRows(data.size(), false);
+        spreadsheetFunctions.addRows(data.size(), false);
 
         int dataSize = data.size();
 
@@ -2166,412 +1137,8 @@ public class Spreadsheet extends JComponent implements
         spreadsheetModel.fireTableDataChanged();
     }
 
-    /**
-     * Popup menu supplies the main form of menu in the draw tool
-     *
-     * @param jc         the component the popup menu is to be added to
-     * @param x          horizontal position where the popup position should be
-     * @param y          vertical position for the location of the popup menu.
-     * @param columnName -> name of column where the popup was called.
-     */
-    private void popupMenu
-    (JComponent
-             jc, final int x,
-     final int y, String
-            columnName) {
-        final JPopupMenu popup = new JPopupMenu("Utilities");
-        popup.setLightWeightPopupEnabled(false);
-        popup.setBackground(new Color(0, 104, 56, 50));
 
-        JMenuItem undo = new JMenuItem("Undo");
-        undo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                um.undo();
-            }
-        });
-
-        undo.setEnabled(um.canUndo());
-
-
-        JMenuItem redo = new JMenuItem("Redo");
-        redo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                um.redo();
-            }
-        });
-
-        redo.setEnabled(um.canRedo());
-
-
-        JMenu addRow = new JMenu("Add Row(s)");
-
-        JMenuItem addRowsAtEndOfTable = new JMenuItem("Add rows to end of table");
-        addRowsAtEndOfTable.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                showMultipleRowsGUI();
-            }
-        });
-
-        JMenuItem addRowsBeforeSelectedRow = new JMenuItem("Add row before this row");
-        addRowsBeforeSelectedRow.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                insertRowInPosition(table.getSelectedRow());
-            }
-        });
-
-        addRow.add(addRowsBeforeSelectedRow);
-        addRow.add(addRowsAtEndOfTable);
-
-        JMenuItem deleteRow = new JMenuItem("Remove Row(s)");
-        deleteRow.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = table.getSelectedRows();
-                deleteRow(selectedRows);
-            }
-        });
-
-        JMenu addColumn = new JMenu("Add Column");
-
-
-        JMenuItem addSampleName = new JMenuItem("Add Sample Name");
-        addSampleName.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                popup.setVisible(false);
-
-                TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
-                        "Sample Name", "The name of the sample being used",
-                        DataTypes.STRING, "", false, false, false);
-
-                addFieldToReferenceObject(fo);
-
-                addColumnAfterPosition("Sample Name", null, -1);
-            }
-        });
-
-        JMenuItem addMaterialType = new JMenuItem("Add Material Type");
-        addMaterialType.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                popup.setVisible(false);
-
-
-                TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
-                        "Material Type", "The type of material used for analysis in this assay",
-                        DataTypes.ONTOLOGY_TERM, "", false, false, false);
-
-                addFieldToReferenceObject(fo);
-
-                addColumnAfterPosition("Material Type", null, -1);
-            }
-        });
-
-
-        JMenuItem addCharacteristic = new JMenuItem("Add Characteristic");
-        addCharacteristic.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-                showAddColumnsGUI(AddColumnGUI.ADD_CHARACTERISTIC_COLUMN);
-            }
-        });
-
-        JMenuItem addFactor = new JMenuItem("Add Factor");
-        addFactor.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-                showAddColumnsGUI(AddColumnGUI.ADD_FACTOR_COLUMN);
-            }
-        });
-
-        JMenuItem addProtocol = new JMenuItem("Add Protocol");
-        addProtocol.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-
-                TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
-                        "Protocol REF", "Protocol used for experiment",
-                        DataTypes.LIST, "", false, false, false);
-
-
-                fo.setFieldList(sde.getProtocolNames());
-
-                addFieldToReferenceObject(fo);
-
-                addColumnAfterPosition("Protocol REF", null, -1);
-            }
-        });
-
-        JMenuItem addParameter = new JMenuItem("Add Parameter");
-        addParameter.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-                showAddColumnsGUI(AddColumnGUI.ADD_PARAMETER_COLUMN);
-            }
-        });
-
-        JMenuItem addComment = new JMenuItem("Add Comment");
-        addComment.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-                showAddColumnsGUI(AddColumnGUI.ADD_COMMENT_COLUMN);
-            }
-        });
-
-        JMenuItem addDate = new JMenuItem("Add Date");
-        addDate.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-
-                TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
-                        "Date", "Date field", DataTypes.DATE, "", false,
-                        false, false);
-
-                addFieldToReferenceObject(fo);
-
-                addColumnAfterPosition("Date", "", -1);
-            }
-        });
-
-        JMenuItem addPerformer = new JMenuItem("Add Performer");
-        addPerformer.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(false);
-
-                TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
-                        "Performer",
-                        "Performer of this hybridisation/sample preparation",
-                        DataTypes.STRING, "", false, false, false);
-
-                addFieldToReferenceObject(fo);
-
-                addColumnAfterPosition("Performer", null, -1);
-            }
-        });
-
-
-        addColumn.add(addSampleName);
-        addColumn.add(addMaterialType);
-
-        if (checkColumnExists("Material Type")) {
-            addMaterialType.setEnabled(false);
-        }
-
-        final String[] toRemove = new String[]{null};
-        if (tro.getMissingFields() != null && tro.getMissingFields().size() != 0) {
-            for (final String missingField : tro.getMissingFields().keySet()) {
-                if (!checkColumnExists(missingField)) {
-                    JMenuItem item = new JMenuItem(missingField);
-                    item.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae) {
-                            popup.setVisible(false);
-
-                            addFieldToReferenceObject(tro.getMissingFields().get(missingField));
-
-                            addColumnAfterPosition(missingField, "", -1);
-                            toRemove[0] = missingField;
-
-                        }
-                    });
-                    addColumn.add(item);
-                }
-            }
-            if (toRemove[0] != null) {
-                tro.getMissingFields().remove(toRemove[0]);
-            }
-        }
-
-        // todo add fields to the list which are allowed to appear multiple times. Code should be integrated
-        // with the above line...
-
-        addColumn.add(new JSeparator());
-
-        addColumn.add(addCharacteristic);
-        addColumn.add(addFactor);
-
-        if (columnName.toLowerCase().contains("protocol")) {
-            addColumn.add(addParameter);
-        }
-
-        if (!columnName.toLowerCase().contains("characteristic") &&
-                !columnName.toLowerCase().contains("unit") &&
-                !columnName.toLowerCase().contains("factor") &&
-                !columnName.toLowerCase().contains("date") &&
-                !columnName.toLowerCase().contains("performer") &&
-                !columnName.toLowerCase().contains("provider") &&
-                !columnName.toLowerCase().contains("comment") &&
-                !columnName.toLowerCase().contains("material type")) {
-            addColumn.add(addProtocol);
-        }
-
-        addColumn.add(new JSeparator());
-        addColumn.add(addComment);
-
-        if (columnName.toLowerCase().contains("protocol")) {
-            addColumn.add(addDate);
-            addColumn.add(addPerformer);
-        }
-
-        JMenuItem deleteColumn = new JMenuItem("Remove Column");
-        deleteColumn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (!(table.getSelectedColumns().length > 1)) {
-                    deleteColumn(table.getSelectedColumn());
-                } else {
-                    showColumnErrorMessage();
-                }
-            }
-        });
-
-
-        JMenu unhideColumns = new JMenu("Add previously removed column(s)");
-        if (hiddenColumns.size() > 0) {
-
-            for (final String hiddenColumn : hiddenColumns) {
-                JMenuItem item = new JMenuItem(hiddenColumn);
-                item.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae) {
-                        addColumnAfterPosition(hiddenColumn, null, -1);
-                        hiddenColumns.remove(hiddenColumn);
-                    }
-                });
-                unhideColumns.add(item);
-            }
-        }
-
-        JMenuItem copyColumnDown = new JMenuItem("Copy Column Downwards");
-        copyColumnDown.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                copyColumnDownwards(table.getSelectedRow(),
-                        table.getSelectedColumn());
-            }
-        });
-
-        JMenuItem copyRowDown = new JMenuItem("Copy Row Downwards");
-        copyRowDown.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                copyRowDownwards(table.getSelectedRow());
-            }
-        });
-
-        JMenuItem copy = new JMenuItem("Copy");
-        copy.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                copy();
-            }
-        });
-
-        JMenuItem paste = new JMenuItem("Paste");
-        paste.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                paste(-1, -1, true);
-            }
-        });
-
-
-        JMenuItem cut = new JMenuItem("Cut");
-        cut.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                doCopy(true, null);
-            }
-        });
-
-        JMenuItem multipleSort = new JMenuItem("Perform Multiple Sort");
-        multipleSort.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                showMultipleColumnSortGUI();
-            }
-        });
-
-
-        JMenuItem clearField = new JMenuItem("Clear Field");
-        clearField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                clearCells(table.getSelectedRow(), table.getSelectedColumn(), table.getSelectedRow(), table.getSelectedColumn());
-            }
-        });
-
-        JMenu highlightGroups = new JMenu("Highlight groups");
-        createMenuItemsForHighlighter(highlightGroups);
-
-        JMenuItem removeHighlight = new JMenuItem("Remove Highlight");
-        removeHighlight.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                if (highlightActive) {
-
-                    setRowsToDefaultColor();
-                }
-
-            }
-        });
-
-        JMenuItem mapFilesToDirectory = new JMenuItem("Resolve file names");
-        mapFilesToDirectory.setToolTipText("<html>" +
-                "<strong>resolve file names</strong>" +
-                "<p>you can select a directory and <strong>ISAcreator</strong> will resolve the correct,</p> " +
-                "<p>absolute file location (where possible!)</p>" +
-                "</html>");
-
-        mapFilesToDirectory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                resolveFileLocations();
-            }
-        });
-
-        if (table.getSelectedRows().length == 0) {
-            deleteRow.setEnabled(false);
-        }
-
-        if (table.getSelectedColumns().length == 0) {
-            deleteColumn.setEnabled(false);
-        }
-
-        if (table.getRowCount() == 0) {
-            multipleSort.setEnabled(false);
-        }
-
-        popup.add(undo);
-        popup.add(redo);
-        popup.add(new JSeparator());
-        popup.add(addRow);
-        popup.add(deleteRow);
-
-        popup.add(new JSeparator());
-        String columnLC = columnName.toLowerCase();
-        if (!columnLC.contains("characteristic") &&
-                !columnLC.contains("unit") &&
-                !columnLC.contains("factor") &&
-                !columnLC.contains("date") &&
-                !columnLC.contains("performer") &&
-                !columnLC.contains("provider") &&
-                !columnLC.contains("comment") &&
-                !columnLC.contains("material type")) {
-            popup.add(addColumn);
-        }
-        if (hiddenColumns.size() > 0) {
-            popup.add(unhideColumns);
-        }
-        popup.add(deleteColumn);
-        popup.add(new JSeparator());
-        popup.add(copyColumnDown);
-        popup.add(copyRowDown);
-        popup.add(new JSeparator());
-        popup.add(copy);
-        popup.add(paste);
-        popup.add(cut);
-        popup.add(new JSeparator());
-        popup.add(multipleSort);
-        popup.add(new JSeparator());
-        popup.add(clearField);
-        popup.add(new JSeparator());
-        popup.add(mapFilesToDirectory);
-        popup.add(new JSeparator());
-        popup.add(highlightGroups);
-        if (highlightActive) {
-            popup.add(removeHighlight);
-        }
-
-        popup.show(jc, x, y);
-    }
-
-    private void highlight(String toGroupBy, boolean exactMatch, boolean returnSampleNames) {
+    protected void highlight(String toGroupBy, boolean exactMatch, boolean returnSampleNames) {
         if (tgi != null && tgi.isShowing()) {
             tgi.dispose();
         }
@@ -2604,71 +1171,8 @@ public class Spreadsheet extends JComponent implements
         });
     }
 
-    private void createMenuItemsForHighlighter(JMenu toAddTo) {
-        JMenu characteristicsMenu = new JMenu("Characteristics");
-        JMenu factors = new JMenu("Factors");
 
-        Map<String, Set<String>> groupInfo = getColumnGroups();
-        JMenuItem mi;
-        for (String group : groupInfo.keySet()) {
-            if (group.equals("Normal")) {
-                for (final String column : groupInfo.get(group)) {
-                    if (!column.equals(TableReferenceObject.ROW_NO_TEXT)) {
-                        mi = new JMenuItem(column);
-                        mi.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent actionEvent) {
-                                highlight(column, true, false);
-                            }
-                        });
-                        toAddTo.add(mi);
-                    }
-                }
-            } else if (group.equals("Characteristics")) {
-
-                mi = new JMenuItem("All Characteristics");
-                mi.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        highlight("Characteristics", false, false);
-                    }
-                });
-                characteristicsMenu.add(mi);
-                for (final String column : groupInfo.get(group)) {
-                    mi = new JMenuItem(column);
-                    mi.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent actionEvent) {
-                            highlight(column, true, false);
-                        }
-                    });
-                    characteristicsMenu.add(mi);
-                }
-
-                toAddTo.add(characteristicsMenu);
-
-            } else if (group.equals("Factor")) {
-
-                mi = new JMenuItem("All Factors");
-                mi.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        highlight("Factor Value", false, false);
-                    }
-                });
-                factors.add(mi);
-                for (final String column : groupInfo.get(group)) {
-                    mi = new JMenuItem(column);
-                    mi.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent actionEvent) {
-                            highlight(column, true, false);
-                        }
-                    });
-                    factors.add(mi);
-                }
-                toAddTo.add(factors);
-            }
-        }
-
-    }
-
-    private Map<String, Set<String>> getColumnGroups() {
+    protected Map<String, Set<String>> getColumnGroups() {
 
         Map<String, Set<String>> groupInfo = new HashMap<String, Set<String>>();
 
@@ -2754,14 +1258,14 @@ public class Spreadsheet extends JComponent implements
             if ((currentState == DELETING_COLUMN) &&
                     (lastOptionAnswer == JOptionPane.YES_OPTION)) {
 
-                removeColumn();
+                spreadsheetFunctions.removeColumn();
                 curColDelete = -1;
                 currentState = DEFAULT_STATE;
             }
 
             if ((currentState == DELETING_ROW) &&
                     (lastOptionAnswer == JOptionPane.YES_OPTION)) {
-                removeRows();
+                spreadsheetFunctions.removeRows();
                 rowsToDelete = null;
                 currentState = DEFAULT_STATE;
             }
@@ -2779,7 +1283,7 @@ public class Spreadsheet extends JComponent implements
      * @param mappings - Mappings of parent column positions to the dependent column positions.
      */
     private void rebuildDependencies(Map<Integer, ListOrderedSet<Integer>> mappings) {
-        log.info("Rebuilding dependencies for: " + title);
+        log.info("Rebuilding dependencies for: " + spreadsheetTitle);
         log.info("Number of columns is " + table.getColumnCount());
         for (Integer parentColIndex : mappings.keySet()) {
             if (parentColIndex + 1 < table.getColumnCount()) {
@@ -2803,171 +1307,6 @@ public class Spreadsheet extends JComponent implements
         }
     }
 
-    private void removeColumn() {
-        if (curColDelete != -1) {
-            SpreadsheetModel model = (SpreadsheetModel) table.getModel();
-            TableColumn col = table.getColumnModel().getColumn(curColDelete);
-
-            hiddenColumns.add(col.getHeaderValue().toString());
-            deleteColumn(model, col);
-
-            removeDependentColumns(col);
-            removeColumnFromDependencies(col);
-        }
-    }
-
-    /**
-     * Remove a column from the table, delete all the data associated with the column in the model, and keep indices
-     * intact by decreasing the index of every column after the one deleted by one to stop fragmentation.
-     */
-    private void deleteColumn(SpreadsheetModel model, TableColumn col) {
-
-        int columnModelIndex = col.getModelIndex();
-        Vector data = model.getDataVector();
-        Vector colIds = model.getColumnIdentifiers();
-        table.removeColumn(col);
-        colIds.removeElementAt(columnModelIndex);
-
-        // remove any data present in the column on deletion
-        for (Object aData : data) {
-            Vector row = (Vector) aData;
-            row.removeElementAt(columnModelIndex);
-        }
-
-        model.setDataVector(data, colIds);
-
-        // decrease each column index after deleted column by 1 so that indexes can be kept intact.
-        Enumeration enumer = table.getColumnModel().getColumns();
-
-        while (enumer.hasMoreElements()) {
-            TableColumn c = (TableColumn) enumer.nextElement();
-
-            if (c.getModelIndex() >= columnModelIndex) {
-                c.setModelIndex(c.getModelIndex() - 1);
-            }
-        }
-        // update the model
-        model.fireTableStructureChanged();
-    }
-
-    /**
-     * Remove a column from a table given a column name
-     *
-     * @param colName - Name of column to be removed.
-     */
-    public void removeColumnByName
-    (String
-             colName) {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        while (columns.hasMoreElements()) {
-            TableColumn col = columns.nextElement();
-
-            if (col.getHeaderValue().toString().equals(colName)) {
-                curColDelete = Utils.convertModelIndexToView(table, col.getModelIndex());
-                removeColumn();
-
-                removeDependentColumns(col);
-            }
-        }
-
-        ((SpreadsheetModel) table.getModel()).fireTableStructureChanged();
-    }
-
-    /**
-     * Removes a column from the list of dependencies
-     *
-     * @param col - Column to be removed
-     */
-    public void removeColumnFromDependencies
-    (TableColumn
-             col) {
-        boolean removingParent = false;
-        TableColumn toRemove = null;
-        TableColumn parentColumn = null;
-
-        for (TableColumn cp : columnDependencies.keySet()) {
-            if (cp == col) {
-                toRemove = cp;
-                removingParent = true;
-                break;
-            }
-
-            for (TableColumn cc : columnDependencies.get(cp)) {
-                if (cc == col) {
-                    toRemove = cc;
-                    parentColumn = cp;
-                    break;
-                }
-            }
-        }
-
-
-        if (toRemove != null) {
-            if (removingParent) {
-                //remove column with it's associated dependencies
-                columnDependencies.remove(toRemove);
-            } else {
-                // remove column from it's parent
-                columnDependencies.get(parentColumn).remove(toRemove);
-            }
-        } else {
-            log.info("Dependents on this column not found, so not removing any other columns!");
-        }
-    }
-
-    /**
-     * if a given column has dependent columns, e.g. does a factor column have an associated unit column. if it does,
-     * then remove the factor and the unit. this method does that.
-     *
-     * @param col - column to remove...
-     */
-    private void removeDependentColumns(TableColumn col) {
-
-        try {
-            if (columnDependencies.containsKey(col)) {
-                for (TableColumn tc : columnDependencies.get(col)) {
-                    curColDelete = Utils.convertModelIndexToView(table, tc.getModelIndex());
-                    removeColumn();
-                }
-                removeColumnFromDependencies(col);
-            }
-        } catch (ConcurrentModificationException cme) {
-            // ignore this error
-        }
-
-    }
-
-
-    /**
-     * Remove a row, fire a table data changed event, and then update the row numbers.
-     *
-     * @param i - row to be removed.
-     */
-    private void removeRow(int i) {
-        //rows.removeElementAt(convertViewRowToModel(i));
-        spreadsheetModel.removeRow(convertViewRowToModel(i));
-        spreadsheetModel.updateRowCount();
-    }
-
-    /**
-     * Remove multiple rows from a table
-     */
-    private void removeRows() {
-        if (rowsToDelete != null && rowsToDelete.length > 0) {
-            for (final int i : Utils.arrayToList(rowsToDelete)) {
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        removeRow(i);
-                    }
-                });
-            }
-        }
-
-        table.addNotify();
-
-        currentState = DEFAULT_STATE;
-    }
 
     /**
      * Searches UserHistory for a unique ontology id (source:term pair)
@@ -2984,12 +1323,10 @@ public class Spreadsheet extends JComponent implements
     /**
      * Add a listener to be notified when the selected range changes
      *
-     * @param l The listener to add
+     * @param spreadsheetSelectionListener The listener to add
      */
-    public void addSelectionListener
-    (SpreadsheetSelectionListener
-             l) {
-        listenerList.add(SpreadsheetSelectionListener.class, l);
+    public void addSelectionListener(SpreadsheetSelectionListener spreadsheetSelectionListener) {
+        listenerList.add(SpreadsheetSelectionListener.class, spreadsheetSelectionListener);
     }
 
     /**
@@ -3045,7 +1382,7 @@ public class Spreadsheet extends JComponent implements
                     if (tc != null) {
                         try {
                             table.getTableHeader()
-                                    .setToolTipText(tro.getFieldByName(
+                                    .setToolTipText(tableReferenceObject.getFieldByName(
                                             tc.getHeaderValue().toString()).getDescription());
                         } catch (Exception e) {
                             // ignore this error
@@ -3094,14 +1431,14 @@ public class Spreadsheet extends JComponent implements
 
         TableColumnModel model = table.getColumnModel();
 
-        for (int i = 0; i < tro.getHeaders().size(); i++) {
+        for (int i = 0; i < tableReferenceObject.getHeaders().size(); i++) {
             if (!model.getColumn(i).getHeaderValue().toString().equals(TableReferenceObject.ROW_NO_TEXT)) {
                 model.getColumn(i).setHeaderRenderer(renderer);
                 model.getColumn(i)
-                        .setPreferredWidth(calcColWidths(
+                        .setPreferredWidth(spreadsheetFunctions.calcColWidths(
                                 model.getColumn(i).getHeaderValue().toString()));
                 // add appropriate cell editor for cell.
-                addCellEditor(model.getColumn(i));
+                spreadsheetFunctions.addCellEditor(model.getColumn(i));
             } else {
                 model.getColumn(i).setHeaderRenderer(new RowNumberCellRenderer());
             }
@@ -3122,7 +1459,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @param toShow can be any one of four static values from the AddColumnGUI class, e.g. ADD_FACTOR_COLUMN, or ADD_COMMENT_COLUMN.
      */
-    private void showAddColumnsGUI
+    protected void showAddColumnsGUI
     (
             int toShow) {
         final AddColumnGUI goingToDisplay;
@@ -3170,10 +1507,9 @@ public class Spreadsheet extends JComponent implements
     /**
      * Displays an error message when a user tries to delete more than one column at a time.
      */
-    private void showColumnErrorMessage
-    () {
+    protected void showColumnErrorMessage() {
         if (!(table.getSelectedColumns().length > 1)) {
-            deleteColumn(table.getSelectedColumn());
+            spreadsheetFunctions.deleteColumn(table.getSelectedColumn());
         } else {
 
             optionPane = new JOptionPane("<html>Multiple column select detected!<p>Please select only one column!</p></html>", JOptionPane.OK_OPTION);
@@ -3188,7 +1524,7 @@ public class Spreadsheet extends JComponent implements
     /**
      * Displays the MultipleSortGUI
      */
-    private void showMultipleColumnSortGUI
+    protected void showMultipleColumnSortGUI
     () {
         msGUI.updateAllCombos();
         SwingUtilities.invokeLater(new Runnable() {
@@ -3202,7 +1538,7 @@ public class Spreadsheet extends JComponent implements
     /**
      * Displays the Transposed Spreadsheet UI
      */
-    private void showTransposeSpreadsheetGUI() {
+    protected void showTransposeSpreadsheetGUI() {
 
         // todo migrate this to occur in the view so that a loading pane is shown whilst the spreadsheet is loaded.
         SpreadsheetConverter converter = new SpreadsheetConverter(Spreadsheet.this);
@@ -3222,78 +1558,13 @@ public class Spreadsheet extends JComponent implements
     /**
      * Displays the AddMultipleRowsGUI
      */
-    private void showMultipleRowsGUI
+    protected void showMultipleRowsGUI
     () {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 dataEntryEnv.getParentFrame().showJDialogAsSheet(amrGUI);
             }
         });
-    }
-
-
-    /**
-     * Substitutes a given value prevTerm with a new value newTerm in a column whose header
-     * is colName
-     *
-     * @param colName  - Column to be searched in.
-     * @param prevTerm - the term to replace
-     * @param newTerm  - the new term to be used instead.
-     */
-    public void susbstituteTermsInColumn(String colName, String prevTerm, String newTerm) {
-
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        while (columns.hasMoreElements()) {
-            TableColumn col = columns.nextElement();
-
-            if (col.getHeaderValue().toString().equals(colName)) {
-                int colIndex = col.getModelIndex();
-
-                for (int i = 0; i < spreadsheetModel.getRowCount(); i++) {
-                    // safety precaution to finalise any cells. otherwise their value would be missed!
-                    if (table.getCellEditor(i, colIndex) != null) {
-                        table.getCellEditor(i, colIndex).stopCellEditing();
-                    }
-
-                    if (spreadsheetModel.getValueAt(i, colIndex) != null && spreadsheetModel.getValueAt(i, colIndex).toString()
-                            .equals(prevTerm)) {
-                        spreadsheetModel.setValueAt(newTerm, i, colIndex);
-                    }
-                }
-            }
-        }
-    }
-
-
-    public void performMultipleSort(int primaryColumn,
-                                    int secondaryColumn,
-                                    boolean primaryAscending,
-                                    boolean secondaryAscending) {
-        SpreadsheetCellRange affectedRange = new SpreadsheetCellRange(Utils.getArrayOfVals(0, table.getRowCount() - 1), Utils.convertSelectedColumnsToModelIndices(table, Utils.getArrayOfVals(1, table.getColumnCount() - 1)));
-        spreadsheetHistory.add(affectedRange);
-        setRowsToDefaultColor();
-        spreadsheetModel.sort(affectedRange, table.columnViewIndextoModel(primaryColumn), table.columnViewIndextoModel(secondaryColumn), primaryAscending, secondaryAscending);
-    }
-
-    /**
-     * Substitutes headers - replaces a column name with another one
-     *
-     * @param prevHeaderName - Previous column header
-     * @param newHeaderName  - New column header
-     */
-    public void substituteHeaderNames(String prevHeaderName, String newHeaderName) {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        while (columns.hasMoreElements()) {
-            TableColumn col = columns.nextElement();
-
-            if (col.getHeaderValue().toString().equals(prevHeaderName)) {
-                col.setHeaderValue(newHeaderName);
-            }
-        }
-
-        table.addNotify();
     }
 
 
@@ -3410,7 +1681,7 @@ public class Spreadsheet extends JComponent implements
                 String columnName = table.getColumnModel()
                         .getColumn(table.columnAtPoint(
                                 e.getPoint())).getHeaderValue().toString();
-                popupMenu(header, e.getX(), e.getY(), columnName);
+                spreadsheetPopups.popupMenu(header, e.getX(), e.getY(), columnName);
             } else {
                 if (e.getClickCount() == 2) {
 

@@ -104,7 +104,7 @@ public class OutputISAFiles {
                         File.separator + s.getStudySampleFileIdentifier());
 
                 Spreadsheet tmpSheet = s.getStudySample().getSpreadsheetUI().getTable();
-                if (!tmpSheet.exportTable(fileToSave, "\t", removeEmptyColumns)) {
+                if (!tmpSheet.getSpreadsheetFunctions().exportTable(fileToSave, "\t", removeEmptyColumns)) {
                     errorSheets.add(tmpSheet);
                     shouldShowIncorrectOrderGUI = true;
                 }
@@ -118,7 +118,7 @@ public class OutputISAFiles {
                             File.separator + a.getAssayReference());
 
                     tmpSheet = a.getSpreadsheetUI().getTable();
-                    if (!tmpSheet.exportTable(fileToSave, "\t", removeEmptyColumns)) {
+                    if (!tmpSheet.getSpreadsheetFunctions().exportTable(fileToSave, "\t", removeEmptyColumns)) {
                         errorSheets.add(tmpSheet);
                         shouldShowIncorrectOrderGUI = true;
                     }

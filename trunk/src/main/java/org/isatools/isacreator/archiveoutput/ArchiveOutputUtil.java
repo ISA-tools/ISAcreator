@@ -164,7 +164,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 for (Assay a : s.getAssays().values()) {
                     localFiles.put(a.getAssayReference(), new ArrayList<String>());
                     // getFilesDefinedInTable will get all files and directory paths listed in each file column in the table!
-                    for (String file : a.getSpreadsheetUI().getTable().getFilesDefinedInTable()) {
+                    for (String file : a.getSpreadsheetUI().getTable().getSpreadsheetFunctions().getFilesDefinedInTable()) {
                         if (!file.startsWith("ftp") && !file.startsWith("http")) {
 
                             localFiles.get(a.getAssayReference()).add(file);
@@ -272,8 +272,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                     fis.close();
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //handle exception
             log.error(e.getMessage());
         }
