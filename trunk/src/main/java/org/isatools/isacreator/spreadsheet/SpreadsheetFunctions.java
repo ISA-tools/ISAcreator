@@ -629,18 +629,24 @@ public class SpreadsheetFunctions {
 
     /**
      * Check to see if a column with a given name exists.
+     * Result is always false if the column allows multiple values.
      *
      * @param colName name of column to check for.
      * @return true if it exists, false otherwise.
      */
     public boolean checkColumnExists(String colName) {
         Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+        // if the column can be referenced multiple times, then we should return false in this check.
+        System.out.println(colName);
+        if (colName != null) {
+            if (!spreadsheet.getTableReferenceObject().acceptsMultipleValues(colName)) {
+                while (columns.hasMoreElements()) {
+                    TableColumn col = columns.nextElement();
 
-        while (columns.hasMoreElements()) {
-            TableColumn col = columns.nextElement();
-
-            if (col.getHeaderValue().toString().equals(colName)) {
-                return true;
+                    if (col.getHeaderValue().toString().equals(colName)) {
+                        return true;
+                    }
+                }
             }
         }
 

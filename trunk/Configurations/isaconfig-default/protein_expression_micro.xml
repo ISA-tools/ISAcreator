@@ -8,7 +8,6 @@
                 case outputs of Extract or a Labeled Extract.
             </description>
             <default-value></default-value>
-            <value-format>[ACTGNactgn]+</value-format>
             <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]
             </generated-value-template>
         </field>

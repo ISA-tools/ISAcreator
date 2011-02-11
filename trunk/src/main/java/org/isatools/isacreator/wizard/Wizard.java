@@ -122,7 +122,7 @@ public class Wizard extends DataEntryWrapper {
     private Map<Integer, String> studyTreatmentGroups = null;
     private Set<String> tmpVals;
     private List<TempFactors> factorsToAdd;
-    private AddAssayPane aap;
+    private AddAssayPane addAssayUI;
     private Stack<HistoryComponent> previousPage;
     private Component initialPane;
     private UserProfile currentUser;
@@ -1072,7 +1072,7 @@ public class Wizard extends DataEntryWrapper {
 
                 if (fromAAP) {
                     StudySampleCreationAlgorithm ssca = new StudySampleCreationAlgorithm(studyBeingEdited,
-                            studySample, factorsToAdd, aap.getSampleNameValues(),
+                            studySample, factorsToAdd, addAssayUI.getSampleNameValues(),
                             organism.getText(),
                             dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
                     ssca.runAlgorithm();
@@ -1110,7 +1110,7 @@ public class Wizard extends DataEntryWrapper {
                 investigationDefinition.addStudy(studyBeingEdited);
 
                 //if more studies to define, then define them, else show created thing!
-                previousPage.push(new HistoryComponent(aap, aap.getListeners()));
+                previousPage.push(new HistoryComponent(addAssayUI, addAssayUI.getListeners()));
                 setCurrentPage(visualizeCurrentStudy());
             }
         });
@@ -1425,15 +1425,15 @@ public class Wizard extends DataEntryWrapper {
         Thread createStudyThread = new Thread(new Runnable() {
             public void run() {
                 if (assayDefinitionRequired()) {
-                    aap = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, dep, currentUser);
-                    aap.createGUI();
-                    aap.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);
-                    aap.addPropertyChangeListener("canceledAssayCreation", new PropertyChangeListener() {
+                    addAssayUI = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, dep, currentUser);
+                    addAssayUI.createGUI();
+                    addAssayUI.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);
+                    addAssayUI.addPropertyChangeListener("canceledAssayCreation", new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent event) {
                             showPreviousPage(previousPage.pop());
                         }
                     });
-                    setCurrentPage(aap);
+                    setCurrentPage(addAssayUI);
                 } else {
                     finaliseStudyEntry(false);
                 }

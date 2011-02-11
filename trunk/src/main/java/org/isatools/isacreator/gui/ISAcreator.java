@@ -147,6 +147,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         UIManager.put("SeparatorUI", "org.isatools.isacreator.common.CustomSeparatorUI");
         UIManager.put("MenuBarUI", "org.isatools.isacreator.common.CustomMenuBarUI");
 
+
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
 
         ResourceInjector.get("archiveoutput-package.style").load(

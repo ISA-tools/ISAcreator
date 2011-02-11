@@ -2,7 +2,7 @@
     <isatab-configuration table-name="cellsorting_flowcyt">
         <measurement term-label="cell sorting" term-accession="" source-abbreviation=""/>
         <technology term-label="flow cytometry" term-accession="" source-abbreviation=""/>
-        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="false"
+        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="true"
                is-required="true">
             <description>the name identifying the sample</description>
             <default-value></default-value>
@@ -11,14 +11,14 @@
         </field>
         <protocol-field protocol-type="labeling"/>
         <field header="Labeled Sample Name" data-type="String" is-file-field="false" is-multiple-value="false"
-               is-required="false">
+               is-required="true">
             <description>a labeled sample name</description>
             <default-value></default-value>
             <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]
             </generated-value-template>
         </field>
         <field header="Label" data-type="Ontology term" is-file-field="false" is-multiple-value="false"
-               is-required="false">
+               is-required="true">
             <description>a semi-colon separated value of dyes selected from CHEBI</description>
             <default-value></default-value>
             <recommended-ontologies>
@@ -27,7 +27,7 @@
             </recommended-ontologies>
         </field>
         <field header="Assay Name" data-type="String" is-file-field="false" is-multiple-value="false"
-               is-required="false">
+               is-required="true">
             <description>the name identifying the assay</description>
             <default-value></default-value>
             <generated-value-template>
@@ -67,6 +67,11 @@
             <default-value></default-value>
         </field>
         <protocol-field protocol-type="gating"/>
+        <field header="Data Transformation Name" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>the name identifying the sample</description>
+            <default-value></default-value>
+        </field>
         <field header="Derived Data File" data-type="String" is-file-field="true" is-multiple-value="false"
                is-required="false">
             <description>a derived data file (e.g gating.ml file)</description>

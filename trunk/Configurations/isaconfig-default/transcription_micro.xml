@@ -89,12 +89,12 @@
             <description>User-defined name for each data transformation applied</description>
             <default-value></default-value>
         </field>
-        <field header="Array Data Matrix File" data-type="String" is-file-field="true" is-multiple-value="false"
+        <field header="Array Data Matrix File" data-type="String" is-file-field="true" is-multiple-value="true"
                is-required="false">
             <description>Name (or URI) of the raw array data matrix file.</description>
             <default-value></default-value>
         </field>
-        <field header="Derived Array Data Matrix File" data-type="String" is-file-field="true" is-multiple-value="false"
+        <field header="Derived Array Data Matrix File" data-type="String" is-file-field="true" is-multiple-value="true"
                is-required="false">
             <description>Name (or URI) of the processed data matrix file resulting from data transformation or
                 processing.

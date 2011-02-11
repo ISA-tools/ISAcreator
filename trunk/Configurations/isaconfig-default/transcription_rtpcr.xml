@@ -2,7 +2,7 @@
     <isatab-configuration table-name="transcription_rtpcr">
         <measurement term-label="transcription profiling" term-accession="0000424" source-abbreviation="OBI"/>
         <technology term-label="real time PCR" term-accession="" source-abbreviation="OBI"/>
-        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="false"
+        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="true"
                is-required="true">
             <description>Samples represent major outputs resulting from a protocol application other than the special
                 case outputs of Extract or a Labeled Extract.
@@ -22,7 +22,7 @@
         </field>
         <protocol-field protocol-type="labeling"/>
         <field header="Labeled Extract Name" data-type="String" is-file-field="false" is-multiple-value="false"
-               is-required="false">
+               is-required="true">
             <description>Identifier for the labeled extract.</description>
             <default-value></default-value>
             <generated-value-template>
@@ -30,7 +30,7 @@
             </generated-value-template>
         </field>
         <field header="Label" data-type="Ontology term" is-file-field="false" is-multiple-value="false"
-               is-required="false">
+               is-required="true">
             <description>Indicates a chemical or biological marker, such as a radioactive isotope or a fluorescent dye
                 which is bound to a material in order to make it detectable by some assay technology (e.g. P33, biotin,
                 GFP).

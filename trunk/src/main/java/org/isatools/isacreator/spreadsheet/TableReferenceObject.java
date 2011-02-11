@@ -258,7 +258,8 @@ public class TableReferenceObject implements Serializable {
 
 
     public boolean acceptsMultipleValues(String colName) {
-        return fieldLookup.get(colName).isAcceptsMultipleValues();
+        TableFieldObject tfo = fieldLookup.get(colName);
+        return tfo != null && tfo.isAcceptsMultipleValues();
     }
 
     public void addField(TableFieldObject fo) {

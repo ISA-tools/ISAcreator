@@ -2,7 +2,7 @@
     <isatab-configuration table-name="cellcount_flowcytometry">
         <measurement term-label="cell counting" term-accession="1111111" source-abbreviation="OBI"/>
         <technology term-label="flow cytometry" term-accession="2222222" source-abbreviation="OBI"/>
-        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="false"
+        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="true"
                is-required="true">
             <description>the name identifying the sample</description>
             <default-value></default-value>
@@ -11,14 +11,14 @@
         </field>
         <protocol-field protocol-type="labeling"/>
         <field header="Labeled Sample Name" data-type="String" is-file-field="false" is-multiple-value="false"
-               is-required="false">
+               is-required="true">
             <description>a name identifying the labeled sample.</description>
             <default-value></default-value>
             <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]
             </generated-value-template>
         </field>
         <field header="Label" data-type="Ontology term" is-file-field="false" is-multiple-value="false"
-               is-required="false">
+               is-required="true">
             <description>a semi-colon separated value of dyes selected from CHEBI</description>
             <default-value></default-value>
             <recommended-ontologies>
@@ -67,6 +67,11 @@
             <default-value></default-value>
         </field>
         <protocol-field protocol-type="gating"/>
+        <field header="Data Transformation Name" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>a data transformation carried out on the raw data files</description>
+            <default-value></default-value>
+        </field>
         <field header="Derived Data File" data-type="String" is-file-field="true" is-multiple-value="false"
                is-required="false">
             <description>path to gating-ml file</description>

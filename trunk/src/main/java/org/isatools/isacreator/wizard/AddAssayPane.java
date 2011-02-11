@@ -75,9 +75,11 @@ public class AddAssayPane extends JPanel {
 
     private static final Logger log = Logger.getLogger(AddAssayPane.class.getName());
 
-    private File arrayDesignsFile;
+    private static final String ARRAY_DESIGN_FILE = "Data" + File.separator +
+            "AEArrayDesigns.txt";
+
     private Collection<Assay> assaysToDefine;
-    private ArrayList<CreationAlgorithm> algorithmsToRun;
+    private List<CreationAlgorithm> algorithmsToRun;
     private Study study;
     private List<TempFactors> factorsToAdd;
     private Map<Integer, TreatmentReplicate> treatmentGroups;
@@ -123,12 +125,14 @@ public class AddAssayPane extends JPanel {
 
         String sourceNameFormat = dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
 
+        String[] arrayDesigns = retrieveArrayDesigns();
+
         for (Assay a : assaysToDefine) {
             if (a.getTechnologyType().equalsIgnoreCase("dna microarray")) {
                 MicroarrayCreationAlgorithm maAlg = new MicroarrayCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
                         new TableReferenceObject(dep.getParentFrame().selectTROForUserSelection(
                                 a.getMeasurementEndpoint(),
-                                a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat);
+                                a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat, arrayDesigns);
                 algorithmsToRun.add(maAlg);
                 centerPanel.add(maAlg);
             } else {
@@ -210,51 +214,50 @@ public class AddAssayPane extends JPanel {
         return sampleNameValues;
     }
 
-    private String[] retrieveArrayDesigns(File arrayDesignsFile) {
+    private String[] retrieveArrayDesigns() {
         String[] arrayDesignList = new String[]{"no designs available"};
         StringBuffer data = new StringBuffer();
 
-        try {
-            Scanner sc = new Scanner(arrayDesignsFile);
-            Pattern p = Pattern.compile("[a-zA-Z]+-[a-zA-Z]+-[0-9]+");
-            while (sc.hasNext()) {
-                String nextLine = sc.nextLine();
+        File arrayDesignsFile = new File(ARRAY_DESIGN_FILE);
 
-                String[] nextLineArray = nextLine.split("\t");
+        if (arrayDesignsFile.exists()) {
 
-                String candidateEntry = nextLineArray[1].trim();
-                String candidateDescription = null;
-                if (nextLineArray.length > 2) {
-                    candidateDescription = nextLine.split("\t")[2].trim();
-                }
-
-                Matcher m = p.matcher(candidateEntry);
-                if (m.matches()) {
-                    data.append(candidateEntry);
-
-                    if (candidateDescription != null) {
-                        data.append(" - ").append(candidateDescription);
-                    }
-                    data.append(":");
-                }
-            }
-
-            if ((data != null) && !(data.length() == 0)) {
-                String dataStr = data.toString();
-                dataStr = dataStr.substring(0, data.length() - 1);
-                arrayDesignList = dataStr.split(":");
-            }
-
-        } catch (FileNotFoundException e) {
-            log.error("File not found: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("Precautionary catch thrown if file contents are incorrect!!");
             try {
-                // remove the file since there is no point having it if it contains errors!
-                arrayDesignsFile.delete();
-            } catch (Exception fe) {
-                //just try a delete! if an exception is thrown, ignore it!
+                Scanner sc = new Scanner(arrayDesignsFile);
+                Pattern p = Pattern.compile("[a-zA-Z]+-[a-zA-Z]+-[0-9]+");
+                while (sc.hasNext()) {
+                    String nextLine = sc.nextLine();
+
+                    String[] nextLineArray = nextLine.split("\t");
+
+                    String candidateEntry = nextLineArray[1].trim();
+                    String candidateDescription = null;
+                    if (nextLineArray.length > 2) {
+                        candidateDescription = nextLine.split("\t")[2].trim();
+                    }
+
+                    Matcher m = p.matcher(candidateEntry);
+                    if (m.matches()) {
+                        data.append(candidateEntry);
+
+                        if (candidateDescription != null) {
+                            data.append(" - ").append(candidateDescription);
+                        }
+                        data.append(":");
+                    }
+                }
+
+                if (!(data.length() == 0)) {
+                    String dataStr = data.toString();
+                    dataStr = dataStr.substring(0, data.length() - 1);
+                    arrayDesignList = dataStr.split(":");
+                }
+
+            } catch (FileNotFoundException e) {
+                log.error("File not found: " + e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("Precautionary catch thrown if file contents are incorrect!!");
             }
         }
         return arrayDesignList;

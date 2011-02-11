@@ -39,6 +39,7 @@ package org.isatools.isacreator.wizard;
 
 import org.apache.axis.utils.StringUtils;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.RoundedBorder;
 import org.isatools.isacreator.model.Assay;
@@ -66,9 +67,10 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     private ImageIcon addRecordIcon, removeIcon;
 
     private JCheckBox dyeSwapUsed;
-    private List<JTextField> arrayDesignsUsed;
-    private JTextField newArrayDesign;
+    private List<AutoFilterCombo> arrayDesignsUsed;
+    private AutoFilterCombo newArrayDesign;
     private String sourceNameFormat;
+    private String[] arrayDesigns;
     private Assay assay;
     private Map<Integer, TreatmentReplicate> treatmentGroups;
     private ExtractDetailsCapture extract;
@@ -83,16 +85,17 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                                        Assay assay, List<TempFactors> factorsToAdd,
                                        Map<Integer, TreatmentReplicate> treatmentGroups,
                                        TableReferenceObject buildingModel, String institution,
-                                       String sourceNameFormat) {
+                                       String sourceNameFormat, String[] arrayDesigns) {
 
 
         super(buildingModel, study, factorsToAdd);
         this.assay = assay;
 
         this.sourceNameFormat = sourceNameFormat;
+        this.arrayDesigns = arrayDesigns;
         this.factorsToAdd = factorsToAdd;
         this.buildingModel = buildingModel;
-        this.arrayDesignsUsed = new ArrayList<JTextField>();
+        this.arrayDesignsUsed = new ArrayList<AutoFilterCombo>();
         this.treatmentGroups = treatmentGroups;
         this.institution = institution;
 
@@ -126,9 +129,9 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     private List<String> getSelectedArrayDesigns() {
         List<String> arrayDesignsAsString = new ArrayList<String>();
 
-        for (JTextField afc : arrayDesignsUsed) {
+        for (AutoFilterCombo afc : arrayDesignsUsed) {
             if (afc != null) {
-                arrayDesignsAsString.add(afc.getText() == null ? "" : afc.getText());
+                arrayDesignsAsString.add(afc.toString() == null ? "" : afc.toString());
             }
         }
 
@@ -278,8 +281,9 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         arrayDesignsContainer.setOpaque(false);
 
-        newArrayDesign = new JTextField();
-        UIHelper.renderComponent(newArrayDesign, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+        newArrayDesign = new AutoFilterCombo(arrayDesigns, true);
+
+        UIHelper.renderComponent(newArrayDesign, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         newArrayDesign.setPreferredSize(new Dimension(70, 30));
 
         arrayDesignsContainer.add(newArrayDesign);
@@ -294,8 +298,8 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         addButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                newArrayDesign = new JTextField();
-                UIHelper.renderComponent(newArrayDesign, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+                newArrayDesign = new AutoFilterCombo(arrayDesigns, true);
+                UIHelper.renderComponent(newArrayDesign, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
                 newArrayDesign.setPreferredSize(new Dimension(70, 30));
                 arrayDesignsUsed.add(newArrayDesign);
                 arrayDesignsContainer.add(newArrayDesign);

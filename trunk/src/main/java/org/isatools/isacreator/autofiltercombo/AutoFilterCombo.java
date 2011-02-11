@@ -40,7 +40,6 @@ package org.isatools.isacreator.autofiltercombo;
 import org.isatools.isacreator.common.UIHelper;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -106,10 +105,6 @@ public class AutoFilterCombo extends JComboBox {
     @Override
     public String toString() {
         return getSelectedItem() == null ? "" : getSelectedItem().toString();
-    }
-
-    public void setEditableComponentBackground(Color c) {
-        super.getEditor().getEditorComponent().setBackground(c);
     }
 
 }
