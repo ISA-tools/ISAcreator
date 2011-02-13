@@ -79,6 +79,8 @@ public class UserProfile implements Serializable {
     // password is stored as it's hashvalue
     private long password;
 
+    private static final long serialVersionUID = -1;
+
     public UserProfile(String username, long password, String forename,
                        String surname, String institution, String email) {
         this.username = username;
