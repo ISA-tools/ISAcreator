@@ -334,7 +334,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         String version = System.getProperty("java.version");
         System.out.println("java runtime environment version is : " + version);
         char minorVersion = version.charAt(2);
-        return minorVersion >= '5';
+        return minorVersion >= '6';
     }
 
     private void createTopPanel() {
@@ -682,9 +682,10 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
     public static void main(String[] args) {
 
-        final ISAcreator main = new ISAcreator();
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                ISAcreator main = new ISAcreator();
                 main.createGUI();
             }
         });
