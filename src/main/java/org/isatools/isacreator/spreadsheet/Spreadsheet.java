@@ -739,15 +739,17 @@ public class Spreadsheet extends JComponent implements
 
             public void mousePressed(MouseEvent mouseEvent) {
                 addProtocol.setIcon(addProtocolButton);
-                TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
-                        "Protocol REF", "Protocol used for experiment", DataTypes.LIST, "",
-                        false, false, false);
+                if (addProtocol.isEnabled()) {
+                    TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
+                            "Protocol REF", "Protocol used for experiment", DataTypes.LIST, "",
+                            false, false, false);
 
-                fo.setFieldList(studyDataEntryEnvironment.getProtocolNames());
+                    fo.setFieldList(studyDataEntryEnvironment.getProtocolNames());
 
-                spreadsheetFunctions.addFieldToReferenceObject(fo);
+                    spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                spreadsheetFunctions.addColumnAfterPosition("Protocol REF", null, -1);
+                    spreadsheetFunctions.addColumnAfterPosition("Protocol REF", null, -1);
+                }
             }
         });
 
@@ -765,7 +767,9 @@ public class Spreadsheet extends JComponent implements
 
             public void mousePressed(MouseEvent mouseEvent) {
                 addFactor.setIcon(addFactorButton);
-                showAddColumnsGUI(AddColumnGUI.ADD_FACTOR_COLUMN);
+                if (addFactor.isEnabled()) {
+                    showAddColumnsGUI(AddColumnGUI.ADD_FACTOR_COLUMN);
+                }
             }
         });
 
@@ -784,7 +788,9 @@ public class Spreadsheet extends JComponent implements
 
             public void mousePressed(MouseEvent mouseEvent) {
                 addCharacteristic.setIcon(addCharacteristicButton);
-                showAddColumnsGUI(AddColumnGUI.ADD_CHARACTERISTIC_COLUMN);
+                if (addCharacteristic.isEnabled()) {
+                    showAddColumnsGUI(AddColumnGUI.ADD_CHARACTERISTIC_COLUMN);
+                }
             }
         });
 
@@ -802,7 +808,9 @@ public class Spreadsheet extends JComponent implements
 
             public void mousePressed(MouseEvent mouseEvent) {
                 addParameter.setIcon(addParameterButton);
-                showAddColumnsGUI(AddColumnGUI.ADD_PARAMETER_COLUMN);
+                if (addParameter.isEnabled()) {
+                    showAddColumnsGUI(AddColumnGUI.ADD_PARAMETER_COLUMN);
+                }
             }
         });
 
