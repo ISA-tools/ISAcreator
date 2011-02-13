@@ -39,9 +39,11 @@ package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.jdesktop.fuse.InjectedResource;
+import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -56,30 +58,25 @@ import java.awt.event.MouseListener;
 public class UnSupportedJava extends MenuUIComponent {
 
     @InjectedResource
-    private ImageIcon exitButtonSml, exitButtonSmlOver;
+    private ImageIcon exitButtonSml, exitButtonSmlOver, unsupported;
 
     public UnSupportedJava(ISAcreatorMenu menu) {
         super(menu);
-        setPreferredSize(new Dimension(400, 400));
+        setPreferredSize(new Dimension(436, 350));
         setLayout(new BorderLayout());
         setOpaque(false);
     }
 
     public void createGUI() {
 
-        JLabel image = new JLabel(new ImageIcon(getClass().getResource("/images/gui/unsupported_java.png")), SwingConstants.CENTER);
+        JLabel image = new JLabel(unsupported, SwingConstants.CENTER);
         add(image, BorderLayout.CENTER);
 
         final JLabel exit = new JLabel(exitButtonSml, JLabel.CENTER);
-        exit.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        exit.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 System.exit(0);
-            }
-
-            public void mouseReleased(MouseEvent event) {
             }
 
             public void mouseEntered(MouseEvent event) {
