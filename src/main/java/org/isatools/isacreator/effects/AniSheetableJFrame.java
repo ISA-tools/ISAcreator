@@ -180,6 +180,7 @@ public class AniSheetableJFrame extends JFrame implements ActionListener, MouseL
     public JComponent showJDialogAsSheet(JDialog dialog) {
         sheet = (JComponent) dialog.getContentPane();
         sheet.setBorder(new LineBorder(UIHelper.DARK_GREEN_COLOR, 2));
+        glass.addMouseListener(this);
         setupAnimation();
 
         return sheet;
