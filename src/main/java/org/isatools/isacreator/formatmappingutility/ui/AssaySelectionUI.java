@@ -70,7 +70,7 @@ public class AssaySelectionUI extends JPanel {
     public final static String NO_TECHNOLOGY_TEXT = "no technology required";
 
     @InjectedResource
-    private ImageIcon confidenceKey, removeIcon, removeIconOver, confirmIcon, confirmIconOver,
+    private ImageIcon removeIcon, removeIconOver, confirmIcon, confirmIconOver,
             cancelIcon, cancelIconOver, selectIcon, selectIconOver;
 
     private ExtendedJList assayMeasurementList;
