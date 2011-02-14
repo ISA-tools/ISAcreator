@@ -38,6 +38,8 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJPasswordField;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.jdesktop.fuse.InjectedResource;
@@ -94,8 +96,12 @@ public class Authentication extends MenuUIComponent {
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         userNameCont.add(usernameLabel);
 
-        username = new JTextField(10);
-        UIHelper.renderComponent(username, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+        username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
+        username.setOpaque(false);
+
+
+        UIHelper.renderComponent(username, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+
         userNameCont.add(username);
         userNameCont.setOpaque(false);
 
@@ -104,8 +110,8 @@ public class Authentication extends MenuUIComponent {
         passwordLabel.setFont(UIHelper.VER_12_BOLD);
         passwordLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         passwordCont.add(passwordLabel);
-        password = new JPasswordField("");
-        UIHelper.renderComponent(password, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+        password = new RoundedJPasswordField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
+        UIHelper.renderComponent(password, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         passwordCont.add(password);
         passwordCont.setOpaque(false);

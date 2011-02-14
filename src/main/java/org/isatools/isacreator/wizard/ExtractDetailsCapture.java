@@ -40,6 +40,7 @@ package org.isatools.isacreator.wizard;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.DataEntryForm;
 
 import javax.swing.*;
@@ -63,12 +64,13 @@ public class ExtractDetailsCapture extends JPanel {
         JPanel container = new JPanel(new GridLayout(1, 3));
         container.setBackground(UIHelper.BG_COLOR);
 
-        extract = new JTextField(initialVal, 8);
-        UIHelper.renderComponent(extract, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
+        extract = new RoundedJTextField(8);
+        extract.setText(initialVal);
+        UIHelper.renderComponent(extract, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         extract.setToolTipText("<html><b>Sample Name</b><p>Part of organism used for analysis, e.g. Liver, Kidney, Blood</p></html>");
 
         poolingPerformed = new JCheckBox("pooled?");
-        UIHelper.renderComponent(poolingPerformed, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        UIHelper.renderComponent(poolingPerformed, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         poolingPerformed.setToolTipText("<html><b>Pooling event?</b><p>Are there no replicates performed with this sample?</p></html>");
 
         container.add(extract);

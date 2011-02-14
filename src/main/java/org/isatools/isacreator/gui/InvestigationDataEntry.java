@@ -39,7 +39,8 @@ package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
@@ -93,7 +94,7 @@ public class InvestigationDataEntry extends DataEntryForm {
         invDescPanel.setLayout(new BoxLayout(invDescPanel, BoxLayout.PAGE_AXIS));
         UIHelper.renderComponent(invDescPanel, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
         invDescPanel.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 3), "investigation description",
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), "investigation description",
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
@@ -107,12 +108,12 @@ public class InvestigationDataEntry extends DataEntryForm {
         JPanel invIdPanel = createFieldPanel(1, 2);
         JLabel invIdLabel = createLabel("investigation identifier");
 
-        invId = new JTextField(inv.getInvestigationIdentifier());
+        invId = new RoundedJTextField(10);
+        invId.setText(inv.getInvestigationIdentifier());
         invId.setToolTipText(
                 "<html><b>investigation identifier</b><p>An identifier for the investigation</p>");
 
         UIHelper.renderComponent(invId, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        invId.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         invIdPanel.add(invIdLabel);
         invIdPanel.add(invId);
@@ -123,12 +124,13 @@ public class InvestigationDataEntry extends DataEntryForm {
         // Create investigation title fields and panel to contain components
         JPanel invTitleCont = createFieldPanel(1, 2);
 
-        invTitle = new JTextField(inv.getInvestigationTitle(), 20);
+        invTitle = new RoundedJTextField(10);
+        invTitle.setText(inv.getInvestigationTitle());
+
         invTitle.setToolTipText(
                 "<html><b>investigation title</b><p>The title of the investigation.</p></html>");
 
         UIHelper.renderComponent(invTitle, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        invTitle.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         JLabel invTitleLab = createLabel("investigation Title");
 
@@ -147,6 +149,8 @@ public class InvestigationDataEntry extends DataEntryForm {
         invDesc.setWrapStyleWord(true);
         invDesc.setLineWrap(true);
         invDesc.setBackground(UIHelper.BG_COLOR);
+        invDesc.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
+
         invDesc.setToolTipText(
                 "<html><b>Investigation Description</b><p>A description of the investigation, it's purpose, and so forth.</p></html>");
 
@@ -155,7 +159,7 @@ public class InvestigationDataEntry extends DataEntryForm {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         invDescScroll.setPreferredSize(new Dimension(200, 75));
-        invDescScroll.setBorder(UIHelper.STD_ETCHED_BORDER);
+
         invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
 
         IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
@@ -172,11 +176,11 @@ public class InvestigationDataEntry extends DataEntryForm {
         JPanel invSubDatePanel = createFieldPanel(1, 2);
         JLabel invSubDateLabel = createLabel("investigation submission date");
 
-        invSubmissionDate = new JTextField(inv.getSubmissionDate());
+        invSubmissionDate = new RoundedJTextField(10);
+        invSubmissionDate.setText(inv.getSubmissionDate());
         invSubmissionDate.setToolTipText(
                 "<html><b>Investigation Submission Date</b><p>The date the investigation is to be submitted</p></html>");
         UIHelper.renderComponent(invSubmissionDate, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        invSubmissionDate.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         invSubDatePanel.add(invSubDateLabel);
         invSubDatePanel.add(createDateDropDown(invSubmissionDate));
@@ -189,11 +193,11 @@ public class InvestigationDataEntry extends DataEntryForm {
         JLabel pubRelDateLabel = createLabel(
                 "investigation public release date");
 
-        pubReleaseDate = new JTextField(inv.getPublicReleaseDate());
+        pubReleaseDate = new RoundedJTextField(10);
+        pubReleaseDate.setText(inv.getPublicReleaseDate());
         pubReleaseDate.setToolTipText(
                 "<html><b>Public Release Date</b><p>The date when the investigation is to be publicly released</p></html>");
         UIHelper.renderComponent(pubReleaseDate, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        pubReleaseDate.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         pubRelDatePanel.add(pubRelDateLabel);
         pubRelDatePanel.add(createDateDropDown(pubReleaseDate));

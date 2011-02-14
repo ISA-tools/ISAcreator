@@ -42,7 +42,7 @@ import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.CustomTextField;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.mgrast.model.ExternalResources;
 import org.isatools.isacreator.mgrast.model.SampleExternalIds;
 import org.jdesktop.fuse.InjectedResource;

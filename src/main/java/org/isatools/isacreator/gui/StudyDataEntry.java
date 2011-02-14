@@ -41,7 +41,8 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.model.*;
 import org.jdesktop.fuse.InjectedResource;
@@ -254,7 +255,7 @@ public class StudyDataEntry extends DataEntryForm {
         studyDesc.setLayout(new BoxLayout(studyDesc, BoxLayout.PAGE_AXIS));
         UIHelper.renderComponent(studyDesc, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
         studyDesc.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 3), "study description",
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), "study description",
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
@@ -265,11 +266,11 @@ public class StudyDataEntry extends DataEntryForm {
         // Create study identifier fields
         JPanel studyIDCont = createFieldPanel(1, 2);
         studyIDCont.add(createLabel("study identifier"));
-        studyIdentifier = new JTextField(study.getStudyId(), 10);
+        studyIdentifier = new RoundedJTextField(10);
+        studyIdentifier.setText(study.getStudyId());
         studyIdentifier.setToolTipText(
                 "<html><b>Study ID</b><p>An identifier for the study</p></html>");
         UIHelper.renderComponent(studyIdentifier, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        studyIdentifier.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         studyIDCont.add(studyIdentifier);
 
@@ -280,13 +281,13 @@ public class StudyDataEntry extends DataEntryForm {
         // create study title fields
         JPanel studyTitleCont = createFieldPanel(1, 2);
         studyTitleCont.add(createLabel("study title"));
-        studyTitle = new JTextField(study.getStudyTitle(), 10);
+        studyTitle = new RoundedJTextField(10);
+        studyTitle.setText(study.getStudyTitle());
         studyTitle.setToolTipText(
                 "<html><b>Study Title</b><p>The title for this study</p></html>");
         studyTitleCont.add(createTextEditEnabledField(studyTitle));
 
         UIHelper.renderComponent(studyTitle, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        studyTitle.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         verticalContainer.add(studyTitleCont);
         verticalContainer.add(Box.createVerticalStrut(5));
@@ -298,11 +299,11 @@ public class StudyDataEntry extends DataEntryForm {
         studyDescription.setLineWrap(true);
         studyDescription.setWrapStyleWord(true);
         studyDescription.setBackground(UIHelper.BG_COLOR);
+        studyDescription.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
         studyDescription.setToolTipText(
                 "<html><b>Study Description</b><p>A detailed description of the Study.</p></html>");
 
         UIHelper.renderComponent(studyDescription, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
 
         JScrollPane descScroller = new JScrollPane(studyDescription,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -321,13 +322,13 @@ public class StudyDataEntry extends DataEntryForm {
         // create date of study submission fields
         JPanel dateOfStudySubmissionCont = createFieldPanel(1, 2);
         dateOfStudySubmissionCont.add(createLabel("study submission date"));
-        dateOfStudySubmission = new JTextField(study.getDateOfSubmission(), 10);
+        dateOfStudySubmission = new RoundedJTextField(10);
+        dateOfStudySubmission.setText(study.getDateOfSubmission());
         dateOfStudySubmission.setToolTipText(
                 "<html><b>Date of Study Submission</b><p>When the study will be submitted</p><p><b>Please use the calendar tool to enter the date!</b></p></html>");
         dateOfStudySubmissionCont.add(createDateDropDown(dateOfStudySubmission));
 
         UIHelper.renderComponent(dateOfStudySubmission, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        dateOfStudySubmission.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         verticalContainer.add(dateOfStudySubmissionCont);
         verticalContainer.add(Box.createVerticalStrut(5));
@@ -335,20 +336,18 @@ public class StudyDataEntry extends DataEntryForm {
         // create study  public release date fields
         JPanel publicStudyReleaseDateCont = createFieldPanel(1, 2);
         publicStudyReleaseDateCont.add(createLabel("study public release date"));
-        dateOfStudyPublicRelease = new JTextField(study.getPublicReleaseDate(),
-                10);
+        dateOfStudyPublicRelease = new RoundedJTextField(10);
+        dateOfStudyPublicRelease.setText(study.getPublicReleaseDate());
         dateOfStudyPublicRelease.setToolTipText(
                 "<html><b>Date of Study Public Release</b><p>When will the study be released for the public domain</p><p><b>Please use the calendar tool to enter the date!</b></p></html>");
 
         UIHelper.renderComponent(dateOfStudyPublicRelease, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-        dateOfStudyPublicRelease.setBorder(UIHelper.STD_ETCHED_BORDER);
 
         publicStudyReleaseDateCont.add(createDateDropDown(
                 dateOfStudyPublicRelease));
 
         verticalContainer.add(publicStudyReleaseDateCont);
         verticalContainer.add(Box.createVerticalStrut(5));
-
 
         studyDesc.add(verticalContainer, BorderLayout.NORTH);
 

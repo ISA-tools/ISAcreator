@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
@@ -84,8 +85,8 @@ public class MenuUIComponent extends JPanel {
     }
 
     protected static JTextField createTextField() {
-        JTextField textfield = new JTextField(10);
-        UIHelper.renderComponent(textfield, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        JTextField textfield = new RoundedJTextField(10);
+        UIHelper.renderComponent(textfield, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         return textfield;
     }
 }

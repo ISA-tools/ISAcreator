@@ -43,7 +43,8 @@ import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.ISAcreator;
@@ -130,7 +131,7 @@ public class MergeFilesUI extends DataEntryWrapper {
         infoPanel.setOpaque(false);
 
         JLabel infoLabel = UIHelper.createLabel("<html>this <strong>merge utility</strong> allows you to select two isatab files and merge them both together, placing all the studies together in a new isatab file..." +
-                "<p>please select the directories containing the two isatab files you wish to merge together!</html>", UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR);
+                "<p>please select the directories containing the two isatab files you wish to merge together!</html>", UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
 
         infoPanel.add(infoLabel);
 
@@ -138,11 +139,11 @@ public class MergeFilesUI extends DataEntryWrapper {
         selectFilesContainer.add(Box.createVerticalStrut(30));
 
         // create selector for mapping files
-        final FileSelectionPanel isatab1 = new FileSelectionPanel("<html>please select first isatab to be merged: </html>", jfc);
+        final FileSelectionPanel isatab1 = new FileSelectionPanel("<html>please select first isatab to be merged: </html>", jfc, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
         selectFilesContainer.add(isatab1);
         selectFilesContainer.add(Box.createVerticalStrut(10));
 
-        final FileSelectionPanel isatab2 = new FileSelectionPanel("<html>please select second isatab to be merged: </html>", jfc);
+        final FileSelectionPanel isatab2 = new FileSelectionPanel("<html>please select second isatab to be merged: </html>", jfc, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
         selectFilesContainer.add(isatab2);
         selectFilesContainer.add(Box.createVerticalStrut(10));
 
@@ -152,10 +153,11 @@ public class MergeFilesUI extends DataEntryWrapper {
         JPanel saveAsPanel = new JPanel(new GridLayout(1, 2));
         saveAsPanel.setOpaque(false);
 
-        saveAsPanel.add(UIHelper.createLabel("Name of merged ISATAB file: ", UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR));
+        saveAsPanel.add(UIHelper.createLabel("Name of merged ISATAB file: ", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR));
 
-        final JTextField mergedFileName = new JTextField("mergedFile");
-        UIHelper.renderComponent(mergedFileName, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
+        final JTextField mergedFileName = new RoundedJTextField(20);
+        mergedFileName.setText("mergedISAFile");
+        UIHelper.renderComponent(mergedFileName, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         saveAsPanel.add(mergedFileName);
 
@@ -300,9 +302,9 @@ public class MergeFilesUI extends DataEntryWrapper {
 
         populateInvestigationFields(null);
 
-        UIHelper.renderComponent(useInv1Definition, UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, false);
-        UIHelper.renderComponent(useInv2Definition, UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, false);
-        UIHelper.renderComponent(createNewDefinition, UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, false);
+        UIHelper.renderComponent(useInv1Definition, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        UIHelper.renderComponent(useInv2Definition, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        UIHelper.renderComponent(createNewDefinition, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         useInv1Definition.setHorizontalAlignment(SwingConstants.LEFT);
         useInv2Definition.setHorizontalAlignment(SwingConstants.LEFT);
@@ -381,10 +383,10 @@ public class MergeFilesUI extends DataEntryWrapper {
                 investigationDefinitionPanel, BoxLayout.PAGE_AXIS));
         investigationDefinitionPanel.setOpaque(false);
         investigationDefinitionPanel.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.GREY_COLOR, 9),
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8),
                 "investigation details", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
-                UIHelper.GREY_COLOR));
+                UIHelper.DARK_GREEN_COLOR));
 
         // create field asking users how many studies they are carrying out
         JPanel infoPanel = new JPanel(new FlowLayout());
@@ -400,14 +402,13 @@ public class MergeFilesUI extends DataEntryWrapper {
         // define investigation title field
         JPanel invTitleContainer = createFieldPanel(1, 2);
 
-        JLabel invTitleLab = UIHelper.createLabel("investigation title: *", UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR);
+        JLabel invTitleLab = UIHelper.createLabel("investigation title: *", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
         invTitleLab.setHorizontalAlignment(JLabel.LEFT);
         invTitleLab.setPreferredSize(new Dimension(175, 25));
 
-        invTitle = new JTextField(20);
+        invTitle = new RoundedJTextField(20);
         invTitle.setSize(new Dimension(250, 25));
-        invTitle.setBorder(UIHelper.STD_ETCHED_BORDER);
-        UIHelper.renderComponent(invTitle, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, false);
+        UIHelper.renderComponent(invTitle, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
         invTitleContainer.add(invTitleLab);
         invTitleContainer.add(invTitle);
@@ -418,11 +419,14 @@ public class MergeFilesUI extends DataEntryWrapper {
         // define investigation description field
         JPanel invDescPanel = createFieldPanel(1, 2);
 
-        JLabel invDescLab = UIHelper.createLabel("investigation description: *", UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR);
+        JLabel invDescLab = UIHelper.createLabel("investigation description: *", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
+        invDescLab.setVerticalAlignment(SwingConstants.TOP);
         invDescLab.setPreferredSize(new Dimension(175, 25));
 
-        invDescription = new JTextArea(8, 20);
-        UIHelper.renderComponent(invDescription, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, false);
+        invDescription = new JTextArea();
+        invDescription.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
+        UIHelper.renderComponent(invDescription, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+
 
         invDescription.setLineWrap(true);
         invDescription.setWrapStyleWord(true);
@@ -447,12 +451,11 @@ public class MergeFilesUI extends DataEntryWrapper {
         JPanel invSubmissionPanel = createFieldPanel(1, 2);
 
         JLabel invSubmissionLab = UIHelper.createLabel(
-                "date of investigation submission:  ", UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR);
+                "date of investigation submission:  ", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
         invSubmissionLab.setSize(new Dimension(150, 25));
 
-        invSubmission = new JTextField(17);
-        invSubmission.setBorder(UIHelper.STD_ETCHED_BORDER);
-        UIHelper.renderComponent(invSubmission, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, false);
+        invSubmission = new RoundedJTextField(17);
+        UIHelper.renderComponent(invSubmission, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         invSubmission.setSize(new Dimension(250, 25));
 
         invSubmissionPanel.add(invSubmissionLab);
@@ -466,12 +469,12 @@ public class MergeFilesUI extends DataEntryWrapper {
         JPanel invPubReleasePanel = createFieldPanel(1, 2);
 
         JLabel invPubReleaseLab = UIHelper.createLabel(
-                "investigation public release date:  ", UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR);
+                "investigation public release date:  ", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
         invPubReleaseLab.setSize(new Dimension(175, 25));
 
-        invPubReleaseDate = new JTextField(17);
-        invPubReleaseDate.setBorder(UIHelper.STD_ETCHED_BORDER);
-        UIHelper.renderComponent(invPubReleaseDate, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, false);
+        invPubReleaseDate = new RoundedJTextField(17);
+
+        UIHelper.renderComponent(invPubReleaseDate, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         invPubReleaseDate.setOpaque(false);
         invPubReleaseDate.setSize(new Dimension(250, 25));
 

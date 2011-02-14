@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.effects;
+package org.isatools.isacreator.effects.borders;
 
 import org.isatools.isacreator.common.UIHelper;
 
@@ -54,7 +54,7 @@ public class RoundedBorder extends AbstractBorder {
     private int curveRadius;
 
     public RoundedBorder() {
-        this(UIHelper.GREY_COLOR, 9);
+        this(UIHelper.GREY_COLOR, 8);
     }
 
     public RoundedBorder(Color borderColor, int curveRadius) {
@@ -62,31 +62,23 @@ public class RoundedBorder extends AbstractBorder {
         this.curveRadius = curveRadius;
     }
 
-    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Stroke prevStroke = g2d.getStroke();
-
-        g2d.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.setColor(borderColor);
-        g.drawRoundRect(x, y, width, height, curveRadius, curveRadius);
-        g2d.setStroke(prevStroke);
-
-    }
-
-    @Override
-    public Insets getBorderInsets(Component component) {
-        return new Insets(curveRadius, curveRadius, curveRadius, curveRadius);
-    }
-
-    @Override
-    public Insets getBorderInsets(Component component, Insets insets) {
-        insets.left = insets.right = insets.bottom = insets.top = curveRadius;
+    public Insets getBorderInsets(Component c, Insets insets) {
+        insets.left = insets.top = insets.right = insets.bottom = 12;
         return insets;
     }
 
-    @Override
+    public void paintBorder(Component c, Graphics g, int x, int y,
+                            int width, int height) {
+
+        Graphics2D g2d =  (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.translate(x, y);
+        g2d.setColor(borderColor);
+        g2d.drawRoundRect(0, 0, width - 2, height - 2, curveRadius, curveRadius);
+        g2d.translate(-x, -y);
+    }
+
     public boolean isBorderOpaque() {
-        return false;
+        return true;
     }
 }

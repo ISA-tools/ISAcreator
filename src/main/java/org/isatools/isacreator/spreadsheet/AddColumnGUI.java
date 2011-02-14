@@ -45,6 +45,7 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import org.jdesktop.fuse.InjectedResource;
@@ -165,7 +166,7 @@ public class AddColumnGUI extends JDialog {
             JLabel lab = new JLabel("Enter comment qualifier");
             UIHelper.createLabel("Enter comment qualifier", UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
 
-            stdTextField = new JTextField(10);
+            stdTextField = new RoundedJTextField(10);
 
             JPanel commentFieldcont = new JPanel(new GridLayout(1, 2));
             commentFieldcont.setOpaque(false);
@@ -263,7 +264,7 @@ public class AddColumnGUI extends JDialog {
         JPanel olsFieldCont = new JPanel(new GridLayout(1, 2));
         olsFieldCont.setBackground(UIHelper.BG_COLOR);
 
-        varSelectOntologyField = new JTextField(10);
+        varSelectOntologyField = new RoundedJTextField(10);
 
         JLabel stdFieldLab = UIHelper.createLabel("select " + typeToAdd, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
 
@@ -289,7 +290,7 @@ public class AddColumnGUI extends JDialog {
         final JPanel unitFieldCont = new JPanel(new GridLayout(1, 2));
         unitFieldCont.setOpaque(false);
 
-        unitField = new JTextField(10);
+        unitField = new RoundedJTextField(10);
 
         JLabel stdFieldLab = UIHelper.createLabel("select unit", UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
 
@@ -409,7 +410,7 @@ public class AddColumnGUI extends JDialog {
                     if (toAdd.equals("")) {
                         status.setText("<html><b>" + typeAsText +
                                 "qualifier missing!</b></html>");
-                        status.setForeground(new Color(191, 30, 45));
+                        status.setForeground(UIHelper.RED_COLOR);
 
                         return;
                     }

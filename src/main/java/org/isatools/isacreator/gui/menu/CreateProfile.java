@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.io.UserProfile;
 import org.jdesktop.fuse.InjectedResource;
 
@@ -107,7 +108,7 @@ public class CreateProfile extends MenuUIComponent {
         JLabel passwordLabel = createLabel("password *");
         passwordCont.add(passwordLabel);
 
-        passwordVal = new JPasswordField();
+        passwordVal = new RoundedJPasswordField(10);
         UIHelper.renderComponent(passwordVal, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         passwordCont.add(passwordVal);
         assignKeyActionToComponent(createProfileAction, passwordVal);
@@ -117,7 +118,7 @@ public class CreateProfile extends MenuUIComponent {
         JLabel confirmPasswordLabel = createLabel("confirm *");
         confirmPasswordCont.add(confirmPasswordLabel);
 
-        confirmPasswordVal = new JPasswordField();
+        confirmPasswordVal = new RoundedJPasswordField(10);
         UIHelper.renderComponent(confirmPasswordVal, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         confirmPasswordCont.add(confirmPasswordVal);
         assignKeyActionToComponent(createProfileAction, confirmPasswordVal);

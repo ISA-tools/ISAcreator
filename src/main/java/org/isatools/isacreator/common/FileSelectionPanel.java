@@ -38,6 +38,7 @@
 
 package org.isatools.isacreator.common;
 
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -114,7 +115,7 @@ public class FileSelectionPanel extends JPanel {
         JPanel fileSelectionUtil = new JPanel();
         fileSelectionUtil.setLayout(new BoxLayout(fileSelectionUtil, BoxLayout.LINE_AXIS));
 
-        fileToUse = new JTextField();
+        fileToUse = new RoundedJTextField(10);
         fileToUse.setEditable(false);
         UIHelper.renderComponent(fileToUse, textFont, textColor, false);
 

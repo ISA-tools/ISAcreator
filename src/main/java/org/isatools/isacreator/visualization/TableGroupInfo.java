@@ -40,7 +40,7 @@ package org.isatools.isacreator.visualization;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
 import java.awt.*;

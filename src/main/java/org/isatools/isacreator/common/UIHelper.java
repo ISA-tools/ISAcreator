@@ -61,6 +61,7 @@ public class UIHelper {
     public static final Color TRANSPARENT_RED_COLOR = new Color(191, 30, 45, 50);
     public static final Color LIGHT_GREY_COLOR = new Color(153, 153, 153);
     public static final Color LIGHT_GREEN_COLOR = new Color(140, 198, 63);
+    public static final Color TRANSPARENT_LIGHT_GREEN_COLOR = new Color(140, 198, 63, 60);
     public static final Font VER_8_PLAIN = new Font("Verdana", Font.PLAIN, 8);
     public static final Font VER_8_BOLD = new Font("Verdana", Font.BOLD, 8);
     public static final Font VER_9_PLAIN = new Font("Verdana", Font.PLAIN, 9);

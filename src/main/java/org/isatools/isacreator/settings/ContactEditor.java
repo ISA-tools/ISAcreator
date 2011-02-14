@@ -38,6 +38,7 @@
 package org.isatools.isacreator.settings;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.model.Contact;
 
 import javax.swing.*;
@@ -69,39 +70,39 @@ public class ContactEditor extends ElementEditor {
     }
 
     protected void createGUI() {
-        firstName = new JTextField();
+        firstName = new RoundedJTextField(10);
         firstName.setEnabled(false);
         add(UIHelper.createFieldComponent("first name", firstName));
 
-        lastName = new JTextField();
+        lastName =new RoundedJTextField(10);
         lastName.setEnabled(false);
         add(UIHelper.createFieldComponent("last name", lastName));
 
-        midInitial = new JTextField();
+        midInitial = new RoundedJTextField(10);
         midInitial.setEnabled(false);
         add(UIHelper.createFieldComponent("mid initials", midInitial));
 
-        email = new JTextField();
+        email = new RoundedJTextField(10);
         email.setEnabled(false);
         add(UIHelper.createFieldComponent("email", email));
 
-        phone = new JTextField();
+        phone =new RoundedJTextField(10);
         phone.setEnabled(false);
         add(UIHelper.createFieldComponent("phone", phone));
 
-        fax = new JTextField();
+        fax = new RoundedJTextField(10);
         fax.setEnabled(false);
         add(UIHelper.createFieldComponent("fax", fax));
 
-        address = new JTextField();
+        address = new RoundedJTextField(10);
         address.setEnabled(false);
         add(UIHelper.createFieldComponent("address", address));
 
-        affiliation = new JTextField();
+        affiliation = new RoundedJTextField(10);
         affiliation.setEnabled(false);
         add(UIHelper.createFieldComponent("affiliation", affiliation));
 
-        role = new JTextField();
+        role = new RoundedJTextField(10);
         role.setEnabled(false);
         add(UIHelper.createFieldComponent("role", role));
     }

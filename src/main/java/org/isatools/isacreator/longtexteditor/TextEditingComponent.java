@@ -39,7 +39,7 @@ package org.isatools.isacreator.longtexteditor;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 

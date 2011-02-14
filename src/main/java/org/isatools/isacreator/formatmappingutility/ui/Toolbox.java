@@ -38,6 +38,7 @@
 package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 
 import javax.swing.*;
 import java.awt.*;
@@ -170,7 +171,7 @@ public class Toolbox extends JPanel {
 
         qualifierLabelCont.add(qualifierLabel);
 
-        final JTextField qualifier = new JTextField("", 12);
+        final JTextField qualifier = new RoundedJTextField(12);
         UIHelper.renderComponent(qualifier, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, false);
 
 

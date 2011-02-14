@@ -48,6 +48,7 @@ import org.isatools.isacreator.common.filterableTree.TreeFilterModel;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.*;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.ontologymanager.*;
 import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;

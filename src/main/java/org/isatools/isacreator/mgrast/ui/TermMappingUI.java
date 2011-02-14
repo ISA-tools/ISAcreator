@@ -41,7 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.mgrast.model.ConfidenceLevel;
 import org.isatools.isacreator.mgrast.model.FieldMapping;
 import org.jdesktop.fuse.InjectedResource;

@@ -39,6 +39,7 @@ package org.isatools.isacreator.settings;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.model.Protocol;
 
 import javax.swing.*;
@@ -70,10 +71,10 @@ public class ProtocolEditor extends ElementEditor {
     }
 
     protected void createGUI() {
-        name = new JTextField();
+        name = new RoundedJTextField(10);
         name.setEnabled(false);
         add(UIHelper.createFieldComponent("name", name));
-        type = new JTextField();
+        type = new RoundedJTextField(10);
         type.setEnabled(false);
         add(UIHelper.createFieldComponent("Type", type));
 
@@ -81,7 +82,7 @@ public class ProtocolEditor extends ElementEditor {
         description.setEnabled(false);
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
-        UIHelper.renderComponent(description, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, false);
+        UIHelper.renderComponent(description, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
         JScrollPane descriptionScroller = new JScrollPane(description,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -91,19 +92,19 @@ public class ProtocolEditor extends ElementEditor {
         IAppWidgetFactory.makeIAppScrollPane(descriptionScroller);
 
         add(UIHelper.createFieldComponent("Description", descriptionScroller));
-        uri = new JTextField();
+        uri = new RoundedJTextField(10);
         uri.setEnabled(false);
         add(UIHelper.createFieldComponent("URI", uri));
-        version = new JTextField();
+        version = new RoundedJTextField(10);
         version.setEnabled(false);
         add(UIHelper.createFieldComponent("Version", version));
-        parameters = new JTextField();
+        parameters = new RoundedJTextField(10);
         parameters.setEnabled(false);
         add(UIHelper.createFieldComponent("Parameters", parameters));
-        components = new JTextField();
+        components = new RoundedJTextField(10);
         components.setEnabled(false);
         add(UIHelper.createFieldComponent("Component", components));
-        componentType = new JTextField();
+        componentType = new RoundedJTextField(10);
         componentType.setEnabled(false);
         add(UIHelper.createFieldComponent("Component Type", componentType));
     }

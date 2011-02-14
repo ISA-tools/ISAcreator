@@ -45,7 +45,7 @@ import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
@@ -166,7 +166,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         if (createBorder) {
             setBorder(new TitledBorder(
-                    new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 3), title,
+                    new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), title,
                     TitledBorder.DEFAULT_JUSTIFICATION,
                     TitledBorder.CENTER,
                     UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));

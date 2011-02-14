@@ -39,7 +39,8 @@ package org.isatools.isacreator.wizard;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.DataEntryWrapper;
 
 import javax.swing.*;
@@ -268,19 +269,20 @@ public class TreatmentGroupSelector extends JPanel {
 
             container.setBackground(UIHelper.BG_COLOR);
 
-            numReplicates = new JTextField(defaultReplicates);
+            numReplicates = new RoundedJTextField(5);
+            numReplicates.setText(defaultReplicates);
             numReplicates.setSize(new Dimension(25, 20));
 
-            final JLabel replicatesLab = UIHelper.createLabel("# Replicates", UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR);
+            final JLabel replicatesLab = UIHelper.createLabel("# Replicates", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
             replicatesLab.setHorizontalAlignment(SwingConstants.LEFT);
 
-            UIHelper.renderComponent(numReplicates, UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, false);
+            UIHelper.renderComponent(numReplicates, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
             numReplicates.setHorizontalAlignment(SwingConstants.LEFT);
             numReplicates.setToolTipText("<html><b>Number of replicates</b><p>The number of replicates performed on this factor group</p></html>");
 
             useGroup = new JCheckBox("<html><div align=\"left\">" + treatmentGroup.trim() + "</div></html>", true);
 //			useGroup.setPreferredSize(new Dimension(400, 25));
-            UIHelper.renderComponent(useGroup, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+            UIHelper.renderComponent(useGroup, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
             useGroup.setToolTipText("<html><b>Use this factor group</b><p>Is this factor group used in the study?</p></html>");
             useGroup.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
@@ -290,7 +292,7 @@ public class TreatmentGroupSelector extends JPanel {
                 }
             });
             if (numTreatmentGroupsSpecified == treatmentGroups.size()) {
-                JLabel groupLab = UIHelper.createLabel(treatmentGroup.trim(), UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR);
+                JLabel groupLab = UIHelper.createLabel(treatmentGroup.trim(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
                 groupLab.setHorizontalAlignment(SwingConstants.LEFT);
                 container.add(groupLab, BorderLayout.WEST);
             } else {

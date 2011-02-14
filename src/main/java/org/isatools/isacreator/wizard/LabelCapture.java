@@ -40,6 +40,7 @@ package org.isatools.isacreator.wizard;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.DataEntryForm;
 
 import javax.swing.*;
@@ -69,8 +70,9 @@ public class LabelCapture extends JPanel {
 //		container.setLayout(new BoxLayout(container, BoxLayout.LINE_AXIS));
         container.setBackground(UIHelper.BG_COLOR);
 
-        labelVal = new JTextField(initialVal, 8);
-        UIHelper.renderComponent(labelVal, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
+        labelVal = new RoundedJTextField(8);
+        labelVal.setText(initialVal);
+        UIHelper.renderComponent(labelVal, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         labelVal.setToolTipText("<html><b>Label</b><p>Label used in this assay</p></html>");
 
         container.add(labelVal);

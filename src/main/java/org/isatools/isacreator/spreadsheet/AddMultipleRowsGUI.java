@@ -39,6 +39,7 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -117,10 +118,10 @@ public class AddMultipleRowsGUI extends JDialog {
      */
     public JPanel instantiatePanel() {
         JLabel numRowsLab = new JLabel("How many rows? ");
-        numRowsLab.setForeground(UIHelper.DARK_GREEN_COLOR);
-        numRowsLab.setFont(UIHelper.VER_12_BOLD);
+        UIHelper.renderComponent(numRowsLab, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        numRowsTxt = new JTextField(4);
+        numRowsTxt = new RoundedJTextField(4);
+        UIHelper.renderComponent(numRowsTxt, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         Action addRowsAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {

@@ -46,7 +46,6 @@ import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -198,8 +197,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
         setPreferredSize(new Dimension(600, 600));
-        setBorder(new EtchedBorder(1, UIHelper.DARK_GREEN_COLOR,
-                UIHelper.DARK_GREEN_COLOR));
+        setBorder(BorderFactory.createLineBorder(UIHelper.LIGHT_GREEN_COLOR));
     }
 
     public Map<String, Assay> getAssays() {

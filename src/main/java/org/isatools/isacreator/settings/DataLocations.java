@@ -2,7 +2,7 @@ package org.isatools.isacreator.settings;
 
 import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.ISAcreator;
 
 import javax.swing.*;

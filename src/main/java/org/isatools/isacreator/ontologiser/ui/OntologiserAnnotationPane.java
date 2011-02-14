@@ -6,7 +6,7 @@ import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.OntologyBranch;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.ontologiser.logic.ScoreAnalysisUtility;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
 import org.isatools.isacreator.ontologiser.model.SuggestedAnnotation;

@@ -38,7 +38,10 @@
 package org.isatools.isacreator.settings;
 
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedFormattedTextField;
+import org.isatools.isacreator.effects.components.RoundedJPasswordField;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -126,8 +129,9 @@ public class HTTPProxySettings extends SettingsScreen {
         hostNamePanel.setOpaque(false);
         hostNamePanel.add(Box.createHorizontalStrut(10));
         hostNamePanel.add(UIHelper.createLabel("host name", UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR));
-        hostName = new JTextField(settings.getProperty("httpProxy.hostname"));
-        UIHelper.renderComponent(hostName, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
+        hostName = new RoundedJTextField(10);
+        hostName.setText(settings.getProperty("httpProxy.hostname"));
+        UIHelper.renderComponent(hostName, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         hostNamePanel.add(hostName);
 
         proxyDetails.add(hostNamePanel);
@@ -136,7 +140,7 @@ public class HTTPProxySettings extends SettingsScreen {
         portNumberPanel.setOpaque(false);
         portNumberPanel.add(Box.createHorizontalStrut(10));
         portNumberPanel.add(UIHelper.createLabel("port number", UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR));
-        portNumber = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        portNumber = new RoundedFormattedTextField(NumberFormat.getIntegerInstance());
         portNumber.setText(settings.getProperty("httpProxy.portNumber"));
         UIHelper.renderComponent(portNumber, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
         portNumberPanel.add(portNumber);
@@ -169,8 +173,9 @@ public class HTTPProxySettings extends SettingsScreen {
         loginPanel.setOpaque(false);
         loginPanel.add(Box.createHorizontalStrut(10));
         loginPanel.add(UIHelper.createLabel("login", UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR));
-        login = new JTextField(settings.getProperty("httpProxy.login"));
-        UIHelper.renderComponent(login, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
+        login = new RoundedJTextField(10);
+        login.setText(settings.getProperty("httpProxy.login"));
+        UIHelper.renderComponent(login, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         loginPanel.add(login);
 
         proxyAuthentication.add(loginPanel);
@@ -179,8 +184,9 @@ public class HTTPProxySettings extends SettingsScreen {
         passwordPanel.setOpaque(false);
         passwordPanel.add(Box.createHorizontalStrut(10));
         passwordPanel.add(UIHelper.createLabel("password", UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR));
-        password = new JPasswordField(settings.getProperty("httpProxy.password"));
-        UIHelper.renderComponent(password, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
+        password = new RoundedJPasswordField(10);
+        password.setText(settings.getProperty("httpProxy.password"));
+        UIHelper.renderComponent(password, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         passwordPanel.add(password);
 
         proxyAuthentication.add(passwordPanel);

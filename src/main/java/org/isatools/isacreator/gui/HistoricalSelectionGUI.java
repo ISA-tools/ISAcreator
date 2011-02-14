@@ -45,7 +45,7 @@ import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.model.Contact;

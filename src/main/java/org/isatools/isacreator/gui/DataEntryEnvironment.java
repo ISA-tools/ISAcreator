@@ -291,6 +291,7 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
         this.investigation = new Investigation("Investigation", "");
+        setBorder(BorderFactory.createEmptyBorder());
         setupWestPanel(investigation);
         setCurrentPage(emptySubmissionFiller);
         setVisible(true);
@@ -566,13 +567,13 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
     private void setupWestPanel(Investigation inv) {
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(UIHelper.BG_COLOR);
-        westPanel.setBorder(null);
+        westPanel.setBorder(BorderFactory.createEmptyBorder());
 
         // setup status pane
         JPanel statusPane = new JPanel(new BorderLayout());
         statusPane.setPreferredSize(new Dimension(200, 200));
         statusPane.setBackground(UIHelper.DARK_GREEN_COLOR);
-        statusPane.setBorder(null);
+        statusPane.setBorder(BorderFactory.createEmptyBorder());
 
         JLabel infoPanelHeader = new JLabel(informationPanelHeader,
                 JLabel.LEFT);
@@ -703,7 +704,7 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
         public EmptySubmissionFill() {
             setLayout(new BorderLayout());
             setBackground(UIHelper.BG_COLOR);
-            setBorder(new EtchedBorder(UIHelper.DARK_GREEN_COLOR, UIHelper.DARK_GREEN_COLOR));
+            setBorder(BorderFactory.createLineBorder(UIHelper.LIGHT_GREEN_COLOR));
 
             JPanel labelContainer = new JPanel(new GridLayout(1, 1));
             labelContainer.setBackground(UIHelper.BG_COLOR);

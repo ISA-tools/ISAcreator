@@ -38,7 +38,7 @@
 package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.formatmappingutility.io.ISAField;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 

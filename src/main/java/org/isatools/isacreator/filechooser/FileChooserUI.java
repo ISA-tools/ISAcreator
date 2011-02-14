@@ -42,6 +42,7 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.*;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 

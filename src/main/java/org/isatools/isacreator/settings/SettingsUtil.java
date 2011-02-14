@@ -39,7 +39,7 @@ package org.isatools.isacreator.settings;
 
 import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.model.Contact;

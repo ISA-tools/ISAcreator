@@ -38,7 +38,7 @@
 package org.isatools.isacreator.settings;
 
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

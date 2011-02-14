@@ -41,7 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -132,11 +132,10 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         listPane.add(filterFieldPane, BorderLayout.SOUTH);
 
         listPane.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 6),
-                getBorderTitle(),
-                TitledBorder.DEFAULT_POSITION,
-                TitledBorder.ABOVE_TOP, UIHelper.VER_14_BOLD,
-                UIHelper.DARK_GREEN_COLOR));
+                    new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), getBorderTitle(),
+                    TitledBorder.DEFAULT_JUSTIFICATION,
+                    TitledBorder.CENTER,
+                    UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
         setListRenderer();
 

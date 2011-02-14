@@ -39,6 +39,7 @@ package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.formatmappingutility.io.ISAField;
 import org.isatools.isacreator.formatmappingutility.logic.MappingTypes;
 import org.isatools.isacreator.formatmappingutility.tablebrowser.IncomingFileBrowser;
@@ -112,7 +113,8 @@ public class MappingChoice extends JPanel {
     public void createGUI() {
         typeSelection = new JComboBox(MappingTypes.values());
         fieldSelection = new JComboBox(columnsToBeMappedTo);
-        literalEntry = new JTextField("-", 10);
+        literalEntry = new RoundedJTextField(10);
+        literalEntry.setText("-");
 
         // set the appearance for ach of the fields!
         UIHelper.renderComponent(typeSelection, UIHelper.VER_10_PLAIN, UIHelper.GREY_COLOR, false);

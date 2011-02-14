@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.autofilteringlist;
 
+import org.isatools.isacreator.effects.components.RoundedJTextField;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -173,7 +175,7 @@ public class ExtendedJList extends JList implements ListSelectionListener {
      */
     class FilterField extends JTextField implements DocumentListener {
         public FilterField() {
-            super();
+            super(20);
             getDocument().addDocumentListener(this);
         }
 

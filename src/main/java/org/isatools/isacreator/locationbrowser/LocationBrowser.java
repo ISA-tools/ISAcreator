@@ -8,7 +8,7 @@
 //import org.jdesktop.swingx.mapviewer.WaypointRenderer;
 //import org.jdesktop.swingx.painter.Painter;
 //import org.isatools.isacreator.common.UIHelper;
-//import org.isatools.isacreator.effects.RoundedBorder;
+//import org.isatools.isacreator.effects.borders.RoundedBorder;
 //
 //import javax.swing.*;
 //import java.awt.*;

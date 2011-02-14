@@ -43,7 +43,9 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.RoundedBorder;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedFormattedTextField;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
@@ -263,8 +265,7 @@ public class Wizard extends DataEntryWrapper {
         JLabel organismLab = UIHelper.createLabel("organism used *");
 
 
-        organism = new JTextField();
-        organism.setBorder(UIHelper.STD_ETCHED_BORDER);
+        organism = new RoundedJTextField(10);
         UIHelper.renderComponent(organism, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
         organism.setPreferredSize(new Dimension(60, 21));
@@ -282,8 +283,7 @@ public class Wizard extends DataEntryWrapper {
         JLabel numTreatmentGroupslabel = UIHelper.createLabel(
                 "no. factor groups *");
 
-        numTreatmentGroups = new JFormattedTextField(NumberFormat.getInstance());
-        numTreatmentGroups.setBorder(UIHelper.STD_ETCHED_BORDER);
+        numTreatmentGroups = new RoundedFormattedTextField(NumberFormat.getInstance());
         UIHelper.renderComponent(numTreatmentGroups, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         numTreatmentGroups.setToolTipText(
                 "<html><b>Number of factor groups</b> <p>Please specify the number of factor groups which you have in this study.</p></html>");
@@ -298,8 +298,7 @@ public class Wizard extends DataEntryWrapper {
                 "no. sample(s) per group *");
         numSubjectsLabel.setBackground(UIHelper.BG_COLOR);
 
-        numSamplesPerGroup = new JFormattedTextField(NumberFormat.getInstance());
-        numSamplesPerGroup.setBorder(UIHelper.STD_ETCHED_BORDER);
+        numSamplesPerGroup = new RoundedFormattedTextField(NumberFormat.getInstance());
         UIHelper.renderComponent(numSamplesPerGroup, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         numSamplesPerGroup.setToolTipText(
                 "<html><b>Number of samples per factor group</b><p>Please specify the number of samples per factor group.</p></html>");
@@ -643,7 +642,7 @@ public class Wizard extends DataEntryWrapper {
         investigationDefinitionPanel.setOpaque(false);
         investigationDefinitionPanel.setVisible(false);
         investigationDefinitionPanel.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 9),
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8),
                 "investigation details", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
                 UIHelper.DARK_GREEN_COLOR));
@@ -655,11 +654,10 @@ public class Wizard extends DataEntryWrapper {
                 "<html><p>how many studies?</p></html>");
         howManyStudiesLab.setSize(new Dimension(200, 25));
 
-        final JFormattedTextField howManyStudiesVal = new JFormattedTextField(NumberFormat.getNumberInstance());
+        final JFormattedTextField howManyStudiesVal = new RoundedFormattedTextField(NumberFormat.getNumberInstance());
         howManyStudiesVal.setPreferredSize(new Dimension(250, 25));
         howManyStudiesVal.setOpaque(false);
 
-        howManyStudiesVal.setBorder(UIHelper.STD_ETCHED_BORDER);
         UIHelper.renderComponent(howManyStudiesVal, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
         final FormattedTextFieldVerifier formatChecker = new FormattedTextFieldVerifier();
@@ -713,9 +711,8 @@ public class Wizard extends DataEntryWrapper {
         invTitleLab.setVerticalAlignment(SwingConstants.TOP);
         invTitleLab.setPreferredSize(new Dimension(175, 25));
 
-        invTitle = new JTextField(20);
+        invTitle = new RoundedJTextField(20);
         invTitle.setSize(new Dimension(250, 25));
-        invTitle.setBorder(UIHelper.STD_ETCHED_BORDER);
         UIHelper.renderComponent(invTitle, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
         invTitleContainer.add(invTitleLab);
@@ -729,14 +726,16 @@ public class Wizard extends DataEntryWrapper {
 
         JLabel invDescLab = UIHelper.createLabel("investigation description: *");
         invDescLab.setPreferredSize(new Dimension(175, 25));
+        invDescLab.setVerticalAlignment(SwingConstants.TOP);
 
-        invDescription = new JTextArea(8, 20);
+        invDescription = new JTextArea();
 
         UIHelper.renderComponent(invDescription, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
         invDescription.setLineWrap(true);
         invDescription.setWrapStyleWord(true);
         invDescription.setBackground(UIHelper.BG_COLOR);
+        invDescription.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
 
         JScrollPane invDescScroll = new JScrollPane(invDescription,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -760,8 +759,7 @@ public class Wizard extends DataEntryWrapper {
                 "date of investigation submission:  ");
         invSubmissionLab.setSize(new Dimension(150, 25));
 
-        invSubmission = new JTextField(17);
-        invSubmission.setBorder(UIHelper.STD_ETCHED_BORDER);
+        invSubmission = new RoundedJTextField(17);
         UIHelper.renderComponent(invSubmission, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         invSubmission.setSize(new Dimension(250, 25));
 
@@ -778,8 +776,7 @@ public class Wizard extends DataEntryWrapper {
                 "investigation public release date:  ");
         invPubReleaseLab.setSize(new Dimension(175, 25));
 
-        invPubReleaseDate = new JTextField(17);
-        invPubReleaseDate.setBorder(UIHelper.STD_ETCHED_BORDER);
+        invPubReleaseDate = new RoundedJTextField(17);
         UIHelper.renderComponent(invPubReleaseDate, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         invPubReleaseDate.setOpaque(false);
         invPubReleaseDate.setSize(new Dimension(250, 25));
@@ -969,8 +966,7 @@ public class Wizard extends DataEntryWrapper {
 
         JLabel studyIDLab = UIHelper.createLabel("study id: *");
 
-        studyId = new JTextField(10);
-        studyId.setBorder(UIHelper.STD_ETCHED_BORDER);
+        studyId = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         UIHelper.renderComponent(studyId, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         studyId.setToolTipText(
                 "<html><b>Study Id<b><p>A short identifier for the study</p></html>");
@@ -983,8 +979,7 @@ public class Wizard extends DataEntryWrapper {
 
         JLabel studyTitleLab = UIHelper.createLabel("study title: *");
 
-        studyTitle = new JTextField(10);
-        studyTitle.setBorder(UIHelper.STD_ETCHED_BORDER);
+        studyTitle = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         UIHelper.renderComponent(studyTitle, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         studyTitle.setToolTipText(
                 "<html><b>Study Title</b><p>Please give a title to the study. <p>This should be a concise description of the experiment in no more than one line </p> <p>of text.</p></html>");
@@ -1004,6 +999,7 @@ public class Wizard extends DataEntryWrapper {
         studyDescription.setLineWrap(true);
         studyDescription.setWrapStyleWord(true);
         studyDescription.setBackground(UIHelper.BG_COLOR);
+        studyDescription.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
         studyDescription.setToolTipText(
                 "<html><b>Study Description</b><p>Please enter a description of the study which you've carried out.</p></html>");
 
