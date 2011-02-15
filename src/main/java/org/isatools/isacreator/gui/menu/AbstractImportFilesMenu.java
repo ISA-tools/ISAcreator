@@ -67,6 +67,8 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     protected File[] previousFiles = null;
     protected ExtendedJList previousFileList;
 
+    private JLabel chooseFromElsewhere, loadSelected;
+
     public AbstractImportFilesMenu(ISAcreatorMenu menu) {
         super(menu);
 
@@ -172,7 +174,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         JPanel selectionPanel = new JPanel(new BorderLayout());
         selectionPanel.setOpaque(false);
 
-        final JLabel chooseFromElsewhere = new JLabel(getSearchButton(),
+        chooseFromElsewhere = new JLabel(getSearchButton(),
                 JLabel.LEFT);
         chooseFromElsewhere.addMouseListener(new MouseAdapter() {
 
@@ -208,7 +210,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
             }
         });
 
-        final JLabel loadSelected = new JLabel(getLoadButton(),
+        loadSelected = new JLabel(getLoadButton(),
                 JLabel.RIGHT);
         loadSelected.addMouseListener(new MouseAdapter() {
 

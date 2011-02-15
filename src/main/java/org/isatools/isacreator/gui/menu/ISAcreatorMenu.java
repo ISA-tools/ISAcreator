@@ -89,7 +89,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     private GenericPanel generic;
 
 
-    public ISAcreatorMenu(final ISAcreator ISAcreator, final int panelToShow) {
+    public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
         this.mGUI = ISAcreator;
 
         setSize(ISAcreator.getSize());
@@ -124,29 +124,29 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                 switch (panelToShow) {
                     case SHOW_MAIN:
-                        ISAcreator.setGlassPanelContents(mainMenu);
+                        mGUI.setGlassPanelContents(mainMenu);
 
                         break;
 
                     case SHOW_LOGIN:
-                        ISAcreator.setGlassPanelContents(authGUI);
+                        mGUI.setGlassPanelContents(authGUI);
 
                         break;
 
                     case SHOW_CREATE_ISA:
-                        ISAcreator.setGlassPanelContents(createISA);
+                        mGUI.setGlassPanelContents(createISA);
 
                         break;
 
                     case SHOW_UNSUPPORTED_JAVA:
                         UnSupportedJava noSupport = new UnSupportedJava(ISAcreatorMenu.this);
                         noSupport.createGUI();
-                        ISAcreator.setGlassPanelContents(noSupport);
+                        mGUI.setGlassPanelContents(noSupport);
 
                         break;
 
                     default:
-                        ISAcreator.setGlassPanelContents(importConfiguration);
+                        mGUI.setGlassPanelContents(importConfiguration);
                 }
 
                 UIHelper.applyBackgroundToSubComponents(ISAcreatorMenu.this, UIHelper.BG_COLOR);
@@ -170,7 +170,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         timer[0].start();
     }
 
-    public void changeView(final Component panel) {
+    public void changeView(Component panel) {
         if (panel != null) {
             currentPanel = panel;
             SwingUtilities.invokeLater(new Runnable() {

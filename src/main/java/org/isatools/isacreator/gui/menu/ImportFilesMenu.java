@@ -60,9 +60,13 @@ import java.io.File;
 
 public class ImportFilesMenu extends AbstractImportFilesMenu {
 
+
+
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
             loadButton, loadButtonOver, backButton, backButtonOver, filterLeft, filterRight;
+
+    private JLabel back;
 
     private ImportISAFiles iISA;
 
@@ -76,8 +80,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         JPanel previousButtonPanel = new JPanel(new GridLayout(1, 1));
         previousButtonPanel.setOpaque(false);
 
-        final JLabel back = new JLabel(backButton,
-                JLabel.LEFT);
+        back = new JLabel(backButton, JLabel.LEFT);
         back.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
@@ -120,7 +123,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     public void getSelectedFileAndLoad() {
         if (previousFileList.getSelectedIndex() != -1) {
             // select file from list
-            for (final File candidate : previousFiles) {
+            for (File candidate : previousFiles) {
                 if (candidate.getName()
                         .equals(previousFileList.getSelectedValue()
                                 .toString())) {

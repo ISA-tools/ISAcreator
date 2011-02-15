@@ -65,6 +65,9 @@ public class Authentication extends MenuUIComponent {
     private JLabel status;
     private JPasswordField password;
     private JTextField username;
+
+    private JLabel createProfile, login, exit;
+
     @InjectedResource
     public ImageIcon pleaseLogin, loginButton, loginButtonOver, createProfileButton,
             createProfileButtonOver, exitButtonSml, exitButtonSmlOver;
@@ -132,7 +135,7 @@ public class Authentication extends MenuUIComponent {
         JPanel buttonContainer = new JPanel(new GridLayout(1, 2));
         buttonContainer.setOpaque(false);
 
-        final JLabel createProfile = new JLabel(createProfileButton,
+        createProfile = new JLabel(createProfileButton,
                 JLabel.LEFT);
         createProfile.addMouseListener(new MouseAdapter() {
 
@@ -157,7 +160,7 @@ public class Authentication extends MenuUIComponent {
 
         buttonContainer.add(createProfile);
 
-        final JLabel login = new JLabel(this.loginButton,
+        login = new JLabel(loginButton,
                 JLabel.RIGHT);
         login.addMouseListener(new MouseAdapter() {
 
@@ -192,7 +195,7 @@ public class Authentication extends MenuUIComponent {
         southPanel.add(status);
         southPanel.add(buttonContainer);
 
-        final JLabel exit = new JLabel(exitButtonSml,
+        exit = new JLabel(exitButtonSml,
                 JLabel.CENTER);
         exit.addMouseListener(new MouseAdapter() {
 

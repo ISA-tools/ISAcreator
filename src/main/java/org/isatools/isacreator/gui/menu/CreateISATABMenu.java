@@ -58,6 +58,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 public class CreateISATABMenu extends MenuUIComponent {
+
+    private JLabel createUsingWizard, createUsingMapper, createManual, back;
+
     @InjectedResource
     public ImageIcon panelHeader, createManuallyButton, createManuallyButtonOver, useWizardButton,
             useWizardButtonOver, useMapperButton, useMapperButtonOver, backButton, backButtonOver;
@@ -84,15 +87,15 @@ public class CreateISATABMenu extends MenuUIComponent {
         menuItems.setOpaque(false);
         menuItems.add(Box.createVerticalStrut(10));
 
-        final JLabel createUsingWizard = new JLabel(useWizardButton,
+        createUsingWizard = new JLabel(useWizardButton,
                 JLabel.LEFT);
         createUsingWizard.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
 
-                final Wizard wizard = new Wizard(menu);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
+                        Wizard wizard = new Wizard(menu);
                         createUsingWizard.setIcon(useWizardButton);
                         wizard.createGUI();
                         wizard.changeView();
@@ -110,19 +113,20 @@ public class CreateISATABMenu extends MenuUIComponent {
             }
         });
 
-        final JLabel createUsingMapper = new JLabel(useMapperButton,
+        createUsingMapper = new JLabel(useMapperButton,
                 JLabel.LEFT);
         createUsingMapper.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
 
-                final AtomicReference<MappingUtilView> mappingUtilView = new AtomicReference<MappingUtilView>(new MappingUtilView(menu));
+
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
+                        MappingUtilView mappingUtilView = new MappingUtilView(menu);
                         createUsingMapper.setIcon(useMapperButton);
-                        mappingUtilView.get().createGUI();
-                        menu.getMain().setCurrentPage(mappingUtilView.get());
-                        mappingUtilView.get().changeView();
+                        mappingUtilView.createGUI();
+                        menu.getMain().setCurrentPage(mappingUtilView);
+                        mappingUtilView.changeView();
                     }
                 });
             }
@@ -137,16 +141,17 @@ public class CreateISATABMenu extends MenuUIComponent {
         });
 
 
-        final JLabel createManual = new JLabel(createManuallyButton,
+        createManual = new JLabel(createManuallyButton,
                 JLabel.LEFT);
         createManual.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 menu.getMain().hideGlassPane();
 
-                final DataEntryEnvironment blankDEP = new DataEntryEnvironment(menu.getMain());
+
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
+                        DataEntryEnvironment blankDEP = new DataEntryEnvironment(menu.getMain());
                         createManual.setIcon(createManuallyButton);
                         blankDEP.createGUI();
                         menu.getMain().setCurDataEntryPanel(blankDEP);
@@ -166,7 +171,7 @@ public class CreateISATABMenu extends MenuUIComponent {
         });
 
 
-        final JLabel back = new JLabel(backButton,
+        back = new JLabel(backButton,
                 JLabel.LEFT);
         back.addMouseListener(new MouseAdapter() {
 

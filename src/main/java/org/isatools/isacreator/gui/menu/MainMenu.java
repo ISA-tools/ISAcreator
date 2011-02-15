@@ -61,6 +61,8 @@ import java.awt.event.MouseEvent;
 
 public class MainMenu extends MenuUIComponent {
 
+    private JLabel newISA, merge, loadPrev, settingsButton, loadAnotherConfiguration, logoutButton;
+
     @InjectedResource
     public ImageIcon panelHeader, createNew, createNewOver, mergeFiles,
             mergeFilesOver, settings, settingsOver, loadExisting, loadExistingOver,
@@ -91,7 +93,7 @@ public class MainMenu extends MenuUIComponent {
         menuItems.setOpaque(false);
         menuItems.add(Box.createVerticalStrut(10));
 
-        final JLabel newISA = new JLabel(createNew,
+        newISA = new JLabel(createNew,
                 JLabel.LEFT);
         newISA.addMouseListener(new MouseAdapter() {
 
@@ -112,7 +114,7 @@ public class MainMenu extends MenuUIComponent {
         menuItems.add(newISA);
         menuItems.add(Box.createVerticalStrut(10));
 
-        final JLabel loadPrev = new JLabel(loadExisting,
+        loadPrev = new JLabel(loadExisting,
                 JLabel.LEFT);
         loadPrev.addMouseListener(new MouseAdapter() {
 
@@ -134,7 +136,7 @@ public class MainMenu extends MenuUIComponent {
         menuItems.add(loadPrev);
         menuItems.add(Box.createVerticalStrut(10));
 
-        final JLabel merge = new JLabel(mergeFiles,
+        merge = new JLabel(mergeFiles,
                 JLabel.LEFT);
         merge.addMouseListener(new MouseAdapter() {
 
@@ -157,7 +159,7 @@ public class MainMenu extends MenuUIComponent {
         menuItems.add(merge);
         menuItems.add(Box.createVerticalStrut(10));
 
-        final JLabel settingsButton = new JLabel(settings,
+        settingsButton = new JLabel(settings,
                 JLabel.LEFT);
         settingsButton.addMouseListener(new MouseAdapter() {
 
@@ -180,7 +182,7 @@ public class MainMenu extends MenuUIComponent {
         menuItems.add(settingsButton);
         menuItems.add(Box.createVerticalStrut(10));
 
-        final JLabel loadAnotherConfiguration = new JLabel(loadConfiguration,
+        loadAnotherConfiguration = new JLabel(loadConfiguration,
                 JLabel.LEFT);
         loadAnotherConfiguration.addMouseListener(new MouseAdapter() {
 
@@ -202,7 +204,7 @@ public class MainMenu extends MenuUIComponent {
         menuItems.add(loadAnotherConfiguration);
         menuItems.add(Box.createVerticalStrut(10));
 
-        final JLabel logoutButton = new JLabel(logout,
+        logoutButton = new JLabel(logout,
                 JLabel.LEFT);
         logoutButton.addMouseListener(new MouseAdapter() {
 

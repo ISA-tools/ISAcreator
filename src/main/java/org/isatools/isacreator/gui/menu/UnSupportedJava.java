@@ -57,6 +57,8 @@ import java.awt.event.MouseListener;
 
 public class UnSupportedJava extends MenuUIComponent {
 
+    private JLabel exit;
+
     @InjectedResource
     private ImageIcon exitButtonSml, exitButtonSmlOver, unsupported;
 
@@ -72,7 +74,7 @@ public class UnSupportedJava extends MenuUIComponent {
         JLabel image = new JLabel(unsupported, SwingConstants.CENTER);
         add(image, BorderLayout.CENTER);
 
-        final JLabel exit = new JLabel(exitButtonSml, JLabel.CENTER);
+        exit = new JLabel(exitButtonSml, JLabel.CENTER);
         exit.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {

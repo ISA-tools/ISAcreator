@@ -104,7 +104,7 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
     public void getSelectedFileAndLoad() {
         if (previousFileList.getSelectedIndex() != -1) {
             // select file from list
-            for (final File candidate : previousFiles) {
+            for (File candidate : previousFiles) {
                 if (candidate.getName()
                         .equals(previousFileList.getSelectedValue()
                                 .toString())) {

@@ -64,6 +64,7 @@ public class CreateProfile extends MenuUIComponent {
     private ImageIcon createProfileButton, createProfileButtonOver,
             backButtonSml, backButtonSmlOver;
 
+    private JLabel back, createProfile;
 
     private JLabel status;
     private JTextField emailVal;
@@ -187,7 +188,7 @@ public class CreateProfile extends MenuUIComponent {
 
         JPanel buttonContainer = new JPanel(new BorderLayout());
 
-        final JLabel back = new JLabel(backButtonSml,
+        back = new JLabel(backButtonSml,
                 JLabel.LEFT);
         back.addMouseListener(new MouseAdapter() {
 
@@ -208,7 +209,7 @@ public class CreateProfile extends MenuUIComponent {
         buttonContainer.add(back, BorderLayout.WEST);
 
 
-        final JLabel createProfile = new JLabel(this.createProfileButton,
+        createProfile = new JLabel(this.createProfileButton,
                 JLabel.RIGHT);
         createProfile.addMouseListener(new MouseAdapter() {
 
