@@ -160,7 +160,7 @@ public class UIHelper {
      * @param color      - Color to change the background to
      */
     public static void applyOptionPaneBackground(JOptionPane
-            optionPane, Color color) {
+                                                         optionPane, Color color) {
         optionPane.setBackground(color);
         for (Component component : getComponents(optionPane)) {
             if (component instanceof JPanel) {
@@ -170,7 +170,7 @@ public class UIHelper {
     }
 
     public static void applyBackgroundToSubComponents(Container
-            container, Color color) {
+                                                              container, Color color) {
         container.setBackground(color);
         for (Component component : getComponents(container)) {
             if (component instanceof JPanel) {
@@ -187,7 +187,7 @@ public class UIHelper {
      * @return - Collection of Components.
      */
     public static Collection<Component> getComponents(Container
-            container) {
+                                                              container) {
         Collection<Component> components = new Vector<Component>();
         Component[] comp = container.getComponents();
         for (int i = 0, n = comp.length; i < n; i++) {
@@ -253,10 +253,12 @@ public class UIHelper {
         try {
             Class cls = Class.forName("javax.swing.PopupFactory");
             Field field = cls.getDeclaredField("forceHeavyWeightPopupKey");
-            field.setAccessible(true);
-            combo.putClientProperty(field.get(null), Boolean.TRUE);
+            if (field != null) {
+                field.setAccessible(true);
+                combo.putClientProperty(field.get(null), Boolean.TRUE);
+            }
         } catch (Exception e1) {
-            e1.printStackTrace();
+            // skip the error
         }
     }
 
