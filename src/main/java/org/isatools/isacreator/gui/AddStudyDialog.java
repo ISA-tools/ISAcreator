@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -162,7 +163,8 @@ public class AddStudyDialog extends JDialog {
         topCont.setBackground(UIHelper.BG_COLOR);
         topCont.add(exHeaderLab);
 
-        name = new JTextField(type);
+        name = new RoundedJTextField(10);
+        name.setText(type);
         UIHelper.renderComponent(name, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, UIHelper.BG_COLOR);
 
         Action addStudyAction = new AbstractAction() {
