@@ -32,7 +32,8 @@
  Display of Attribution Information is required in Larger Works which are defined in the CPAL as a work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
 
  Sponsors:
- The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
+ The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics
+ project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
 package org.isatools.isacreator.gui;
@@ -222,7 +223,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        setTitle("ISAcreator");
+        setTitle("ISAcreator 1.3.2");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);

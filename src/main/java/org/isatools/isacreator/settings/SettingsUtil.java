@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.settings;
 
+import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
@@ -217,17 +218,23 @@ public class SettingsUtil extends DataEntryWrapper {
         JScrollPane listScroller = new JScrollPane(settingsOptions, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         listScroller.setPreferredSize(new Dimension(175, 250));
         listScroller.getViewport().setOpaque(false);
-        listScroller.setBorder(new TitledBorder(
+        IAppWidgetFactory.makeIAppScrollPane(listScroller);
+        listScroller.setBackground(UIHelper.BG_COLOR);
+
+        JPanel westPanel = new JPanel();
+        westPanel.add(listScroller);
+        westPanel.setBackground(UIHelper.BG_COLOR);
+
+        westPanel.setBorder(new TitledBorder(
                 new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
                 "available settings", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
                 UIHelper.GREY_COLOR));
 
-        settingsScreen.add(listScroller, BorderLayout.WEST);
+        settingsScreen.add(westPanel, BorderLayout.WEST);
 
         centralPanel = new JPanel(new BorderLayout());
         settingsScreen.add(centralPanel, BorderLayout.CENTER);
-
 
         settingsOptions.setSelectedIndex(0);
         return settingsScreen;

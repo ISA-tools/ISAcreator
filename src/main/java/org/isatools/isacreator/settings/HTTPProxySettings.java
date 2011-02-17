@@ -71,7 +71,7 @@ public class HTTPProxySettings extends SettingsScreen {
     // general fields
     private JCheckBox useProxy;
     private JTextField hostName;
-    private JFormattedTextField portNumber;
+    private JTextField portNumber;
 
     // authentication fields
     private JCheckBox useProxyAuthentication;
@@ -140,7 +140,7 @@ public class HTTPProxySettings extends SettingsScreen {
         portNumberPanel.setOpaque(false);
         portNumberPanel.add(Box.createHorizontalStrut(10));
         portNumberPanel.add(UIHelper.createLabel("port number", UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR));
-        portNumber = new RoundedFormattedTextField(NumberFormat.getIntegerInstance());
+        portNumber = new RoundedJTextField(10);
         portNumber.setText(settings.getProperty("httpProxy.portNumber"));
         UIHelper.renderComponent(portNumber, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, false);
         portNumberPanel.add(portNumber);
