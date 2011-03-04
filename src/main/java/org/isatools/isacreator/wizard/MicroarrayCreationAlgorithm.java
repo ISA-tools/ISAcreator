@@ -169,8 +169,8 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         JPanel labelPanel = new JPanel(new GridLayout(2, 2));
         labelPanel.setBackground(UIHelper.BG_COLOR);
 
-        label1Capture = new LabelCapture("Label (e.g. Cy3)");
-        label2Capture = new LabelCapture("Label (e.g. Cy5)");
+        label1Capture = new LabelCapture("Label (e.g. Cy3)", study.getUserInterface().getDataEntryEnvironment());
+        label2Capture = new LabelCapture("Label (e.g. Cy5)", study.getUserInterface().getDataEntryEnvironment());
         label2Capture.setVisible(false);
 
         // create dye swap check box
@@ -205,7 +205,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         extractNameContainer.setOpaque(false);
 
-        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1));
+        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
 
         extractDetails.add(extract);
         extractNameContainer.add(extract);
@@ -219,7 +219,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         addExtractButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1));
+                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
                 extractDetails.add(extract);
                 extractNameContainer.add(extract);
 

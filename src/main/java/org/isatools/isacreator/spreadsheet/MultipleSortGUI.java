@@ -190,6 +190,7 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         st.getParentFrame().hideSheet();
+                        dispose();
                     }
                 });
             }

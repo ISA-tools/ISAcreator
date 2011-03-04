@@ -42,6 +42,10 @@ import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.common.TextEditUtility;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.gui.listeners.propertychange.DateChangedCancelledEvent;
+import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
+import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
+import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
@@ -55,10 +59,11 @@ import java.util.List;
 import java.util.Map;
 
 public class DataEntryForm extends JLayeredPane implements Serializable {
-    private static DataEntryEnvironment dep = null;
 
-    public DataEntryForm(DataEntryEnvironment dep) {
-        this.dep = dep;
+    private DataEntryEnvironment dataEntryEnvironment;
+
+    public DataEntryForm(DataEntryEnvironment dataEntryEnvironment) {
+        this.dataEntryEnvironment = dataEntryEnvironment;
     }
 
     public DataEntryForm() {
@@ -68,25 +73,16 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         // implemented in subclasses
     }
 
-    public static JComponent createDateDropDown(final JTextField field) {
-        final CalendarGUI cal = new CalendarGUI();
-        cal.createGUI();
+    public JComponent createDateDropDown(JTextField field) {
 
-        final DropDownComponent dropdown = new DropDownComponent(field, cal, DropDownComponent.CALENDAR);
-        cal.addPropertyChangeListener("selectedDate",
-                new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(cal);
-                        field.setText(evt.getNewValue().toString());
-                    }
-                });
+        CalendarGUI calendar = new CalendarGUI();
+        calendar.createGUI();
 
-        cal.addPropertyChangeListener("noneSelected",
-                new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(cal);
-                    }
-                });
+        DropDownComponent dropdown = new DropDownComponent(field, calendar, DropDownComponent.CALENDAR);
+
+        calendar.addPropertyChangeListener("selectedDate", new DateChangedEvent(calendar, dropdown, field));
+
+        calendar.addPropertyChangeListener("noneSelected", new DateChangedCancelledEvent(calendar, dropdown));
 
         return dropdown;
     }
@@ -107,8 +103,8 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         return panel;
     }
 
-    public void setDep(DataEntryEnvironment dep) {
-        this.dep = dep;
+    public void setDataEntryEnvironment(DataEntryEnvironment dataEntryEnvironment) {
+        this.dataEntryEnvironment = dataEntryEnvironment;
     }
 
     /**
@@ -125,27 +121,17 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         return label;
     }
 
-    public static JComponent createOntologyDropDown(final JTextField field,
-                                                    boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
-        final OntologySelectionTool ost = new OntologySelectionTool(dep.getParentFrame(),
+    public JComponent createOntologyDropDown(JTextField field,
+                                             boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
+        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(dataEntryEnvironment.getParentFrame(),
                 allowsMultiple, recommendedOntologySource);
-        ost.createGUI();
+        ontologySelectionTool.createGUI();
 
-        final DropDownComponent dropdown = new DropDownComponent(field, ost, DropDownComponent.ONTOLOGY);
-        ost.addPropertyChangeListener("selectedOntology",
-                new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(ost);
-                        field.setText(evt.getNewValue().toString());
-                    }
-                });
+        DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
 
-        ost.addPropertyChangeListener("noSelectedOntology",
-                new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(ost);
-                    }
-                });
+        ontologySelectionTool.addPropertyChangeListener("selectedOntology", new OntologySelectedEvent(ontologySelectionTool, dropdown, field));
+
+        ontologySelectionTool.addPropertyChangeListener("noSelectedOntology", new OntologySelectionCancelledEvent(ontologySelectionTool, dropdown));
 
         return dropdown;
     }
@@ -167,7 +153,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         container.add(textEditPanel, BorderLayout.EAST);
 
         return container;
-
     }
 
 
@@ -178,16 +163,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         setVisible(true);
     }
 
-    public DataEntryEnvironment getDep() {
-        return dep;
+    protected ISAcreator getISAcreatorEnvironment() {
+        return dataEntryEnvironment.getParentFrame();
     }
 
-    protected ISAcreator getMGUI() {
-        return dep.getParentFrame();
-    }
-
-    public DataEntryEnvironment getDEP() {
-        return dep;
+    public DataEntryEnvironment getDataEntryEnvironment() {
+        return dataEntryEnvironment;
     }
 
     /**
@@ -235,4 +216,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public List<StudyDesign> getDesigns() {
         return null;
     }
+
+
+
 }

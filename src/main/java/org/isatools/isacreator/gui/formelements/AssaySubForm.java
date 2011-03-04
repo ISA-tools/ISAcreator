@@ -110,7 +110,7 @@ public class AssaySubForm extends SubForm implements Serializable {
                         dtm.setValueAt("", 2, colToCheck);
                     }
 
-                    if (parent.getDEP()
+                    if (parent.getDataEntryEnvironment()
                             .addAssay(dtm.getValueAt(0, colToCheck)
                                     .toString(),
                                     dtm.getValueAt(1, colToCheck).toString(),
@@ -135,11 +135,11 @@ public class AssaySubForm extends SubForm implements Serializable {
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName()
                                 .equals(JOptionPane.VALUE_PROPERTY)) {
-                            parent.getDEP().getParentFrame().hideSheet();
+                            parent.getDataEntryEnvironment().getParentFrame().hideSheet();
                         }
                     }
                 });
-                parent.getDEP().getParentFrame()
+                parent.getDataEntryEnvironment().getParentFrame()
                         .showJDialogAsSheet(optionPane.createDialog(this,
                                 "All fields not completed"));
             }

@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.spreadsheet.transposedview;
 
+import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.gui.formelements.SubForm;
@@ -58,8 +59,8 @@ public class TransposedSubForm extends SubForm {
     private Object[][] data;
 
 
-    public TransposedSubForm(String title, FieldTypes fieldType, List<SubFormField> fields, int initialNoFields, int width, int height, Object[][] data, DataEntryForm parent) {
-        super(title, fieldType, fields, initialNoFields, width, height, parent, false);
+    public TransposedSubForm(String title, FieldTypes fieldType, List<SubFormField> fields, int initialNoFields, int width, int height, Object[][] data, DataEntryEnvironment entryEnvironment) {
+        super(title, fieldType, fields, initialNoFields, width, height, entryEnvironment, false);
         this.data = data;
         toggleShowRemoveOption();
     }

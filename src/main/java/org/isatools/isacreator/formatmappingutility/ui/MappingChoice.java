@@ -83,6 +83,9 @@ public class MappingChoice extends JPanel {
     private boolean lastInList = false;
     private String[] columnsToBeMappedTo;
 
+    private IncomingFileBrowser csGUI;
+    private DropDownComponent dropdown;
+
     /**
      * Create a new MappingChoice.
      *
@@ -202,8 +205,8 @@ public class MappingChoice extends JPanel {
 
     public JComponent createTableBrowseDropdown(final JComboBox field) {
 
-        final IncomingFileBrowser csGUI = new IncomingFileBrowser(columnsToBeMappedTo, incomingFileSummaryData);
-        final DropDownComponent dropdown = new DropDownComponent(field, csGUI, DropDownComponent.TABLE_BROWSER);
+        csGUI = new IncomingFileBrowser(columnsToBeMappedTo, incomingFileSummaryData);
+        dropdown = new DropDownComponent(field, csGUI, DropDownComponent.TABLE_BROWSER);
         csGUI.addPropertyChangeListener("selectedColumn",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {

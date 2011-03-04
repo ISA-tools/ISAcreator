@@ -61,14 +61,12 @@ import java.io.File;
 public class ImportFilesMenu extends AbstractImportFilesMenu {
 
 
-
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
             loadButton, loadButtonOver, backButton, backButtonOver, filterLeft, filterRight;
 
     private JLabel back;
 
-    private ImportISAFiles iISA;
 
     public ImportFilesMenu(ISAcreatorMenu menu) {
         super(menu);
@@ -135,7 +133,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         }
     }
 
-    private void assignOntologiesToSession() {
+    private void assignOntologiesToSession(ImportISAFiles iISA) {
 
         // finally add ontology objects to user history.
         for (OntologyObject oo : iISA.getOntologyTermsDefined()) {
@@ -154,37 +152,35 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
 
     public void loadFile(final String dir) {
-        iISA = new ImportISAFiles(menu.getMain());
+
 
         // show infinite panel. if successful, hide glass panel and show either the errors, or the data entry panel containing the submission
         Thread performer = new Thread(new Runnable() {
             public void run() {
                 try {
+                    // TODO test to see if objects are maintained in memory after moving the
+                    // instantiation inside the thread.
+                    ImportISAFiles iISA = new ImportISAFiles(menu.getMain());
                     if (iISA.importFile(dir)) {
                         // success, so load
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                menu.stopProgressIndicator();
-                                menu.resetViewAfterProgress();
-                                menu.hideGlassPane();
-                                menu.getMain().setCurDataEntryPanel(iISA.getDataEntryPanel());
-                                assignOntologiesToSession();
-                                menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
-                                problemScroll.setVisible(false);
-                            }
-                        });
+
+                        menu.stopProgressIndicator();
+                        menu.resetViewAfterProgress();
+                        menu.hideGlassPane();
+                        assignOntologiesToSession(iISA);
+                        menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
+                        problemScroll.setVisible(false);
+                        iISA = null;
 
                     } else {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                menu.stopProgressIndicator();
-                                menu.resetViewAfterProgress();
 
-                                problemReport.setText(iISA.getProblemLog());
-                                problemScroll.setVisible(true);
-                                revalidate();
-                            }
-                        });
+                        menu.stopProgressIndicator();
+                        menu.resetViewAfterProgress();
+
+                        problemReport.setText(iISA.getProblemLog());
+                        problemScroll.setVisible(true);
+                        revalidate();
+
                     }
                 } catch (OutOfMemoryError outOfMemory) {
                     System.gc();
@@ -205,7 +201,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 }
             }
         });
-        performer.setPriority(Thread.NORM_PRIORITY);
         performer.start();
     }
 

@@ -37,15 +37,21 @@
 
 package org.isatools.isacreator.wizard;
 
+import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryForm;
+import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Eamonn Maguire
@@ -56,11 +62,13 @@ import java.util.Collections;
 public class LabelCapture extends JPanel {
 
     private String initialVal;
+    private DataEntryEnvironment dep;
 
     private JTextField labelVal;
 
-    public LabelCapture(String initialVal) {
+    public LabelCapture(String initialVal, DataEntryEnvironment dep) {
         this.initialVal = initialVal;
+        this.dep = dep;
         setBackground(UIHelper.BG_COLOR);
         instantiatePanel();
     }
@@ -76,7 +84,7 @@ public class LabelCapture extends JPanel {
         labelVal.setToolTipText("<html><b>Label</b><p>Label used in this assay</p></html>");
 
         container.add(labelVal);
-        container.add(DataEntryForm.createOntologyDropDown(labelVal, false,
+        container.add(dep.createOntologyDropDown(labelVal, false,
                 Collections.singletonMap("CHEBI", new RecommendedOntology(new Ontology("1007", "", "CHEBI", "Chemicals of Bioligical Interest")))));
         container.add(UIHelper.createLabel(""));
 
@@ -86,4 +94,7 @@ public class LabelCapture extends JPanel {
     public String getLabelName() {
         return labelVal.getText();
     }
+
+
+
 }

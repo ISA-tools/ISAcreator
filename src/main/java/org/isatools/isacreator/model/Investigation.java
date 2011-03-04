@@ -57,7 +57,7 @@ public class Investigation {
 
     private InvestigationDataEntry userInterface;
     private String reference = "";
-    private String investigationIdentifier = "";
+    private String investigationId = "";
     private String investigationTitle = "";
     private String investigationDescription = "";
     private String submissionDate = "";
@@ -84,15 +84,15 @@ public class Investigation {
      * Investigation Object contains one to many Study Objects and is the top most element
      * in the ISA structure.
      *
-     * @param investigationIdentifier  - ID to be given to the investigation
+     * @param investigationId  - ID to be given to the investigation
      * @param investigationTitle       - Title given to the investigation
      * @param investigationDescription - Description of the Investigation including aims, hypotheses, and so forth.
      * @param submissionDate           - Date the Investigation was submitted.
      * @param publicReleaseDate        - Date the Investigation should be available to the public.
      */
-    public Investigation(String investigationIdentifier, String investigationTitle, String investigationDescription,
+    public Investigation(String investigationId, String investigationTitle, String investigationDescription,
                          String submissionDate, String publicReleaseDate) {
-        this.investigationIdentifier = investigationIdentifier;
+        this.investigationId = investigationId;
         this.investigationTitle = investigationTitle.equals("") ? "Investigation" : investigationTitle;
         this.investigationDescription = investigationDescription;
         this.submissionDate = submissionDate;
@@ -216,8 +216,8 @@ public class Investigation {
         return investigationDescription;
     }
 
-    public String getInvestigationIdentifier() {
-        return investigationIdentifier;
+    public String getInvestigationId() {
+        return investigationId;
     }
 
     public String getPublicReleaseDate() {
@@ -249,8 +249,8 @@ public class Investigation {
         this.investigationDescription = investigationDescription;
     }
 
-    public void setInvestigationIdentifier(String investigationIdentifier) {
-        this.investigationIdentifier = investigationIdentifier;
+    public void setInvestigationId(String investigationIdentifier) {
+        this.investigationId = investigationIdentifier;
     }
 
 

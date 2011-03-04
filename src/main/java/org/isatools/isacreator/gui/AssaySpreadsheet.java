@@ -56,21 +56,21 @@ public class AssaySpreadsheet extends DataEntryForm {
      * AssayDataEntry constructor
      * Associated StudyDataEntry object and TableReferenceObject are defined here.
      *
-     * @param sde - The StudyDataEntryObject associated with this assays related study.
-     * @param tro - TableReferenceObject to be used to create the Spreadsheet.
+     * @param studyDataEntry - The StudyDataEntryObject associated with this assays related study.
+     * @param tableReferenceObject - TableReferenceObject to be used to create the Spreadsheet.
      */
-    public AssaySpreadsheet(StudyDataEntry sde, TableReferenceObject tro) {
-        this(sde, tro, "[Sample]", "");
+    public AssaySpreadsheet(StudyDataEntry studyDataEntry, TableReferenceObject tableReferenceObject) {
+        this(studyDataEntry, tableReferenceObject, "[Sample]", "");
 
     }
 
-    public AssaySpreadsheet(StudyDataEntry sde, TableReferenceObject tro, String measurementType, String technologyType) {
-        super(sde.getDEP());
+    public AssaySpreadsheet(StudyDataEntry studyDataEntry, TableReferenceObject tableReferenceObject, String measurementType, String technologyType) {
+        super(studyDataEntry.getDataEntryEnvironment());
         instantiatePane();
 
         String title = constructTitleString(measurementType, technologyType);
 
-        table = new Spreadsheet(tro, sde, title, this);
+        table = new Spreadsheet(tableReferenceObject, studyDataEntry, title, this);
         add(table, BorderLayout.CENTER);
         finalisePane();
     }
@@ -98,5 +98,9 @@ public class AssaySpreadsheet extends DataEntryForm {
      */
     public Spreadsheet getTable() {
         return table;
+    }
+
+    public void setTable(Spreadsheet table) {
+        this.table = table;
     }
 }

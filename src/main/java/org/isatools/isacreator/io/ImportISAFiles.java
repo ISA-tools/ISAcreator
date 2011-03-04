@@ -86,7 +86,6 @@ public class ImportISAFiles {
     private DataEntryEnvironment dataEntryEnvironment;
     private Investigation investigation;
     private String parentDir = null;
-    private boolean problemsEncountered = false;
 
     // problem log contains errors found when reading document, validation errors etc. to be fed back to the user so that they can correct the document
     private StringBuilder problemLog;
@@ -124,6 +123,7 @@ public class ImportISAFiles {
     public ImportISAFiles(ISAcreator applicationContainer, Boolean constructWithGUIs) {
         this.constructWithGUIs = constructWithGUIs;
         this.dataEntryEnvironment = new DataEntryEnvironment(applicationContainer);
+        applicationContainer.setCurDataEntryPanel(dataEntryEnvironment);
         assaysToAdd = new ArrayList<Assay>();
         ontologySourcesDefined = new ArrayList<OntologySourceRefObject>();
         ontologyTermsDefined = new ArrayList<OntologyObject>();
@@ -283,6 +283,7 @@ public class ImportISAFiles {
     }
 
     private void addStudyWithGUIs() throws MalformedInvestigationException {
+        System.out.println("Adding study with GUIs");
         StudyDataEntry sde = new StudyDataEntry(dataEntryEnvironment,
                 currentStudy);
 
@@ -504,10 +505,6 @@ public class ImportISAFiles {
         return ontologyTermsDefined;
     }
 
-
-    public boolean isProblemsEncountered() {
-        return problemsEncountered;
-    }
 
     /**
      * Create tablemodel for item!

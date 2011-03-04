@@ -110,7 +110,7 @@ public class SpreadsheetConverter {
             int fieldType = resolveDataTypeForSubform(dt, acceptsFiles);
 
             if (colName.startsWith("Protocol")) {
-                list = sheet.getSDE().getProtocolNames();
+                list = sheet.getStudyDataEntryEnvironment().getProtocolNames();
             }
 
             if (list != null) {

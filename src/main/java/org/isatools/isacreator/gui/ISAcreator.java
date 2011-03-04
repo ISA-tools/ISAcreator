@@ -209,14 +209,6 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
             assayDefinitions = cp.getTables();
         }
 
-        final DataEntryEnvironment dep = new DataEntryEnvironment(this);
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                dep.createGUI();
-            }
-        });
-
-        curDataEntryEnvironment = dep;
     }
 
     public void createGUI() {
@@ -614,13 +606,13 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                         item.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
 
-                                final QRCodeGeneratorUI qrCodeUI = new QRCodeGeneratorUI(
-                                        ISAcreator.this, study_id);
 
                                 Thread loader = new Thread(new Runnable() {
                                     public void run() {
                                         SwingUtilities.invokeLater(new Runnable() {
                                             public void run() {
+                                                QRCodeGeneratorUI qrCodeUI = new QRCodeGeneratorUI(
+                                                        ISAcreator.this, study_id);
                                                 qrCodeUI.createGUI();
                                                 showJDialogAsSheet(qrCodeUI);
                                                 maskOutMouseEvents();
@@ -712,7 +704,6 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         try {
 
-
             for (UserProfile up : getUserProfiles()) {
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
                     up.setUserHistory(getUserHistory());
@@ -720,20 +711,22 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                     break;
                 }
             }
+
             userProfileIO.saveUserProfiles();
             checkMenuRequired();
 
-//        getDataEntryEnvironment().getInvestigation().clearUsedOntologies();
-            curDataEntryEnvironment = null;
             userHistory.clear();
+
+            curDataEntryEnvironment.removeReferences();
+            curDataEntryEnvironment = null;
+
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("Problem occurred when saving user profiles.");
         }
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                curDataEntryEnvironment = new DataEntryEnvironment(ISAcreator.this);
-                curDataEntryEnvironment.setInvestigation(new Investigation("Investigation", ""));
 
                 lp.showGUI(ISAcreatorMenu.SHOW_MAIN);
                 lp.startAnimation();
@@ -762,15 +755,12 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         // reset information pertinent to a certain user
 //        getDataEntryEnvironment().getInvestigation().clearUsedOntologies();
         Spreadsheet.fileSelectEditor.setFtpManager(new FTPManager());
+
         curDataEntryEnvironment = null;
         userHistory.clear();
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-
-
-                curDataEntryEnvironment = new DataEntryEnvironment(ISAcreator.this);
-                curDataEntryEnvironment.setInvestigation(new Investigation("Investigation", ""));
                 lp.showGUI(ISAcreatorMenu.SHOW_LOGIN);
                 lp.startAnimation();
                 setCurrentPage(lp);
@@ -779,16 +769,19 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     }
 
 
-    public void setCurDataEntryPanel(DataEntryEnvironment curDataEntryEnvironment) {
-        this.curDataEntryEnvironment = curDataEntryEnvironment;
+    public void setCurDataEntryPanel(DataEntryEnvironment dataEntryEnvironment) {
+        this.curDataEntryEnvironment = dataEntryEnvironment;
+        System.out.println("Data entry panel changed & initialised");
     }
 
     public void setCurrentPage(JLayeredPane newPage) {
+
         if (currentPage == null) {
             currentPage = newPage;
         } else {
             System.out.println("removing current page...");
             getContentPane().remove(currentPage);
+            currentPage = null;
             currentPage = newPage;
         }
 

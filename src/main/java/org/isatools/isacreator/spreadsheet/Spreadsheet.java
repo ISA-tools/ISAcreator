@@ -121,9 +121,6 @@ public class Spreadsheet extends JComponent implements
             undoButtonOver, redoButton, redoButtonOver, requiredColumnWarningIcon, confirmRemoveColumnIcon,
             confirmRemoveRowIcon, selectOneColumnWarningIcon, copyColumnDownWarningIcon, copyRowDownWarningIcon, transposeIcon, transposeIconOver;
 
-    private AddMultipleRowsGUI amrGUI;
-    private DataEntryEnvironment dataEntryEnv;
-
     //map provides a way of tracking where unit fields belong in the table, so even columns are moved around by the user,
     // they are moved by the user, the software still knows where they belong when it comes to outputting the ISATAB files!!
     protected Map<TableColumn, List<TableColumn>> columnDependencies;
@@ -132,9 +129,9 @@ public class Spreadsheet extends JComponent implements
 
     protected JOptionPane optionPane;
     private CustomTable table;
-    private MultipleSortGUI msGUI;
-    private TransposedSpreadsheetView tsv;
-    private TableGroupInfo tgi;
+
+
+    private TableGroupInfo tableGroupInformation;
     protected SpreadsheetColumnRenderer renderer = new SpreadsheetColumnRenderer();
     protected SpreadsheetModel spreadsheetModel;
     private StudyDataEntry studyDataEntryEnvironment;
@@ -152,7 +149,7 @@ public class Spreadsheet extends JComponent implements
     protected Set<String> hiddenColumns;
     private String spreadsheetTitle;
     protected boolean highlightActive = false;
-    private TableConsistencyChecker tcc;
+    private TableConsistencyChecker tableConsistencyChecker;
 
     private SpreadsheetPopupMenus spreadsheetPopups;
 
@@ -162,7 +159,7 @@ public class Spreadsheet extends JComponent implements
     protected Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
     protected SpreadsheetHistory spreadsheetHistory = new SpreadsheetHistory();
 
-    protected UndoManager um = new UndoManager() {
+    protected UndoManager undoManager = new UndoManager() {
         public void undoableEditHappened(UndoableEditEvent e) {
             super.undoableEditHappened(e);
             undo.setEnabled(canUndo());
@@ -210,7 +207,7 @@ public class Spreadsheet extends JComponent implements
 
         this.studyDataEntryEnvironment = studyDataEntryEnvironment;
         this.assayDataEntryEnvironment = assayDataEntryEnvironment;
-        this.dataEntryEnv = studyDataEntryEnvironment.getDEP();
+
         this.spreadsheetTitle = spreadsheetTitle;
         this.tableReferenceObject = tableReferenceObject;
 
@@ -234,13 +231,13 @@ public class Spreadsheet extends JComponent implements
             public Class getColumnClass(int colNo) {
                 String colName = getColumnName(colNo);
 
-                Class c = tableReferenceObject.getColumnType(colName).getMapping();
+                Class columnClass = tableReferenceObject.getColumnType(colName).getMapping();
 
-                if (c == DataTypes.DATE.getMapping()) {
-                    c = DataTypes.STRING.getMapping();
+                if (columnClass == DataTypes.DATE.getMapping()) {
+                    columnClass = DataTypes.STRING.getMapping();
                 }
 
-                return c;
+                return columnClass;
             }
 
             //overrides
@@ -250,8 +247,8 @@ public class Spreadsheet extends JComponent implements
                 return tableReferenceObject.getColumnEditable(colName);
             }
 
-            public void setValueAt(Object obj, int row, int col) {
-                super.setValueAt(obj, row, col);
+            public void setValueAt(Object value, int row, int col) {
+                super.setValueAt(value, row, col);
             }
         };
 
@@ -302,14 +299,10 @@ public class Spreadsheet extends JComponent implements
 
         if (tableReferenceObject.getDefinedOntologies().size() > 0) {
             for (OntologyObject oo : tableReferenceObject.getDefinedOntologies().values()) {
-                dataEntryEnv.getUserHistory().put(oo.getUniqueId(), oo);
+                studyDataEntryEnvironment.getDataEntryEnvironment().getUserHistory().put(oo.getUniqueId(), oo);
             }
         }
 
-        amrGUI = new AddMultipleRowsGUI(this);
-        amrGUI.createGUI();
-        msGUI = new MultipleSortGUI(this);
-        msGUI.createGUI();
 
         table.setAutoscrolls(true);
 
@@ -326,7 +319,7 @@ public class Spreadsheet extends JComponent implements
         add(pane, BorderLayout.CENTER);
 
         createButtonPanel();
-        addUndoableEditListener(um);
+        addUndoableEditListener(undoManager);
     }
 
     public SpreadsheetFunctions getSpreadsheetFunctions() {
@@ -667,14 +660,14 @@ public class Spreadsheet extends JComponent implements
                         public void propertyChange(PropertyChangeEvent event) {
                             if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
                                 int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-                                dataEntryEnv.getParentFrame().hideSheet();
+                                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
                                 if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                                     spreadsheetFunctions.copyColumnDownwards(row, col);
                                 }
                             }
                         }
                     });
-                    dataEntryEnv.getParentFrame()
+                    studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
                             .showJDialogAsSheet(copyColDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Column?"));
 
                 }
@@ -712,14 +705,14 @@ public class Spreadsheet extends JComponent implements
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
                             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-                            dataEntryEnv.getParentFrame().hideSheet();
+                            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
                             if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                                 spreadsheetFunctions.copyRowDownwards(row);
                             }
                         }
                     }
                 });
-                dataEntryEnv.getParentFrame()
+                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
                         .showJDialogAsSheet(copyRowDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Row Down?"));
             }
         });
@@ -816,11 +809,11 @@ public class Spreadsheet extends JComponent implements
 
         undo = new JLabel(undoButton);
         undo.setToolTipText("<html><b>undo previous action<b></html>");
-        undo.setEnabled(um.canUndo());
+        undo.setEnabled(undoManager.canUndo());
         undo.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 undo.setIcon(undoButton);
-                um.undo();
+                undoManager.undo();
 
                 if (highlightActive) {
                     setRowsToDefaultColor();
@@ -839,11 +832,11 @@ public class Spreadsheet extends JComponent implements
 
         redo = new JLabel(redoButton);
         redo.setToolTipText("<html><b>redo action<b></html>");
-        redo.setEnabled(um.canRedo());
+        redo.setEnabled(undoManager.canRedo());
         redo.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 redo.setIcon(redoButton);
-                um.redo();
+                undoManager.redo();
 
                 if (highlightActive) {
                     setRowsToDefaultColor();
@@ -935,13 +928,13 @@ public class Spreadsheet extends JComponent implements
      * @return whether or not the table is consistent
      */
     protected boolean checkTableColumnOrderBad(String fileName) {
-        tcc = new TableConsistencyChecker();
+        tableConsistencyChecker = new TableConsistencyChecker();
         // return true if ok, false if not
-        return tcc.runInspection(fileName, table, columnDependencies);
+        return tableConsistencyChecker.runInspection(fileName, table, columnDependencies);
     }
 
     public TableConsistencyChecker getTableConsistencyChecker() {
-        return tcc;
+        return tableConsistencyChecker;
     }
 
 
@@ -950,9 +943,8 @@ public class Spreadsheet extends JComponent implements
      *
      * @return DataEntryPanel
      */
-    public DataEntryEnvironment getDataEntryEnv
-    () {
-        return dataEntryEnv;
+    public DataEntryEnvironment getDataEntryEnv() {
+        return studyDataEntryEnvironment.getDataEntryEnvironment();
     }
 
 
@@ -1040,7 +1032,7 @@ public class Spreadsheet extends JComponent implements
      */
     public AniSheetableJFrame getParentFrame
     () {
-        return dataEntryEnv.getParentFrame();
+        return studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
     }
 
     /**
@@ -1048,7 +1040,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @return the StudyDataEntry object for the current Spreadsheet
      */
-    public StudyDataEntry getSDE
+    public StudyDataEntry getStudyDataEntryEnvironment
     () {
         return studyDataEntryEnvironment;
     }
@@ -1147,8 +1139,8 @@ public class Spreadsheet extends JComponent implements
 
 
     protected void highlight(String toGroupBy, boolean exactMatch, boolean returnSampleNames) {
-        if (tgi != null && tgi.isShowing()) {
-            tgi.dispose();
+        if (tableGroupInformation != null && tableGroupInformation.isShowing()) {
+            tableGroupInformation.dispose();
         }
 
         Map<String, List<Object>> groups = getDataGroupsByColumn(toGroupBy, exactMatch, returnSampleNames);
@@ -1162,15 +1154,15 @@ public class Spreadsheet extends JComponent implements
         // showing group distribution!
         final Map<Integer, Color> rowColors = paintRows(groups, groupColors);
 
-        tgi = new TableGroupInfo(groups, groupColors, table.getRowCount());
-        tgi.setLocation(getWidth() / 2 - tgi.getWidth(), getHeight() / 2 - tgi.getHeight());
+        tableGroupInformation = new TableGroupInfo(groups, groupColors, table.getRowCount());
+        tableGroupInformation.setLocation(getWidth() / 2 - tableGroupInformation.getWidth(), getHeight() / 2 - tableGroupInformation.getHeight());
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 
                 try {
                     table.setDefaultRenderer(Class.forName("java.lang.Object"), new CustomRowRenderer(rowColors, UIHelper.VER_11_PLAIN));
                     table.repaint();
-                    tgi.createGUI();
+                    tableGroupInformation.createGUI();
                     highlightActive = true;
                 } catch (ClassNotFoundException e) {
                     //
@@ -1244,8 +1236,8 @@ public class Spreadsheet extends JComponent implements
 
 
     public void setRowsToDefaultColor() {
-        if (tgi != null && tgi.isShowing()) {
-            tgi.dispose();
+        if (tableGroupInformation != null && tableGroupInformation.isShowing()) {
+            tableGroupInformation.dispose();
         }
         try {
             table.setDefaultRenderer(Class.forName("java.lang.Object"), new SpreadsheetCellRenderer());
@@ -1261,7 +1253,7 @@ public class Spreadsheet extends JComponent implements
                      event) {
         if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-            dataEntryEnv.getParentFrame().hideSheet();
+            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
 
             if ((currentState == DELETING_COLUMN) &&
                     (lastOptionAnswer == JOptionPane.YES_OPTION)) {
@@ -1325,7 +1317,7 @@ public class Spreadsheet extends JComponent implements
     private OntologyObject searchUserHistory
     (String
              uniqueId) {
-        return dataEntryEnv.getUserHistory().get(uniqueId);
+        return studyDataEntryEnvironment.getDataEntryEnvironment().getUserHistory().get(uniqueId);
     }
 
     /**
@@ -1467,49 +1459,46 @@ public class Spreadsheet extends JComponent implements
      *
      * @param toShow can be any one of four static values from the AddColumnGUI class, e.g. ADD_FACTOR_COLUMN, or ADD_COMMENT_COLUMN.
      */
-    protected void showAddColumnsGUI
-    (
-            int toShow) {
-        final AddColumnGUI goingToDisplay;
+    protected void showAddColumnsGUI(final int toShow) {
 
-        switch (toShow) {
-            case AddColumnGUI.ADD_FACTOR_COLUMN:
-                goingToDisplay = new AddColumnGUI(this,
-                        AddColumnGUI.ADD_FACTOR_COLUMN);
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                AddColumnGUI goingToDisplay;
 
-                break;
+                switch (toShow) {
+                    case AddColumnGUI.ADD_FACTOR_COLUMN:
+                        goingToDisplay = new AddColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_FACTOR_COLUMN);
+                        break;
 
-            case AddColumnGUI.ADD_CHARACTERISTIC_COLUMN:
-                goingToDisplay = new AddColumnGUI(this,
-                        AddColumnGUI.ADD_CHARACTERISTIC_COLUMN);
+                    case AddColumnGUI.ADD_CHARACTERISTIC_COLUMN:
+                        goingToDisplay = new AddColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_CHARACTERISTIC_COLUMN);
+                        break;
 
-                break;
+                    case AddColumnGUI.ADD_PARAMETER_COLUMN:
+                        goingToDisplay = new AddColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_PARAMETER_COLUMN);
 
-            case AddColumnGUI.ADD_PARAMETER_COLUMN:
-                goingToDisplay = new AddColumnGUI(this,
-                        AddColumnGUI.ADD_PARAMETER_COLUMN);
+                        break;
 
-                break;
+                    case AddColumnGUI.ADD_COMMENT_COLUMN:
+                        goingToDisplay = new AddColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_COMMENT_COLUMN);
 
-            case AddColumnGUI.ADD_COMMENT_COLUMN:
-                goingToDisplay = new AddColumnGUI(this,
-                        AddColumnGUI.ADD_COMMENT_COLUMN);
+                        break;
 
-                break;
-
-            default:
-                goingToDisplay = null;
-        }
-
-        if (goingToDisplay != null) {
-            goingToDisplay.createGUI();
-            // do this to ensure that the gui is fully created before displaying it.
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    dataEntryEnv.getParentFrame().showJDialogAsSheet(goingToDisplay);
+                    default:
+                        goingToDisplay = null;
                 }
-            });
-        }
+
+                if (goingToDisplay != null) {
+                    goingToDisplay.createGUI();
+                    // do this to ensure that the gui is fully created before displaying it.
+                    studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(goingToDisplay);
+                }
+            }
+        });
     }
 
     /**
@@ -1524,7 +1513,7 @@ public class Spreadsheet extends JComponent implements
             optionPane.setIcon(selectOneColumnWarningIcon);
             UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
             optionPane.addPropertyChangeListener(this);
-            dataEntryEnv.getParentFrame()
+            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
                     .showJDialogAsSheet(optionPane.createDialog(this, "Delete Column"));
         }
     }
@@ -1534,10 +1523,14 @@ public class Spreadsheet extends JComponent implements
      */
     protected void showMultipleColumnSortGUI
     () {
-        msGUI.updateAllCombos();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                dataEntryEnv.getParentFrame().showJDialogAsSheet(msGUI);
+
+                MultipleSortGUI msGUI = new MultipleSortGUI(Spreadsheet.this);
+                msGUI.createGUI();
+                msGUI.updateAllCombos();
+
+                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(msGUI);
             }
         });
     }
@@ -1547,18 +1540,16 @@ public class Spreadsheet extends JComponent implements
      * Displays the Transposed Spreadsheet UI
      */
     protected void showTransposeSpreadsheetGUI() {
-
         // todo migrate this to occur in the view so that a loading pane is shown whilst the spreadsheet is loaded.
-        SpreadsheetConverter converter = new SpreadsheetConverter(Spreadsheet.this);
-        final TransposedSpreadsheetModel transposedSpreadsheetModel = converter.doConversion();
 
         SwingUtilities.invokeLater(new Runnable() {
-
             public void run() {
-                tsv = new TransposedSpreadsheetView(transposedSpreadsheetModel, (int) (dataEntryEnv.getParentFrame().getWidth() * 0.80), (int) (dataEntryEnv.getParentFrame().getHeight() * 0.70));
-                tsv.createGUI();
-                dataEntryEnv.getParentFrame().showJDialogAsSheet(tsv);
-                dataEntryEnv.getParentFrame().maskOutMouseEvents();
+                SpreadsheetConverter converter = new SpreadsheetConverter(Spreadsheet.this);
+                TransposedSpreadsheetModel transposedSpreadsheetModel = converter.doConversion();
+                TransposedSpreadsheetView transposedSpreadsheetView = new TransposedSpreadsheetView(transposedSpreadsheetModel, (int) (studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().getWidth() * 0.80), (int) (studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().getHeight() * 0.70));
+                transposedSpreadsheetView.createGUI();
+                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(transposedSpreadsheetView);
+                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().maskOutMouseEvents();
             }
         });
     }
@@ -1566,18 +1557,22 @@ public class Spreadsheet extends JComponent implements
     /**
      * Displays the AddMultipleRowsGUI
      */
-    protected void showMultipleRowsGUI
-    () {
+    protected void showMultipleRowsGUI() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                dataEntryEnv.getParentFrame().showJDialogAsSheet(amrGUI);
+                AddMultipleRowsGUI amrGUI = new AddMultipleRowsGUI(Spreadsheet.this);
+                amrGUI.createGUI();
+
+                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(amrGUI);
             }
         });
     }
 
 
     public void columnAdded(TableColumnModelEvent event) {
-        um.discardAllEdits();
+
+
+        undoManager.discardAllEdits();
     }
 
     public void columnMarginChanged(ChangeEvent event) {
@@ -1586,12 +1581,12 @@ public class Spreadsheet extends JComponent implements
 
     public void columnMoved(TableColumnModelEvent event) {
         if (event.getFromIndex() != event.getToIndex()) {
-            um.discardAllEdits();
+            undoManager.discardAllEdits();
         }
     }
 
     public void columnRemoved(TableColumnModelEvent event) {
-        um.discardAllEdits();
+        undoManager.discardAllEdits();
     }
 
     public void columnSelectionChanged(ListSelectionEvent event) {
@@ -1655,7 +1650,7 @@ public class Spreadsheet extends JComponent implements
                 // update status panel in bottom left hand corner of workspace to contain the ontology
                 // information. this should possibly be extended to visualize the ontology location within
                 // the ontology tree itself.
-                dataEntryEnv.setStatusPaneInfo("<html>" +
+                studyDataEntryEnvironment.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
                         "<b>ontology term information</b>" + "</hr>" +
                         "<p><term name: >" + ooForSelectedTerm.getTerm() +
                         "</p>" + "<p><b>source ref: </b> " +

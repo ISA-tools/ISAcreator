@@ -219,7 +219,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
         JPanel labelPanel = new JPanel(new GridLayout(1, 2));
         labelPanel.setBackground(UIHelper.BG_COLOR);
 
-        labelCapture = new LabelCapture("Label");
+        labelCapture = new LabelCapture("Label", study.getUserInterface().getDataEntryEnvironment());
         labelCapture.setVisible(false);
 
         labelUsed = new JCheckBox("Label used?", false);
@@ -252,7 +252,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         extractNameContainer.setBackground(UIHelper.BG_COLOR);
 
-        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1));
+        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
 
         extractDetails.add(extract);
         extractNameContainer.add(extract);
@@ -266,7 +266,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
         addButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1));
+                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
                 extractDetails.add(extract);
                 extractNameContainer.add(extract);
 

@@ -161,7 +161,7 @@ public class MappingUtilView extends DataEntryWrapper {
 
         // create first pane (select files pane!)
         dep = new DataEntryEnvironment(menuPanels.getMain());
-        setDep(dep);
+        setDataEntryEnvironment(dep);
     }
 
     public void changeView() {

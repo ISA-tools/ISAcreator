@@ -85,7 +85,6 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
             warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp, emptySubmission;
 
 
-    private AddStudyDialog studyEntry;
     private DefaultMutableTreeNode overviewTreeRoot;
     private DefaultTreeModel overviewTreeModel;
     private Investigation investigation;
@@ -104,8 +103,6 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
 
         this.mGUI = mGUI;
         emptySubmissionFiller = new EmptySubmissionFill();
-        studyEntry = new AddStudyDialog(this, "Study");
-        studyEntry.createGUI();
     }
 
     /**
@@ -208,7 +205,14 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
      * Show the addStudy dialog to the user.
      */
     public void addStudyToTree() {
-        mGUI.showJDialogAsSheet(studyEntry);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                AddStudyDialog studyEntry = new AddStudyDialog(DataEntryEnvironment.this, "Study");
+                studyEntry.createGUI();
+                mGUI.showJDialogAsSheet(studyEntry);
+            }
+        });
+
     }
 
     /**
@@ -424,7 +428,10 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
     }
 
     private DefaultMutableTreeNode createStudyNode(Investigation inv, Study s) {
-        s.setUI(new StudyDataEntry(this, s));
+        if (s.getUserInterface() == null) {
+
+            s.setUI(new StudyDataEntry(this, s));
+        }
 
         DefaultMutableTreeNode studyNode = new DefaultMutableTreeNode(s);
         studyNode.add(new DefaultMutableTreeNode(s.getStudySample()));
@@ -723,4 +730,17 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
             return "Empty Submission";
         }
     }
+
+    public void removeReferences() {
+        System.out.println("REMOVING REFERENCES");
+        System.out.println(investigation);
+
+        if (investigation != null) {
+            investigation.getUserInterface().removeReferences();
+            investigation = null;
+        }
+
+
+    }
+
 }
