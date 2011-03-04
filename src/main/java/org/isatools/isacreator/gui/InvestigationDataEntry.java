@@ -45,6 +45,7 @@ import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
+import org.isatools.isacreator.model.Study;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -109,7 +110,7 @@ public class InvestigationDataEntry extends DataEntryForm {
         JLabel invIdLabel = createLabel("investigation identifier");
 
         invId = new RoundedJTextField(10);
-        invId.setText(inv.getInvestigationIdentifier());
+        invId.setText(inv.getInvestigationId());
         invId.setToolTipText(
                 "<html><b>investigation identifier</b><p>An identifier for the investigation</p>");
 
@@ -336,7 +337,7 @@ public class InvestigationDataEntry extends DataEntryForm {
     }
 
     public void update() {
-        inv.setInvestigationIdentifier(invId.getText());
+        inv.setInvestigationId(invId.getText());
         inv.setInvestigationTitle(invTitle.getText());
         inv.setInvestigationDescription(invDesc.getText());
         inv.setPublicReleaseDate(pubReleaseDate.getText());
@@ -344,5 +345,31 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         publicationsSubForm.update();
         contactsSubform.update();
+    }
+
+    public void removeReferences() {
+        System.out.println("removing investigation: " + inv.getInvestigationId());
+
+        publicationsSubForm.setDataEntryEnvironment(null);
+        publicationsSubForm.setParent(null);
+        publicationsSubForm = null;
+
+        contactsSubform.setDataEntryEnvironment(null);
+        contactsSubform.setParent(null);
+        contactsSubform = null;
+
+        setDataEntryEnvironment(null);
+
+        for (String s : inv.getStudies().keySet()) {
+            Study tmpStudy = inv.getStudies().get(s);
+            System.out.println("removing study: " + tmpStudy.getStudyId());
+            tmpStudy.getUserInterface().removeReferences();
+            tmpStudy.setUI(null);
+        }
+
+        inv.getUserInterface().removeAll();
+        inv.setUserInterface(null);
+
+        inv = null;
     }
 }

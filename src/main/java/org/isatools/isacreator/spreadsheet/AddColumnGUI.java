@@ -91,6 +91,8 @@ public class AddColumnGUI extends JDialog {
     private JTextField varSelectOntologyField;
     private Spreadsheet st;
     private int type;
+    private DropDownComponent dropdown;
+    private OntologySelectionTool ost;
 
 
     public AddColumnGUI(Spreadsheet st, int type) {
@@ -116,7 +118,7 @@ public class AddColumnGUI extends JDialog {
         container.setBackground(UIHelper.BG_COLOR);
 
         if (panelType == ADD_FACTOR_COLUMN) {
-            List<Factor> factors = st.getSDE().getFactors();
+            List<Factor> factors = st.getStudyDataEntryEnvironment().getFactors();
             String[] terms = new String[factors.size()];
 
             for (int i = 0; i < factors.size(); i++) {
@@ -231,11 +233,11 @@ public class AddColumnGUI extends JDialog {
      */
     protected DropDownComponent createOntologyDropDown(final JTextField field,
                                                        boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
-        final OntologySelectionTool ost = new OntologySelectionTool(st.getDataEntryEnv().getParentFrame(),
+        ost = new OntologySelectionTool(st.getDataEntryEnv().getParentFrame(),
                 allowsMultiple, recommendedOntologySource);
         ost.createGUI();
 
-        final DropDownComponent dropdown = new DropDownComponent(field, ost, DropDownComponent.ONTOLOGY);
+        dropdown = new DropDownComponent(field, ost, DropDownComponent.ONTOLOGY);
         ost.addPropertyChangeListener("selectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
@@ -287,7 +289,7 @@ public class AddColumnGUI extends JDialog {
         unitContainer.setLayout(new BoxLayout(unitContainer, BoxLayout.PAGE_AXIS));
         unitContainer.setOpaque(false);
 
-        final JPanel unitFieldCont = new JPanel(new GridLayout(1, 2));
+        JPanel unitFieldCont = new JPanel(new GridLayout(1, 2));
         unitFieldCont.setOpaque(false);
 
         unitField = new RoundedJTextField(10);

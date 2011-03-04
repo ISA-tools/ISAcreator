@@ -39,6 +39,7 @@ package org.isatools.isacreator.gui;
 
 import javax.swing.table.TableCellEditor;
 import java.util.HashMap;
+import java.util.WeakHashMap;
 
 
 /**
@@ -48,10 +49,10 @@ import java.util.HashMap;
  * @date Jun 2, 2008
  */
 public class RowEditor {
-    private HashMap<Integer, TableCellEditor> rowEditors;
+    private WeakHashMap<Integer, TableCellEditor> rowEditors;
 
     public RowEditor() {
-        rowEditors = new HashMap<Integer, TableCellEditor>();
+        rowEditors = new WeakHashMap<Integer, TableCellEditor>();
     }
 
     /**
@@ -88,5 +89,9 @@ public class RowEditor {
             rowEditors.get(row).stopCellEditing();
             rowEditors.get(row).cancelCellEditing();
         }
+    }
+
+    public void removeAllListeners() {
+        rowEditors.clear();
     }
 }

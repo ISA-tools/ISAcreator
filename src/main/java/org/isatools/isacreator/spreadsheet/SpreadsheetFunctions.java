@@ -852,7 +852,7 @@ public class SpreadsheetFunctions {
         }
 
         if (col.getHeaderValue().toString().equals("Protocol REF")) {
-            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getSDE().getStudy()));
+            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getStudyDataEntryEnvironment().getStudy()));
             return;
         }
 
@@ -952,7 +952,7 @@ public class SpreadsheetFunctions {
      * @param number            - number of rows to add.
      * @param creatingFromEmpty - whether or not the rows have been added at the very start.
      */
-    public synchronized void addRows(int number, boolean creatingFromEmpty) {
+    public void addRows(int number, boolean creatingFromEmpty) {
         for (int i = 0; i < number; i++) {
             // need to create separate references.
             Vector<SpreadsheetCell> r = createBlankElement(creatingFromEmpty);

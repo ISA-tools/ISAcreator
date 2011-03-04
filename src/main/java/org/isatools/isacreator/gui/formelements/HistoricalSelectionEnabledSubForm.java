@@ -84,7 +84,7 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
 
             UIHelper.renderComponent(selectFromHistory, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
-            final UserProfile up = dep.getParentFrame()
+            final UserProfile up = dataEntryEnvironment.getParentFrame()
                     .getCurrentUser();
 
             selectFromHistory.addMouseListener(new MouseAdapter() {

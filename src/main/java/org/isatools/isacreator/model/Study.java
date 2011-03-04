@@ -66,13 +66,13 @@ public class Study {
     private Set<String> previousProtocols;
     private Set<String> previousFactors;
 
-    private StudyDataEntry ui;
+    private StudyDataEntry studyDataEntryEnvironment;
 
     private Map<String, Set<String>> termsToBeReplaced;
     private Map<String, Set<String>> termsToReplaceWith;
 
-    public static final String PROTOCOL_IDENT = "protocols";
-    public static final String FACTOR_IDENT = "factors";
+    public static String PROTOCOL_IDENT = "protocols";
+    public static String FACTOR_IDENT = "factors";
 
     /**
      * A Study is the all-encompassing object which groups together an assay
@@ -340,7 +340,7 @@ public class Study {
     }
 
     public StudyDataEntry getUserInterface() {
-        return ui;
+        return studyDataEntryEnvironment;
     }
 
     /**
@@ -630,7 +630,7 @@ public class Study {
     }
 
     public void setUI(StudyDataEntry ui) {
-        this.ui = ui;
+        this.studyDataEntryEnvironment = ui;
     }
 
     public String toString() {

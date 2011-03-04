@@ -82,6 +82,9 @@ import java.util.List;
 public abstract class SubForm extends JPanel implements ListSelectionListener, FocusListener {
     private static final Logger log = Logger.getLogger(SubForm.class.getName());
 
+    protected static SubFormLockedCellRenderer lockedTableHeaderRenderer = new SubFormLockedCellRenderer();
+    protected static SubFormHeaderRenderer scrollTableHeaderRenderer = new SubFormHeaderRenderer();
+
     private static final int numFrozenColumns = 1;
 
     @InjectedResource
@@ -102,14 +105,13 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     protected RowEditor rowEditor = new RowEditor();
     protected FieldTypes fieldType;
     protected DataEntryForm parent;
-    protected DataEntryEnvironment dep;
+    protected DataEntryEnvironment dataEntryEnvironment;
 
     private boolean createBorder = true;
 
     protected Map<String, OntologyObject> userHistory;
     protected Set<Integer> uneditableRecords = new HashSet<Integer>();
-    protected static SubFormLockedCellRenderer lockedTableHeaderRenderer = new SubFormLockedCellRenderer();
-    protected static SubFormHeaderRenderer scrollTableHeaderRenderer = new SubFormHeaderRenderer();
+
 
     protected int initialNoFields;
     protected int width;
@@ -125,15 +127,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     protected JPanel options;
     private boolean showRemoveOption = true;
 
-    public SubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dep) {
-        this(title, fieldType, fields, dep, true);
+    public SubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dataEntryEnvironment) {
+        this(title, fieldType, fields, dataEntryEnvironment, true);
     }
 
-    public SubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dep, boolean createBorder) {
+    public SubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dataEntryEnvironment, boolean createBorder) {
         this.title = title;
         this.fieldType = fieldType;
         this.fields = fields;
-        this.dep = dep;
+        this.dataEntryEnvironment = dataEntryEnvironment;
+
         this.createBorder = createBorder;
     }
 
@@ -154,8 +157,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         this.height = height;
         this.parent = parent;
         this.createBorder = createBorder;
-        this.dep = parent.getDEP();
 
+        if (parent instanceof DataEntryEnvironment) {
+            this.dataEntryEnvironment = (DataEntryEnvironment) parent;
+        } else {
+            this.dataEntryEnvironment = parent.getDataEntryEnvironment();
+        }
     }
 
     protected void initialisePanel() {
@@ -324,12 +331,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             if (fields.get(i).getDataType() == SubFormField.SINGLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(dep.getParentFrame(), false, null));
+                        new OntologyCellEditor(dataEntryEnvironment.getParentFrame(), false, null));
             }
 
             if (fields.get(i).getDataType() == SubFormField.MULTIPLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(dep.getParentFrame(), true, null));
+                        new OntologyCellEditor(dataEntryEnvironment.getParentFrame(), true, null));
             }
 
             if (fields.get(i).getDataType() == SubFormField.COMBOLIST) {
@@ -343,7 +350,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             }
 
             if (fields.get(i).getDataType() == SubFormField.FACTOR_LEVEL_UNITS) {
-                rowEditor.addCellEditorForRow(i, new FactorLevelEntryCellEditor(dep.getParentFrame()));
+                rowEditor.addCellEditorForRow(i, new FactorLevelEntryCellEditor(dataEntryEnvironment.getParentFrame()));
             }
 
         }
@@ -361,7 +368,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         Set<Integer> ontologyRows = new HashSet<Integer>();
 
-        Map<String, OntologyObject> history = dep.getUserHistory();
+        Map<String, OntologyObject> history = dataEntryEnvironment.getUserHistory();
 
         for (int col = 0; col < dtm.getColumnCount(); col++) {
             String val;
@@ -477,7 +484,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     private String getSourceAndAccessionForMapping(String val) {
-        for (MappingObject mo : parent.getDep().getParentFrame().getMappings()) {
+        for (MappingObject mo : parent.getDataEntryEnvironment().getParentFrame().getMappings()) {
             if (mo.getMeasurementEndpointType().equals(val)) {
                 return mo.getMeasurementSource() + ":" + mo.getMeasurementAccession();
             }
@@ -632,7 +639,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 OntologyObject ooForSelectedTerm = searchUserHistory(s);
 
                 if (ooForSelectedTerm != null) {
-                    parent.getDep().setStatusPaneInfo("<html>" +
+                    parent.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
                             "<b>ontology term information</b>" +
                             "<p><term name: >" + ooForSelectedTerm.getTerm() +
                             "</p>" + "<p><b>source ref: </b> " +
@@ -653,9 +660,9 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 }
                 if (parent != null) {
                     if (icon != null) {
-                        parent.getDep().setStatusPaneInfo(icon);
+                        parent.getDataEntryEnvironment().setStatusPaneInfo(icon);
                     } else {
-                        parent.getDep().setStatusPaneInfo("");
+                        parent.getDataEntryEnvironment().setStatusPaneInfo("");
                     }
                 }
             }
@@ -749,17 +756,17 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
                         if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                             removeItem(selectedItem);
-                            dep.getParentFrame().hideSheet();
+                            dataEntryEnvironment.getParentFrame().hideSheet();
                         } else {
                             // just hide the sheet and cancel further actions!
-                            dep.getParentFrame().hideSheet();
+                            dataEntryEnvironment.getParentFrame().hideSheet();
                         }
                     }
                 }
             });
             optionPane.setIcon(confirmRemoveColumn);
             UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-            dep.getParentFrame()
+            dataEntryEnvironment.getParentFrame()
                     .showJDialogAsSheet(optionPane.createDialog(this,
                             "Confirm Delete"));
         } else {
@@ -832,7 +839,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     protected void checkForSourcePresence(String source) {
-        List<OntologySourceRefObject> definedSources = parent.getDEP()
+        List<OntologySourceRefObject> definedSources = parent.getDataEntryEnvironment()
                 .getOntologySources();
         boolean isPresent = false;
 
@@ -845,7 +852,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         // if it doesn't exist, then add the ontology information to the defined sources
         if (!isPresent) {
 
-            OntologySourceRefObject osro = parent.getDEP().getParentFrame()
+            OntologySourceRefObject osro = parent.getDataEntryEnvironment().getParentFrame()
                     .getCurrentUser()
                     .getOntologySource(source);
 
@@ -853,9 +860,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 osro = new OntologySourceRefObject(source, "", OntologySourceManager.getOntologyVersion(source), OntologySourceManager.getOntologyDescription(source));
             }
 
-            if (osro != null) {
-                parent.getDEP().getOntologySources().add(osro);
-            }
+            parent.getDataEntryEnvironment().getOntologySources().add(osro);
         }
     }
 
@@ -975,6 +980,18 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         } catch (ClassNotFoundException e) {
             log.error("Problem occurred when changing TableRenderer : " + e.getMessage());
         }
+    }
+
+    public void setDataEntryEnvironment(DataEntryEnvironment dataEntryEnvironment) {
+        this.dataEntryEnvironment = dataEntryEnvironment;
+    }
+
+    public void setParent(DataEntryForm parent) {
+        this.parent = parent;
+    }
+
+    public RowEditor getRowEditor() {
+        return rowEditor;
     }
 
     public abstract void update();

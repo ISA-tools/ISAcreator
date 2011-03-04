@@ -790,11 +790,11 @@ public class MergeFilesUI extends DataEntryWrapper {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
 
-                        DataEntryEnvironment dep = new DataEntryEnvironment(getMGUI());
+                        DataEntryEnvironment dep = new DataEntryEnvironment(getISAcreatorEnvironment());
 
-                        getMGUI().setCurDataEntryPanel(dep);
+                        getISAcreatorEnvironment().setCurDataEntryPanel(dep);
                         dep.createGUIFromSource(inv1);
-                        getMGUI().setCurrentPage(dep);
+                        getISAcreatorEnvironment().setCurrentPage(dep);
                     }
                 });
             }

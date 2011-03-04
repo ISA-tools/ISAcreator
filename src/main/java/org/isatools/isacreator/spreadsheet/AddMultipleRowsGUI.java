@@ -58,7 +58,7 @@ public class AddMultipleRowsGUI extends JDialog {
 
     @InjectedResource
     private ImageIcon panelHeader, addRowButton, addRowButtonOver, closeButton, closeButtonOver;
-
+    private JLabel close, addRows;
     private JTextField numRowsTxt;
     private Spreadsheet st;
 
@@ -132,7 +132,7 @@ public class AddMultipleRowsGUI extends JDialog {
         numRowsTxt.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "ADDROWS");
         numRowsTxt.getActionMap().put("ADDROWS", addRowsAction);
 
-        final JLabel addRows = new JLabel(addRowButton,
+        addRows = new JLabel(addRowButton,
                 JLabel.RIGHT);
         addRows.addMouseListener(new MouseAdapter() {
 
@@ -149,7 +149,7 @@ public class AddMultipleRowsGUI extends JDialog {
             }
         });
 
-        final JLabel close = new JLabel(closeButton,
+        close = new JLabel(closeButton,
                 JLabel.LEFT);
         close.addMouseListener(new MouseAdapter() {
 
@@ -158,6 +158,7 @@ public class AddMultipleRowsGUI extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         st.getParentFrame().hideSheet();
+                        dispose();
                     }
                 });
             }

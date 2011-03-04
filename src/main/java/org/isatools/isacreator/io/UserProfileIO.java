@@ -206,28 +206,30 @@ public class UserProfileIO {
     }
 
     public void updateUserProfileInformation(UserProfile up) {
-        Investigation inv = main.getDataEntryEnvironment().getInvestigation();
+        if (main.getDataEntryEnvironment() != null) {
+            Investigation inv = main.getDataEntryEnvironment().getInvestigation();
 
-        // update the user profiles to contain the previously added factors, protocols, and contacts.
-        for (Study s : inv.getStudies().values()) {
-            for (Protocol p : s.getProtocols()) {
-                up.addProtocol(p);
+            // update the user profiles to contain the previously added factors, protocols, and contacts.
+            for (Study s : inv.getStudies().values()) {
+                for (Protocol p : s.getProtocols()) {
+                    up.addProtocol(p);
+                }
+
+                for (Factor f : s.getFactors()) {
+                    up.addFactor(f);
+                }
+
+                for (Contact c : s.getContacts()) {
+                    up.addContact(c);
+                }
             }
 
-            for (Factor f : s.getFactors()) {
-                up.addFactor(f);
+            up.setFtpManager(Spreadsheet.fileSelectEditor.getFTPManager());
+
+            // update used ontology sources
+            for (OntologySourceRefObject osro : main.getOntologiesUsed()) {
+                up.addOntologyReference(osro);
             }
-
-            for (Contact c : s.getContacts()) {
-                up.addContact(c);
-            }
-        }
-
-        up.setFtpManager(Spreadsheet.fileSelectEditor.getFTPManager());
-
-        // update used ontology sources
-        for (OntologySourceRefObject osro : main.getOntologiesUsed()) {
-            up.addOntologyReference(osro);
         }
     }
 

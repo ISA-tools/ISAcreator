@@ -85,13 +85,13 @@ public class ExperimentVisualization extends JLayeredPane {
         try {
             Thread populate = new Thread(new Runnable() {
                 public void run() {
-                    investigation.getUserInterface().getDep().setOverviewIconAsBusy(true);
+                    investigation.getUserInterface().getDataEntryEnvironment().setOverviewIconAsBusy(true);
                     populateAssayInformationInBackground();
                 }
             });
             populate.start();
         } finally {
-            investigation.getUserInterface().getDep().setOverviewIconAsBusy(false);
+            investigation.getUserInterface().getDataEntryEnvironment().setOverviewIconAsBusy(false);
         }
     }
 

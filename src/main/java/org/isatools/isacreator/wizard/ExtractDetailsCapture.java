@@ -37,25 +37,35 @@
 
 package org.isatools.isacreator.wizard;
 
+import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryForm;
+import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
+import java.util.Map;
 
 public class ExtractDetailsCapture extends JPanel {
 
     private String initialVal;
+    private DataEntryEnvironment dep;
 
     private JTextField extract;
     private JCheckBox poolingPerformed;
 
-    public ExtractDetailsCapture(String initialVal) {
+    private DropDownComponent dropdown;
+
+    public ExtractDetailsCapture(String initialVal, DataEntryEnvironment dep) {
         this.initialVal = initialVal;
+        this.dep = dep;
         setBackground(UIHelper.BG_COLOR);
         instantiatePanel();
     }
@@ -74,9 +84,8 @@ public class ExtractDetailsCapture extends JPanel {
         poolingPerformed.setToolTipText("<html><b>Pooling event?</b><p>Are there no replicates performed with this sample?</p></html>");
 
         container.add(extract);
-        container.add(DataEntryForm.createOntologyDropDown(extract, false, Collections.singletonMap("Tissue ontology", new RecommendedOntology(new Ontology("", "", "BTO", "Brenda Tissue Ontology")))));
+        container.add(dep.createOntologyDropDown(extract, false, Collections.singletonMap("Tissue ontology", new RecommendedOntology(new Ontology("", "", "BTO", "Brenda Tissue Ontology")))));
         container.add(poolingPerformed);
-
 
         add(container);
     }
@@ -88,4 +97,6 @@ public class ExtractDetailsCapture extends JPanel {
     public boolean getPoolingPerformed() {
         return poolingPerformed.isSelected();
     }
+
+
 }

@@ -82,11 +82,11 @@ public class StudyDataEntry extends DataEntryForm {
     /**
      * StudyDataEntry constructor
      *
-     * @param dep   - DataEntryEnvironment
+     * @param dataEntryEnvironment   - DataEntryEnvironment
      * @param study - Associated Study Object.
      */
-    public StudyDataEntry(DataEntryEnvironment dep, Study study) {
-        super(dep);
+    public StudyDataEntry(DataEntryEnvironment dataEntryEnvironment, Study study) {
+        super(dataEntryEnvironment);
 
         ResourceInjector.get("gui-package.style").inject(this);
 
@@ -161,7 +161,7 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyAssaysSubForm() {
         List<SubFormField> assayFields = new ArrayList<SubFormField>();
 
-        List<MappingObject> assayToTypeMapping = getDEP().getParentFrame()
+        List<MappingObject> assayToTypeMapping = getDataEntryEnvironment().getParentFrame()
                 .getMappings();
 
         Set<String> measurementEndPointSet = new HashSet<String>();
@@ -244,6 +244,8 @@ public class StudyDataEntry extends DataEntryForm {
 
         return contactSubForm;
     }
+
+
 
     /**
      * Create the majority of fields for data entry in the study definition form
@@ -513,11 +515,11 @@ public class StudyDataEntry extends DataEntryForm {
      */
     public void removeAssay(String assayRef) {
         // remove assay from the tree
-        getDEP().removeFromTree(assayRef);
+        getDataEntryEnvironment().removeFromTree(assayRef);
         // remove assay from the study
         getStudy().removeAssay(assayRef);
         // remove assay from investigation assay list.
-        getDep().getInvestigation().getAssays().remove(assayRef);
+        getDataEntryEnvironment().getInvestigation().getAssays().remove(assayRef);
     }
 
     /**
@@ -575,5 +577,62 @@ public class StudyDataEntry extends DataEntryForm {
 
     public void reformFactors() {
         factorSubForm.reformItems();
+    }
+
+    public void removeReferences() {
+
+        setDataEntryEnvironment(null);
+
+        studyDesignSubform.setDataEntryEnvironment(null);
+        studyDesignSubform.getRowEditor().removeAllListeners();
+        studyDesignSubform.setParent(null);
+        studyDesignSubform = null;
+
+        studyPublicationsSubForm.setDataEntryEnvironment(null);
+        studyPublicationsSubForm.getRowEditor().removeAllListeners();
+        studyPublicationsSubForm.setParent(null);
+        studyPublicationsSubForm = null;
+
+        factorSubForm.setDataEntryEnvironment(null);
+        factorSubForm.getRowEditor().removeAllListeners();
+        factorSubForm.setParent(null);
+        factorSubForm = null;
+
+        contactSubForm.setDataEntryEnvironment(null);
+        contactSubForm.getRowEditor().removeAllListeners();
+        contactSubForm.setParent(null);
+        contactSubForm = null;
+
+        protocolSubForm.setDataEntryEnvironment(null);
+        protocolSubForm.getRowEditor().removeAllListeners();
+        protocolSubForm.setParent(null);
+        protocolSubForm = null;
+
+        assaySubForm.setDataEntryEnvironment(null);
+        assaySubForm.getRowEditor().removeAllListeners();
+        assaySubForm.setParent(null);
+        assaySubForm = null;
+
+        study.getStudySample().getSpreadsheetUI().setDataEntryEnvironment(null);
+
+        for (String a : study.getAssays().keySet()) {
+            Assay tmpAssay = study.getAssays().get(a);
+            tmpAssay.getSpreadsheetUI().setDataEntryEnvironment(null);
+            tmpAssay.getSpreadsheetUI().getTable().getTable().setCellEditor(null);
+            tmpAssay.getSpreadsheetUI().setTable(null);
+            tmpAssay.setSpreadsheet(null);
+            System.out.println("Cleaning up assay " + a);
+        }
+
+
+        setDataEntryEnvironment(null);
+
+        study.setAssays(null);
+
+        study.getUserInterface().removeAll();
+        study.setUI(null);
+        study.setStudySamples(null);
+        study = null;
+        removeAll();
     }
 }

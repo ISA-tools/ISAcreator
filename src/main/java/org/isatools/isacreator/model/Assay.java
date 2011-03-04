@@ -160,6 +160,10 @@ public class Assay implements StudySubData {
         return spreadsheet;
     }
 
+    public void setSpreadsheet(AssaySpreadsheet spreadsheet) {
+        this.spreadsheet = spreadsheet;
+    }
+
     /**
      * Returns a 2D Array representation of the Data contained inside this Assay.
      *

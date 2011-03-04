@@ -39,6 +39,7 @@ package org.isatools.isacreator.spreadsheet.transposedview;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
+import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.gui.formelements.SubForm;
 import org.isatools.isacreator.gui.formelements.SubFormCellRenderer;
@@ -77,7 +78,7 @@ public class TransposedSpreadsheetView extends JDialog {
     private TransposedSpreadsheetModel transposedSpreadsheetModel;
     private int width;
     private int height;
-    private SubForm transposedSpreadsheetSubform;
+    private TransposedSubForm transposedSpreadsheetSubform;
     private ConfirmationDialog confirmChoice;
 
     private JLabel information;
@@ -248,8 +249,10 @@ public class TransposedSpreadsheetView extends JDialog {
 
         Box subformContainer = Box.createVerticalBox();
 
+        DataEntryEnvironment dataEntryEnvironment = transposedSpreadsheetModel.getSpreadsheet().getDataEntryEnv();
+
         transposedSpreadsheetSubform = new TransposedSubForm("spreadsheet data", FieldTypes.ROW, transposedSpreadsheetModel.getFields(),
-                transposedSpreadsheetModel.getNumberOfRecords(), width, height, transposedSpreadsheetModel.getData(), transposedSpreadsheetModel.getSpreadsheet().getDataEntryEnv());
+                transposedSpreadsheetModel.getNumberOfRecords(), width, height, transposedSpreadsheetModel.getData(), dataEntryEnvironment);
 
         transposedSpreadsheetSubform.createGUI();
 

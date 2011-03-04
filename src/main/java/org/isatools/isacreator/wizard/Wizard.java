@@ -156,7 +156,7 @@ public class Wizard extends DataEntryWrapper {
         createSouthPanel();
         setOpaque(false);
         dep = new DataEntryEnvironment(mainMenu.getMain());
-        setDep(dep);
+        setDataEntryEnvironment(dep);
 
         finaliseStudy = new FinaliseStudyCreationListener();
         initialPane = createInvestigationDefinitionPanel();
@@ -938,7 +938,7 @@ public class Wizard extends DataEntryWrapper {
                 SubFormField.STRING));
 
         assayDefinitionSubForm = new AssaySubForm("assays", FieldTypes.ASSAY, assayFields, 3,
-                400, 110, getDep());
+                400, 110, getDataEntryEnvironment());
 
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -1234,7 +1234,7 @@ public class Wizard extends DataEntryWrapper {
             public void mousePressed(MouseEvent mouseEvent) {
                 // go back to define assay page.
 
-                investigationDefinition.getOntologiesUsed().addAll(getMGUI().getOntologiesUsed());
+                investigationDefinition.getOntologiesUsed().addAll(getISAcreatorEnvironment().getOntologiesUsed());
                 mainMenu.getMain().setCurDataEntryPanel(dep);
                 investigationDefinition.setUserInterface(new InvestigationDataEntry(
                         investigationDefinition, dep));

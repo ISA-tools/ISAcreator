@@ -81,21 +81,21 @@ public class SpreadsheetPopupMenus {
         JMenuItem undo = new JMenuItem("Undo");
         undo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                spreadsheet.um.undo();
+                spreadsheet.undoManager.undo();
             }
         });
 
-        undo.setEnabled(spreadsheet.um.canUndo());
+        undo.setEnabled(spreadsheet.undoManager.canUndo());
 
 
         JMenuItem redo = new JMenuItem("Redo");
         redo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                spreadsheet.um.redo();
+                spreadsheet.undoManager.redo();
             }
         });
 
-        redo.setEnabled(spreadsheet.um.canRedo());
+        redo.setEnabled(spreadsheet.undoManager.canRedo());
 
 
         JMenu addRow = new JMenu("Add Row(s)");
@@ -186,7 +186,7 @@ public class SpreadsheetPopupMenus {
                         DataTypes.LIST, "", false, false, false);
 
 
-                fo.setFieldList(spreadsheet.getSDE().getProtocolNames());
+                fo.setFieldList(spreadsheet.getStudyDataEntryEnvironment().getProtocolNames());
 
                 spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(fo);
 

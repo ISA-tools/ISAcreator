@@ -137,6 +137,7 @@ public class AddStudyDialog extends JDialog {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 dep.getParentFrame().hideSheet();
+                dispose();
             }
         });
     }

@@ -297,6 +297,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             }
 
             out.closeEntry();
+
             fis.close();
             addedFilePaths.add(file.getAbsolutePath());
         }
@@ -353,7 +354,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                             statistics.addToUncompressedSize(f.length());
 
                             zipFile(f, out, buffer);
-
+                            out.close();
                         }
 
                     } else {
