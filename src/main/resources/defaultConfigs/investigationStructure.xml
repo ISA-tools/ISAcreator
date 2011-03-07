@@ -1,0 +1,148 @@
+<investigationFileStructure>
+    <section>
+        <name>ONTOLOGY SOURCE REFERENCE</name>
+        <requiredValues>
+            <value>Term Source Name</value>
+            <value>Term Source File</value>
+            <value>Term Source Version</value>
+            <value>Term Source Description</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>INVESTIGATION</name>
+        <requiredValues>
+            <value>Investigation Identifier</value>
+            <value>Investigation Title</value>
+            <value>Investigation Description</value>
+            <value>Investigation Submission Date</value>
+            <value>Investigation Public Release Date</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>INVESTIGATION PUBLICATIONS</name>
+        <requiredValues>
+            <value>Investigation PubMed ID</value>
+            <value>Investigation Publication DOI</value>
+            <value>Investigation Publication Author list</value>
+            <value>Investigation Publication Title</value>
+            <value>Investigation Publication Status</value>
+            <value>Investigation Publication Status Term Accession Number</value>
+            <value>Investigation Publication Status Term Source REF</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>INVESTIGATION CONTACTS</name>
+        <requiredValues>
+            <value>Investigation Person Last Name</value>
+            <value>Investigation Person First Name</value>
+            <value>Investigation Person Mid Initials</value>
+            <value>Investigation Person Email</value>
+            <value>Investigation Person Phone</value>
+            <value>Investigation Person Fax</value>
+            <value>Investigation Person Address</value>
+            <value>Investigation Person Affiliation</value>
+            <value>Investigation Person Roles</value>
+            <value>Investigation Person Roles Term Accession Number</value>
+            <value>Investigation Person Roles Term Source REF</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>STUDY</name>
+        <requiredValues>
+            <value>Study Identifier</value>
+            <value>Study Title</value>
+            <value>Study Submission Date</value>
+            <value>Study Public Release Date</value>
+            <value>Study Description</value>
+            <value>Study File Name</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>STUDY PUBLICATIONS</name>
+         <requiredValues>
+            <value>Study PubMed ID</value>
+            <value>Study Publication DOI</value>
+            <value>Study Publication Author list</value>
+            <value>Study Publication Title</value>
+            <value>Study Publication Status</value>
+            <value>Study Publication Status Term Accession Number</value>
+            <value>Study Publication Status Term Source REF</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>STUDY DESIGN DESCRIPTORS</name>
+         <requiredValues>
+            <value>Study Design Type</value>
+            <value>Study Design Type Term Accession Number</value>
+            <value>Study Design Type Term Source REF</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>STUDY FACTORS</name>
+       <requiredValues>
+            <value>Study Factor Name</value>
+            <value>Study Factor Type</value>
+            <value>Study Factor Type Term Accession Number</value>
+            <value>Study Factor Type Term Source REF</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>STUDY ASSAYS</name>
+         <requiredValues>
+            <value>Study Assay Measurement Type</value>
+            <value>Study Assay Measurement Type Term Accession Number</value>
+            <value>Study Assay Measurement Type Term Source REF</value>
+            <value>Study Assay Technology Type</value>
+            <value>Study Assay Technology Type Term Accession Number</value>
+            <value>Study Assay Technology Type Term Source REF</value>
+            <value>Study Assay Technology Platform</value>
+            <value>Study Assay File Name</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>STUDY PROTOCOLS</name>
+        <requiredValues>
+            <value>Study Protocol Name</value>
+            <value>Study Protocol Type</value>
+            <value>Study Protocol Type Term Accession Number</value>
+            <value>Study Protocol Type Term Source REF</value>
+            <value>Study Protocol Description</value>
+            <value>Study Protocol URI</value>
+            <value>Study Protocol Version</value>
+            <value>Study Protocol Parameters Name</value>
+            <value>Study Protocol Parameters Name Term Accession Number</value>
+            <value>Study Protocol Parameters Name Term Source REF</value>
+            <value>Study Protocol Components Name</value>
+            <value>Study Protocol Components Type</value>
+            <value>Study Protocol Components Type Term Accession Number</value>
+            <value>Study Protocol Components Type Term Source REF</value>
+        </requiredValues>
+    </section>
+
+    <section>
+        <name>STUDY CONTACTS</name>
+        <requiredValues>
+            <value>Study Person Last Name</value>
+            <value>Study Person First Name</value>
+            <value>Study Person Mid Initials</value>
+            <value>Study Person Email</value>
+            <value>Study Person Phone</value>
+            <value>Study Person Fax</value>
+            <value>Study Person Address</value>
+            <value>Study Person Affiliation</value>
+            <value>Study Person Roles</value>
+            <value>Study Person Roles Term Accession Number</value>
+            <value>Study Person Roles Term Source REF</value>
+        </requiredValues>
+    </section>
+
+</investigationFileStructure>

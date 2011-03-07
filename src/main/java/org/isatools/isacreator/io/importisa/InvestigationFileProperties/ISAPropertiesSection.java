@@ -35,56 +35,39 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.utils;
-
-import com.sun.tools.javac.util.Pair;
-import org.apache.commons.collections15.map.ListOrderedMap;
-
-import java.util.*;
+package org.isatools.isacreator.io.importisa.InvestigationFileProperties;
 
 /**
- * CollectionUtils
- *
  * @author Eamonn Maguire
- * @date Mar 2, 2010
+ * @date Jul 9, 2009
  */
 
+public class ISAPropertiesSection {
 
-public class CollectionUtils<T extends Comparable, V extends Comparable> {
+    private String name;
+    private int numRows;
 
-    public Map<T, V> sortMapKeys(Map<T, V> toSort) {
-
-        Map<T, V> sortedMap = new ListOrderedMap<T, V>();
-
-        List<T> sortedKeys = new ArrayList<T>();
-
-        for (T key : toSort.keySet()) {
-            sortedKeys.add(key);
-        }
-
-        Collections.sort(sortedKeys);
-
-        for (T key : sortedKeys) {
-            sortedMap.put(key, toSort.get(key));
-        }
-
-        return sortedMap;
+    public ISAPropertiesSection() {
     }
 
-    public Pair<Boolean, Set<T>> compareSets(Set<T> setA, Set<T> setB) {
+    public ISAPropertiesSection(String name, int numRows) {
+        this.name = name;
+        this.numRows = numRows;
+    }
 
-        Pair<Boolean, Set<T>> result = new Pair<Boolean, Set<T>>(false, new HashSet<T>());
+    public String getName() {
+        return name;
+    }
 
-        for (T value : setB) {
-            if (!setA.contains(value)) {
-                result.snd.add(value);
-            }
-        }
+    public int getNumRows() {
+        return numRows;
+    }
 
-        if (result.snd.size() > 0) {
-            return result;
-        } else {
-            return new Pair<Boolean, Set<T>>(true, null);
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNumRows(int numRows) {
+        this.numRows = numRows;
     }
 }

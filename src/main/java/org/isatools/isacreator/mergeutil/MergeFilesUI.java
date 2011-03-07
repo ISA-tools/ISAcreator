@@ -49,7 +49,7 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.io.ImportISAFiles;
+import org.isatools.isacreator.io.importisa.ImportISAFiles;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.visualization.ExperimentVisualization;

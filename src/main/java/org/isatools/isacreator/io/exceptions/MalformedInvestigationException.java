@@ -35,56 +35,21 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.utils;
+package org.isatools.isacreator.io.exceptions;
 
-import com.sun.tools.javac.util.Pair;
-import org.apache.commons.collections15.map.ListOrderedMap;
-
-import java.util.*;
 
 /**
- * CollectionUtils
+ * Duplicate AssayException - Thrown when an assay with the same name tries to get added to the Study
  *
  * @author Eamonn Maguire
- * @date Mar 2, 2010
+ * @date Jul 20, 2008
  */
-
-
-public class CollectionUtils<T extends Comparable, V extends Comparable> {
-
-    public Map<T, V> sortMapKeys(Map<T, V> toSort) {
-
-        Map<T, V> sortedMap = new ListOrderedMap<T, V>();
-
-        List<T> sortedKeys = new ArrayList<T>();
-
-        for (T key : toSort.keySet()) {
-            sortedKeys.add(key);
-        }
-
-        Collections.sort(sortedKeys);
-
-        for (T key : sortedKeys) {
-            sortedMap.put(key, toSort.get(key));
-        }
-
-        return sortedMap;
+public class MalformedInvestigationException extends Exception {
+    public MalformedInvestigationException(String message) {
+        super(message);
     }
 
-    public Pair<Boolean, Set<T>> compareSets(Set<T> setA, Set<T> setB) {
-
-        Pair<Boolean, Set<T>> result = new Pair<Boolean, Set<T>>(false, new HashSet<T>());
-
-        for (T value : setB) {
-            if (!setA.contains(value)) {
-                result.snd.add(value);
-            }
-        }
-
-        if (result.snd.size() > 0) {
-            return result;
-        } else {
-            return new Pair<Boolean, Set<T>>(true, null);
-        }
+    public String toString() {
+        return super.getMessage();
     }
 }

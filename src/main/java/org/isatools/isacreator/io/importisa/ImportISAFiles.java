@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.io;
+package org.isatools.isacreator.io.importisa;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.collections15.set.ListOrderedSet;
@@ -47,6 +47,10 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.io.exceptions.MalformedInvestigationException;
+import org.isatools.isacreator.io.exceptions.MalformedOntologyTermException;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.ISAPropertiesLoader;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.ISAPropertiesSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
@@ -1081,10 +1085,6 @@ public class ImportISAFiles {
             }
         }
         return invalidHeaders;
-    }
-
-    public void setParentDir(String parentDir) {
-        this.parentDir = parentDir;
     }
 
     private boolean validateInvestigationFile(Investigation inv) {

@@ -35,19 +35,43 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.io;
+package org.isatools.isacreator.io.importisa.InvestigationFileProperties;
 
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * @author Eamonn Maguire
- * @date Jul 17, 2008
+ * Created by the ISA team
+ *
+ * @author Eamonn Maguire (eamonnmag@gmail.com)
+ *         <p/>
+ *         Date: 07/03/2011
+ *         Time: 14:40
  */
-public class MalformedOntologyTermException extends Exception {
-    public MalformedOntologyTermException(String message) {
-        super(message);
+public class InvestigationSection {
+
+    private InvestigationFileSections sectionName;
+    private Set<String> requiredValues;
+
+    public InvestigationSection(InvestigationFileSections sectionName) {
+        this.sectionName = sectionName;
+        requiredValues = new HashSet<String>();
     }
 
-    public String toString() {
-        return super.getMessage();
+    public InvestigationSection(InvestigationFileSections sectionName, Set<String> requiredValues) {
+        this.sectionName = sectionName;
+        this.requiredValues = requiredValues;
+    }
+
+    public InvestigationFileSections getSectionName() {
+        return sectionName;
+    }
+
+    public Set<String> getRequiredValues() {
+        return requiredValues;
+    }
+
+    public void setRequiredValues(Set<String> requiredValues) {
+        this.requiredValues = requiredValues;
     }
 }

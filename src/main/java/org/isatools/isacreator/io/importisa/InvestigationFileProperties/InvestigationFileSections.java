@@ -35,56 +35,48 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.utils;
-
-import com.sun.tools.javac.util.Pair;
-import org.apache.commons.collections15.map.ListOrderedMap;
-
-import java.util.*;
+package org.isatools.isacreator.io.importisa.InvestigationFileProperties;
 
 /**
- * CollectionUtils
+ * Created by the ISA team
  *
- * @author Eamonn Maguire
- * @date Mar 2, 2010
+ * @author Eamonn Maguire (eamonnmag@gmail.com)
+ * Date: 07/03/2011
  */
 
+public enum InvestigationFileSections {
 
-public class CollectionUtils<T extends Comparable, V extends Comparable> {
+    ONTOLOGY_SECTION("ONTOLOGY SOURCE REFERENCE"),
+    INVESTIGATION_SECTION("INVESTIGATION"),
+    INVESTIGATION_PUBLICATIONS_SECTION("INVESTIGATION PUBLICATIONS"),
+    INVESTIGATION_CONTACTS_SECTION("INVESTIGATION CONTACTS"),
+    STUDY_SECTION("STUDY"),
+    STUDY_DESIGN_SECTION("STUDY DESIGN DESCRIPTORS"),
+    STUDY_PUBLICATIONS("STUDY PUBLICATIONS"),
+    STUDY_FACTORS("STUDY FACTORS"),
+    STUDY_ASSAYS("STUDY ASSAYS"),
+    STUDY_PROTOCOLS("STUDY PROTOCOLS"),
+    STUDY_CONTACTS("STUDY CONTACTS");
 
-    public Map<T, V> sortMapKeys(Map<T, V> toSort) {
+    private String identifier;
 
-        Map<T, V> sortedMap = new ListOrderedMap<T, V>();
-
-        List<T> sortedKeys = new ArrayList<T>();
-
-        for (T key : toSort.keySet()) {
-            sortedKeys.add(key);
-        }
-
-        Collections.sort(sortedKeys);
-
-        for (T key : sortedKeys) {
-            sortedMap.put(key, toSort.get(key));
-        }
-
-        return sortedMap;
+    InvestigationFileSections(String identifier) {
+        this.identifier = identifier;
     }
 
-    public Pair<Boolean, Set<T>> compareSets(Set<T> setA, Set<T> setB) {
+    @Override
+    public String toString() {
+        return identifier;
+    }
 
-        Pair<Boolean, Set<T>> result = new Pair<Boolean, Set<T>>(false, new HashSet<T>());
-
-        for (T value : setB) {
-            if (!setA.contains(value)) {
-                result.snd.add(value);
+    public static InvestigationFileSections convertToInstance(String value) {
+        for(InvestigationFileSections section : values()) {
+            if(section.toString().equalsIgnoreCase(value)) {
+                return section;
             }
         }
 
-        if (result.snd.size() > 0) {
-            return result;
-        } else {
-            return new Pair<Boolean, Set<T>>(true, null);
-        }
+        return null;
     }
+
 }

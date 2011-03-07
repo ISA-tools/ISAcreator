@@ -35,39 +35,60 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.io;
+package org.isatools.isacreator.io.xpath;
+
+import org.w3c.dom.Document;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.*;
+import javax.xml.xpath.*;
+import org.xml.sax.SAXException;
 
 /**
- * @author Eamonn Maguire
- * @date Jul 9, 2009
+ * Created by the ISA team
+ * Modified from example here: http://www.javabeat.net/tips/182-how-to-query-xml-using-xpath.html
+ * @author Eamonn Maguire (eamonnmag@gmail.com)
  */
+public class XPathReader {
 
-public class ISAPropertiesSection {
+    private InputStream xmlFile;
+    private Document xmlDocument;
+    private XPath xPath;
 
-    private String name;
-    private int numRows;
-
-    public ISAPropertiesSection() {
+    public XPathReader(InputStream xmlFile) {
+        this.xmlFile = xmlFile;
+        initObjects();
     }
 
-    public ISAPropertiesSection(String name, int numRows) {
-        this.name = name;
-        this.numRows = numRows;
+    private void initObjects() {
+        try {
+            xmlDocument = DocumentBuilderFactory.
+                    newInstance().newDocumentBuilder().
+                    parse(xmlFile);
+            xPath = XPathFactory.newInstance().
+                    newXPath();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (SAXException ex) {
+            ex.printStackTrace();
+        } catch (ParserConfigurationException ex) {
+            ex.printStackTrace();
+        }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getNumRows() {
-        return numRows;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setNumRows(int numRows) {
-        this.numRows = numRows;
+    public Object read(String expression,
+                       QName returnType) {
+        try {
+            XPathExpression xPathExpression =
+                    xPath.compile(expression);
+            return xPathExpression.evaluate
+                    (xmlDocument, returnType);
+        } catch (XPathExpressionException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }
