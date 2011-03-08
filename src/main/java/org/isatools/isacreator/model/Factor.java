@@ -47,11 +47,13 @@ import java.io.Serializable;
  *
  * @author Eamonn Maguire
  */
-public class Factor implements StudySubData, Serializable {
-    private String factorName;
-    private String factorType;
-    private String factorTypeTermAccession;
-    private String factorTypeTermSource;
+public class Factor extends ISASection implements StudySubData, Serializable {
+
+    public static final String FACTOR_NAME = "Study Factor Name";
+    public static final String FACTOR_TYPE = "Study Factor Type";
+    public static final String FACTOR_TYPE_TERM_ACCESSION = "Study Factor Type Term Accession Number";
+    public static final String FACTOR_TYPE_SOURCE_REF = "Study Factor Type Term Source REF";
+
 
     /**
      * Factor Object
@@ -73,10 +75,11 @@ public class Factor implements StudySubData, Serializable {
      */
     public Factor(String factorName, String factorType,
                   String factorTypeTermAccession, String factorTypeTermSource) {
-        this.factorName = factorName;
-        this.factorType = factorType;
-        this.factorTypeTermAccession = factorTypeTermAccession;
-        this.factorTypeTermSource = factorTypeTermSource;
+        super();
+        fieldValues.put(FACTOR_NAME, factorName);
+        fieldValues.put(FACTOR_TYPE, factorType);
+        fieldValues.put(FACTOR_TYPE_TERM_ACCESSION, factorTypeTermAccession);
+        fieldValues.put(FACTOR_TYPE_SOURCE_REF, factorTypeTermSource);
     }
 
     /**
@@ -85,7 +88,7 @@ public class Factor implements StudySubData, Serializable {
      * @return String denoting the Factor Name
      */
     public String getFactorName() {
-        return factorName;
+        return fieldValues.get(FACTOR_NAME);
     }
 
 
@@ -95,7 +98,7 @@ public class Factor implements StudySubData, Serializable {
      * @return String denoting the Factor type
      */
     public String getFactorType() {
-        return factorType;
+        return fieldValues.get(FACTOR_TYPE);
     }
 
     /**
@@ -104,7 +107,7 @@ public class Factor implements StudySubData, Serializable {
      * @return String denoting the Factor Type Term Accession
      */
     public String getFactorTypeTermAccession() {
-        return factorTypeTermAccession;
+        return fieldValues.get(FACTOR_TYPE_TERM_ACCESSION);
     }
 
     /**
@@ -113,7 +116,7 @@ public class Factor implements StudySubData, Serializable {
      * @return String denoting the Factor Type Term Source
      */
     public String getFactorTypeTermSource() {
-        return factorTypeTermSource;
+        return fieldValues.get(FACTOR_TYPE_SOURCE_REF);
     }
 
     /**
@@ -123,7 +126,7 @@ public class Factor implements StudySubData, Serializable {
      * @see org.isatools.isacreator.gui.StudySubData getIdentifier()
      */
     public String getIdentifier() {
-        return factorName;
+        return getFactorName();
     }
 
     /**
@@ -132,6 +135,7 @@ public class Factor implements StudySubData, Serializable {
      * @param factorType - new Factor Type
      */
     public void setFactorType(String factorType) {
-        this.factorType = factorType;
+        fieldValues.put(FACTOR_TYPE, factorType);
     }
+
 }

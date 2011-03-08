@@ -45,11 +45,11 @@ import org.isatools.isacreator.gui.StudySubData;
  *
  * @author Eamonn Maguire
  */
-public class StudyDesign implements StudySubData {
+public class StudyDesign extends ISASection implements StudySubData {
 
-    private String studyDesignType;
-    private String studyDesignTermAcc;
-    private String studyDesignTermSourceRef;
+    public static final String STUDY_DESIGN_TYPE = "Study Design Type";
+    public static final String STUDY_DESIGN_TYPE_TERM_ACCESSION = "Study Design Type Term Accession Number";
+    public static final String STUDY_DESIGN_TYPE_TERM_SOURCE_REF = "Study Design Type Term Source REF";
 
     /**
      * Study Design object
@@ -57,7 +57,8 @@ public class StudyDesign implements StudySubData {
      * @param studyDesignType - String representing the Study Design.
      */
     public StudyDesign(String studyDesignType) {
-        this.studyDesignType = studyDesignType;
+        super();
+        fieldValues.put(STUDY_DESIGN_TYPE, studyDesignType);
     }
 
 
@@ -69,28 +70,29 @@ public class StudyDesign implements StudySubData {
      * @param studyDesignTermSourceRef - String representing the Term Source REF (e.g. OBI) for the Ontology term defining the Study Design.
      */
     public StudyDesign(String studyDesignType, String studyDesignTermAccession, String studyDesignTermSourceRef) {
-        this.studyDesignType = studyDesignType;
-        this.studyDesignTermAcc = studyDesignTermAccession;
-        this.studyDesignTermSourceRef = studyDesignTermSourceRef;
+        super();
+        fieldValues.put(STUDY_DESIGN_TYPE, studyDesignType);
+        fieldValues.put(STUDY_DESIGN_TYPE_TERM_ACCESSION, studyDesignTermAccession);
+        fieldValues.put(STUDY_DESIGN_TYPE_TERM_SOURCE_REF, studyDesignTermSourceRef);
     }
 
     public String getStudyDesignType() {
-        return studyDesignType;
+        return fieldValues.get(STUDY_DESIGN_TYPE);
     }
 
-    public String getStudyDesignTermAcc() {
-        return studyDesignTermAcc;
+    public String getStudyDesignTypeTermAcc() {
+        return fieldValues.get(STUDY_DESIGN_TYPE_TERM_ACCESSION);
     }
 
-    public String getStudyDesignTermSourceRef() {
-        return studyDesignTermSourceRef;
+    public String getStudyDesignTypeTermSourceRef() {
+        return fieldValues.get(STUDY_DESIGN_TYPE_TERM_SOURCE_REF);
     }
 
     public void setStudyDesignType(String studyDesignType) {
-        this.studyDesignType = studyDesignType;
+        fieldValues.put(STUDY_DESIGN_TYPE, studyDesignType);
     }
 
     public String getIdentifier() {
-        return studyDesignType;
+        return getStudyDesignType();
     }
 }

@@ -45,16 +45,16 @@ import org.isatools.isacreator.gui.StudySubData;
  *
  * @author Eamonn Maguire
  */
-public class Publication implements StudySubData {
+public class Publication extends ISASection implements StudySubData {
 
-    private String pubmedId = "";
-    private String publicationDOI = "";
-    private String publicationAuthorList;
-    private String publicationTitle;
-    private String publicationStatus;
-    private String publicationTermAcc;
-    private String publicationSourceRef;
-    private String abstractText;
+    public static final String PUBMED_ID = "Study PubMed ID";
+    public static final String PUBLICATION_DOI = "Study Publication DOI";
+    public static final String PUBLICATION_AUTHOR_LIST = "Study Publication Author list";
+    public static final String PUBLICATION_TITLE = "Study Publication Title";
+    public static final String PUBLICATION_STATUS = "Study Publication Status";
+    public static final String PUBLICATION_STATUS_TERM_ACC = "Study Publication Status Term Accession Number";
+    public static final String PUBLICATION_STATUS_SOURCE_REF = "Study Publication Status Term Source REF";
+    public static final String ABSTRACT_TEXT = "Abstract Text";
 
     /**
      * Publication Object
@@ -66,11 +66,12 @@ public class Publication implements StudySubData {
      * @param publicationStatus     - Status of the Publication (e.g. Submitted)
      */
     public Publication(String pubmedId, String publicationDOI, String publicationAuthorList, String publicationTitle, String publicationStatus) {
-        this.pubmedId = pubmedId;
-        this.publicationDOI = publicationDOI;
-        this.publicationAuthorList = publicationAuthorList;
-        this.publicationTitle = publicationTitle;
-        this.publicationStatus = publicationStatus;
+        super();
+        fieldValues.put(PUBMED_ID, pubmedId);
+        fieldValues.put(PUBLICATION_DOI, publicationDOI);
+        fieldValues.put(PUBLICATION_AUTHOR_LIST, publicationAuthorList);
+        fieldValues.put(PUBLICATION_TITLE, publicationTitle);
+        fieldValues.put(PUBLICATION_STATUS, publicationStatus);
     }
 
     /**
@@ -85,65 +86,66 @@ public class Publication implements StudySubData {
      * @param publicationStatusSourceRef     - Source REF (e.g. OBI) for the Ontology term used for the publicationStatus field
      */
     public Publication(String pubmedId, String publicationDOI, String publicationAuthorList, String publicationTitle, String publicationStatus, String publicationStatusTermAccession, String publicationStatusSourceRef) {
-        this.pubmedId = pubmedId;
-        this.publicationDOI = publicationDOI;
-        this.publicationAuthorList = publicationAuthorList;
-        this.publicationTitle = publicationTitle;
-        this.publicationStatus = publicationStatus;
-        this.publicationTermAcc = publicationStatusTermAccession;
-        this.publicationSourceRef = publicationStatusSourceRef;
+        super();
+        fieldValues.put(PUBMED_ID, pubmedId);
+        fieldValues.put(PUBLICATION_DOI, publicationDOI);
+        fieldValues.put(PUBLICATION_AUTHOR_LIST, publicationAuthorList);
+        fieldValues.put(PUBLICATION_TITLE, publicationTitle);
+        fieldValues.put(PUBLICATION_STATUS, publicationStatus);
+        fieldValues.put(PUBLICATION_STATUS_TERM_ACC, publicationStatusTermAccession);
+        fieldValues.put(PUBLICATION_STATUS_SOURCE_REF, publicationStatusSourceRef);
     }
 
     public String getPubmedId() {
-        return pubmedId;
+        return fieldValues.get(PUBMED_ID);
     }
 
     public String getPublicationDOI() {
-        return publicationDOI;
+        return fieldValues.get(PUBLICATION_DOI);
     }
 
     public String getPublicationAuthorList() {
-        return publicationAuthorList;
+        return fieldValues.get(PUBLICATION_AUTHOR_LIST);
     }
 
     public String getPublicationTitle() {
-        return publicationTitle;
+        return fieldValues.get(PUBLICATION_TITLE);
     }
 
     public String getPublicationStatus() {
-        return publicationStatus;
+        return fieldValues.get(PUBLICATION_STATUS);
     }
 
     public String getPublicationTermAcc() {
-        return publicationTermAcc;
+        return fieldValues.get(PUBLICATION_STATUS_TERM_ACC);
     }
 
     public String getPublicationSourceRef() {
-        return publicationSourceRef;
+        return fieldValues.get(PUBLICATION_STATUS_SOURCE_REF);
     }
 
     public void setPublicationTermAcc(String publicationTermAcc) {
-        this.publicationTermAcc = publicationTermAcc;
+        fieldValues.put(PUBLICATION_STATUS_TERM_ACC, publicationTermAcc);
     }
 
     public void setPublicationSourceRef(String publicationSourceRef) {
-        this.publicationSourceRef = publicationSourceRef;
+        fieldValues.put(PUBLICATION_STATUS_SOURCE_REF, publicationSourceRef);
     }
 
     public String getIdentifier() {
-        return pubmedId;
+        return getPubmedId();
     }
 
     public void setPublicationStatus(String publicationStatus) {
-        this.publicationStatus = publicationStatus;
+        fieldValues.put(PUBLICATION_STATUS, publicationStatus);
     }
 
     public String getAbstractText() {
-        return abstractText == null ? "" : abstractText;
+        return fieldValues.get(ABSTRACT_TEXT) == null ? "" : fieldValues.get(ABSTRACT_TEXT);
     }
 
     public void setAbstractText(String abstractText) {
-        this.abstractText = abstractText;
+        fieldValues.put(ABSTRACT_TEXT, abstractText);
     }
 
     /**
@@ -152,6 +154,14 @@ public class Publication implements StudySubData {
      * @return boolean to determine if there is information contained in it or not.
      */
     public boolean hasInformation() {
-        return !(pubmedId.trim().equals("") && publicationDOI.trim().equals("") && publicationAuthorList.trim().equals("") && publicationTitle.trim().equals("") && publicationStatus.trim().equals(""));
+
+        String publicationDOI = getPublicationDOI() == null ? "" : getPublicationDOI().trim();
+        String pubmedId = getPubmedId() == null ? "" : getPubmedId().trim();
+        String publicationTitle = getPublicationTitle() == null ? "" : getPublicationTitle().trim();
+        String publicationAuthorList = getPublicationAuthorList() == null ? "" : getPublicationAuthorList().trim();
+
+        return !((pubmedId.equals("") || publicationDOI.equals("")) &&
+                publicationAuthorList.equals("") &&
+                publicationTitle.equals(""));
     }
 }

@@ -53,21 +53,22 @@ import java.util.Map;
  *
  * @author Eamonn Maguire
  */
-public class Investigation {
+public class Investigation extends ISASection {
 
+    public static final String INVESTIGATION_ID_KEY = "Investigation Identifier";
+    public static final String INVESTIGATION_TITLE_KEY = "Investigation Title";
+    public static final String INVESTIGATION_DESCRIPTION_KEY = "Investigation Description";
+    public static final String INVESTIGATION_SUBMISSION_DATE_KEY = "Investigation Submission Date";
+    public static final String INVESTIGATION_PUBLIC_RELEASE_KEY = "Investigation Public Release Date";
+
+    private String reference;
     private InvestigationDataEntry userInterface;
-    private String reference = "";
-    private String investigationId = "";
-    private String investigationTitle = "";
-    private String investigationDescription = "";
-    private String submissionDate = "";
-    private String publicReleaseDate = "";
-
     private List<OntologySourceRefObject> ontologiesUsed;
     private List<Publication> publications;
     private List<Contact> contacts;
     private Map<String, Study> studies;
     private Map<String, String> assays;
+
 
     /**
      * Investigation Object contains one to many Study Objects and is the top most element
@@ -84,7 +85,7 @@ public class Investigation {
      * Investigation Object contains one to many Study Objects and is the top most element
      * in the ISA structure.
      *
-     * @param investigationId  - ID to be given to the investigation
+     * @param investigationId          - ID to be given to the investigation
      * @param investigationTitle       - Title given to the investigation
      * @param investigationDescription - Description of the Investigation including aims, hypotheses, and so forth.
      * @param submissionDate           - Date the Investigation was submitted.
@@ -92,11 +93,15 @@ public class Investigation {
      */
     public Investigation(String investigationId, String investigationTitle, String investigationDescription,
                          String submissionDate, String publicReleaseDate) {
-        this.investigationId = investigationId;
-        this.investigationTitle = investigationTitle.equals("") ? "Investigation" : investigationTitle;
-        this.investigationDescription = investigationDescription;
-        this.submissionDate = submissionDate;
-        this.publicReleaseDate = publicReleaseDate;
+
+        super();
+
+        setInvestigationId(investigationId);
+        setInvestigationTitle(investigationTitle.equals("") ? "Investigation" : investigationTitle);
+        setInvestigationDescription(investigationDescription);
+        setSubmissionDate(submissionDate);
+        setPublicReleaseDate(publicReleaseDate);
+
         studies = new ListOrderedMap<String, Study>();
         assays = new HashMap<String, String>();
         contacts = new ArrayList<Contact>();
@@ -199,38 +204,32 @@ public class Investigation {
         }
     }
 
-    /**
-     * Return a HashMap containing AssayRef <-> StudyId pairs
-     *
-     * @return HashMap<String, String>
-     */
-    public Map<String, String> getAssays() {
-        return assays;
-    }
-
     public String getSubmissionDate() {
-        return submissionDate;
+        return fieldValues.get(INVESTIGATION_SUBMISSION_DATE_KEY);
     }
 
     public String getInvestigationDescription() {
-        return investigationDescription;
+        return fieldValues.get(INVESTIGATION_DESCRIPTION_KEY);
     }
 
     public String getInvestigationId() {
-        return investigationId;
+        return fieldValues.get(INVESTIGATION_ID_KEY);
     }
 
     public String getPublicReleaseDate() {
-        return publicReleaseDate;
+        return fieldValues.get(INVESTIGATION_PUBLIC_RELEASE_KEY);
     }
 
-
     public String getInvestigationTitle() {
-        return investigationTitle;
+        return fieldValues.get(INVESTIGATION_TITLE_KEY);
     }
 
     public String getReference() {
         return reference;
+    }
+
+    public Map<String, String> getAssays() {
+        return assays;
     }
 
     public Map<String, Study> getStudies() {
@@ -242,25 +241,25 @@ public class Investigation {
     }
 
     public void setSubmissionDate(String submissionDate) {
-        this.submissionDate = submissionDate;
+        fieldValues.put(INVESTIGATION_SUBMISSION_DATE_KEY, submissionDate);
     }
 
     public void setInvestigationDescription(String investigationDescription) {
-        this.investigationDescription = investigationDescription;
+        fieldValues.put(INVESTIGATION_DESCRIPTION_KEY, investigationDescription);
     }
 
     public void setInvestigationId(String investigationIdentifier) {
-        this.investigationId = investigationIdentifier;
+        fieldValues.put(INVESTIGATION_ID_KEY, investigationIdentifier);
     }
 
-
     public void setPublicReleaseDate(String publicReleaseDate) {
-        this.publicReleaseDate = publicReleaseDate;
+        fieldValues.put(INVESTIGATION_PUBLIC_RELEASE_KEY, publicReleaseDate);
     }
 
     public void setInvestigationTitle(String investigationTitle) {
-        this.investigationTitle = investigationTitle;
+        fieldValues.put(INVESTIGATION_TITLE_KEY, investigationTitle);
     }
+
 
     public List<Contact> getContacts() {
         return contacts;
@@ -300,9 +299,8 @@ public class Investigation {
     }
 
     public String toString() {
-        return investigationTitle;
+        return getInvestigationTitle();
     }
-
 
     /**
      * Remove a contact from the list in the study

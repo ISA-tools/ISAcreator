@@ -47,18 +47,19 @@ import java.io.Serializable;
  *
  * @author Eamonn Maguire
  */
-public class Contact implements StudySubData, Serializable {
-    private String address;
-    private String affiliation;
-    private String email;
-    private String fax;
-    private String firstName;
-    private String lastName;
-    private String midInitial;
-    private String phone;
-    private String role;
-    private String roleTermAccession;
-    private String roleTermSourceRef;
+public class Contact extends ISASection implements StudySubData, Serializable {
+
+    public static final String CONTACT_LAST_NAME = "Study Person Last Name";
+    public static final String CONTACT_FIRST_NAME = "Study Person First Name";
+    public static final String CONTACT_MID_INITIAL = "Study Person Mid Initials";
+    public static final String CONTACT_EMAIL = "Study Person Email";
+    public static final String CONTACT_PHONE = "Study Person Phone";
+    public static final String CONTACT_FAX = "Study Person Fax";
+    public static final String CONTACT_ADDRESS = "Study Person Address";
+    public static final String CONTACT_AFFILIATION = "Study Person Affiliation";
+    public static final String CONTACT_ROLE = "Study Person Roles";
+    public static final String CONTACT_ROLE_TERM_ACCESSION = "Study Person Roles Term Accession Number";
+    public static final String CONTACT_ROLE_TERM_SOURCE_REF = "Study Person Roles Term Source REF";
 
     /**
      * Contact Constructor
@@ -99,17 +100,19 @@ public class Contact implements StudySubData, Serializable {
                    String email, String phone, String fax, String address,
                    String affiliation, String role, String roleTermAccession,
                    String roleTermSourceRef) {
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.midInitial = midInitial;
-        this.email = email;
-        this.phone = phone;
-        this.fax = fax;
-        this.address = address;
-        this.affiliation = affiliation;
-        this.role = role;
-        this.roleTermAccession = roleTermAccession;
-        this.roleTermSourceRef = roleTermSourceRef;
+        super();
+
+        fieldValues.put(CONTACT_LAST_NAME, lastName);
+        fieldValues.put(CONTACT_FIRST_NAME, firstName);
+        fieldValues.put(CONTACT_MID_INITIAL, midInitial);
+        fieldValues.put(CONTACT_EMAIL, email);
+        fieldValues.put(CONTACT_PHONE, phone);
+        fieldValues.put(CONTACT_FAX, fax);
+        fieldValues.put(CONTACT_ADDRESS, address);
+        fieldValues.put(CONTACT_AFFILIATION, affiliation);
+        fieldValues.put(CONTACT_ROLE, role);
+        fieldValues.put(CONTACT_ROLE_TERM_ACCESSION, roleTermAccession);
+        fieldValues.put(CONTACT_ROLE_TERM_SOURCE_REF, roleTermSourceRef);
     }
 
     /**
@@ -118,7 +121,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts address
      */
     public String getAddress() {
-        return address;
+        return fieldValues.get(CONTACT_ADDRESS);
     }
 
     /**
@@ -127,7 +130,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts affiliation
      */
     public String getAffiliation() {
-        return affiliation;
+        return fieldValues.get(CONTACT_AFFILIATION);
     }
 
 
@@ -137,7 +140,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts email
      */
     public String getEmail() {
-        return email;
+        return fieldValues.get(CONTACT_EMAIL);
     }
 
 
@@ -147,7 +150,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts number
      */
     public String getFax() {
-        return fax;
+        return fieldValues.get(CONTACT_FAX);
     }
 
 
@@ -157,7 +160,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts First name (forename)
      */
     public String getFirstName() {
-        return firstName;
+        return fieldValues.get(CONTACT_FIRST_NAME);
     }
 
     /**
@@ -167,7 +170,7 @@ public class Contact implements StudySubData, Serializable {
      * @see org.isatools.isacreator.gui.StudySubData
      */
     public String getIdentifier() {
-        return firstName + " " + lastName + " " + email;
+        return getFirstName() + " " + getLastName() + " " + getEmail();
     }
 
     /**
@@ -176,7 +179,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts Last name (surname)
      */
     public String getLastName() {
-        return lastName;
+        return fieldValues.get(CONTACT_LAST_NAME);
     }
 
     /**
@@ -185,7 +188,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts Mid Initial
      */
     public String getMidInitial() {
-        return midInitial;
+        return fieldValues.get(CONTACT_MID_INITIAL);
     }
 
     /**
@@ -194,7 +197,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts Phone
      */
     public String getPhone() {
-        return phone;
+        return fieldValues.get(CONTACT_PHONE);
     }
 
     /**
@@ -203,7 +206,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts Role
      */
     public String getRole() {
-        return role;
+        return fieldValues.get(CONTACT_ROLE);
     }
 
     /**
@@ -212,7 +215,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts Role Term Accession
      */
     public String getRoleTermAccession() {
-        return roleTermAccession;
+        return fieldValues.get(CONTACT_ROLE_TERM_ACCESSION);
     }
 
     /**
@@ -221,7 +224,7 @@ public class Contact implements StudySubData, Serializable {
      * @return String representing the Contacts Role Term Source REF
      */
     public String getRoleTermSourceRef() {
-        return roleTermSourceRef;
+        return fieldValues.get(CONTACT_ROLE_TERM_SOURCE_REF);
     }
 
     /**
@@ -230,11 +233,11 @@ public class Contact implements StudySubData, Serializable {
      * @param role - the Contact's role.
      */
     public void setRole(String role) {
-        this.role = role;
+        fieldValues.put(CONTACT_ROLE, role);
     }
 
     @Override
     public String toString() {
-        return lastName + ", " + firstName;
+        return getLastName() + ", " + getFirstName();
     }
 }

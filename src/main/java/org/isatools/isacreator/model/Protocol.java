@@ -47,22 +47,22 @@ import java.io.Serializable;
  *
  * @author Eamonn Maguire
  */
-public class Protocol implements StudySubData, Serializable {
-    private String protocolName;
-    private String protocolType;
-    private String protocolTypeTermAccession;
-    private String protocolTypeTermSourceRef;
-    private String protocolDescription;
-    private String protocolURL;
-    private String protocolVersion;
-    private String protocolParameterName;
-    private String protocolParameterNameAccession;
-    private String protocolParameterNameSource;
-    private String protocolComponentName;
-    private String protocolComponentType;
-    private String protocolComponentTypeAccession;
-    private String protocolComponentTypeSource;
+public class Protocol extends ISASection implements StudySubData, Serializable {
 
+    public static final String PROTOCOL_NAME = "Study Protocol Name";
+    public static final String PROTOCOL_TYPE = "Study Protocol Type";
+    public static final String PROTOCOL_TYPE_TERM_ACCESSION = "Study Protocol Type Term Accession Number";
+    public static final String PROTOCOL_TYPE_TERM_SOURCE_REF = "Study Protocol Type Term Source REF";
+    public static final String PROTOCOL_DESCRIPTION = "Study Protocol Description";
+    public static final String PROTOCOL_URI = "Study Protocol URI";
+    public static final String PROTOCOL_VERSION = "Study Protocol Version";
+    public static final String PROTOCOL_PARAMETER_NAME = "Study Protocol Parameters Name";
+    public static final String PROTOCOL_PARAMETER_NAME_TERM_ACCESSION = "Study Protocol Parameters Name Term Accession Number";
+    public static final String PROTOCOL_PARAMETER_NAME_TERM_SOURCE_REF = "Study Protocol Parameters Name Term Source REF";
+    public static final String PROTOCOL_COMPONENT_NAME = "Study Protocol Components Name";
+    public static final String PROTOCOL_COMPONENT_TYPE = "Study Protocol Components Type";
+    public static final String PROTOCOL_COMPONENT_TYPE_TERM_ACCESSION = "Study Protocol Components Type Term Accession Number";
+    public static final String PROTOCOL_COMPONENT_TYPE_TERM_SOURCE_REF = "Study Protocol Components Type Term Source REF";
 
     /**
      * @param protocolName          - Name for protocol
@@ -99,91 +99,94 @@ public class Protocol implements StudySubData, Serializable {
      * @param protocolComponentTypeSource    - Source REF (e.g. OBI) for the Ontology term defined for protocolComponentType (; separated)
      */
     public Protocol(String protocolName, String protocolType, String protocolTypeTermAccession, String protocolTypeTermSourceRef, String protocolDescription, String protocolURL, String protocolVersion, String protocolParameterName, String protocolParameterNameAccession, String protocolParameterNameSource, String protocolComponentName, String protocolComponentType, String protocolComponentTypeAccession, String protocolComponentTypeSource) {
-        this.protocolName = protocolName;
-        this.protocolType = protocolType;
-        this.protocolTypeTermAccession = protocolTypeTermAccession;
-        this.protocolTypeTermSourceRef = protocolTypeTermSourceRef;
-        this.protocolDescription = protocolDescription;
-        this.protocolURL = protocolURL;
-        this.protocolVersion = protocolVersion;
-        this.protocolParameterName = protocolParameterName;
-        this.protocolParameterNameAccession = protocolParameterNameAccession;
-        this.protocolParameterNameSource = protocolParameterNameSource;
-        this.protocolComponentName = protocolComponentName;
-        this.protocolComponentType = protocolComponentType;
-        this.protocolComponentTypeAccession = protocolComponentTypeAccession;
-        this.protocolComponentTypeSource = protocolComponentTypeSource;
+        super();
+        fieldValues.put(PROTOCOL_NAME, protocolName);
+        fieldValues.put(PROTOCOL_TYPE, protocolType);
+        fieldValues.put(PROTOCOL_TYPE_TERM_ACCESSION, protocolTypeTermAccession);
+        fieldValues.put(PROTOCOL_TYPE_TERM_SOURCE_REF, protocolTypeTermSourceRef);
+        fieldValues.put(PROTOCOL_DESCRIPTION, protocolDescription);
+        fieldValues.put(PROTOCOL_URI, protocolURL);
+        fieldValues.put(PROTOCOL_VERSION, protocolVersion);
+        fieldValues.put(PROTOCOL_PARAMETER_NAME, protocolParameterName);
+        fieldValues.put(PROTOCOL_PARAMETER_NAME_TERM_ACCESSION, protocolParameterNameAccession);
+        fieldValues.put(PROTOCOL_PARAMETER_NAME_TERM_SOURCE_REF, protocolParameterNameSource);
+        fieldValues.put(PROTOCOL_COMPONENT_NAME, protocolComponentName);
+        fieldValues.put(PROTOCOL_COMPONENT_TYPE, protocolComponentType);
+        fieldValues.put(PROTOCOL_COMPONENT_TYPE_TERM_ACCESSION, protocolComponentTypeAccession);
+        fieldValues.put(PROTOCOL_COMPONENT_TYPE_TERM_SOURCE_REF, protocolComponentTypeSource);
     }
 
     public String getIdentifier() {
-        return protocolName;
+        return fieldValues.get(PROTOCOL_NAME);
     }
 
     public String getProtocolComponentName() {
-        return protocolComponentName;
+        return fieldValues.get(PROTOCOL_COMPONENT_NAME);
     }
 
     public String getProtocolDescription() {
-        return protocolDescription;
+        return fieldValues.get(PROTOCOL_DESCRIPTION);
     }
 
     public String getProtocolName() {
-        return protocolName;
+        return fieldValues.get(PROTOCOL_NAME);
     }
 
     public String getProtocolParameterName() {
-        return protocolParameterName;
+        return fieldValues.get(PROTOCOL_PARAMETER_NAME);
     }
 
     public String getProtocolType() {
-        return protocolType;
+        return fieldValues.get(PROTOCOL_TYPE);
     }
 
     public String getProtocolTypeTermAccession() {
-        return protocolTypeTermAccession;
+        return fieldValues.get(PROTOCOL_TYPE_TERM_ACCESSION);
     }
 
     public String getProtocolTypeTermSourceRef() {
-        return protocolTypeTermSourceRef;
+        return fieldValues.get(PROTOCOL_TYPE_TERM_SOURCE_REF);
     }
 
     public String getProtocolURL() {
-        return protocolURL;
+        return fieldValues.get(PROTOCOL_URI);
     }
 
     public String getProtocolVersion() {
-        return protocolVersion;
+        return fieldValues.get(PROTOCOL_VERSION);
     }
 
     public void setProtocolType(String protocolType) {
-        this.protocolType = protocolType;
+        fieldValues.put(PROTOCOL_TYPE, protocolType);
     }
 
     public void setProtocolComponentType(String protocolComponentType) {
-        this.protocolComponentType = protocolComponentType;
+        fieldValues.put(PROTOCOL_COMPONENT_TYPE, protocolComponentType);
     }
 
     public void setProtocolParameterName(String protocolParameterName) {
-        this.protocolParameterName = protocolParameterName;
+        fieldValues.put(PROTOCOL_PARAMETER_NAME, protocolParameterName);
     }
 
     public String getProtocolParameterNameAccession() {
-        return protocolParameterNameAccession;
+        return fieldValues.get(PROTOCOL_PARAMETER_NAME_TERM_ACCESSION);
     }
 
     public String getProtocolParameterNameSource() {
-        return protocolParameterNameSource;
+        return fieldValues.get(PROTOCOL_PARAMETER_NAME_TERM_SOURCE_REF);
+
     }
 
     public String getProtocolComponentType() {
-        return protocolComponentType;
+        return fieldValues.get(PROTOCOL_COMPONENT_TYPE);
+
     }
 
     public String getProtocolComponentTypeAccession() {
-        return protocolComponentTypeAccession;
+        return fieldValues.get(PROTOCOL_COMPONENT_TYPE_TERM_ACCESSION);
     }
 
     public String getProtocolComponentTypeSource() {
-        return protocolComponentTypeSource;
+        return fieldValues.get(PROTOCOL_COMPONENT_TYPE_TERM_SOURCE_REF);
     }
 }

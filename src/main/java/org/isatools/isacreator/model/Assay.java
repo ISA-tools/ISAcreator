@@ -48,12 +48,12 @@ import org.isatools.isacreator.spreadsheet.TableReferenceObject;
  *
  * @author Eamonn Maguire
  */
-public class Assay implements StudySubData {
+public class Assay extends ISASection implements StudySubData {
+    public static final String ASSAY_REFERENCE = "Study Assay File Name";
+    public static final String MEASUREMENT_ENDPOINT = "Study Assay Measurement Type";
+    public static final String TECHNOLOGY_TYPE = "Study Assay Technology Type";
+    public static final String ASSAY_PLATFORM = "Study Assay Technology Platform";
 
-    private String assayReference;
-    private String measurementEndpoint;
-    private String technologyType;
-    private String assayPlatform;
     private TableReferenceObject tableReferenceObject = null;
     private AssaySpreadsheet spreadsheet;
 
@@ -65,7 +65,10 @@ public class Assay implements StudySubData {
      * @param tableReferenceObject - the Table Reference Object which contains all the properties of a an Assay, in particular defining which Columns are required, Which are Ontology terms, etc. These files are provided via the ISAConfiguration Tool.
      */
     public Assay(String assayReference, TableReferenceObject tableReferenceObject) {
-        this.assayReference = assayReference;
+        super();
+
+        fieldValues.put(ASSAY_REFERENCE, assayReference);
+
         this.tableReferenceObject = tableReferenceObject;
     }
 
@@ -80,11 +83,12 @@ public class Assay implements StudySubData {
      */
     public Assay(String assayReference, String measurementEndpoint,
                  String technologyType, String assayPlatform) {
+        super();
 
-        this.assayReference = assayReference;
-        this.measurementEndpoint = measurementEndpoint;
-        this.technologyType = technologyType;
-        this.assayPlatform = assayPlatform;
+        fieldValues.put(ASSAY_REFERENCE, assayReference);
+        fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
+        fieldValues.put(TECHNOLOGY_TYPE, technologyType);
+        fieldValues.put(ASSAY_PLATFORM, assayPlatform);
     }
 
     /**
@@ -101,15 +105,17 @@ public class Assay implements StudySubData {
     public Assay(String assayReference, String measurementEndpoint,
                  String technologyType, String assayPlatform, StudyDataEntry studyDataEntry,
                  TableReferenceObject tableReferenceObject) {
-        this.assayReference = assayReference;
-        this.measurementEndpoint = measurementEndpoint;
-        this.technologyType = technologyType;
-        this.assayPlatform = assayPlatform;
+        super();
+
+        fieldValues.put(ASSAY_REFERENCE, assayReference);
+        fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
+        fieldValues.put(TECHNOLOGY_TYPE, technologyType);
+        fieldValues.put(ASSAY_PLATFORM, assayPlatform);
 
         // we copy the table reference object, otherwise all modifications
         // to this object will be carried through to all other assays too!
         TableReferenceObject newTRO = new TableReferenceObject(tableReferenceObject.getTableFields());
-        spreadsheet = new AssaySpreadsheet(studyDataEntry, newTRO, this.measurementEndpoint, this.technologyType);
+        spreadsheet = new AssaySpreadsheet(studyDataEntry, newTRO, getMeasurementEndpoint(), getTechnologyType());
     }
 
     /**
@@ -124,20 +130,23 @@ public class Assay implements StudySubData {
      */
     public Assay(String assayReference, String measurementEndpoint,
                  String technologyType, String assayPlatform, TableReferenceObject tableReferenceObject) {
-        this.assayReference = assayReference;
-        this.measurementEndpoint = measurementEndpoint;
-        this.technologyType = technologyType;
-        this.assayPlatform = assayPlatform;
+        super();
+
+        fieldValues.put(ASSAY_REFERENCE, assayReference);
+        fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
+        fieldValues.put(TECHNOLOGY_TYPE, technologyType);
+        fieldValues.put(ASSAY_PLATFORM, assayPlatform);
+
         this.tableReferenceObject = tableReferenceObject;
     }
 
 
     public String getAssayPlatform() {
-        return assayPlatform;
+        return fieldValues.get(ASSAY_PLATFORM);
     }
 
     public String getAssayReference() {
-        return assayReference;
+        return fieldValues.get(ASSAY_REFERENCE);
     }
 
     public String getIdentifier() {
@@ -145,11 +154,11 @@ public class Assay implements StudySubData {
     }
 
     public String getMeasurementEndpoint() {
-        return measurementEndpoint == null ? "" : measurementEndpoint;
+        return fieldValues.get(MEASUREMENT_ENDPOINT) == null ? "" : fieldValues.get(MEASUREMENT_ENDPOINT);
     }
 
     public String getTechnologyType() {
-        return technologyType == null ? "" : technologyType;
+        return fieldValues.get(TECHNOLOGY_TYPE) == null ? "" : fieldValues.get(TECHNOLOGY_TYPE);
     }
 
     public TableReferenceObject getTableReferenceObject() {
@@ -186,7 +195,7 @@ public class Assay implements StudySubData {
     }
 
     public String toString() {
-        return assayReference;
+        return fieldValues.get(ASSAY_REFERENCE);
     }
 
 
