@@ -38,7 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.io.ImportISAFiles;
+import org.isatools.isacreator.io.importisa.ImportISAFiles;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.jdesktop.fuse.InjectedResource;

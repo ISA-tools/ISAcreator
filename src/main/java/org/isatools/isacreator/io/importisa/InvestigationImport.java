@@ -1,14 +1,13 @@
 package org.isatools.isacreator.io.importisa;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.google.zxing.common.StringUtils;
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSections;
 import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationStructureLoader;
-import org.isatools.isacreator.utils.CollectionUtils;
+import org.isatools.isacreator.utils.datastructures.SetUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,7 +48,7 @@ public class InvestigationImport {
      *         EFO
      *         etc
      */
-    public Map<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>> importInvestigationFile(File investigationFile) throws IOException {
+    public Pair<Boolean, Map<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
 
         Map<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>> importedInvestigationFile = new HashMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>();
 
@@ -97,19 +96,9 @@ public class InvestigationImport {
 
             }
         }
-        // todo improve logging...provide detailed information about what information is missing from the file, if there is something missing
-        if (isValidInvestigationSections(importedInvestigationFile)) {
-            System.out.println("Investigation file is valid...");
-        } else {
-            System.out.println("Investigation is invalid...here's why:");
 
-            for(String message : messages)  {
-                System.out.println(message);
-            }
-
-        }
-
-        return importedInvestigationFile;
+        return new Pair<Boolean, Map<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>>(
+                isValidInvestigationSections(importedInvestigationFile), importedInvestigationFile);
     }
 
     /**
@@ -139,8 +128,8 @@ public class InvestigationImport {
                     minorSectionParts.add(sectionLabelsAndValues);
                 }
 
-                CollectionUtils<String, String> collectionUtils = new CollectionUtils<String, String>();
-                Pair<Boolean, Set<String>> equalityResult = collectionUtils.compareSets(minorSectionParts, sections.get(section).getRequiredValues());
+                SetUtils<String> setUtils = new SetUtils<String>();
+                Pair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, sections.get(section).getRequiredValues(), false);
                 if (!equalityResult.fst) {
                     for (String sectionValue : equalityResult.snd) {
                         messages.add(fmt.format(new Object[]{sectionValue, section}));
@@ -153,22 +142,22 @@ public class InvestigationImport {
 
             // the mainsection string is investigation-1 or study-2 - here we strip away from - onwards.
             Set<InvestigationFileSections> requiredSections = loader.getRequiredSections(mainSection.substring(0, mainSection.lastIndexOf("-")));
-            CollectionUtils<InvestigationFileSections, InvestigationFileSections> collectionUtils = new CollectionUtils<InvestigationFileSections, InvestigationFileSections>();
-            Pair<Boolean, Set<InvestigationFileSections>> equalityResult = collectionUtils.compareSets(majorSectionParts, requiredSections);
+            SetUtils<InvestigationFileSections> setUtils = new SetUtils<InvestigationFileSections>();
+            Pair<Boolean, Set<InvestigationFileSections>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
 
-            if (equalityResult.fst) {
-                System.out.println("All required elements have been found...");
-            } else {
-                System.out.println("Missing something " + equalityResult.snd);
-                for (InvestigationFileSections section : equalityResult.snd) {
-                    messages.add(fmt.format(new Object[]{section, mainSection.lastIndexOf("-")}));
+            // if false,
+            if (!equalityResult.fst) {
+                if (equalityResult.snd != null) {
+                    for (InvestigationFileSections section : equalityResult.snd) {
+                        messages.add(fmt.format(new Object[]{section, mainSection.substring(0, mainSection.lastIndexOf("-"))}));
+                    }
+                } else {
+                    messages.add("There are too many or too few major sections, e.g. PUBLICATION Sections than are allowed for " + mainSection.substring(0, mainSection.lastIndexOf("-")) + " section of the ISAtab format");
                 }
-
-
             }
-
         }
 
+        // if the message size is 0, there are no errors...
         return messages.size() == 0;
     }
 
@@ -180,5 +169,9 @@ public class InvestigationImport {
         } else {
             throw new FileNotFoundException("The specified file " + investigationFile.getName() + "does not exist in " + investigationFile.getAbsolutePath());
         }
+    }
+
+    public Set<String> getMessages() {
+        return messages;
     }
 }

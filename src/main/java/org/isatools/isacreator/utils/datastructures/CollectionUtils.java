@@ -35,12 +35,14 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.utils;
+package org.isatools.isacreator.utils.datastructures;
 
-import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.map.ListOrderedMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * CollectionUtils
@@ -69,22 +71,5 @@ public class CollectionUtils<T extends Comparable, V extends Comparable> {
         }
 
         return sortedMap;
-    }
-
-    public Pair<Boolean, Set<T>> compareSets(Set<T> setA, Set<T> setB) {
-
-        Pair<Boolean, Set<T>> result = new Pair<Boolean, Set<T>>(false, new HashSet<T>());
-
-        for (T value : setB) {
-            if (!setA.contains(value)) {
-                result.snd.add(value);
-            }
-        }
-
-        if (result.snd.size() > 0) {
-            return result;
-        } else {
-            return new Pair<Boolean, Set<T>>(true, null);
-        }
     }
 }
