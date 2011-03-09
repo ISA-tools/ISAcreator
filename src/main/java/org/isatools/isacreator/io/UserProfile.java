@@ -122,10 +122,10 @@ public class UserProfile implements Serializable {
         }
     }
 
-    private boolean checkExists(StudySubData usedFactor,
+    private boolean checkExists(StudySubData toCheck,
                                 List<StudySubData> data) {
         for (StudySubData ssd : data) {
-            if (ssd.getIdentifier().equals(usedFactor.getIdentifier())) {
+            if (ssd.getIdentifier().equals(toCheck.getIdentifier())) {
                 return true;
             }
         }

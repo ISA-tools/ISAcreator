@@ -38,6 +38,7 @@
 package org.isatools.isacreator.publicationlocator;
 
 import org.isatools.isacreator.model.Publication;
+import org.isatools.isacreator.model.StudyPublication;
 import uk.ac.ebi.cdb.client.*;
 
 import javax.xml.ws.WebServiceRef;
@@ -99,7 +100,7 @@ public class CiteExploreClient {
                         }
                     }
 
-                    Publication pub = new Publication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                    Publication pub = new StudyPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
                     pub.setAbstractText(citation.getAbstractText());
                     publications.put(citation.getExternalId(), pub);
 

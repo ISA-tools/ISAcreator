@@ -40,12 +40,13 @@ package org.isatools.isacreator.io.importisa;
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
 import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSections;
+import org.isatools.isacreator.model.Investigation;
+import org.isatools.isacreator.model.Publication;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -61,15 +62,28 @@ public class InvestigationImportTest {
 
     @Test
     public void loadInvestigationFile() {
-        File testInvestigationFile = new File("isatab files/BII-I-1/i_Investigation.txt");
+        File testInvestigationFile = new File("isatab files/BII-I-1/i_investigation.txt");
 
         System.out.println("__TESTING loadInvestigationFile() on " + testInvestigationFile.getName());
 
         InvestigationImport importer = new InvestigationImport();
         try {
-            Pair<Boolean, Map<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>> result = importer.importInvestigationFile(testInvestigationFile);
+            Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>> result = importer.importInvestigationFile(testInvestigationFile);
 
             assertTrue("Investigation did not validate\n" + printMessages(importer), result.fst);
+
+            StructureToInvestigationMapper mapper = new StructureToInvestigationMapper();
+            Investigation i = mapper.createInvestigationFromDataStructure(result.snd);
+
+            System.out.println("Investigation title: " + i.getInvestigationTitle());
+            System.out.println("Number of studies: " + i.getStudies().size());
+
+            System.out.println("Getting investigation publications:");
+
+            for (Publication publication : i.getPublications()) {
+                System.out.println("Publication identifier: " + publication.getIdentifier());
+                System.out.println("Publication title: " + publication.getPublicationTitle());
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

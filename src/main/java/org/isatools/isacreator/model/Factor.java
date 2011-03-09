@@ -55,6 +55,10 @@ public class Factor extends ISASection implements StudySubData, Serializable {
     public static final String FACTOR_TYPE_SOURCE_REF = "Study Factor Type Term Source REF";
 
 
+    public Factor() {
+        super();
+    }
+
     /**
      * Factor Object
      *
@@ -88,7 +92,7 @@ public class Factor extends ISASection implements StudySubData, Serializable {
      * @return String denoting the Factor Name
      */
     public String getFactorName() {
-        return fieldValues.get(FACTOR_NAME);
+        return getValue(FACTOR_NAME);
     }
 
 
@@ -98,7 +102,7 @@ public class Factor extends ISASection implements StudySubData, Serializable {
      * @return String denoting the Factor type
      */
     public String getFactorType() {
-        return fieldValues.get(FACTOR_TYPE);
+        return getValue(FACTOR_TYPE);
     }
 
     /**
@@ -107,7 +111,7 @@ public class Factor extends ISASection implements StudySubData, Serializable {
      * @return String denoting the Factor Type Term Accession
      */
     public String getFactorTypeTermAccession() {
-        return fieldValues.get(FACTOR_TYPE_TERM_ACCESSION);
+        return getValue(FACTOR_TYPE_TERM_ACCESSION);
     }
 
     /**
@@ -116,7 +120,7 @@ public class Factor extends ISASection implements StudySubData, Serializable {
      * @return String denoting the Factor Type Term Source
      */
     public String getFactorTypeTermSource() {
-        return fieldValues.get(FACTOR_TYPE_SOURCE_REF);
+        return getValue(FACTOR_TYPE_SOURCE_REF);
     }
 
     /**

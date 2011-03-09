@@ -41,7 +41,10 @@ import org.isatools.isacreator.io.xpath.XPathReader;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPathConstants;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * InvestigationStructureLoader loads the XML file describing the salient items of an Investigation file
@@ -79,7 +82,7 @@ public class InvestigationStructureLoader {
                     for (int requiredValueIndex = 0; requiredValueIndex <= requiredValueNodeList.getLength(); requiredValueIndex++) {
                         String requiredLabel = (String) reader.read("/investigationFileStructure/section[" + sectionIndex + "]/requiredValues/value[" + requiredValueIndex + "]", XPathConstants.STRING);
 
-                        if(!requiredLabel.trim().equals("")) {
+                        if (!requiredLabel.trim().equals("")) {
                             currentSection.getRequiredValues().add(requiredLabel);
                         }
                     }
@@ -95,6 +98,7 @@ public class InvestigationStructureLoader {
 
     /**
      * Given "Investigation" or "Study" will return all of the elements required for each part.
+     *
      * @param type - "Investigation" or "Study"
      * @return @see Set<InvestigationFileSections>
      */
@@ -103,30 +107,16 @@ public class InvestigationStructureLoader {
 
         type = type.toUpperCase();
 
-        for(InvestigationFileSections section : investigationSections.keySet()) {
-            if(section.toString().contains(type)) {
+        for (InvestigationFileSections section : investigationSections.keySet()) {
+            if (section.toString().contains(type)) {
                 result.add(section);
             }
         }
 
-        if(type.equalsIgnoreCase("INVESTIGATION")) {
+        if (type.equalsIgnoreCase("INVESTIGATION")) {
             result.add(InvestigationFileSections.ONTOLOGY_SECTION);
         }
 
         return result;
     }
-
-    public static void main(String[] args) {
-        InvestigationStructureLoader loader = new InvestigationStructureLoader();
-        Map<InvestigationFileSections, InvestigationSection> sections = loader.loadInvestigationStructure();
-
-        for(InvestigationSection section : sections.values()) {
-            System.out.println(section.getSectionName());
-            for(String value : section.getRequiredValues()) {
-                System.out.println("\t " + value);
-            }
-        }
-    }
-
-
 }

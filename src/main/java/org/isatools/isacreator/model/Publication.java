@@ -45,107 +45,44 @@ import org.isatools.isacreator.gui.StudySubData;
  *
  * @author Eamonn Maguire
  */
-public class Publication extends ISASection implements StudySubData {
+public abstract class Publication extends ISASection implements StudySubData {
 
-    public static final String PUBMED_ID = "Study PubMed ID";
-    public static final String PUBLICATION_DOI = "Study Publication DOI";
-    public static final String PUBLICATION_AUTHOR_LIST = "Study Publication Author list";
-    public static final String PUBLICATION_TITLE = "Study Publication Title";
-    public static final String PUBLICATION_STATUS = "Study Publication Status";
-    public static final String PUBLICATION_STATUS_TERM_ACC = "Study Publication Status Term Accession Number";
-    public static final String PUBLICATION_STATUS_SOURCE_REF = "Study Publication Status Term Source REF";
     public static final String ABSTRACT_TEXT = "Abstract Text";
 
-    /**
-     * Publication Object
-     *
-     * @param pubmedId              - PubMedID uniquely identifying the Publication (if available!)
-     * @param publicationDOI        - Publication Database Object Identifier
-     * @param publicationAuthorList - List of authors who contributed to the paper.
-     * @param publicationTitle      - Title given to the Publication
-     * @param publicationStatus     - Status of the Publication (e.g. Submitted)
-     */
-    public Publication(String pubmedId, String publicationDOI, String publicationAuthorList, String publicationTitle, String publicationStatus) {
+    public Publication() {
         super();
-        fieldValues.put(PUBMED_ID, pubmedId);
-        fieldValues.put(PUBLICATION_DOI, publicationDOI);
-        fieldValues.put(PUBLICATION_AUTHOR_LIST, publicationAuthorList);
-        fieldValues.put(PUBLICATION_TITLE, publicationTitle);
-        fieldValues.put(PUBLICATION_STATUS, publicationStatus);
     }
 
-    /**
-     * Publication Object
-     *
-     * @param pubmedId                       - PubMedID uniquely identifying the Publication (if available!)
-     * @param publicationDOI                 - Publication Database Object Identifier
-     * @param publicationAuthorList          - List of authors who contributed to the paper.
-     * @param publicationTitle               - Title given to the Publication
-     * @param publicationStatus              - Status of the Publication (e.g. Submitted)
-     * @param publicationStatusTermAccession - Accession (e.g. 000123) for the Ontology term used for the publicationStatus field
-     * @param publicationStatusSourceRef     - Source REF (e.g. OBI) for the Ontology term used for the publicationStatus field
-     */
-    public Publication(String pubmedId, String publicationDOI, String publicationAuthorList, String publicationTitle, String publicationStatus, String publicationStatusTermAccession, String publicationStatusSourceRef) {
-        super();
-        fieldValues.put(PUBMED_ID, pubmedId);
-        fieldValues.put(PUBLICATION_DOI, publicationDOI);
-        fieldValues.put(PUBLICATION_AUTHOR_LIST, publicationAuthorList);
-        fieldValues.put(PUBLICATION_TITLE, publicationTitle);
-        fieldValues.put(PUBLICATION_STATUS, publicationStatus);
-        fieldValues.put(PUBLICATION_STATUS_TERM_ACC, publicationStatusTermAccession);
-        fieldValues.put(PUBLICATION_STATUS_SOURCE_REF, publicationStatusSourceRef);
-    }
+    public abstract String getPubmedId();
 
-    public String getPubmedId() {
-        return fieldValues.get(PUBMED_ID);
-    }
+    public abstract String getPublicationDOI();
 
-    public String getPublicationDOI() {
-        return fieldValues.get(PUBLICATION_DOI);
-    }
+    public abstract String getPublicationAuthorList();
 
-    public String getPublicationAuthorList() {
-        return fieldValues.get(PUBLICATION_AUTHOR_LIST);
-    }
+    public abstract String getPublicationTitle();
 
-    public String getPublicationTitle() {
-        return fieldValues.get(PUBLICATION_TITLE);
-    }
+    public abstract String getPublicationStatus();
 
-    public String getPublicationStatus() {
-        return fieldValues.get(PUBLICATION_STATUS);
-    }
+    public abstract String getPublicationTermAcc();
 
-    public String getPublicationTermAcc() {
-        return fieldValues.get(PUBLICATION_STATUS_TERM_ACC);
-    }
+    public abstract String getPublicationSourceRef();
 
-    public String getPublicationSourceRef() {
-        return fieldValues.get(PUBLICATION_STATUS_SOURCE_REF);
-    }
+    public abstract void setPublicationTermAcc(String publicationTermAcc);
 
-    public void setPublicationTermAcc(String publicationTermAcc) {
-        fieldValues.put(PUBLICATION_STATUS_TERM_ACC, publicationTermAcc);
-    }
+    public abstract void setPublicationSourceRef(String publicationSourceRef);
 
-    public void setPublicationSourceRef(String publicationSourceRef) {
-        fieldValues.put(PUBLICATION_STATUS_SOURCE_REF, publicationSourceRef);
-    }
-
-    public String getIdentifier() {
-        return getPubmedId();
-    }
-
-    public void setPublicationStatus(String publicationStatus) {
-        fieldValues.put(PUBLICATION_STATUS, publicationStatus);
-    }
+    public abstract void setPublicationStatus(String publicationStatus);
 
     public String getAbstractText() {
-        return fieldValues.get(ABSTRACT_TEXT) == null ? "" : fieldValues.get(ABSTRACT_TEXT);
+        return getValue(ABSTRACT_TEXT);
     }
 
     public void setAbstractText(String abstractText) {
         fieldValues.put(ABSTRACT_TEXT, abstractText);
+    }
+
+    public String getIdentifier() {
+        return getPubmedId();
     }
 
     /**

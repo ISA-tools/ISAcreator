@@ -38,9 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.io.importisa.ImportISAFiles;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -133,20 +131,20 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         }
     }
 
-    private void assignOntologiesToSession(ImportISAFiles iISA) {
-
-        // finally add ontology objects to user history.
-        for (OntologyObject oo : iISA.getOntologyTermsDefined()) {
-            if (!oo.getTerm().trim().equals("")) {
-                menu.getMain().addToUserHistory(oo);
-            }
-        }
-
-        for (OntologySourceRefObject osro : iISA.getOntologySourcesDefined()) {
-            if (osro.getSourceName().trim().equals("")) {
-                menu.getMain().getOntologiesUsed().add(osro);
-            }
-        }
+    private void assignOntologiesToSession(ISAtabImporter iISA) {
+//  TODO reinstate this once initial tests are working
+//        // finally add ontology objects to user history.
+//        for (OntologyObject oo : iISA.getOntologyTermsDefined()) {
+//            if (!oo.getTerm().trim().equals("")) {
+//                menu.getMain().addToUserHistory(oo);
+//            }
+//        }
+//
+//        for (OntologySourceRefObject osro : iISA.getOntologySourcesDefined()) {
+//            if (osro.getSourceName().trim().equals("")) {
+//                menu.getMain().getOntologiesUsed().add(osro);
+//            }
+//        }
 
     }
 
@@ -160,7 +158,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 try {
                     // TODO test to see if objects are maintained in memory after moving the
                     // instantiation inside the thread.
-                    ImportISAFiles iISA = new ImportISAFiles(menu.getMain());
+                    ISAtabImporter iISA = new ISAtabImporter(menu.getMain());
                     if (iISA.importFile(dir)) {
                         // success, so load
 
@@ -177,7 +175,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         menu.stopProgressIndicator();
                         menu.resetViewAfterProgress();
 
-                        problemReport.setText(iISA.getProblemLog());
+//                        problemReport.setText(iISA.getProblemLog());
                         problemScroll.setVisible(true);
                         revalidate();
 
@@ -194,7 +192,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 } catch (Exception e) {
                     menu.stopProgressIndicator();
                     menu.resetViewAfterProgress();
-
+                    e.printStackTrace();
                     problemReport.setText("<html>Unexpected problem occurred." + e.getMessage() + "</html>");
                     problemScroll.setVisible(true);
                     revalidate();

@@ -47,15 +47,16 @@ import java.util.*;
  *
  * @author Eamonn Maguire
  */
-public class Study {
+public class Study extends ISASection {
+
+    public static final String STUDY_ID = "Study Identifier";
+    public static final String STUDY_TITLE = "Study Title";
+    public static final String STUDY_DESC = "Study Description";
+    public static final String STUDY_DATE_OF_SUBMISSION = "Study Submission Date";
+    public static final String STUDY_DATE_OF_PUBLIC_RELEASE = "Study Public Release Date";
+    public static final String STUDY_SAMPLE_FILE = "Study File Name";
 
     private Assay studySampleRecord;
-    private String dateOfSubmission = "";
-    private String publicReleaseDate = "";
-    private String studyDesc = "";
-    private String studyId;
-    private String studySample = "";
-    private String studyTitle = "";
 
     private Map<String, Assay> assays;
     private List<Contact> contacts;
@@ -73,6 +74,11 @@ public class Study {
 
     public static String PROTOCOL_IDENT = "protocols";
     public static String FACTOR_IDENT = "factors";
+
+    public Study() {
+        super();
+        initialise();
+    }
 
     /**
      * A Study is the all-encompassing object which groups together an assay
@@ -97,13 +103,19 @@ public class Study {
      */
     public Study(String studyId, String studyTitle, String dateOfSubmission,
                  String publicReleaseDate, String studyDesc, String studySample) {
-        this.studyId = studyId;
-        this.studyTitle = studyTitle;
-        this.dateOfSubmission = dateOfSubmission;
-        this.publicReleaseDate = publicReleaseDate;
-        this.studyDesc = studyDesc;
-        this.studySample = studySample;
+        super();
 
+        fieldValues.put(STUDY_ID, studyId);
+        fieldValues.put(STUDY_TITLE, studyTitle);
+        fieldValues.put(STUDY_DATE_OF_SUBMISSION, dateOfSubmission);
+        fieldValues.put(STUDY_DATE_OF_PUBLIC_RELEASE, publicReleaseDate);
+        fieldValues.put(STUDY_DESC, studyDesc);
+        fieldValues.put(STUDY_SAMPLE_FILE, studySample);
+
+        initialise();
+    }
+
+    private void initialise() {
         assays = new HashMap<String, Assay>();
         factors = new ArrayList<Factor>();
         protocols = new ArrayList<Protocol>();
@@ -130,7 +142,7 @@ public class Study {
      * @param contact - The Contact to Add to the Study.
      * @return - true if the contact was added, false otherwise.
      */
-    public boolean addContact(Contact contact) {
+    public boolean addContact(StudyContact contact) {
         if (!checkContactExists(contact.getFirstName(), contact.getLastName(), contact.getEmail())) {
             contacts.add(contact);
 
@@ -286,7 +298,7 @@ public class Study {
     }
 
     public String getDateOfSubmission() {
-        return dateOfSubmission;
+        return getValue(STUDY_DATE_OF_SUBMISSION);
     }
 
     /**
@@ -308,15 +320,15 @@ public class Study {
     }
 
     public String getPublicReleaseDate() {
-        return publicReleaseDate;
+        return getValue(STUDY_DATE_OF_PUBLIC_RELEASE);
     }
 
     public String getStudyDesc() {
-        return studyDesc;
+        return getValue(STUDY_DESC);
     }
 
     public String getStudyId() {
-        return studyId;
+        return getValue(STUDY_ID);
     }
 
     public Assay getStudySample() {
@@ -328,15 +340,15 @@ public class Study {
     }
 
     public String getStudySampleFileIdentifier() {
-        if (studySample.equals("")) {
-            return "s_" + studyId + ".txt";
+        if (getValue(STUDY_SAMPLE_FILE).equals("")) {
+            return "s_" + getStudyId() + ".txt";
         }
 
-        return studySample;
+        return getValue(STUDY_SAMPLE_FILE);
     }
 
     public String getStudyTitle() {
-        return studyTitle;
+        return getValue(STUDY_TITLE);
     }
 
     public StudyDataEntry getUserInterface() {
@@ -488,12 +500,22 @@ public class Study {
         this.assays = assays;
     }
 
+    public void addToAssays(List<Assay> assays) {
+        Map<String, Assay> modifiedAssayStructure = new HashMap<String, Assay>();
+
+        for (Assay assay : assays) {
+            modifiedAssayStructure.put(assay.getAssayReference(), assay);
+        }
+
+        this.assays = modifiedAssayStructure;
+    }
+
     public void setContacts(List<Contact> contacts) {
         this.contacts = contacts;
     }
 
     public void setDateOfSubmission(String dateOfSubmission) {
-        this.dateOfSubmission = dateOfSubmission;
+        fieldValues.put(STUDY_DATE_OF_SUBMISSION, dateOfSubmission);
     }
 
 
@@ -596,7 +618,7 @@ public class Study {
     }
 
     public void setPublicReleaseDate(String publicReleaseDate) {
-        this.publicReleaseDate = publicReleaseDate;
+        fieldValues.put(STUDY_DATE_OF_PUBLIC_RELEASE, publicReleaseDate);
     }
 
     public void setSampleFileName(String sampleFile) {
@@ -610,15 +632,15 @@ public class Study {
             studySampleName += ".txt";
         }
 
-        this.studySample = studySampleName;
+        fieldValues.put(STUDY_SAMPLE_FILE, studySampleName);
     }
 
     public void setStudyDesc(String studyDesc) {
-        this.studyDesc = studyDesc;
+        fieldValues.put(STUDY_DESC, studyDesc);
     }
 
     public void setStudyId(String studyId) {
-        this.studyId = studyId;
+        fieldValues.put(STUDY_ID, studyId);
     }
 
     public void setStudySamples(Assay studySamples) {
@@ -626,7 +648,7 @@ public class Study {
     }
 
     public void setStudyTitle(String studyTitle) {
-        this.studyTitle = studyTitle;
+        fieldValues.put(STUDY_TITLE, studyTitle);
     }
 
     public void setUI(StudyDataEntry ui) {
@@ -634,7 +656,7 @@ public class Study {
     }
 
     public String toString() {
-        return studyId;
+        return getStudyId();
     }
 
     /**

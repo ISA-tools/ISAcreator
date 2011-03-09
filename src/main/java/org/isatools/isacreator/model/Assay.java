@@ -57,6 +57,10 @@ public class Assay extends ISASection implements StudySubData {
     private TableReferenceObject tableReferenceObject = null;
     private AssaySpreadsheet spreadsheet;
 
+    public Assay() {
+        super();
+    }
+
     /**
      * The Assay object represents the Spreadsheet/Matrix defining the processes involved
      * to get data files from a Sample
@@ -142,11 +146,11 @@ public class Assay extends ISASection implements StudySubData {
 
 
     public String getAssayPlatform() {
-        return fieldValues.get(ASSAY_PLATFORM);
+        return getValue(ASSAY_PLATFORM);
     }
 
     public String getAssayReference() {
-        return fieldValues.get(ASSAY_REFERENCE);
+        return getValue(ASSAY_REFERENCE);
     }
 
     public String getIdentifier() {
@@ -154,11 +158,11 @@ public class Assay extends ISASection implements StudySubData {
     }
 
     public String getMeasurementEndpoint() {
-        return fieldValues.get(MEASUREMENT_ENDPOINT) == null ? "" : fieldValues.get(MEASUREMENT_ENDPOINT);
+        return getValue(MEASUREMENT_ENDPOINT);
     }
 
     public String getTechnologyType() {
-        return fieldValues.get(TECHNOLOGY_TYPE) == null ? "" : fieldValues.get(TECHNOLOGY_TYPE);
+        return getValue(TECHNOLOGY_TYPE);
     }
 
     public TableReferenceObject getTableReferenceObject() {
@@ -188,14 +192,16 @@ public class Assay extends ISASection implements StudySubData {
 
     public void setUserInterface(StudyDataEntry sde) {
         if (getMeasurementEndpoint().equals("") && getTechnologyType().equals("")) {
-            this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject);
+            if (tableReferenceObject != null) {
+                this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject);
+            }
         } else {
             this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject, getMeasurementEndpoint(), getTechnologyType());
         }
     }
 
     public String toString() {
-        return fieldValues.get(ASSAY_REFERENCE);
+        return getValue(ASSAY_REFERENCE);
     }
 
 

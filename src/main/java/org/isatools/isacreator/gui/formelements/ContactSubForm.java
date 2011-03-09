@@ -42,6 +42,8 @@ import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.Contact;
+import org.isatools.isacreator.model.InvestigationContact;
+import org.isatools.isacreator.model.StudyContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,10 +131,18 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
             }
 
             if (!contactVars[0].equals("")) {
-                newContacts.add(new Contact(contactVars[0], contactVars[1],
-                        contactVars[2], contactVars[3], contactVars[4],
-                        contactVars[5], contactVars[6], contactVars[7],
-                        contactVars[8]));
+                if (parent instanceof StudyDataEntry) {
+                    newContacts.add(new StudyContact(contactVars[0], contactVars[1],
+                            contactVars[2], contactVars[3], contactVars[4],
+                            contactVars[5], contactVars[6], contactVars[7],
+                            contactVars[8]));
+                } else {
+                    newContacts.add(new InvestigationContact(contactVars[0], contactVars[1],
+                            contactVars[2], contactVars[3], contactVars[4],
+                            contactVars[5], contactVars[6], contactVars[7],
+                            contactVars[8]));
+                }
+
             }
         }
         if (parent instanceof StudyDataEntry) {

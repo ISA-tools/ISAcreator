@@ -51,6 +51,10 @@ public class StudyDesign extends ISASection implements StudySubData {
     public static final String STUDY_DESIGN_TYPE_TERM_ACCESSION = "Study Design Type Term Accession Number";
     public static final String STUDY_DESIGN_TYPE_TERM_SOURCE_REF = "Study Design Type Term Source REF";
 
+    public StudyDesign() {
+        super();
+    }
+
     /**
      * Study Design object
      *
@@ -77,15 +81,15 @@ public class StudyDesign extends ISASection implements StudySubData {
     }
 
     public String getStudyDesignType() {
-        return fieldValues.get(STUDY_DESIGN_TYPE);
+        return getValue(STUDY_DESIGN_TYPE);
     }
 
     public String getStudyDesignTypeTermAcc() {
-        return fieldValues.get(STUDY_DESIGN_TYPE_TERM_ACCESSION);
+        return getValue(STUDY_DESIGN_TYPE_TERM_ACCESSION);
     }
 
     public String getStudyDesignTypeTermSourceRef() {
-        return fieldValues.get(STUDY_DESIGN_TYPE_TERM_SOURCE_REF);
+        return getValue(STUDY_DESIGN_TYPE_TERM_SOURCE_REF);
     }
 
     public void setStudyDesignType(String studyDesignType) {

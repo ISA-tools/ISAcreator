@@ -64,6 +64,12 @@ public class Protocol extends ISASection implements StudySubData, Serializable {
     public static final String PROTOCOL_COMPONENT_TYPE_TERM_ACCESSION = "Study Protocol Components Type Term Accession Number";
     public static final String PROTOCOL_COMPONENT_TYPE_TERM_SOURCE_REF = "Study Protocol Components Type Term Source REF";
 
+
+    public Protocol() {
+        super();
+    }
+
+
     /**
      * @param protocolName          - Name for protocol
      * @param protocolType          - Type of protocol
@@ -117,43 +123,43 @@ public class Protocol extends ISASection implements StudySubData, Serializable {
     }
 
     public String getIdentifier() {
-        return fieldValues.get(PROTOCOL_NAME);
+        return getValue(PROTOCOL_NAME);
     }
 
     public String getProtocolComponentName() {
-        return fieldValues.get(PROTOCOL_COMPONENT_NAME);
+        return getValue(PROTOCOL_COMPONENT_NAME);
     }
 
     public String getProtocolDescription() {
-        return fieldValues.get(PROTOCOL_DESCRIPTION);
+        return getValue(PROTOCOL_DESCRIPTION);
     }
 
     public String getProtocolName() {
-        return fieldValues.get(PROTOCOL_NAME);
+        return getValue(PROTOCOL_NAME);
     }
 
     public String getProtocolParameterName() {
-        return fieldValues.get(PROTOCOL_PARAMETER_NAME);
+        return getValue(PROTOCOL_PARAMETER_NAME);
     }
 
     public String getProtocolType() {
-        return fieldValues.get(PROTOCOL_TYPE);
+        return getValue(PROTOCOL_TYPE);
     }
 
     public String getProtocolTypeTermAccession() {
-        return fieldValues.get(PROTOCOL_TYPE_TERM_ACCESSION);
+        return getValue(PROTOCOL_TYPE_TERM_ACCESSION);
     }
 
     public String getProtocolTypeTermSourceRef() {
-        return fieldValues.get(PROTOCOL_TYPE_TERM_SOURCE_REF);
+        return getValue(PROTOCOL_TYPE_TERM_SOURCE_REF);
     }
 
     public String getProtocolURL() {
-        return fieldValues.get(PROTOCOL_URI);
+        return getValue(PROTOCOL_URI);
     }
 
     public String getProtocolVersion() {
-        return fieldValues.get(PROTOCOL_VERSION);
+        return getValue(PROTOCOL_VERSION);
     }
 
     public void setProtocolType(String protocolType) {
@@ -169,24 +175,24 @@ public class Protocol extends ISASection implements StudySubData, Serializable {
     }
 
     public String getProtocolParameterNameAccession() {
-        return fieldValues.get(PROTOCOL_PARAMETER_NAME_TERM_ACCESSION);
+        return getValue(PROTOCOL_PARAMETER_NAME_TERM_ACCESSION);
     }
 
     public String getProtocolParameterNameSource() {
-        return fieldValues.get(PROTOCOL_PARAMETER_NAME_TERM_SOURCE_REF);
+        return getValue(PROTOCOL_PARAMETER_NAME_TERM_SOURCE_REF);
 
     }
 
     public String getProtocolComponentType() {
-        return fieldValues.get(PROTOCOL_COMPONENT_TYPE);
+        return getValue(PROTOCOL_COMPONENT_TYPE);
 
     }
 
     public String getProtocolComponentTypeAccession() {
-        return fieldValues.get(PROTOCOL_COMPONENT_TYPE_TERM_ACCESSION);
+        return getValue(PROTOCOL_COMPONENT_TYPE_TERM_ACCESSION);
     }
 
     public String getProtocolComponentTypeSource() {
-        return fieldValues.get(PROTOCOL_COMPONENT_TYPE_TERM_SOURCE_REF);
+        return getValue(PROTOCOL_COMPONENT_TYPE_TERM_SOURCE_REF);
     }
 }

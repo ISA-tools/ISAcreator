@@ -39,7 +39,9 @@ package org.isatools.isacreator.gui.formelements;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gui.*;
+import org.isatools.isacreator.model.InvestigationPublication;
 import org.isatools.isacreator.model.Publication;
+import org.isatools.isacreator.model.StudyPublication;
 import org.isatools.isacreator.publicationlocator.PublicationLocatorUI;
 
 import javax.swing.*;
@@ -63,12 +65,6 @@ import java.util.List;
 
 public class PublicationSubForm extends SubForm {
 
-    private static PublicationLocatorUI publicationLocator = new PublicationLocatorUI();
-
-    static {
-        publicationLocator.createGUI();
-        publicationLocator.installListeners();
-    }
 
     public PublicationSubForm(String title, FieldTypes fieldType,
                               List<SubFormField> fields, DataEntryEnvironment dep) {
@@ -141,8 +137,14 @@ public class PublicationSubForm extends SubForm {
 
             if (!publicationVars[0].equals("") || !publicationVars[1].equals("") || !publicationVars[2].equals("")
                     || !publicationVars[3].equals("") || !publicationVars[4].equals("")) {
-                newPublications.add(new Publication(publicationVars[0], publicationVars[1],
-                        publicationVars[2], publicationVars[3], publicationVars[4]));
+                if (parent instanceof StudyDataEntry) {
+                    newPublications.add(new StudyPublication(publicationVars[0], publicationVars[1],
+                            publicationVars[2], publicationVars[3], publicationVars[4]));
+                } else {
+                    newPublications.add(new InvestigationPublication(publicationVars[0], publicationVars[1],
+                            publicationVars[2], publicationVars[3], publicationVars[4]));
+                }
+
             }
         }
 
@@ -188,83 +190,87 @@ public class PublicationSubForm extends SubForm {
                 public void mousePressed(MouseEvent event) {
                     selectPublicationLabel.setIcon(searchIcon);
                     if (selectPublicationLabel.isEnabled()) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                final PublicationLocatorUI publicationLocator = new PublicationLocatorUI();
+                                publicationLocator.createGUI();
+                                publicationLocator.installListeners();
+                                publicationLocator.addPropertyChangeListener("selectedPublication",
+                                        new PropertyChangeListener() {
+                                            public void propertyChange(
+                                                    PropertyChangeEvent evt) {
 
-
-                        publicationLocator.addPropertyChangeListener("selectedPublication",
-                                new PropertyChangeListener() {
-                                    public void propertyChange(
-                                            PropertyChangeEvent evt) {
-
-                                        if (evt.getNewValue() instanceof Publication) {
-                                            Publication p = (Publication) evt.getNewValue();
-                                            boolean added;
-                                            if (parent instanceof StudyDataEntry) {
-                                                added = parent.getStudy().addPublication(p);
-                                            } else {
-                                                //parent is instance of InvestigationDataEntry
-                                                added = parent.getInvestigation().addPublication(p);
-                                            }
-
-                                            if (added) {
-                                                SwingUtilities.invokeLater(new Runnable() {
-                                                    public void run() {
-                                                        addColumn();
-                                                        updateTables();
-                                                        reformItems();
+                                                if (evt.getNewValue() instanceof Publication) {
+                                                    Publication p = (Publication) evt.getNewValue();
+                                                    boolean added;
+                                                    if (parent instanceof StudyDataEntry) {
+                                                        added = parent.getStudy().addPublication(p);
+                                                    } else {
+                                                        //parent is instance of InvestigationDataEntry
+                                                        added = parent.getInvestigation().addPublication(p);
                                                     }
-                                                });
 
+                                                    if (added) {
+                                                        SwingUtilities.invokeLater(new Runnable() {
+                                                            public void run() {
+                                                                addColumn();
+                                                                updateTables();
+                                                                reformItems();
+                                                            }
+                                                        });
+
+                                                    }
+
+                                                }
+                                                selectPublicationLabel.setEnabled(true);
                                             }
+                                        });
 
+
+                                publicationLocator.addPropertyChangeListener("noSelectedPublication",
+                                        new PropertyChangeListener() {
+                                            public void propertyChange
+                                                    (PropertyChangeEvent evt) {
+                                                selectPublicationLabel.setEnabled(true);
+                                                publicationLocator.setVisible(false);
+                                            }
                                         }
-                                        selectPublicationLabel.setEnabled(true);
-                                    }
-                                });
+
+                                );
 
 
-                        publicationLocator.addPropertyChangeListener("noSelectedPublication",
-                                new PropertyChangeListener() {
-                                    public void propertyChange
-                                            (PropertyChangeEvent evt) {
-                                        selectPublicationLabel.setEnabled(true);
-                                        publicationLocator.setVisible(false);
-                                    }
+                                // set up location on screen
+                                int proposedX = (int) selectPublicationLabel.getLocationOnScreen()
+                                        .getX();
+                                int proposedY = (int) selectPublicationLabel.getLocationOnScreen()
+                                        .getY();
+
+                                // get the desktop bounds e.g. 1440*990, 800x600, etc.
+                                Rectangle desktopBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                                        .getMaximumWindowBounds();
+
+                                if ((proposedX + HistoricalSelectionGUI.WIDTH) > desktopBounds.width)
+
+                                {
+                                    int difference = (proposedX +
+                                            HistoricalSelectionGUI.WIDTH) -
+                                            desktopBounds.width;
+                                    proposedX = proposedX - difference;
                                 }
 
-                        );
+                                if ((proposedY + HistoricalSelectionGUI.HEIGHT) > desktopBounds.height)
 
+                                {
+                                    int difference = (proposedY +
+                                            HistoricalSelectionGUI.HEIGHT) -
+                                            desktopBounds.height;
+                                    proposedY = proposedY - difference;
+                                }
 
-                        // set up location on screen
-                        int proposedX = (int) selectPublicationLabel.getLocationOnScreen()
-                                .getX();
-                        int proposedY = (int) selectPublicationLabel.getLocationOnScreen()
-                                .getY();
-
-                        // get the desktop bounds e.g. 1440*990, 800x600, etc.
-                        Rectangle desktopBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                                .getMaximumWindowBounds();
-
-                        if ((proposedX + HistoricalSelectionGUI.WIDTH) > desktopBounds.width)
-
-                        {
-                            int difference = (proposedX +
-                                    HistoricalSelectionGUI.WIDTH) -
-                                    desktopBounds.width;
-                            proposedX = proposedX - difference;
-                        }
-
-                        if ((proposedY + HistoricalSelectionGUI.HEIGHT) > desktopBounds.height)
-
-                        {
-                            int difference = (proposedY +
-                                    HistoricalSelectionGUI.HEIGHT) -
-                                    desktopBounds.height;
-                            proposedY = proposedY - difference;
-                        }
-
-                        publicationLocator.setLocation(proposedX, proposedY);
-                        publicationLocator.setVisible(true);
-
+                                publicationLocator.setLocation(proposedX, proposedY);
+                                publicationLocator.setVisible(true);
+                            }
+                        });
                     }
                 }
             });

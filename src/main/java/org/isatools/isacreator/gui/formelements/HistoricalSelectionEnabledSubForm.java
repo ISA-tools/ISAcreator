@@ -43,6 +43,7 @@ import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
+import org.isatools.isacreator.model.StudyContact;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -124,8 +125,8 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                                 .contains(":")) {
                                                             checkForSourcePresence(factor.getFactorType()
                                                                     .substring(0,
-                                                                    factor.getFactorType()
-                                                                            .indexOf(":")));
+                                                                            factor.getFactorType()
+                                                                                    .indexOf(":")));
                                                         }
 
                                                         if (parent.getStudy()
@@ -157,8 +158,8 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                                 .contains(":")) {
                                                             checkForSourcePresence(protocol.getProtocolType()
                                                                     .substring(0,
-                                                                    protocol.getProtocolType()
-                                                                            .indexOf(":")));
+                                                                            protocol.getProtocolType()
+                                                                                    .indexOf(":")));
                                                         }
 
                                                         if (parent.getStudy()
@@ -187,7 +188,7 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                         List<Contact> contacts;
                                                         boolean added;
                                                         if (parent instanceof StudyDataEntry) {
-                                                            added = parent.getStudy().addContact((Contact) c);
+                                                            added = parent.getStudy().addContact((StudyContact) c);
                                                             contacts = parent.getStudy().getContacts();
 
                                                         } else {
@@ -203,8 +204,8 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                                     .contains(":")) {
                                                                 checkForSourcePresence(contact.getRole()
                                                                         .substring(0,
-                                                                        contact.getRole()
-                                                                                .indexOf(":")));
+                                                                                contact.getRole()
+                                                                                        .indexOf(":")));
                                                             }
 
                                                             if (!(contacts.size() < (dtm.getColumnCount() - 1))) {

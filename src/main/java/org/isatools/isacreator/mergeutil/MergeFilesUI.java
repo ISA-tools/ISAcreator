@@ -49,7 +49,7 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.io.importisa.ImportISAFiles;
+import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
@@ -604,20 +604,20 @@ public class MergeFilesUI extends DataEntryWrapper {
         Thread performerThread = new Thread(new Runnable() {
             public void run() {
                 try {
-                    ImportISAFiles importISA1 = new ImportISAFiles(menuPanels.getMain());
+                    ISAtabImporter importISA1 = new ISAtabImporter(menuPanels.getMain());
 
                     if (!importISA1.importFile(ISA1 + File.separator)) {
-                        status.setText(importISA1.getProblemLog());
+//                        status.setText(importISA1.getProblemLog());
                         return;
                     }
 
                     final Investigation inv1 = importISA1.getInvestigation();
 
-                    ImportISAFiles importISA2 = new ImportISAFiles(menuPanels.getMain());
+                    ISAtabImporter importISA2 = new ISAtabImporter(menuPanels.getMain());
                     importISA2.importFile(ISA2 + File.separator);
 
                     if (!importISA2.importFile(ISA2 + File.separator)) {
-                        status.setText(importISA2.getProblemLog());
+//                        status.setText(importISA2.getProblemLog());
                         return;
                     }
 

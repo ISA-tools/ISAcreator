@@ -45,8 +45,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -56,6 +56,8 @@ public class TermSubstitutionGUI extends JPanel {
     private Map<String, String[]> termsToBeReplaced;
     private Map<String, String[]> termsToReplaceWith;
     private Map<String, Set<SingleSubstitutionPanel>> categorySubsitutionPanels;
+
+
     private JLabel status;
     public static final String DO_NOT_REPLACE_TEXT = "Delete";
 
@@ -162,10 +164,7 @@ public class TermSubstitutionGUI extends JPanel {
         final JLabel okButton = new JLabel(new ImageIcon(getClass().getResource("/images/common/ok.png")), JLabel.RIGHT);
         okButton.setOpaque(false);
 
-        okButton.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-
-            }
+        okButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 // check to ensure that all terms have been replaced uniquely.
@@ -191,10 +190,6 @@ public class TermSubstitutionGUI extends JPanel {
                 }
                 status.setText("");
                 firePropertyChange("substitutionComplete", "", getDefinedSubstitutions());
-            }
-
-            public void mouseReleased(MouseEvent event) {
-
             }
 
             public void mouseEntered(MouseEvent event) {

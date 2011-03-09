@@ -52,8 +52,6 @@ import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +103,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     public void setDataEntryEnvironment(DataEntryEnvironment dataEntryEnvironment) {
         this.dataEntryEnvironment = dataEntryEnvironment;
+
     }
 
     /**
@@ -216,7 +215,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public List<StudyDesign> getDesigns() {
         return null;
     }
-
 
 
 }

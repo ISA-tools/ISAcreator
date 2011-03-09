@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.ontologymanager;
 
+import org.isatools.isacreator.model.ISASection;
+
 import java.io.Serializable;
 
 
@@ -47,11 +49,17 @@ import java.io.Serializable;
  * @author Eamonn Maguire
  * @date Jun 12, 2008
  */
-public class OntologySourceRefObject implements Serializable {
-    String sourceDescription;
-    String sourceFile;
-    String sourceName;
-    String sourceVersion;
+public class OntologySourceRefObject extends ISASection implements Serializable {
+
+    public static final String SOURCE_NAME = "Term Source Name";
+    public static final String SOURCE_FILE = "Term Source File";
+    public static final String SOURCE_VERSION = "Term Source Version";
+    public static final String SOURCE_DESCRIPTION = "Term Source Description";
+
+
+    public OntologySourceRefObject() {
+        super();
+    }
 
     /**
      * @param sourceName        - e.g. GO
@@ -61,44 +69,54 @@ public class OntologySourceRefObject implements Serializable {
      */
     public OntologySourceRefObject(String sourceName, String sourceFile,
                                    String sourceVersion, String sourceDescription) {
-        this.sourceName = sourceName;
-        this.sourceFile = sourceFile;
-        this.sourceVersion = sourceVersion;
-        this.sourceDescription = sourceDescription;
+        fieldValues.put(SOURCE_NAME, sourceName);
+        fieldValues.put(SOURCE_FILE, sourceFile);
+        fieldValues.put(SOURCE_VERSION, sourceVersion);
+        fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
     }
 
     public String getSourceDescription() {
-        return sourceDescription;
+        return fieldValues.get(SOURCE_DESCRIPTION);
     }
 
     public String getSourceFile() {
-        return sourceFile;
+        return fieldValues.get(SOURCE_FILE);
     }
 
     public String getSourceName() {
-        return sourceName;
+        return fieldValues.get(SOURCE_NAME);
     }
 
     public String getSourceVersion() {
-        return sourceVersion;
+        return fieldValues.get(SOURCE_VERSION);
     }
 
     public void setSourceDescription(String sourceDescription) {
-        this.sourceDescription = sourceDescription;
+        fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
     }
 
     public void setSourceFile(String sourceFile) {
-        this.sourceFile = sourceFile;
+        fieldValues.put(SOURCE_FILE, sourceFile);
     }
 
     public void setSourceVersion(String sourceVersion) {
-        this.sourceVersion = sourceVersion;
+        fieldValues.put(SOURCE_VERSION, sourceVersion);
     }
 
     public String toString() {
-        return "Source name: " + getSourceName() + "\n" +
-                "Source description: " + getSourceDescription() + "\n" +
-                "Source file: " + getSourceFile() + "\n" + "Source version: " +
-                getSourceVersion();
+
+        StringBuffer stringRepresentation = new StringBuffer();
+
+        int count = 0;
+        for (String key : fieldValues.keySet()) {
+            stringRepresentation.append(key).append(": ").append(fieldValues.get(key));
+            if (count < fieldValues.size() - 1) {
+                stringRepresentation.append("\n");
+            }
+            count++;
+        }
+
+        return stringRepresentation.toString();
+
     }
 }

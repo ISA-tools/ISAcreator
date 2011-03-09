@@ -70,6 +70,11 @@ public class Investigation extends ISASection {
     private Map<String, String> assays;
 
 
+    public Investigation() {
+        super();
+        initialise();
+    }
+
     /**
      * Investigation Object contains one to many Study Objects and is the top most element
      * in the ISA structure.
@@ -95,13 +100,16 @@ public class Investigation extends ISASection {
                          String submissionDate, String publicReleaseDate) {
 
         super();
-
         setInvestigationId(investigationId);
         setInvestigationTitle(investigationTitle.equals("") ? "Investigation" : investigationTitle);
         setInvestigationDescription(investigationDescription);
         setSubmissionDate(submissionDate);
         setPublicReleaseDate(publicReleaseDate);
 
+        initialise();
+    }
+
+    private void initialise() {
         studies = new ListOrderedMap<String, Study>();
         assays = new HashMap<String, String>();
         contacts = new ArrayList<Contact>();
@@ -146,18 +154,23 @@ public class Investigation extends ISASection {
      * @return true if added, false otherwise.
      */
     public boolean addPublication(Publication publication) {
-        if (!checkPublicationExists(publication.getPubmedId())) {
+
+        if (!checkPublicationExists(publication.getPublicationTitle())) {
             publications.add(publication);
             return true;
         }
         return false;
     }
 
-    private boolean checkPublicationExists(String pubmedId) {
-        for (Publication p : publications) {
-            if (p.getPubmedId().equals(pubmedId)) {
-                return true;
+    private boolean checkPublicationExists(String publicationTitle) {
+        if (publicationTitle != null) {
+            for (Publication p : publications) {
+                if (p.getPublicationTitle().equals(publicationTitle)) {
+                    return true;
+                }
             }
+        } else {
+            return true;
         }
         return false;
     }
@@ -198,8 +211,8 @@ public class Investigation extends ISASection {
         }
     }
 
-    public void addToContacts(List<Contact> contactssToAdd) {
-        for (Contact c : contactssToAdd) {
+    public void addToContacts(List<Contact> contactsToAdd) {
+        for (Contact c : contactsToAdd) {
             addContact(c);
         }
     }
@@ -344,10 +357,13 @@ public class Investigation extends ISASection {
     private boolean checkContactExists(String forename, String surname,
                                        String email) {
         for (Contact c : contacts) {
-            if (c.getFirstName().equals(forename) &&
-                    c.getLastName().equals(surname) &&
-                    c.getEmail().equals(email)) {
-                return true;
+
+            if (c.getFirstName() != null && c.getLastName() != null) {
+                if (c.getFirstName().equals(forename) &&
+                        c.getLastName().equals(surname) &&
+                        c.getEmail().equals(email)) {
+                    return true;
+                }
             }
         }
 
