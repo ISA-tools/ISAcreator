@@ -157,6 +157,7 @@ public class Wizard extends DataEntryWrapper {
         setOpaque(false);
         dep = new DataEntryEnvironment(mainMenu.getMain());
         setDataEntryEnvironment(dep);
+        mainMenu.getMain().setCurDataEntryPanel(dep);
 
         finaliseStudy = new FinaliseStudyCreationListener();
         initialPane = createInvestigationDefinitionPanel();
