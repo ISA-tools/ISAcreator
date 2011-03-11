@@ -46,9 +46,6 @@ import java.util.Map;
  * Created by the ISA team
  *
  * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 08/03/2011
- *         Time: 13:19
  */
 public class ISASection {
 
@@ -81,5 +78,4 @@ public class ISASection {
         }
         return value;
     }
-
 }

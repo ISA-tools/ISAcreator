@@ -38,6 +38,7 @@
 package org.isatools.isacreator.model;
 
 import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 
 import java.util.*;
 
@@ -68,6 +69,8 @@ public class Study extends ISASection {
     private Set<String> previousFactors;
 
     private StudyDataEntry studyDataEntryEnvironment;
+
+    private DataEntryReferenceObject referenceObject;
 
     private Map<String, Set<String>> termsToBeReplaced;
     private Map<String, Set<String>> termsToReplaceWith;
@@ -329,6 +332,14 @@ public class Study extends ISASection {
 
     public String getStudyId() {
         return getValue(STUDY_ID);
+    }
+
+    public DataEntryReferenceObject getReferenceObject() {
+        return referenceObject;
+    }
+
+    public void setReferenceObject(DataEntryReferenceObject referenceObject) {
+        this.referenceObject = referenceObject;
     }
 
     public Assay getStudySample() {

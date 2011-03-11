@@ -42,9 +42,9 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.configuration.TableFieldObject;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
@@ -419,7 +419,7 @@ public class AddColumnGUI extends JDialog {
 
                     String colName = typeAsText + "[" + toAdd + "]";
 
-                    TableFieldObject charFo = new TableFieldObject(st.getColumnCount(),
+                    FieldObject charFo = new FieldObject(st.getColumnCount(),
                             colName, typeAsText + " value", DataTypes.STRING,
                             "", false, false, false);
 
@@ -480,7 +480,7 @@ public class AddColumnGUI extends JDialog {
                             boolean useOntology = qualitativeOp.isSelected();
                             DataTypes type = useOntology ? DataTypes.ONTOLOGY_TERM
                                     : DataTypes.STRING;
-                            TableFieldObject charFo = new TableFieldObject(st.getColumnCount(),
+                            FieldObject charFo = new FieldObject(st.getColumnCount(),
                                     colName, typeAsText + " value", type,
                                     "", false, false, false);
                             st.getSpreadsheetFunctions().addFieldToReferenceObject(charFo);
@@ -490,7 +490,7 @@ public class AddColumnGUI extends JDialog {
                             }
 
                             if (quantativeOp.isSelected()) {
-                                TableFieldObject unitFo = new TableFieldObject(st.getColumnCount(),
+                                FieldObject unitFo = new FieldObject(st.getColumnCount(),
                                         "Unit",
                                         "Unit for definition of value",
                                         DataTypes.ONTOLOGY_TERM, "", false, false,

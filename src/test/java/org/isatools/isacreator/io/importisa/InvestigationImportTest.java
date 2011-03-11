@@ -39,7 +39,7 @@ package org.isatools.isacreator.io.importisa;
 
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSections;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.junit.Test;
@@ -68,7 +68,7 @@ public class InvestigationImportTest {
 
         InvestigationImport importer = new InvestigationImport();
         try {
-            Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>> result = importer.importInvestigationFile(testInvestigationFile);
+            Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> result = importer.importInvestigationFile(testInvestigationFile);
 
             assertTrue("Investigation did not validate\n" + printMessages(importer), result.fst);
 

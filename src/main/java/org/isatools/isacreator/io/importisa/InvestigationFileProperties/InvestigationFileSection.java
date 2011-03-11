@@ -41,10 +41,10 @@ package org.isatools.isacreator.io.importisa.InvestigationFileProperties;
  * Created by the ISA team
  *
  * @author Eamonn Maguire (eamonnmag@gmail.com)
- * Date: 07/03/2011
+ *         Date: 07/03/2011
  */
 
-public enum InvestigationFileSections {
+public enum InvestigationFileSection {
 
     ONTOLOGY_SECTION("ONTOLOGY SOURCE REFERENCE"),
     INVESTIGATION_SECTION("INVESTIGATION"),
@@ -60,7 +60,7 @@ public enum InvestigationFileSections {
 
     private String identifier;
 
-    InvestigationFileSections(String identifier) {
+    InvestigationFileSection(String identifier) {
         this.identifier = identifier;
     }
 
@@ -69,9 +69,9 @@ public enum InvestigationFileSections {
         return identifier;
     }
 
-    public static InvestigationFileSections convertToInstance(String value) {
-        for(InvestigationFileSections section : values()) {
-            if(section.toString().equalsIgnoreCase(value)) {
+    public static InvestigationFileSection convertToInstance(String value) {
+        for (InvestigationFileSection section : values()) {
+            if (section.toString().equalsIgnoreCase(value)) {
                 return section;
             }
         }

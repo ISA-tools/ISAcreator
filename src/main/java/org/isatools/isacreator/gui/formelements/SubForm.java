@@ -38,6 +38,8 @@
 package org.isatools.isacreator.gui.formelements;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.apache.commons.collections15.OrderedMap;
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
@@ -387,14 +389,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                         }
                     }
 
-                }
-
-                if (col == 0) {
-                    if (parent instanceof StudyDataEntry) {
-                        val = "Study " + val;
-                    } else if (parent instanceof InvestigationDataEntry) {
-                        val = "Investigation " + val;
-                    }
                 }
 
                 if (scrollTable.getCellEditor(row, 0) instanceof OntologyCellEditor || val.contains("Assay Measurement Type") || val.contains("Assay Technology Type") || ontologyRows.contains(row)) {
@@ -869,6 +863,19 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         for (int i = 0; i < noRows; i++) {
             dtm.setValueAt("", i, colindex);
         }
+    }
+
+    public Map<String, String> getRecord(int recordNumber) {
+        OrderedMap<String, String> record = new ListOrderedMap<String, String>();
+
+        int index = 0;
+        for (SubFormField field : fields) {
+            Object value = dtm.getValueAt(index, recordNumber);
+            record.put(field.getFieldName(), value == null ? "" : value.toString());
+            index++;
+        }
+
+        return record;
     }
 
     private JPanel setupOptionsPanel() {

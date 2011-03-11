@@ -9,7 +9,7 @@ import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.io.exceptions.MalformedInvestigationException;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSections;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -114,7 +114,7 @@ public class ISAtabImporter {
 
             try {
                 InvestigationImport investigationFileImporter = new InvestigationImport();
-                Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
+                Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
 
                 if (investigationFileImport.fst) {
                     log.info("Import of Investigation in " + investigationFile.getPath() + " was successful...");

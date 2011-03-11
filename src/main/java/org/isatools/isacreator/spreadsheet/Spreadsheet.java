@@ -45,7 +45,7 @@ import org.isatools.isacreator.archiveoutput.ArchiveOutputError;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
-import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.AniSheetableJFrame;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
@@ -733,7 +733,7 @@ public class Spreadsheet extends JComponent implements
             public void mousePressed(MouseEvent mouseEvent) {
                 addProtocol.setIcon(addProtocolButton);
                 if (addProtocol.isEnabled()) {
-                    TableFieldObject fo = new TableFieldObject(table.getColumnCount(),
+                    FieldObject fo = new FieldObject(table.getColumnCount(),
                             "Protocol REF", "Protocol used for experiment", DataTypes.LIST, "",
                             false, false, false);
 

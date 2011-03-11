@@ -39,7 +39,7 @@ package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
-import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
@@ -934,7 +934,7 @@ public class SpreadsheetFunctions {
      *
      * @param fo - Field object to add.
      */
-    public void addFieldToReferenceObject(TableFieldObject fo) {
+    public void addFieldToReferenceObject(FieldObject fo) {
         spreadsheet.getTableReferenceObject().addField(fo);
     }
 

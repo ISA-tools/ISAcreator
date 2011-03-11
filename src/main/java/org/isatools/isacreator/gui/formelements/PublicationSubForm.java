@@ -54,6 +54,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * PublicationSubForm
@@ -85,16 +86,15 @@ public class PublicationSubForm extends SubForm {
 
     public void reformItems() {
         List<Publication> publications = parent.getPublications();
-        for (int i = 1; i < publications.size() + 1; i++) {
-            String[] publicationInfo = {
-                    publications.get(i - 1).getPubmedId(),
-                    publications.get(i - 1).getPublicationDOI(),
-                    publications.get(i - 1).getPublicationAuthorList(),
-                    publications.get(i - 1).getPublicationTitle(),
-                    publications.get(i - 1).getPublicationStatus()};
+        for (int record = 1; record < publications.size() + 1; record++) {
 
-            for (int j = 0; j < publicationInfo.length; j++) {
-                dtm.setValueAt(publicationInfo[j], j, i);
+            Map<String, String> fieldList = publications.get(record - 1).getFieldValues();
+
+            int publicationFieldIndex = 0;
+            for (SubFormField field : fields) {
+                String value = fieldList.get(field.getFieldName());
+                dtm.setValueAt(value, publicationFieldIndex, record);
+                publicationFieldIndex++;
             }
         }
     }
@@ -103,17 +103,16 @@ public class PublicationSubForm extends SubForm {
         // provide a publication id or a publication title depending on which is available
         if (parent != null) {
 
-            String pubMedId = (scrollTable.getModel().getValueAt(0, itemToRemove) != null)
-                    ? scrollTable.getModel().getValueAt(0, itemToRemove).toString()
-                    : "";
-            String publicationTitle = (scrollTable.getModel().getValueAt(3, itemToRemove) != null)
-                    ? scrollTable.getModel().getValueAt(3, itemToRemove).toString()
-                    : "";
+            Map<String, String> record = getRecord(itemToRemove);
 
             if (parent instanceof StudyDataEntry) {
-                parent.getStudy().removePublication(pubMedId, publicationTitle);
+                Publication tmpPublication = new StudyPublication();
+                tmpPublication.addToFields(record);
+                parent.getStudy().removePublication(tmpPublication.getPubmedId(), tmpPublication.getPublicationTitle());
             } else {
-                parent.getInvestigation().removePublication(pubMedId, publicationTitle);
+                Publication tmpPublication = new InvestigationPublication();
+                tmpPublication.addToFields(record);
+                parent.getInvestigation().removePublication(tmpPublication.getPubmedId(), tmpPublication.getPublicationTitle());
             }
         }
         removeColumn(itemToRemove);
@@ -121,29 +120,30 @@ public class PublicationSubForm extends SubForm {
 
     public void updateItems() {
         int cols = dtm.getColumnCount();
-        int rows = dtm.getRowCount();
+
         final List<Publication> newPublications = new ArrayList<Publication>();
 
-        for (int i = 1; i < cols; i++) {
-            String[] publicationVars = new String[5];
+        for (int recordNumber = 1; recordNumber < cols; recordNumber++) {
 
-            for (int j = 0; j < rows; j++) {
-                if (dtm.getValueAt(j, i) != null) {
-                    publicationVars[j] = dtm.getValueAt(j, i).toString();
-                } else {
-                    publicationVars[j] = "";
-                }
-            }
+            Map<String, String> record = getRecord(recordNumber);
 
-            if (!publicationVars[0].equals("") || !publicationVars[1].equals("") || !publicationVars[2].equals("")
-                    || !publicationVars[3].equals("") || !publicationVars[4].equals("")) {
-                if (parent instanceof StudyDataEntry) {
-                    newPublications.add(new StudyPublication(publicationVars[0], publicationVars[1],
-                            publicationVars[2], publicationVars[3], publicationVars[4]));
-                } else {
-                    newPublications.add(new InvestigationPublication(publicationVars[0], publicationVars[1],
-                            publicationVars[2], publicationVars[3], publicationVars[4]));
-                }
+            // todo for each record, create a Map of key to values for each record.
+
+            if (parent instanceof StudyDataEntry) {
+                Publication publication = new StudyPublication();
+                publication.addToFields(record);
+
+                if (!publication.getPubmedId().equals("") || !publication.getPublicationDOI().equals("") ||
+                        !publication.getPublicationTitle().equals("") || !publication.getPublicationAuthorList().equals(""))
+                    newPublications.add(publication);
+            } else {
+
+                Publication publication = new InvestigationPublication();
+                publication.addToFields(record);
+
+                if (!publication.getPubmedId().equals("") || !publication.getPublicationDOI().equals("") ||
+                        !publication.getPublicationTitle().equals("") || !publication.getPublicationAuthorList().equals(""))
+                    newPublications.add(publication);
 
             }
         }

@@ -39,7 +39,6 @@ package org.isatools.isacreator.configuration.io;
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.isatools.isaconfigurator.schema.*;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.configuration.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
@@ -142,7 +141,7 @@ public class ConfigXMLParser {
                 technologyInfo.getTermLabel(), technologyInfo.getSourceAbbreviation(), technologyInfo.getTermAccession(),
                 isaConf.getTableName());
 
-        List<TableFieldObject> fields = new ArrayList<TableFieldObject>();
+        List<FieldObject> fields = new ArrayList<FieldObject>();
         Map<Integer, String[]> tableStructure = new HashMap<Integer, String[]>();
 
         int colNo = 0;
@@ -152,7 +151,7 @@ public class ConfigXMLParser {
             // check what the obj is an instance of, and handle it accordingly!
             if (obj instanceof FieldType) {
                 FieldType stdField = (FieldType) obj;
-                TableFieldObject newField = new TableFieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(),
+                FieldObject newField = new FieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(),
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField());
 
@@ -196,7 +195,7 @@ public class ConfigXMLParser {
                 colNo++;
             } else if (obj instanceof ProtocolFieldType) {
                 ProtocolFieldType protocolField = (ProtocolFieldType) obj;
-                TableFieldObject newField = new TableFieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(),
+                FieldObject newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(),
                         protocolField.getIsRequired(), false, false);
                 newField.setWizardTemplate(newField.getWizardTemplate());
 
@@ -207,7 +206,7 @@ public class ConfigXMLParser {
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
-                TableFieldObject newField = new TableFieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "",
+                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "",
                         unitField.getIsRequired(), false, false);
 
                 if (unitField.getRecommendedOntologies() != null) {
@@ -234,19 +233,19 @@ public class ConfigXMLParser {
         tables.add(new TableReferenceObject(tc));
     }
 
-    private void processRecommendedOntologies(FieldType processing, TableFieldObject tfo) {
+    private void processRecommendedOntologies(FieldType processing, FieldObject tfo) {
         for (OntologyType ot : processing.getRecommendedOntologies().getOntologyArray()) {
             processOntologyType(ot, tfo);
         }
     }
 
-    private void processRecommendedOntologies(UnitFieldType processing, TableFieldObject tfo) {
+    private void processRecommendedOntologies(UnitFieldType processing, FieldObject tfo) {
         for (OntologyType ot : processing.getRecommendedOntologies().getOntologyArray()) {
             processOntologyType(ot, tfo);
         }
     }
 
-    private void processOntologyType(OntologyType ot, TableFieldObject tfo) {
+    private void processOntologyType(OntologyType ot, FieldObject tfo) {
         RecommendedOntology ro = new RecommendedOntology(new Ontology(ot.getId(), ot.getVersion(),
                 ot.getAbbreviation(), ot.getName()), null);
         // add branch!

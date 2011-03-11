@@ -37,8 +37,11 @@
 
 package org.isatools.isacreator.io.importisa;
 
+import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSections;
+import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
@@ -62,7 +65,7 @@ public class StructureToInvestigationMapper {
     }
 
     public Investigation createInvestigationFromDataStructure(
-            OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>> investigationStructure) {
+            OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> investigationStructure) {
 
         Investigation investigation = null;
 
@@ -92,21 +95,28 @@ public class StructureToInvestigationMapper {
         return investigation;
     }
 
-    private Investigation processInvestigation(OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>> investigationSections) {
+    private Investigation processInvestigation(OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>> investigationSections) {
         List<OntologySourceRefObject> ontologySources = new ArrayList<OntologySourceRefObject>();
         List<Contact> contacts = new ArrayList<Contact>();
         List<Publication> publications = new ArrayList<Publication>();
 
         Investigation investigation = null;
 
-        for (InvestigationFileSections investigationSection : investigationSections.keySet()) {
-            if (investigationSection == InvestigationFileSections.INVESTIGATION_SECTION) {
+        OrderedMap<InvestigationFileSection, Set<String>> sectionFields = new ListOrderedMap<InvestigationFileSection, Set<String>>();
+
+        for (InvestigationFileSection investigationSection : investigationSections.keySet()) {
+            if (investigationSection == InvestigationFileSection.INVESTIGATION_SECTION) {
                 investigation = processInvestigationSection(investigationSections.get(investigationSection));
-            } else if (investigationSection == InvestigationFileSections.ONTOLOGY_SECTION) {
+            } else if (investigationSection == InvestigationFileSection.ONTOLOGY_SECTION) {
                 ontologySources = processOntologySourceReferences(investigationSections.get(investigationSection));
-            } else if (investigationSection == InvestigationFileSections.INVESTIGATION_PUBLICATIONS_SECTION) {
-                publications = processPublication(investigationSection, investigationSections.get(investigationSection));
-            } else if (investigationSection == InvestigationFileSections.INVESTIGATION_CONTACTS_SECTION) {
+            } else if (investigationSection == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
+
+                Pair<Set<String>, List<Publication>> processedPublicationSection = processPublication(investigationSection,
+                        investigationSections.get(investigationSection));
+                sectionFields.put(investigationSection, processedPublicationSection.fst);
+                publications = processedPublicationSection.snd;
+
+            } else if (investigationSection == InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION) {
                 contacts = processContacts(investigationSection, investigationSections.get(investigationSection));
             }
         }
@@ -115,6 +125,8 @@ public class StructureToInvestigationMapper {
             investigation.setOntologiesUsed(ontologySources);
             investigation.addToPublications(publications);
             investigation.addToContacts(contacts);
+
+            investigation.setReferenceObject(new DataEntryReferenceObject(sectionFields));
         }
 
         return investigation;
@@ -128,7 +140,7 @@ public class StructureToInvestigationMapper {
         return investigation;
     }
 
-    private Study processStudy(OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>> studySections) {
+    private Study processStudy(OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>> studySections) {
         Study study = null;
 
         List<Protocol> protocols = new ArrayList<Protocol>();
@@ -139,20 +151,29 @@ public class StructureToInvestigationMapper {
         List<StudyDesign> studyDesigns = new ArrayList<StudyDesign>();
 
 
-        for (InvestigationFileSections studySection : studySections.keySet()) {
-            if (studySection == InvestigationFileSections.STUDY_SECTION) {
+        // todo: here we should create a DataEntryReferenceObject for each Study. Somehow, this should be passed back to the
+        // todo calling method so that the DataEntry interface for the Study or Investigation can use it to build the interface.
+
+        OrderedMap<InvestigationFileSection, Set<String>> sectionFields = new ListOrderedMap<InvestigationFileSection, Set<String>>();
+
+        for (InvestigationFileSection studySection : studySections.keySet()) {
+            if (studySection == InvestigationFileSection.STUDY_SECTION) {
                 study = processStudySection(studySections.get(studySection));
-            } else if (studySection == InvestigationFileSections.STUDY_FACTORS) {
+            } else if (studySection == InvestigationFileSection.STUDY_FACTORS) {
                 factors = processFactors(studySections.get(studySection));
-            } else if (studySection == InvestigationFileSections.STUDY_DESIGN_SECTION) {
+            } else if (studySection == InvestigationFileSection.STUDY_DESIGN_SECTION) {
                 studyDesigns = processStudyDesigns(studySections.get(studySection));
-            } else if (studySection == InvestigationFileSections.STUDY_ASSAYS) {
+            } else if (studySection == InvestigationFileSection.STUDY_ASSAYS) {
                 assays = processAssay(studySections.get(studySection));
-            } else if (studySection == InvestigationFileSections.STUDY_PUBLICATIONS) {
-                publications = processPublication(studySection, studySections.get(studySection));
-            } else if (studySection == InvestigationFileSections.STUDY_PROTOCOLS) {
+            } else if (studySection == InvestigationFileSection.STUDY_PUBLICATIONS) {
+
+                Pair<Set<String>, List<Publication>> processedPublicationSection = processPublication(studySection, studySections.get(studySection));
+                sectionFields.put(studySection, processedPublicationSection.fst);
+                publications = processedPublicationSection.snd;
+
+            } else if (studySection == InvestigationFileSection.STUDY_PROTOCOLS) {
                 protocols = processProtocol(studySections.get(studySection));
-            } else if (studySection == InvestigationFileSections.STUDY_CONTACTS) {
+            } else if (studySection == InvestigationFileSection.STUDY_CONTACTS) {
                 contacts = processContacts(studySection, studySections.get(studySection));
             }
 
@@ -165,6 +186,8 @@ public class StructureToInvestigationMapper {
             study.setStudyDesigns(studyDesigns);
             study.setFactors(factors);
             study.setPublications(publications);
+
+            study.setReferenceObject(new DataEntryReferenceObject(sectionFields));
         }
 
         return study;
@@ -195,14 +218,17 @@ public class StructureToInvestigationMapper {
         return ontologySources;
     }
 
-    private List<Publication> processPublication(InvestigationFileSections section, OrderedMap<String, List<String>> publicationSection) {
+    private Pair<Set<String>, List<Publication>> processPublication(InvestigationFileSection section, OrderedMap<String, List<String>> publicationSection) {
         List<Publication> publications = new ArrayList<Publication>();
 
         int recordCount = getLoopCount(publicationSection);
 
+        Set<String> sectionFields = getFieldList(publicationSection);
+
+
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Publication p;
-            if (section == InvestigationFileSections.INVESTIGATION_PUBLICATIONS_SECTION) {
+            if (section == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
                 p = new InvestigationPublication();
             } else {
                 p = new StudyPublication();
@@ -216,13 +242,14 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return publications;
+        return new Pair<Set<String>, List<Publication>>(sectionFields, publications);
     }
 
     private List<StudyDesign> processStudyDesigns(OrderedMap<String, List<String>> studyDesignSection) {
         List<StudyDesign> studyDesigns = new ArrayList<StudyDesign>();
 
         int recordCount = getLoopCount(studyDesignSection);
+
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             StudyDesign design = new StudyDesign();
@@ -237,14 +264,14 @@ public class StructureToInvestigationMapper {
         return studyDesigns;
     }
 
-    private List<Contact> processContacts(InvestigationFileSections section, OrderedMap<String, List<String>> contactSection) {
+    private List<Contact> processContacts(InvestigationFileSection section, OrderedMap<String, List<String>> contactSection) {
         List<Contact> contacts = new ArrayList<Contact>();
 
         int recordCount = getLoopCount(contactSection);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Contact c;
-            if (section == InvestigationFileSections.INVESTIGATION_CONTACTS_SECTION) {
+            if (section == InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION) {
                 c = new InvestigationContact();
             } else {
                 c = new StudyContact();
@@ -334,6 +361,10 @@ public class StructureToInvestigationMapper {
         }
 
         return fields;
+    }
+
+    private Set<String> getFieldList(Map<String, List<String>> records) {
+        return records.keySet();
     }
 
     private boolean isNullRecord(Map<String, String> record) {

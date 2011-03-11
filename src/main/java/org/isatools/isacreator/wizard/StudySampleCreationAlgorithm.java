@@ -40,7 +40,7 @@ package org.isatools.isacreator.wizard;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.DataTypes;
-import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
@@ -113,7 +113,7 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
 
         headers = new ArrayList<String>();
 
-        TableFieldObject newFo;
+        FieldObject newFo;
 
         int count = tableStructure.size() + 1;
         rowFormat = "";
@@ -132,7 +132,7 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
             if (fieldName.toLowerCase().equals("characteristics")) {
 
                 headers.add("Characteristics[Organism]");
-                newFo = new TableFieldObject(count, "Characteristics[Organism]",
+                newFo = new FieldObject(count, "Characteristics[Organism]",
                         "The organism being studied", DataTypes.ONTOLOGY_TERM, "",
                         false, false, false);
                 // todo set recommended ontology for organism...
@@ -142,7 +142,7 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
                 rowFormat += (organism + "\t");
 
                 headers.add("Characteristics[Organism Part]");
-                newFo = new TableFieldObject(count, "Characteristics[Organism Part]", "Part of the organism being studied", DataTypes.ONTOLOGY_TERM, "",
+                newFo = new FieldObject(count, "Characteristics[Organism Part]", "Part of the organism being studied", DataTypes.ONTOLOGY_TERM, "",
                         false, false, false);
                 buildingModel.addField(newFo);
                 count++;
@@ -174,20 +174,20 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
 
                     if (unitAdded) {
                         // add factor column field first
-                        newFo = new TableFieldObject(count,
+                        newFo = new FieldObject(count,
                                 "Factor Value[" + tf.getFactorName().trim() +
                                         "]", "Factor", DataTypes.STRING, "", false,
                                 false, false);
                         buildingModel.addField(newFo);
                         count++;
 
-                        newFo = new TableFieldObject(count, "Unit",
+                        newFo = new FieldObject(count, "Unit",
                                 "Unit to give meaning to it's associated value",
                                 DataTypes.ONTOLOGY_TERM, "", false, false, false);
                         buildingModel.addField(newFo);
                         count++;
                     } else {
-                        newFo = new TableFieldObject(count,
+                        newFo = new FieldObject(count,
                                 "Factor Value[" + tf.getFactorName().trim() +
                                         "]", "Factor", DataTypes.ONTOLOGY_TERM, "",
                                 false, false, false);

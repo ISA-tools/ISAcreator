@@ -39,6 +39,7 @@ package org.isatools.isacreator.model;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 
 import java.io.File;
@@ -61,13 +62,14 @@ public class Investigation extends ISASection {
     public static final String INVESTIGATION_SUBMISSION_DATE_KEY = "Investigation Submission Date";
     public static final String INVESTIGATION_PUBLIC_RELEASE_KEY = "Investigation Public Release Date";
 
-    private String reference;
     private InvestigationDataEntry userInterface;
     private List<OntologySourceRefObject> ontologiesUsed;
     private List<Publication> publications;
     private List<Contact> contacts;
     private Map<String, Study> studies;
     private Map<String, String> assays;
+    private DataEntryReferenceObject referenceObject;
+    private String reference;
 
 
     public Investigation() {
@@ -239,6 +241,14 @@ public class Investigation extends ISASection {
 
     public String getReference() {
         return reference;
+    }
+
+    public DataEntryReferenceObject getReferenceObject() {
+        return referenceObject;
+    }
+
+    public void setReferenceObject(DataEntryReferenceObject referenceObject) {
+        this.referenceObject = referenceObject;
     }
 
     public Map<String, String> getAssays() {

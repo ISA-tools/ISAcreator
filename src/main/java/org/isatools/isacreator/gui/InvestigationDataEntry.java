@@ -42,6 +42,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
@@ -54,6 +55,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * InvestigationDataEntry
@@ -246,6 +248,10 @@ public class InvestigationDataEntry extends DataEntryForm {
     private JPanel createInvestigationContactsSubForm() {
         List<SubFormField> contactFields = new ArrayList<SubFormField>();
 
+        //todo this will have to also take into consideration a config.xml which describes the investigation.
+        // todo the desired fields will be the union of both sets of fields.
+
+
         contactFields.add(new SubFormField("Person Last Name",
                 SubFormField.STRING));
         contactFields.add(new SubFormField("Person First Name",
@@ -276,21 +282,38 @@ public class InvestigationDataEntry extends DataEntryForm {
     private JPanel createInvestigationPublicationSubForm() {
         List<SubFormField> publicationFields = new ArrayList<SubFormField>();
 
-        publicationFields.add(new SubFormField("PubMed ID", SubFormField.STRING));
-        publicationFields.add(new SubFormField("Publication DOI",
-                SubFormField.STRING));
-        publicationFields.add(new SubFormField("Publication Author list",
-                SubFormField.LONG_STRING));
-        publicationFields.add(new SubFormField("Publication Title",
-                SubFormField.LONG_STRING));
-        publicationFields.add(new SubFormField("Publication Status",
-                SubFormField.SINGLE_ONTOLOGY_SELECT));
+        Set<String> ontologyFields = inv.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION);
+        Set<String> fieldsToIgnore = inv.getReferenceObject().getFieldsToIgnore();
+        for (String publicationField : inv.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
 
-        int numColsToAdd = (inv.getPublications().size() == 0) ? 4
+            if (!fieldsToIgnore.contains(publicationField)) {
+                if (ontologyFields.contains(publicationField)) {
+                    publicationFields.add(new SubFormField(publicationField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    publicationFields.add(new SubFormField(publicationField, SubFormField.STRING));
+                }
+            }
+
+        }
+
+
+//        publicationFields.add(new SubFormField("PubMed ID", SubFormField.STRING));
+//        publicationFields.add(new SubFormField("Publication DOI",
+//                SubFormField.STRING));
+//        publicationFields.add(new SubFormField("Publication Author list",
+//                SubFormField.LONG_STRING));
+//        publicationFields.add(new SubFormField("Publication Title",
+//                SubFormField.LONG_STRING));
+//        publicationFields.add(new SubFormField("Publication Status",
+//                SubFormField.SINGLE_ONTOLOGY_SELECT));
+
+        int numColsToAdd = (inv.getPublications().size() == 0) ? 1
                 : inv.getPublications()
                 .size();
 
-        publicationsSubForm = new PublicationSubForm("investigation publications",
+
+        // todo should calculate the height of the subform based on the number of fields.
+        publicationsSubForm = new PublicationSubForm(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(),
                 FieldTypes.PUBLICATION, publicationFields, numColsToAdd, 300, 125, this);
         publicationsSubForm.createGUI();
 

@@ -56,16 +56,16 @@ public class InvestigationStructureLoader {
 
     private static final String INVESTIGATION_STRUCTURE_FILE = "/defaultConfigs/investigationStructure.xml";
 
-    private Map<InvestigationFileSections, InvestigationSection> investigationSections;
+    private Map<InvestigationFileSection, InvestigationSection> investigationSections;
 
-    public Map<InvestigationFileSections, InvestigationSection> loadInvestigationStructure() {
+    public Map<InvestigationFileSection, InvestigationSection> loadInvestigationStructure() {
         XPathReader reader = new XPathReader(getClass().getResourceAsStream(INVESTIGATION_STRUCTURE_FILE));
 
         NodeList sections = (NodeList) reader.read("/investigationFileStructure/section", XPathConstants.NODESET);
 
         if (sections.getLength() > 0) {
 
-            investigationSections = new HashMap<InvestigationFileSections, InvestigationSection>();
+            investigationSections = new HashMap<InvestigationFileSection, InvestigationSection>();
 
             for (int sectionIndex = 0; sectionIndex <= sections.getLength(); sectionIndex++) {
                 String tmpName = (String) reader.read("/investigationFileStructure/section[" + sectionIndex + "]/name", XPathConstants.STRING);
@@ -73,7 +73,7 @@ public class InvestigationStructureLoader {
                 // we don't want any empty sections getting through
                 if (!tmpName.trim().equals("")) {
 
-                    InvestigationFileSections name = InvestigationFileSections.convertToInstance(tmpName);
+                    InvestigationFileSection name = InvestigationFileSection.convertToInstance(tmpName);
 
                     InvestigationSection currentSection = new InvestigationSection(name);
 
@@ -93,28 +93,28 @@ public class InvestigationStructureLoader {
             return investigationSections;
         }
 
-        return new HashMap<InvestigationFileSections, InvestigationSection>();
+        return new HashMap<InvestigationFileSection, InvestigationSection>();
     }
 
     /**
      * Given "Investigation" or "Study" will return all of the elements required for each part.
      *
      * @param type - "Investigation" or "Study"
-     * @return @see Set<InvestigationFileSections>
+     * @return @see Set<InvestigationFileSection>
      */
-    public Set<InvestigationFileSections> getRequiredSections(String type) {
-        Set<InvestigationFileSections> result = new HashSet<InvestigationFileSections>();
+    public Set<InvestigationFileSection> getRequiredSections(String type) {
+        Set<InvestigationFileSection> result = new HashSet<InvestigationFileSection>();
 
         type = type.toUpperCase();
 
-        for (InvestigationFileSections section : investigationSections.keySet()) {
+        for (InvestigationFileSection section : investigationSections.keySet()) {
             if (section.toString().contains(type)) {
                 result.add(section);
             }
         }
 
         if (type.equalsIgnoreCase("INVESTIGATION")) {
-            result.add(InvestigationFileSections.ONTOLOGY_SECTION);
+            result.add(InvestigationFileSection.ONTOLOGY_SECTION);
         }
 
         return result;

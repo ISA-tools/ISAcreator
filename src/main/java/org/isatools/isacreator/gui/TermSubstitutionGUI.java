@@ -39,9 +39,9 @@ package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -71,8 +71,9 @@ public class TermSubstitutionGUI extends JPanel {
     public void createGUI() {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(400, 300));
-        setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6));
+        setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 3));
         instantiatePanel();
+
     }
 
 

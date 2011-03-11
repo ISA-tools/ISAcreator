@@ -38,7 +38,7 @@ package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
-import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.configuration.FieldObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -133,7 +133,7 @@ public class SpreadsheetPopupMenus {
             public void actionPerformed(ActionEvent event) {
                 popup.setVisible(false);
 
-                TableFieldObject fo = new TableFieldObject(spreadsheet.getTable().getColumnCount(),
+                FieldObject fo = new FieldObject(spreadsheet.getTable().getColumnCount(),
                         "Sample Name", "The name of the sample being used",
                         DataTypes.STRING, "", false, false, false);
 
@@ -149,7 +149,7 @@ public class SpreadsheetPopupMenus {
                 popup.setVisible(false);
 
 
-                TableFieldObject fo = new TableFieldObject(spreadsheet.getTable().getColumnCount(),
+                FieldObject fo = new FieldObject(spreadsheet.getTable().getColumnCount(),
                         "Material Type", "The type of material used for analysis in this assay",
                         DataTypes.ONTOLOGY_TERM, "", false, false, false);
 
@@ -181,7 +181,7 @@ public class SpreadsheetPopupMenus {
             public void actionPerformed(ActionEvent e) {
                 popup.setVisible(false);
 
-                TableFieldObject fo = new TableFieldObject(spreadsheet.getTable().getColumnCount(),
+                FieldObject fo = new FieldObject(spreadsheet.getTable().getColumnCount(),
                         "Protocol REF", "Protocol used for experiment",
                         DataTypes.LIST, "", false, false, false);
 
@@ -215,7 +215,7 @@ public class SpreadsheetPopupMenus {
             public void actionPerformed(ActionEvent e) {
                 popup.setVisible(false);
 
-                TableFieldObject fo = new TableFieldObject(spreadsheet.getTable().getColumnCount(),
+                FieldObject fo = new FieldObject(spreadsheet.getTable().getColumnCount(),
                         "Date", "Date field", DataTypes.DATE, "", false,
                         false, false);
 
@@ -230,7 +230,7 @@ public class SpreadsheetPopupMenus {
             public void actionPerformed(ActionEvent e) {
                 popup.setVisible(false);
 
-                TableFieldObject fo = new TableFieldObject(spreadsheet.getTable().getColumnCount(),
+                FieldObject fo = new FieldObject(spreadsheet.getTable().getColumnCount(),
                         "Performer",
                         "Performer of this hybridisation/sample preparation",
                         DataTypes.STRING, "", false, false, false);

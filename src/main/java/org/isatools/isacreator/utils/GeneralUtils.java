@@ -38,7 +38,7 @@
 package org.isatools.isacreator.utils;
 
 import org.apache.log4j.Logger;
-import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 
 import java.io.*;
@@ -109,13 +109,13 @@ public class GeneralUtils {
         return false;
     }
 
-    public static Map<String, TableFieldObject> findMissingFields(String[] headers, TableReferenceObject stdTableDefinition) {
+    public static Map<String, FieldObject> findMissingFields(String[] headers, TableReferenceObject stdTableDefinition) {
 
         Set<String> headerSet = new HashSet<String>();
 
         headerSet.addAll(Arrays.asList(headers));
 
-        Map<String, TableFieldObject> missingHeaders = new HashMap<String, TableFieldObject>();
+        Map<String, FieldObject> missingHeaders = new HashMap<String, FieldObject>();
 
         for (String field : stdTableDefinition.getHeaders().toArray(new String[stdTableDefinition.getHeaders().size()])) {
             if (!headerSet.contains(field) && !field.equals(TableReferenceObject.ROW_NO_TEXT)) {

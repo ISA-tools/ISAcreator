@@ -45,7 +45,7 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.configuration.DataTypes;
-import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.ui.*;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
@@ -225,7 +225,7 @@ public class MappingLogic {
 
         List<String> filteredSubstitutions = new ArrayList<String>();
 
-        TableFieldObject fo;
+        FieldObject fo;
 
         int count = 0;
         for (int fieldNumber = 0; fieldNumber < isatab.size(); fieldNumber++) {
@@ -240,7 +240,7 @@ public class MappingLogic {
                 count++;
             } else {
                 if (field.getFieldName().equals("Protocol REF")) {
-                    fo = new TableFieldObject(count, field.getFieldName(), "A protocol used", DataTypes.LIST, "", false, false, false);
+                    fo = new FieldObject(count, field.getFieldName(), "A protocol used", DataTypes.LIST, "", false, false, false);
                     final_tro.addField(fo);
                     headers.add(field.getFieldName());
                     filteredSubstitutions.add(substitutions.get(fieldNumber));
@@ -248,19 +248,19 @@ public class MappingLogic {
                 } else if (field.getFieldName().contains("Characteristics") || field.getFieldName().contains("Factor Value") ||
                         field.getFieldName().contains("Parameter") || field.getFieldName().contains("Unit")) {
                     DataTypes fieldDataType = fieldsUsingUnits.contains(field.getFieldName()) ? DataTypes.STRING : DataTypes.ONTOLOGY_TERM;
-                    fo = new TableFieldObject(count, field.getFieldName(), field.getFieldName(), fieldDataType, "", false, false, false);
+                    fo = new FieldObject(count, field.getFieldName(), field.getFieldName(), fieldDataType, "", false, false, false);
                     final_tro.addField(fo);
                     headers.add(field.getFieldName());
                     filteredSubstitutions.add(substitutions.get(fieldNumber));
                     count++;
                 } else if (field.getFieldName().contains("Date")) {
-                    fo = new TableFieldObject(count, field.getFieldName(), field.getFieldName(), DataTypes.DATE, "", false, false, false);
+                    fo = new FieldObject(count, field.getFieldName(), field.getFieldName(), DataTypes.DATE, "", false, false, false);
                     final_tro.addField(fo);
                     headers.add(field.getFieldName());
                     filteredSubstitutions.add(substitutions.get(fieldNumber));
                     count++;
                 } else if (field.getFieldName().contains("Comment") || field.getFieldName().contains("Performer")) {
-                    fo = new TableFieldObject(count, field.getFieldName(), field.getFieldName(), DataTypes.STRING, "", false, false, false);
+                    fo = new FieldObject(count, field.getFieldName(), field.getFieldName(), DataTypes.STRING, "", false, false, false);
                     final_tro.addField(fo);
                     headers.add(field.getFieldName());
                     filteredSubstitutions.add(substitutions.get(fieldNumber));

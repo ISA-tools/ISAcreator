@@ -44,6 +44,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -82,8 +83,8 @@ public class StudyDataEntry extends DataEntryForm {
     /**
      * StudyDataEntry constructor
      *
-     * @param dataEntryEnvironment   - DataEntryEnvironment
-     * @param study - Associated Study Object.
+     * @param dataEntryEnvironment - DataEntryEnvironment
+     * @param study                - Associated Study Object.
      */
     public StudyDataEntry(DataEntryEnvironment dataEntryEnvironment, Study study) {
         super(dataEntryEnvironment);
@@ -246,7 +247,6 @@ public class StudyDataEntry extends DataEntryForm {
     }
 
 
-
     /**
      * Create the majority of fields for data entry in the study definition form
      *
@@ -402,7 +402,7 @@ public class StudyDataEntry extends DataEntryForm {
                 SubFormField.STRING));
         protocolFields.add(new SubFormField("Protocol Components Type", SubFormField.MULTIPLE_ONTOLOGY_SELECT));
 
-        int numColsToAdd = (study.getProtocols().size() == 0) ? 4
+        int numColsToAdd = (study.getProtocols().size() == 0) ? 1
                 : study.getProtocols()
                 .size();
 
@@ -422,18 +422,25 @@ public class StudyDataEntry extends DataEntryForm {
         List<SubFormField> publicationFields = new ArrayList<SubFormField>();
 
 
-        publicationFields.add(new SubFormField("PubMed ID", SubFormField.STRING));
-        publicationFields.add(new SubFormField("Publication DOI", SubFormField.STRING));
-        publicationFields.add(new SubFormField("Publication Author list", SubFormField.LONG_STRING));
-        publicationFields.add(new SubFormField("Publication Title", SubFormField.LONG_STRING));
-        publicationFields.add(new SubFormField("Publication Status", SubFormField.SINGLE_ONTOLOGY_SELECT));
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_PUBLICATIONS);
+        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
+        for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PUBLICATIONS)) {
 
+            if (!fieldsToIgnore.contains(publicationField)) {
+                if (ontologyFields.contains(publicationField)) {
+                    publicationFields.add(new SubFormField(publicationField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    publicationFields.add(new SubFormField(publicationField, SubFormField.STRING));
+                }
+            }
 
-        int numColsToAdd = (study.getPublications().size() == 0) ? 4
+        }
+
+        int numColsToAdd = (study.getPublications().size() == 0) ? 1
                 : study.getPublications()
                 .size();
 
-        studyPublicationsSubForm = new PublicationSubForm("study publications", FieldTypes.PUBLICATION,
+        studyPublicationsSubForm = new PublicationSubForm(InvestigationFileSection.STUDY_PUBLICATIONS.toString(), FieldTypes.PUBLICATION,
                 publicationFields, numColsToAdd, 300, 120, this);
         studyPublicationsSubForm.createGUI();
 
@@ -456,24 +463,6 @@ public class StudyDataEntry extends DataEntryForm {
         studyDesignSubform.createGUI();
         return studyDesignSubform;
     }
-
-//	/**
-//	 * Create the comments subform    a
-//	 *
-//	 * @return JPanel containing the Publication definition subform
-//	 */
-//	private JPanel createStudyCommentsSubForm() {
-//		List<SubFormField> studyCommentsFields = new ArrayList<SubFormField>();
-//		studyCommentsFields.add(new SubFormField("Comment Type", SubFormField.STRING));
-//		studyCommentsFields.add(new SubFormField("Comment", SubFormField.STRING, "OBI"));
-//
-//		int numColsToAdd = 0;
-//
-//		studyCommentsSubForm = new CommentSubForm("study comments", FieldTypes.COMMENT,
-//				studyCommentsFields, numColsToAdd, 300, 60, this);
-//		studyCommentsSubForm.createGUI();
-//		return studyCommentsSubForm;
-//	}
 
     public synchronized Map<String, Assay> getAssays() {
         return study.getAssays();
@@ -621,7 +610,6 @@ public class StudyDataEntry extends DataEntryForm {
             tmpAssay.getSpreadsheetUI().getTable().getTable().setCellEditor(null);
             tmpAssay.getSpreadsheetUI().setTable(null);
             tmpAssay.setSpreadsheet(null);
-            System.out.println("Cleaning up assay " + a);
         }
 
 

@@ -39,7 +39,7 @@ package org.isatools.isacreator.wizard;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
-import org.isatools.isacreator.configuration.TableFieldObject;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 
@@ -107,7 +107,7 @@ public abstract class CreationAlgorithm extends JPanel {
         headers.add(newFactor);
         colsToUse.add(nextIndex);
 
-        TableFieldObject newFo;
+        FieldObject newFo;
         boolean unitAdded = false;
 
         for (TimeUnitPair tup : factor.getFactorLevels()) {
@@ -120,20 +120,20 @@ public abstract class CreationAlgorithm extends JPanel {
 
         if (unitAdded) {
             // add factor column field first
-            newFo = new TableFieldObject(count,
+            newFo = new FieldObject(count,
                     newFactor, "Factor", DataTypes.STRING, "",
                     false, false, false);
             buildingModel.addField(newFo);
             count++;
 
-            newFo = new TableFieldObject(count, "Unit",
+            newFo = new FieldObject(count, "Unit",
                     "Unit to give meaning to it's associated value",
                     DataTypes.ONTOLOGY_TERM, "",
                     false, false, false);
             buildingModel.addField(newFo);
             count++;
         } else {
-            newFo = new TableFieldObject(count,
+            newFo = new FieldObject(count,
                     newFactor, "Factor", DataTypes.ONTOLOGY_TERM, "",
                     false, false, false);
             buildingModel.addField(newFo);

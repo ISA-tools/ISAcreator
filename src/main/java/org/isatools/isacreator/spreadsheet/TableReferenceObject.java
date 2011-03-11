@@ -39,9 +39,9 @@ package org.isatools.isacreator.spreadsheet;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.configuration.TableConfiguration;
-import org.isatools.isacreator.configuration.TableFieldObject;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
@@ -61,12 +61,12 @@ public class TableReferenceObject implements Serializable {
     private TableConfiguration tableConfig;
     private List<List<String>> data = null;
     private Map<Integer, ListOrderedSet<Integer>> columnDependencies = new HashMap<Integer, ListOrderedSet<Integer>>();
-    private Map<String, TableFieldObject> fieldLookup = new HashMap<String, TableFieldObject>();
+    private Map<String, FieldObject> fieldLookup = new HashMap<String, FieldObject>();
     private Map<Integer, String[]> tableStructure;
-    private Map<Integer, TableFieldObject> preprocessedTableFields;
+    private Map<Integer, FieldObject> preprocessedTableFields;
     private Vector<String> preDefinedHeaders;
     private Map<String, OntologyObject> definedOntologies = null;
-    private Map<String, TableFieldObject> missingFields = null;
+    private Map<String, FieldObject> missingFields = null;
 
     // create protocols list, and a general structure which defines how table is to be laid out when being created by wizard
 
@@ -75,7 +75,7 @@ public class TableReferenceObject implements Serializable {
         this.tableName = tableConfig.getTableName();
         this.tableStructure = tableConfig.getTableStructure();
 
-        for (TableFieldObject fo : tableConfig.getFields()) {
+        for (FieldObject fo : tableConfig.getFields()) {
             fieldLookup.put(fo.getFieldName(), fo);
         }
 
@@ -162,7 +162,7 @@ public class TableReferenceObject implements Serializable {
 
         // process list of columns to determine the protocol and respective parameters.
         if (protocolIndex > 0) {
-            TableFieldObject protocolObject = tableConfig.getFields().get(protocolIndex);
+            FieldObject protocolObject = tableConfig.getFields().get(protocolIndex);
 
             StringBuffer parameters = new StringBuffer();
             Set<String> parameterSet = extractValue(listOfColumns, ",", "Parameter");
@@ -200,13 +200,13 @@ public class TableReferenceObject implements Serializable {
         String[] tableColumns = new String[tableConfig.getFields().size()];
         int field = 0;
 
-        List<TableFieldObject> fields = tableConfig.getFields();
+        List<FieldObject> fields = tableConfig.getFields();
 
 
         // ensure the correctness of the field order!
         Collections.sort(fields,
-                new Comparator<TableFieldObject>() {
-                    public int compare(TableFieldObject o, TableFieldObject o1) {
+                new Comparator<FieldObject>() {
+                    public int compare(FieldObject o, FieldObject o1) {
                         if (o.getColNo() < o1.getColNo()) {
                             return -1;
                         }
@@ -219,7 +219,7 @@ public class TableReferenceObject implements Serializable {
                     }
                 });
 
-        for (TableFieldObject fo : fields) {
+        for (FieldObject fo : fields) {
             tableColumns[field] = fo.getFieldName();
             field++;
         }
@@ -231,7 +231,7 @@ public class TableReferenceObject implements Serializable {
         return tableStructure;
     }
 
-    public Map<String, TableFieldObject> getMissingFields() {
+    public Map<String, FieldObject> getMissingFields() {
         if (missingFields != null) {
             return Collections.synchronizedMap(missingFields);
         } else {
@@ -239,7 +239,7 @@ public class TableReferenceObject implements Serializable {
         }
     }
 
-    public void setMissingFields(Map<String, TableFieldObject> missingFields) {
+    public void setMissingFields(Map<String, FieldObject> missingFields) {
         this.missingFields = missingFields;
     }
 
@@ -250,7 +250,7 @@ public class TableReferenceObject implements Serializable {
 
     public boolean acceptsFileLocations(String colName) {
 
-        TableFieldObject fieldObject = fieldLookup.get(colName);
+        FieldObject fieldObject = fieldLookup.get(colName);
 
         return fieldObject != null && !colName.equals(ROW_NO_TEXT) &&
                 fieldLookup.get(colName).isAcceptsFileLocations();
@@ -258,11 +258,11 @@ public class TableReferenceObject implements Serializable {
 
 
     public boolean acceptsMultipleValues(String colName) {
-        TableFieldObject tfo = fieldLookup.get(colName);
+        FieldObject tfo = fieldLookup.get(colName);
         return tfo != null && tfo.isAcceptsMultipleValues();
     }
 
-    public void addField(TableFieldObject fo) {
+    public void addField(FieldObject fo) {
         fieldLookup.put(fo.getFieldName(), fo);
     }
 
@@ -320,7 +320,7 @@ public class TableReferenceObject implements Serializable {
         if ((colName == null) || colName.equals("")) {
             return null;
         } else {
-            TableFieldObject dataType = fieldLookup.get(colName);
+            FieldObject dataType = fieldLookup.get(colName);
 
             if (dataType != null) {
                 return dataType.getDatatype();
@@ -387,7 +387,7 @@ public class TableReferenceObject implements Serializable {
                 createProcessedTableFields();
             }
 
-            TableFieldObject field = preprocessedTableFields.get(colNumber);
+            FieldObject field = preprocessedTableFields.get(colNumber);
 
             if (field == null) {
                 return "";
@@ -402,7 +402,7 @@ public class TableReferenceObject implements Serializable {
         return definedOntologies;
     }
 
-    public TableFieldObject getFieldByName(String name) {
+    public FieldObject getFieldByName(String name) {
         return fieldLookup.get(name);
     }
 
@@ -424,10 +424,10 @@ public class TableReferenceObject implements Serializable {
      * is the row number in the spreadsheet)
      */
     private void createProcessedTableFields() {
-        preprocessedTableFields = new HashMap<Integer, TableFieldObject>();
+        preprocessedTableFields = new HashMap<Integer, FieldObject>();
 
         int count = 1;
-        for (TableFieldObject fo : tableConfig.getFields()) {
+        for (FieldObject fo : tableConfig.getFields()) {
             if (!fo.getFieldName().equals("Characteristics") && !fo.getFieldName().equalsIgnoreCase("Factors")) {
                 preprocessedTableFields.put(count, fo);
                 count++;
@@ -437,7 +437,7 @@ public class TableReferenceObject implements Serializable {
 
     public String[] getListItems(String colName) {
 
-        TableFieldObject field = fieldLookup.get(colName);
+        FieldObject field = fieldLookup.get(colName);
         String[] listItems = new String[]{"no items yet!"};
 
         if (field != null) {
@@ -451,7 +451,7 @@ public class TableReferenceObject implements Serializable {
     }
 
     public void setFieldListItems(String colName, String[] listItems) {
-        TableFieldObject fo = fieldLookup.get(colName);
+        FieldObject fo = fieldLookup.get(colName);
 
         if (fo != null) {
             fo.setFieldList(listItems);
@@ -473,13 +473,13 @@ public class TableReferenceObject implements Serializable {
     }
 
     public Map<String, RecommendedOntology> getRecommendedSource(String colName) {
-        TableFieldObject tfo = fieldLookup.get(colName);
+        FieldObject tfo = fieldLookup.get(colName);
         return tfo.getRecommmendedOntologySource();
     }
 
     public Vector<String> getStdHeaders() {
 
-        List<TableFieldObject> fields = new ArrayList<TableFieldObject>();
+        List<FieldObject> fields = new ArrayList<FieldObject>();
 
         Vector<String> headers = new Vector<String>();
 
@@ -495,8 +495,8 @@ public class TableReferenceObject implements Serializable {
         }
 
         Collections.sort(fields,
-                new Comparator<TableFieldObject>() {
-                    public int compare(TableFieldObject o, TableFieldObject o1) {
+                new Comparator<FieldObject>() {
+                    public int compare(FieldObject o, FieldObject o1) {
                         if (o.getColNo() < o1.getColNo()) {
                             return -1;
                         }
@@ -509,7 +509,7 @@ public class TableReferenceObject implements Serializable {
                     }
                 });
 
-        for (TableFieldObject sortedField : fields) {
+        for (FieldObject sortedField : fields) {
             headers.add(sortedField.getFieldName());
         }
 
@@ -528,7 +528,7 @@ public class TableReferenceObject implements Serializable {
     public ValidationObject getValidationConstraints(String colName) {
         DataTypes classType;
 
-        TableFieldObject fo = fieldLookup.get(colName);
+        FieldObject fo = fieldLookup.get(colName);
 
         if (fo != null && fo.getDatatype() != null) {
             classType = fo.getDatatype();

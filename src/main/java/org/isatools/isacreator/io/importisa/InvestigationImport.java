@@ -41,7 +41,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSections;
+import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
 import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationStructureLoader;
 import org.isatools.isacreator.utils.datastructures.SetUtils;
@@ -79,15 +79,15 @@ public class InvestigationImport {
      * @param investigationFile- File object representing Investigation file to be loaded.
      * @return Map is formatted like so:
      *         (Main section name) e.g. Investigation-1
-     *         -> Section name e.g. InvestigationFileSections e.g. InvestigationFileSections.ONTOLOGY_SECTION
+     *         -> Section name e.g. InvestigationFileSection e.g. InvestigationFileSection.ONTOLOGY_SECTION
      *         -> Label for the ontology section e.g. Term Source Name
      *         -> Values for the given section/label e.g. OBI
      *         EFO
      *         etc
      */
-    public Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
+    public Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
 
-        OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>> importedInvestigationFile = new ListOrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>();
+        OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> importedInvestigationFile = new ListOrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>();
 
         List<String[]> investigationFileContents = loadFile(investigationFile);
 
@@ -95,22 +95,22 @@ public class InvestigationImport {
 
         int studyCount = 1;
 
-        importedInvestigationFile.put(currentMajorSection, new ListOrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>());
+        importedInvestigationFile.put(currentMajorSection, new ListOrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>());
 
-        InvestigationFileSections currentMinorSection = null;
+        InvestigationFileSection currentMinorSection = null;
 
         for (String[] line : investigationFileContents) {
-            InvestigationFileSections tmpSection;
+            InvestigationFileSection tmpSection;
 
-            if ((tmpSection = InvestigationFileSections.convertToInstance(line[0])) != null) {
+            if ((tmpSection = InvestigationFileSection.convertToInstance(line[0])) != null) {
 
                 currentMinorSection = tmpSection;
 
-                if (currentMinorSection == InvestigationFileSections.STUDY_SECTION) {
+                if (currentMinorSection == InvestigationFileSection.STUDY_SECTION) {
                     currentMajorSection = "Study-" + studyCount;
                     studyCount++;
 
-                    importedInvestigationFile.put(currentMajorSection, new ListOrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>());
+                    importedInvestigationFile.put(currentMajorSection, new ListOrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>());
                 }
 
                 importedInvestigationFile.get(currentMajorSection).put(currentMinorSection, new ListOrderedMap<String, List<String>>());
@@ -134,7 +134,7 @@ public class InvestigationImport {
             }
         }
 
-        return new Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>>>(
+        return new Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>>(
                 isValidInvestigationSections(importedInvestigationFile), importedInvestigationFile);
     }
 
@@ -144,19 +144,19 @@ public class InvestigationImport {
      * @param investigationFile - Map containing investigation file structure
      * @return - true if valid, false otherwise.
      */
-    private boolean isValidInvestigationSections(OrderedMap<String, OrderedMap<InvestigationFileSections, OrderedMap<String, List<String>>>> investigationFile) {
+    private boolean isValidInvestigationSections(OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> investigationFile) {
 
         InvestigationStructureLoader loader = new InvestigationStructureLoader();
-        Map<InvestigationFileSections, InvestigationSection> sections = loader.loadInvestigationStructure();
+        Map<InvestigationFileSection, InvestigationSection> sections = loader.loadInvestigationStructure();
 
         MessageFormat fmt = new MessageFormat("The field {0} is missing from the {1} section of the investigation file");
 
         for (String mainSection : investigationFile.keySet()) {
 
             // checking major section, e.g. study or investigation
-            Set<InvestigationFileSections> majorSectionParts = new HashSet<InvestigationFileSections>();
+            Set<InvestigationFileSection> majorSectionParts = new HashSet<InvestigationFileSection>();
 
-            for (InvestigationFileSections section : investigationFile.get(mainSection).keySet()) {
+            for (InvestigationFileSection section : investigationFile.get(mainSection).keySet()) {
                 majorSectionParts.add(section);
 
                 Set<String> minorSectionParts = new HashSet<String>();
@@ -178,14 +178,14 @@ public class InvestigationImport {
             // check major section for salient information
 
             // the mainsection string is investigation-1 or study-2 - here we strip away from - onwards.
-            Set<InvestigationFileSections> requiredSections = loader.getRequiredSections(mainSection.substring(0, mainSection.lastIndexOf("-")));
-            SetUtils<InvestigationFileSections> setUtils = new SetUtils<InvestigationFileSections>();
-            Pair<Boolean, Set<InvestigationFileSections>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
+            Set<InvestigationFileSection> requiredSections = loader.getRequiredSections(mainSection.substring(0, mainSection.lastIndexOf("-")));
+            SetUtils<InvestigationFileSection> setUtils = new SetUtils<InvestigationFileSection>();
+            Pair<Boolean, Set<InvestigationFileSection>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
 
             // if false,
             if (!equalityResult.fst) {
                 if (equalityResult.snd != null) {
-                    for (InvestigationFileSections section : equalityResult.snd) {
+                    for (InvestigationFileSection section : equalityResult.snd) {
                         messages.add(fmt.format(new Object[]{section, mainSection.substring(0, mainSection.lastIndexOf("-"))}));
                     }
                 } else {

@@ -43,12 +43,12 @@ import java.util.Map;
 
 
 /**
- * TableFieldObject contains information from the FieldData interface.
+ * FieldObject contains information from the FieldData interface.
  * Both should be edited in Tandem during modification as one will depend on the other
  *
  * @author Eamonn Maguire
  */
-public class TableFieldObject implements Serializable {
+public class FieldObject implements Serializable {
     private int colNo;
     private String fieldName;
     private String description;
@@ -80,9 +80,9 @@ public class TableFieldObject implements Serializable {
      * @param acceptsMultipleValues - Does the field accept multiple values separated by comma's (,)
      * @param acceptsFileLocations  - Does the field Accept a file Location
      */
-    public TableFieldObject(String fieldName, String description,
-                            DataTypes datatype, String defaultVal, boolean required,
-                            boolean acceptsMultipleValues, boolean acceptsFileLocations) {
+    public FieldObject(String fieldName, String description,
+                       DataTypes datatype, String defaultVal, boolean required,
+                       boolean acceptsMultipleValues, boolean acceptsFileLocations) {
 
         this(-1, fieldName, description, datatype, defaultVal, required, acceptsMultipleValues, acceptsFileLocations);
     }
@@ -98,9 +98,9 @@ public class TableFieldObject implements Serializable {
      * @param acceptsMultipleValues - Does the field accept multiple values separated by comma's (,)
      * @param acceptsFileLocations  - Does the field Accept a file Location
      */
-    public TableFieldObject(int colNo, String fieldName, String description,
-                            DataTypes datatype, String defaultVal, boolean required,
-                            boolean acceptsMultipleValues, boolean acceptsFileLocations) {
+    public FieldObject(int colNo, String fieldName, String description,
+                       DataTypes datatype, String defaultVal, boolean required,
+                       boolean acceptsMultipleValues, boolean acceptsFileLocations) {
         this.colNo = colNo;
         this.fieldName = fieldName;
         this.description = description;

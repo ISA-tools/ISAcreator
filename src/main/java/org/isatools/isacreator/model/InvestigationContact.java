@@ -22,6 +22,7 @@ public class InvestigationContact extends Contact {
     public static final String CONTACT_ROLE_TERM_ACCESSION = "Investigation Person Roles Term Accession Number";
     public static final String CONTACT_ROLE_TERM_SOURCE_REF = "Investigation Person Roles Term Source REF";
 
+
     public InvestigationContact() {
         super();
     }

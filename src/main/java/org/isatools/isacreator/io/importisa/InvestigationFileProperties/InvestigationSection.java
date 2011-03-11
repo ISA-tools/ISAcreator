@@ -50,20 +50,20 @@ import java.util.Set;
  */
 public class InvestigationSection {
 
-    private InvestigationFileSections sectionName;
+    private InvestigationFileSection sectionName;
     private Set<String> requiredValues;
 
-    public InvestigationSection(InvestigationFileSections sectionName) {
+    public InvestigationSection(InvestigationFileSection sectionName) {
         this.sectionName = sectionName;
         requiredValues = new HashSet<String>();
     }
 
-    public InvestigationSection(InvestigationFileSections sectionName, Set<String> requiredValues) {
+    public InvestigationSection(InvestigationFileSection sectionName, Set<String> requiredValues) {
         this.sectionName = sectionName;
         this.requiredValues = requiredValues;
     }
 
-    public InvestigationFileSections getSectionName() {
+    public InvestigationFileSection getSectionName() {
         return sectionName;
     }
 
