@@ -153,6 +153,10 @@ public class Assay extends ISASection implements StudySubData {
         return getValue(ASSAY_REFERENCE);
     }
 
+    public void setAssayReference(String newReference) {
+        fieldValues.put(ASSAY_REFERENCE, newReference);
+    }
+
     public String getIdentifier() {
         return getAssayReference();
     }

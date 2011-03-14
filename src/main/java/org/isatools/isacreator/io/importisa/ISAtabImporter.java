@@ -210,6 +210,8 @@ public class ISAtabImporter {
             study.getStudySample().setUserInterface(study.getUserInterface());
 
             for (String assay : study.getAssays().keySet()) {
+                log.info("Adding assay " + assay);
+                log.info("Measurement type: " + study.getAssays().get(assay).getMeasurementEndpoint());
                 study.getAssays().get(assay).setUserInterface(study.getUserInterface());
             }
         }

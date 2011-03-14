@@ -45,6 +45,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * StudyDesignSubForm
@@ -73,13 +74,15 @@ public class StudyDesignSubForm extends SubForm {
     public void reformItems() {
         List<StudyDesign> designs = parent.getDesigns();
 
-        for (int i = 1; i < designs.size() + 1; i++) {
-            String[] designInfo = {
-                    designs.get(i - 1).getStudyDesignType()
-            };
+        for (int record = 1; record < designs.size() + 1; record++) {
 
-            for (int j = 0; j < designInfo.length; j++) {
-                dtm.setValueAt(designInfo[j], j, i);
+            Map<String, String> fieldList = designs.get(record - 1).getFieldValues();
+
+            int contactFieldIndex = 0;
+            for (SubFormField field : fields) {
+                String value = fieldList.get(field.getFieldName());
+                dtm.setValueAt(value, contactFieldIndex, record);
+                contactFieldIndex++;
             }
         }
     }
@@ -90,14 +93,18 @@ public class StudyDesignSubForm extends SubForm {
 
     public void updateItems() {
         int cols = dtm.getColumnCount();
-        final List<StudyDesign> newStudyDesigns = new ArrayList<StudyDesign>();
-        String design;
-        for (int i = 1; i < cols; i++) {
 
-            design = (dtm.getValueAt(0, i) != null) ? dtm.getValueAt(0, i).toString() : "";
+        List<StudyDesign> newStudyDesigns = new ArrayList<StudyDesign>();
 
-            if (!design.equals("")) {
-                newStudyDesigns.add(new StudyDesign(design));
+        for (int recordNumber = 1; recordNumber < cols; recordNumber++) {
+
+            Map<String, String> record = getRecord(recordNumber);
+
+            StudyDesign studyDesign = new StudyDesign();
+            studyDesign.addToFields(record);
+
+            if (!studyDesign.getStudyDesignType().equals("")) {
+                newStudyDesigns.add(studyDesign);
             }
         }
 

@@ -40,7 +40,9 @@ package org.isatools.isacreator.io.importisa;
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.exceptions.MalformedOntologyTermException;
 import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
@@ -55,6 +57,12 @@ import java.util.*;
  * @author Eamonn Maguire (eamonnmag@gmail.com)
  */
 public class StructureToInvestigationMapper {
+
+    private static Logger log = Logger.getLogger(StructureToInvestigationMapper.class.getName());
+
+    private static final String TERM = "term";
+    private static final String SOURCE_REF = "term source";
+    private static final String ACCESSION = "term accession";
 
     private List<OntologyObject> ontologyTermsDefined;
     private Set<String> messages;
@@ -106,9 +114,17 @@ public class StructureToInvestigationMapper {
 
         for (InvestigationFileSection investigationSection : investigationSections.keySet()) {
             if (investigationSection == InvestigationFileSection.INVESTIGATION_SECTION) {
-                investigation = processInvestigationSection(investigationSections.get(investigationSection));
+
+                Pair<Set<String>, Investigation> processedInvestigationSection = processInvestigationSection(investigationSections.get(investigationSection));
+                sectionFields.put(investigationSection, processedInvestigationSection.fst);
+                investigation = processedInvestigationSection.snd;
+
             } else if (investigationSection == InvestigationFileSection.ONTOLOGY_SECTION) {
-                ontologySources = processOntologySourceReferences(investigationSections.get(investigationSection));
+
+                Pair<Set<String>, List<OntologySourceRefObject>> processedFactorsSection = processOntologySourceReferences(investigationSections.get(investigationSection));
+                sectionFields.put(investigationSection, processedFactorsSection.fst);
+                ontologySources = processedFactorsSection.snd;
+
             } else if (investigationSection == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
 
                 Pair<Set<String>, List<Publication>> processedPublicationSection = processPublication(investigationSection,
@@ -117,7 +133,9 @@ public class StructureToInvestigationMapper {
                 publications = processedPublicationSection.snd;
 
             } else if (investigationSection == InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION) {
-                contacts = processContacts(investigationSection, investigationSections.get(investigationSection));
+                Pair<Set<String>, List<Contact>> processedContactSection = processContacts(investigationSection, investigationSections.get(investigationSection));
+                sectionFields.put(investigationSection, processedContactSection.fst);
+                contacts = processedContactSection.snd;
             }
         }
 
@@ -132,12 +150,29 @@ public class StructureToInvestigationMapper {
         return investigation;
     }
 
-    private Investigation processInvestigationSection(OrderedMap<String, List<String>> investigationSection) {
+    private Pair<Set<String>, Investigation> processInvestigationSection(OrderedMap<String, List<String>> investigationSection) {
         Investigation investigation = new Investigation();
 
-        investigation.addToFields(getRecord(investigationSection, 0));
+        Set<String> sectionFields = getFieldList(investigationSection);
 
-        return investigation;
+        Map<String, String> record = getRecord(investigationSection, 0);
+
+        investigation.addToFields(record);
+
+        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+
+        for (int hashCode : ontologyFields.keySet()) {
+            Map<String, String> ontologyField = ontologyFields.get(hashCode);
+
+            try {
+                String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
+                investigation.getFieldValues().put(ontologyField.get(TERM), value);
+            } catch (MalformedOntologyTermException e) {
+                log.error(e.getMessage());
+            }
+        }
+
+        return new Pair<Set<String>, Investigation>(sectionFields, investigation);
     }
 
     private Study processStudy(OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>> studySections) {
@@ -150,21 +185,33 @@ public class StructureToInvestigationMapper {
         List<Assay> assays = new ArrayList<Assay>();
         List<StudyDesign> studyDesigns = new ArrayList<StudyDesign>();
 
-
-        // todo: here we should create a DataEntryReferenceObject for each Study. Somehow, this should be passed back to the
-        // todo calling method so that the DataEntry interface for the Study or Investigation can use it to build the interface.
-
         OrderedMap<InvestigationFileSection, Set<String>> sectionFields = new ListOrderedMap<InvestigationFileSection, Set<String>>();
 
         for (InvestigationFileSection studySection : studySections.keySet()) {
             if (studySection == InvestigationFileSection.STUDY_SECTION) {
-                study = processStudySection(studySections.get(studySection));
+
+                Pair<Set<String>, Study> processedStudySection = processStudySection(studySections.get(studySection));
+                study = processedStudySection.snd;
+                sectionFields.put(studySection, processedStudySection.fst);
+
             } else if (studySection == InvestigationFileSection.STUDY_FACTORS) {
-                factors = processFactors(studySections.get(studySection));
+
+                Pair<Set<String>, List<Factor>> processedFactorsSection = processFactors(studySections.get(studySection));
+                sectionFields.put(studySection, processedFactorsSection.fst);
+                factors = processedFactorsSection.snd;
+
             } else if (studySection == InvestigationFileSection.STUDY_DESIGN_SECTION) {
-                studyDesigns = processStudyDesigns(studySections.get(studySection));
+
+                Pair<Set<String>, List<StudyDesign>> processedStudyDesignSection = processStudyDesigns(studySections.get(studySection));
+                sectionFields.put(studySection, processedStudyDesignSection.fst);
+                studyDesigns = processedStudyDesignSection.snd;
+
             } else if (studySection == InvestigationFileSection.STUDY_ASSAYS) {
-                assays = processAssay(studySections.get(studySection));
+
+                Pair<Set<String>, List<Assay>> processedAssaySection = processAssay(studySections.get(studySection));
+                sectionFields.put(studySection, processedAssaySection.fst);
+                assays = processedAssaySection.snd;
+
             } else if (studySection == InvestigationFileSection.STUDY_PUBLICATIONS) {
 
                 Pair<Set<String>, List<Publication>> processedPublicationSection = processPublication(studySection, studySections.get(studySection));
@@ -172,9 +219,16 @@ public class StructureToInvestigationMapper {
                 publications = processedPublicationSection.snd;
 
             } else if (studySection == InvestigationFileSection.STUDY_PROTOCOLS) {
-                protocols = processProtocol(studySections.get(studySection));
+
+                Pair<Set<String>, List<Protocol>> processedProtocolSection = processProtocol(studySections.get(studySection));
+                sectionFields.put(studySection, processedProtocolSection.fst);
+                protocols = processedProtocolSection.snd;
+
             } else if (studySection == InvestigationFileSection.STUDY_CONTACTS) {
-                contacts = processContacts(studySection, studySections.get(studySection));
+
+                Pair<Set<String>, List<Contact>> processedContactSection = processContacts(studySection, studySections.get(studySection));
+                sectionFields.put(studySection, processedContactSection.fst);
+                contacts = processedContactSection.snd;
             }
 
         }
@@ -193,18 +247,37 @@ public class StructureToInvestigationMapper {
         return study;
     }
 
-    private Study processStudySection(OrderedMap<String, List<String>> studySection) {
+    private Pair<Set<String>, Study> processStudySection(OrderedMap<String, List<String>> studySection) {
         Study study = new Study();
 
-        study.addToFields(getRecord(studySection, 0));
+        Set<String> sectionFields = getFieldList(studySection);
 
-        return study;
+        Map<String, String> record = getRecord(studySection, 0);
+
+        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+
+        study.addToFields(record);
+
+        for (int hashCode : ontologyFields.keySet()) {
+            Map<String, String> ontologyField = ontologyFields.get(hashCode);
+
+            try {
+                String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
+                study.getFieldValues().put(ontologyField.get(TERM), value);
+            } catch (MalformedOntologyTermException e) {
+                log.error(e.getMessage());
+            }
+        }
+
+        return new Pair<Set<String>, Study>(sectionFields, study);
     }
 
-    private List<OntologySourceRefObject> processOntologySourceReferences(OrderedMap<String, List<String>> ontologySection) {
+    private Pair<Set<String>, List<OntologySourceRefObject>> processOntologySourceReferences(OrderedMap<String, List<String>> ontologySection) {
         List<OntologySourceRefObject> ontologySources = new ArrayList<OntologySourceRefObject>();
 
         int recordCount = getLoopCount(ontologySection);
+
+        Set<String> sectionFields = getFieldList(ontologySection);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             OntologySourceRefObject ontologySource = new OntologySourceRefObject();
@@ -215,7 +288,7 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return ontologySources;
+        return new Pair<Set<String>, List<OntologySourceRefObject>>(sectionFields, ontologySources);
     }
 
     private Pair<Set<String>, List<Publication>> processPublication(InvestigationFileSection section, OrderedMap<String, List<String>> publicationSection) {
@@ -225,6 +298,7 @@ public class StructureToInvestigationMapper {
 
         Set<String> sectionFields = getFieldList(publicationSection);
 
+        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Publication p;
@@ -238,18 +312,36 @@ public class StructureToInvestigationMapper {
 
             if (!isNullRecord(record)) {
                 p.addToFields(record);
+
+                for (int hashCode : ontologyFields.keySet()) {
+                    Map<String, String> ontologyField = ontologyFields.get(hashCode);
+
+                    try {
+                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
+                        p.getFieldValues().put(ontologyField.get(TERM), value);
+                    } catch (MalformedOntologyTermException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+
+
                 publications.add(p);
+
+                // do ontology term grouping here...
             }
         }
 
         return new Pair<Set<String>, List<Publication>>(sectionFields, publications);
     }
 
-    private List<StudyDesign> processStudyDesigns(OrderedMap<String, List<String>> studyDesignSection) {
+    private Pair<Set<String>, List<StudyDesign>> processStudyDesigns(OrderedMap<String, List<String>> studyDesignSection) {
         List<StudyDesign> studyDesigns = new ArrayList<StudyDesign>();
 
         int recordCount = getLoopCount(studyDesignSection);
 
+        Set<String> sectionFields = getFieldList(studyDesignSection);
+
+        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             StudyDesign design = new StudyDesign();
@@ -257,17 +349,33 @@ public class StructureToInvestigationMapper {
 
             if (!isNullRecord(record)) {
                 design.addToFields(record);
+
+                for (int hashCode : ontologyFields.keySet()) {
+                    Map<String, String> ontologyField = ontologyFields.get(hashCode);
+
+                    try {
+                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
+                        design.getFieldValues().put(ontologyField.get(TERM), value);
+                    } catch (MalformedOntologyTermException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+
                 studyDesigns.add(design);
             }
         }
 
-        return studyDesigns;
+        return new Pair<Set<String>, List<StudyDesign>>(sectionFields, studyDesigns);
     }
 
-    private List<Contact> processContacts(InvestigationFileSection section, OrderedMap<String, List<String>> contactSection) {
+    private Pair<Set<String>, List<Contact>> processContacts(InvestigationFileSection section, OrderedMap<String, List<String>> contactSection) {
         List<Contact> contacts = new ArrayList<Contact>();
 
         int recordCount = getLoopCount(contactSection);
+
+        Set<String> sectionFields = getFieldList(contactSection);
+
+        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Contact c;
@@ -281,17 +389,33 @@ public class StructureToInvestigationMapper {
 
             if (!isNullRecord(record)) {
                 c.addToFields(record);
+
+                for (int hashCode : ontologyFields.keySet()) {
+                    Map<String, String> ontologyField = ontologyFields.get(hashCode);
+
+                    try {
+                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
+                        c.getFieldValues().put(ontologyField.get(TERM), value);
+                    } catch (MalformedOntologyTermException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+
                 contacts.add(c);
             }
         }
 
-        return contacts;
+        return new Pair<Set<String>, List<Contact>>(sectionFields, contacts);
     }
 
-    private List<Factor> processFactors(OrderedMap<String, List<String>> factorSection) {
+    private Pair<Set<String>, List<Factor>> processFactors(OrderedMap<String, List<String>> factorSection) {
         List<Factor> factors = new ArrayList<Factor>();
 
         int recordCount = getLoopCount(factorSection);
+
+        Set<String> sectionFields = getFieldList(factorSection);
+
+        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Factor f = new Factor();
@@ -299,17 +423,41 @@ public class StructureToInvestigationMapper {
 
             if (!isNullRecord(record)) {
                 f.addToFields(record);
+
+                for (int hashCode : ontologyFields.keySet()) {
+                    Map<String, String> ontologyField = ontologyFields.get(hashCode);
+
+                    try {
+                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
+                        f.getFieldValues().put(ontologyField.get(TERM), value);
+                    } catch (MalformedOntologyTermException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+
                 factors.add(f);
             }
         }
 
-        return factors;
+        return new Pair<Set<String>, List<Factor>>(sectionFields, factors);
     }
 
-    private List<Protocol> processProtocol(OrderedMap<String, List<String>> protocolSection) {
+    private Pair<Set<String>, List<Protocol>> processProtocol(OrderedMap<String, List<String>> protocolSection) {
         List<Protocol> protocols = new ArrayList<Protocol>();
 
         int recordCount = getLoopCount(protocolSection);
+
+        Set<String> sectionFields = getFieldList(protocolSection);
+
+        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+
+        System.out.println("Found " + ontologyFields.size() + " ontology fields");
+        System.out.println("They are:");
+        for (int hashCode : ontologyFields.keySet()) {
+            for (String key : ontologyFields.get(hashCode).keySet()) {
+                System.out.println("\t" + key + " -> " + ontologyFields.get(hashCode).get(key));
+            }
+        }
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Protocol p = new Protocol();
@@ -317,18 +465,33 @@ public class StructureToInvestigationMapper {
 
             if (!isNullRecord(record)) {
                 p.addToFields(record);
+
+
+                for (int hashCode : ontologyFields.keySet()) {
+                    Map<String, String> ontologyField = ontologyFields.get(hashCode);
+
+                    try {
+                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
+                        p.getFieldValues().put(ontologyField.get(TERM), value);
+                    } catch (MalformedOntologyTermException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+
                 protocols.add(p);
             }
         }
 
-        return protocols;
+        return new Pair<Set<String>, List<Protocol>>(sectionFields, protocols);
     }
 
-    private List<Assay> processAssay(OrderedMap<String, List<String>> assaySection) {
+    private Pair<Set<String>, List<Assay>> processAssay(OrderedMap<String, List<String>> assaySection) {
 
         List<Assay> assays = new ArrayList<Assay>();
 
         int recordCount = getLoopCount(assaySection);
+
+        Set<String> sectionFields = getFieldList(assaySection);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Assay a = new Assay();
@@ -340,7 +503,7 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return assays;
+        return new Pair<Set<String>, List<Assay>>(sectionFields, assays);
     }
 
 
@@ -378,5 +541,137 @@ public class StructureToInvestigationMapper {
             }
         }
         return allNulls;
+    }
+
+    private String groupElements(String fieldBeingCombined, String term,
+                                 String accession, String sourceRef)
+            throws MalformedOntologyTermException {
+        String toReturn = "";
+
+        term = term == null ? "" : term;
+        accession = accession == null ? "" : accession;
+        sourceRef = sourceRef == null ? "" : sourceRef;
+        // if all elements contain ; then we are dealing with multiple ontology terms
+        if (term.contains(";") && sourceRef.contains(";")) {
+            String[] splitTerms = term.split(";");
+
+            // small hack to ensure that we have equal numbers of terms!
+            if (sourceRef.endsWith(";")) {
+                sourceRef += " ";
+            }
+
+            String[] splitSourceRefs = sourceRef.split(";");
+
+            String[] splitAccession = null;
+
+            if (accession.split(";").length > 0) {
+                splitAccession = accession.split(";");
+            }
+
+            if ((splitTerms.length == splitSourceRefs.length)) {
+                // we know that everything is properly formed between the split terms and the source refs
+
+                // we know that everything is properly formed between the source refs, accessions, and the terms.
+                for (int i = 0; i < splitTerms.length; i++) {
+                    if (splitSourceRefs[i].equals("") ||
+                            splitSourceRefs[i].equals(" ")) {
+                        toReturn += splitTerms[i];
+                    } else {
+                        toReturn += (splitSourceRefs[i] + ":" + splitTerms[i]);
+
+                        String accToAdd = "";
+
+                        if ((splitAccession != null) &&
+                                (i < splitAccession.length)) {
+                            accToAdd = splitAccession[i];
+                        }
+
+                        ontologyTermsDefined.add(new OntologyObject(
+                                splitTerms[i], accToAdd, splitSourceRefs[i]));
+
+                    }
+
+                    if (i != (splitTerms.length - 1)) {
+                        toReturn += ";";
+                    }
+                }
+            } else {
+                throw new MalformedOntologyTermException("Problem with Ontology field " + fieldBeingCombined +
+                        ". There should be an equal number of values in the term source and term accession number fields separated by ;");
+            }
+        } else {
+            // can assume that there is only one value in each cell. so group them
+            if (sourceRef.equals("")) {
+                toReturn = term;
+            } else {
+                toReturn = sourceRef + ":" + term;
+
+
+                if (!term.trim().equals("") &&
+                        !sourceRef.trim().equals("")) {
+                    ontologyTermsDefined.add(new OntologyObject(
+                            term, accession, sourceRef));
+                }
+
+            }
+        }
+
+        return toReturn;
+    }
+
+    /**
+     * Ontology terms are detected when there is a presence of 3 values in the field set with the same base name and
+     * the words "Term Accession Number" & "Term Source Ref" are found.
+     *
+     * @param fieldNames - field names for the section @see Set<String>
+     * @return Map from hashcode for field to a Map indicating which fields are source refs, terms and term accessions.
+     */
+    public Map<Integer, Map<String, String>> getOntologyTerms(Set<String> fieldNames) {
+
+        Map<Integer, Map<String, String>> fields = new HashMap<Integer, Map<String, String>>();
+
+        if (fieldNames != null) {
+
+            Set<String> ontologyFields = filterFields(fieldNames, ACCESSION, SOURCE_REF);
+
+            for (String ontologyValues : ontologyFields) {
+                String actualFieldName = ontologyValues.substring(0, ontologyValues.toLowerCase().indexOf("term")).trim();
+
+                int hash = actualFieldName.hashCode();
+
+                if (!fields.containsKey(hash)) {
+                    fields.put(hash, new HashMap<String, String>());
+
+                    if (actualFieldName.contains("[")) {
+                        actualFieldName += "]";
+                    }
+
+                    fields.get(hash).put(TERM, actualFieldName);
+                }
+
+                if (ontologyValues.toLowerCase().contains(ACCESSION)) {
+                    fields.get(hash).put(ACCESSION, ontologyValues);
+                } else if (ontologyValues.toLowerCase().contains(SOURCE_REF)) {
+                    fields.get(hash).put(SOURCE_REF, ontologyValues);
+                }
+
+            }
+        }
+
+
+        return fields;
+    }
+
+    public Set<String> filterFields(Set<String> toFilter, String... filters) {
+        Set<String> result = new HashSet<String>();
+        for (String value : toFilter) {
+            for (String filter : filters) {
+                if (value.toLowerCase().contains(filter)) {
+                    result.add(value);
+                }
+            }
+        }
+
+        return result;
     }
 }

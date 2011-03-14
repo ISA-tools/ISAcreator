@@ -251,27 +251,25 @@ public class InvestigationDataEntry extends DataEntryForm {
         //todo this will have to also take into consideration a config.xml which describes the investigation.
         // todo the desired fields will be the union of both sets of fields.
 
+        Set<String> ontologyFields = inv.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION);
+        Set<String> fieldsToIgnore = inv.getReferenceObject().getFieldsToIgnore();
 
-        contactFields.add(new SubFormField("Person Last Name",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person First Name",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Mid Initials",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Email", SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Phone", SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Fax", SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Address", SubFormField.LONG_STRING));
-        contactFields.add(new SubFormField("Person Affiliation",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Roles",
-                SubFormField.MULTIPLE_ONTOLOGY_SELECT));
+        for (String contactField : inv.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION)) {
+
+            if (!fieldsToIgnore.contains(contactField)) {
+                if (ontologyFields.contains(contactField)) {
+                    contactFields.add(new SubFormField(contactField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    contactFields.add(new SubFormField(contactField, SubFormField.STRING));
+                }
+            }
+        }
 
         int numColsToAdd = (inv.getContacts().size() == 0) ? 4
                 : inv.getContacts()
                 .size();
 
-        contactsSubform = new ContactSubForm("investigation contacts", FieldTypes.CONTACT,
+        contactsSubform = new ContactSubForm(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), FieldTypes.CONTACT,
                 contactFields, numColsToAdd, 300, 195, this);
         contactsSubform.createGUI();
 
@@ -293,19 +291,7 @@ public class InvestigationDataEntry extends DataEntryForm {
                     publicationFields.add(new SubFormField(publicationField, SubFormField.STRING));
                 }
             }
-
         }
-
-
-//        publicationFields.add(new SubFormField("PubMed ID", SubFormField.STRING));
-//        publicationFields.add(new SubFormField("Publication DOI",
-//                SubFormField.STRING));
-//        publicationFields.add(new SubFormField("Publication Author list",
-//                SubFormField.LONG_STRING));
-//        publicationFields.add(new SubFormField("Publication Title",
-//                SubFormField.LONG_STRING));
-//        publicationFields.add(new SubFormField("Publication Status",
-//                SubFormField.SINGLE_ONTOLOGY_SELECT));
 
         int numColsToAdd = (inv.getPublications().size() == 0) ? 1
                 : inv.getPublications()

@@ -80,52 +80,53 @@ public class AssaySubForm extends SubForm implements Serializable {
     public boolean doAddColumn(DefaultTableModel model, TableColumn col) {
 
         if (fieldType == FieldTypes.ASSAY && (parent != null)) {
-            // if adding the assay was succesful, then stop the column from being edited
+            // if adding the assay was successful, then stop the column from being edited
             int colToCheck = dtm.getColumnCount() - 1;
+
+            Map<String, String> record = getRecord(colToCheck);
+
+            Assay tmpAssay = new Assay();
+            tmpAssay.addToFields(record);
 
             if (dtm.getValueAt(1, colToCheck) == null ||
                     dtm.getValueAt(1, colToCheck).toString().equals(AutoFilterComboCellEditor.BLANK_VALUE)) {
                 dtm.setValueAt("", 1, colToCheck);
             }
 
-            if ((dtm.getValueAt(0, colToCheck) != null) &&
-                    (dtm.getValueAt(3, colToCheck) != null)) {
-                if (!dtm.getValueAt(3, colToCheck).toString().equals("")) {
-                    String assayName = dtm.getValueAt(3, colToCheck).toString();
+            if (!tmpAssay.getMeasurementEndpoint().equals("") &&
+                    !tmpAssay.getAssayReference().equals("")) {
 
-                    if (!assayName.startsWith("a_")) {
-                        assayName = "a_" + assayName;
-                    }
+                String assayName = tmpAssay.getAssayReference();
 
-                    String extension = assayName.substring(assayName.lastIndexOf(
-                            ".") + 1);
-
-                    if (!extension.equals("txt")) {
-                        assayName += ".txt";
-                    }
-
-                    dtm.setValueAt(assayName, 3, colToCheck);
-
-                    if (dtm.getValueAt(2, colToCheck) == null) {
-                        dtm.setValueAt("", 2, colToCheck);
-                    }
-
-                    if (parent.getDataEntryEnvironment()
-                            .addAssay(dtm.getValueAt(0, colToCheck)
-                                    .toString(),
-                                    dtm.getValueAt(1, colToCheck).toString(),
-                                    dtm.getValueAt(2, colToCheck).toString(),
-                                    dtm.getValueAt(3, colToCheck).toString())) {
-                        // set previous column to be uneditable
-                        uneditableRecords.add(dtm.getColumnCount() - 1);
-                        scrollTable.addColumn(col);
-                        model.addColumn(fieldType);
-                        model.fireTableStructureChanged();
-
-                        return true;
-                    }
+                if (!assayName.startsWith("a_")) {
+                    assayName = "a_" + assayName;
                 }
+
+                String extension = assayName.substring(assayName.lastIndexOf(
+                        ".") + 1);
+
+                if (!extension.equals("txt")) {
+                    assayName += ".txt";
+                }
+
+                tmpAssay.setAssayReference(assayName);
+
+                if (parent.getDataEntryEnvironment()
+                        .addAssay(tmpAssay.getMeasurementEndpoint(),
+                                tmpAssay.getTechnologyType(),
+                                tmpAssay.getAssayPlatform(),
+                                tmpAssay.getAssayReference())) {
+                    // set previous column to be uneditable
+                    uneditableRecords.add(dtm.getColumnCount() - 1);
+                    scrollTable.addColumn(col);
+                    model.addColumn(fieldType);
+                    model.fireTableStructureChanged();
+
+                    return true;
+                }
+
             } else {
+                // todo make a nicer dialog for this...and add more explanation
                 JOptionPane optionPane = new JOptionPane(
                         "Problem occurred when attempting to add an Assay... " +
                                 "\n All fields for the assay definition are not complete!",
@@ -155,39 +156,36 @@ public class AssaySubForm extends SubForm implements Serializable {
     }
 
     public void reformItems() {
+
         Map<String, Assay> assays = parent.getAssays();
+
         int colCount = 1;
 
-        if (assays != null) {
-            for (String assayRef : assays.keySet()) {
+        for (String assayRef : assays.keySet()) {
 
-                Assay assay = assays.get(assayRef);
-                String[] assayInfo = {
-                        assay.getMeasurementEndpoint(), assay.getTechnologyType(),
-                        assay.getAssayPlatform(), assay.getAssayReference()
-                };
+            Map<String, String> fieldList = assays.get(assayRef).getFieldValues();
 
-                for (int j = 0; j < assayInfo.length; j++) {
-                    dtm.setValueAt(assayInfo[j], j, colCount);
-                }
-
-                colCount++;
+            int contactFieldIndex = 0;
+            for (SubFormField field : fields) {
+                String value = fieldList.get(field.getFieldName());
+                dtm.setValueAt(value, contactFieldIndex, colCount);
+                contactFieldIndex++;
             }
 
-            for (int i = 1; i < (dtm.getColumnCount() - 1); i++) {
-                uneditableRecords.add(i);
-            }
+            colCount++;
         }
     }
 
     protected void removeItem(int assayToRemove) {
         // get factor name which is in the 2nd row (index 1) of the table
-        if (scrollTable.getModel().getValueAt(3, assayToRemove) != null) {
-            String assayRef = scrollTable.getModel().getValueAt(3, assayToRemove)
-                    .toString();
+        Map<String, String> record = getRecord(assayToRemove);
 
+        Assay tmpAssay = new Assay();
+        tmpAssay.addToFields(record);
+
+        if (!tmpAssay.getAssayReference().equals("")) {
             // remove factor from assays
-            parent.removeAssay(assayRef);
+            parent.removeAssay(tmpAssay.getAssayReference());
         }
         // remove column
         removeColumn(assayToRemove);

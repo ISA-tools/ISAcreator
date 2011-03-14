@@ -190,17 +190,29 @@ public class StudyDataEntry extends DataEntryForm {
         Collections.sort(tempMeasurements);
         Collections.sort(tempTechnologies);
 
-        assayFields.add(new SubFormField("Assay Measurement Type",
-                SubFormField.COMBOLIST, tempMeasurements.toArray(new String[tempMeasurements.size()])));
-        assayFields.add(new SubFormField("Assay Technology Type", SubFormField.COMBOLIST,
-                tempTechnologies.toArray(new String[tempTechnologies.size()])));
-        assayFields.add(new SubFormField("Assay Technology Platform", SubFormField.STRING));
-        assayFields.add(new SubFormField("Assay File Name", SubFormField.STRING));
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_ASSAYS);
+        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
+
+        for (String assayField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_ASSAYS)) {
+
+            if (!fieldsToIgnore.contains(assayField)) {
+
+                if (assayField.equals(Assay.MEASUREMENT_ENDPOINT)) {
+                    assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempMeasurements.toArray(new String[tempMeasurements.size()])));
+                } else if (assayField.equals(Assay.TECHNOLOGY_TYPE)) {
+                    assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempTechnologies.toArray(new String[tempTechnologies.size()])));
+                } else if (ontologyFields.contains(assayField)) {
+                    assayFields.add(new SubFormField(assayField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    assayFields.add(new SubFormField(assayField, SubFormField.STRING));
+                }
+            }
+        }
 
         int numColsToAdd = (study.getAssays().size() == 0) ? 1
                 : (study.getAssays()
                 .size() + 1);
-        assaySubForm = new AssaySubForm("study assays", FieldTypes.ASSAY, assayFields,
+        assaySubForm = new AssaySubForm(InvestigationFileSection.STUDY_ASSAYS.toString(), FieldTypes.ASSAY, assayFields,
                 numColsToAdd, 300, 110, this);
         assaySubForm.createGUI();
 
@@ -220,30 +232,34 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyContactsSubForm() {
         List<SubFormField> contactFields = new ArrayList<SubFormField>();
 
-        contactFields.add(new SubFormField("Person Last Name",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person First Name",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Mid Initials",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Email", SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Phone", SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Fax", SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Address", SubFormField.LONG_STRING));
-        contactFields.add(new SubFormField("Person Affiliation",
-                SubFormField.STRING));
-        contactFields.add(new SubFormField("Person Roles",
-                SubFormField.MULTIPLE_ONTOLOGY_SELECT));
+        //todo this will have to also take into consideration a config.xml which describes the investigation.
+        // todo the desired fields will be the union of both sets of fields.
+
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_CONTACTS);
+        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
+
+        for (String contactField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_CONTACTS)) {
+
+            if (!fieldsToIgnore.contains(contactField)) {
+                if (ontologyFields.contains(contactField)) {
+                    contactFields.add(new SubFormField(contactField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    contactFields.add(new SubFormField(contactField, SubFormField.STRING));
+                }
+            }
+        }
 
         int numColsToAdd = (study.getContacts().size() == 0) ? 4
                 : study.getContacts()
                 .size();
 
-        contactSubForm = new ContactSubForm("study contacts", FieldTypes.CONTACT,
-                contactFields, numColsToAdd, 300, 190, this);
+        contactSubForm = new ContactSubForm(InvestigationFileSection.STUDY_CONTACTS.toString(), FieldTypes.CONTACT,
+                contactFields, numColsToAdd, 300, 195, this);
         contactSubForm.createGUI();
 
         return contactSubForm;
+
+
     }
 
 
@@ -364,15 +380,25 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyFactorsSubForm() {
         List<SubFormField> factorFields = new ArrayList<SubFormField>();
 
-        factorFields.add(new SubFormField("Factor Name", SubFormField.STRING));
-        factorFields.add(new SubFormField("Factor Type",
-                SubFormField.SINGLE_ONTOLOGY_SELECT));
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_FACTORS);
+        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
+
+        for (String factorField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_FACTORS)) {
+
+            if (!fieldsToIgnore.contains(factorField)) {
+                if (ontologyFields.contains(factorField)) {
+                    factorFields.add(new SubFormField(factorField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    factorFields.add(new SubFormField(factorField, SubFormField.STRING));
+                }
+            }
+        }
 
         int numColsToAdd = (study.getFactors().size() == 0) ? 1
                 : study.getFactors()
                 .size();
 
-        factorSubForm = new FactorSubForm("study factors", FieldTypes.FACTOR, factorFields,
+        factorSubForm = new FactorSubForm(InvestigationFileSection.STUDY_FACTORS.toString(), FieldTypes.FACTOR, factorFields,
                 numColsToAdd, 300, 80, this);
 
         factorSubForm.createGUI();
@@ -388,25 +414,25 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyProtocolsSubForm() {
         List<SubFormField> protocolFields = new ArrayList<SubFormField>();
 
-        protocolFields.add(new SubFormField("Protocol Name", SubFormField.STRING));
-        protocolFields.add(new SubFormField("Protocol Type",
-                SubFormField.SINGLE_ONTOLOGY_SELECT));
-        protocolFields.add(new SubFormField("Protocol Description",
-                SubFormField.LONG_STRING));
-        protocolFields.add(new SubFormField("Protocol URI", SubFormField.STRING));
-        protocolFields.add(new SubFormField("Protocol Version",
-                SubFormField.STRING));
-        protocolFields.add(new SubFormField("Protocol Parameters Name",
-                SubFormField.MULTIPLE_ONTOLOGY_SELECT));
-        protocolFields.add(new SubFormField("Protocol Components Name",
-                SubFormField.STRING));
-        protocolFields.add(new SubFormField("Protocol Components Type", SubFormField.MULTIPLE_ONTOLOGY_SELECT));
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_PROTOCOLS);
+        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
+
+        for (String protocolField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PROTOCOLS)) {
+
+            if (!fieldsToIgnore.contains(protocolField)) {
+                if (ontologyFields.contains(protocolField)) {
+                    protocolFields.add(new SubFormField(protocolField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    protocolFields.add(new SubFormField(protocolField, SubFormField.STRING));
+                }
+            }
+        }
 
         int numColsToAdd = (study.getProtocols().size() == 0) ? 1
                 : study.getProtocols()
                 .size();
 
-        protocolSubForm = new ProtocolSubForm("study protocols", FieldTypes.PROTOCOL,
+        protocolSubForm = new ProtocolSubForm(InvestigationFileSection.STUDY_PROTOCOLS.toString(), FieldTypes.PROTOCOL,
                 protocolFields, numColsToAdd, 300, 180, this);
         protocolSubForm.createGUI();
 
@@ -421,7 +447,6 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyPublicationSubForm() {
         List<SubFormField> publicationFields = new ArrayList<SubFormField>();
 
-
         Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_PUBLICATIONS);
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PUBLICATIONS)) {
@@ -433,7 +458,6 @@ public class StudyDataEntry extends DataEntryForm {
                     publicationFields.add(new SubFormField(publicationField, SubFormField.STRING));
                 }
             }
-
         }
 
         int numColsToAdd = (study.getPublications().size() == 0) ? 1
@@ -453,12 +477,26 @@ public class StudyDataEntry extends DataEntryForm {
      * @return JPanel containing the Publication definition subform
      */
     private JPanel createStudyDesignSubForm() {
+
         List<SubFormField> studyDesignFields = new ArrayList<SubFormField>();
-        studyDesignFields.add(new SubFormField("Design Type", SubFormField.SINGLE_ONTOLOGY_SELECT, "OBI"));
-        int numColsToAdd = (study.getStudyDesigns().size() == 0) ? 4
+
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_DESIGN_SECTION);
+        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
+        for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_DESIGN_SECTION)) {
+
+            if (!fieldsToIgnore.contains(publicationField)) {
+                if (ontologyFields.contains(publicationField)) {
+                    studyDesignFields.add(new SubFormField(publicationField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                } else {
+                    studyDesignFields.add(new SubFormField(publicationField, SubFormField.STRING));
+                }
+            }
+        }
+
+        int numColsToAdd = (study.getStudyDesigns().size() == 0) ? 2
                 : study.getStudyDesigns().size();
 
-        studyDesignSubform = new StudyDesignSubForm("study design descriptors", FieldTypes.DESIGN,
+        studyDesignSubform = new StudyDesignSubForm(InvestigationFileSection.STUDY_DESIGN_SECTION.toString(), FieldTypes.DESIGN,
                 studyDesignFields, numColsToAdd, 300, 60, this);
         studyDesignSubform.createGUI();
         return studyDesignSubform;

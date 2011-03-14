@@ -39,6 +39,7 @@ package org.isatools.isacreator.configuration.io;
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.isatools.isaconfigurator.schema.*;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.configuration.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;

@@ -34,6 +34,7 @@ Investigation Person Affiliation	"Faculty of Life Sciences, Michael Smith Buildi
 Investigation Person Roles	"corresponding author"	"author"	"author"
 Investigation Person Roles Term Accession Number	""	""	""
 Investigation Person Roles Term Source REF	""	""	""
+Comment[Investigation Person Degree status]	"1:1"   ""  "2:1"
 
 STUDY
 Study Identifier	"BII-S-1"

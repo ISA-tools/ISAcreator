@@ -47,6 +47,7 @@ import org.isatools.isacreator.model.StudyContact;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ContactSubForm
@@ -71,80 +72,68 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
     }
 
     public void reformItems() {
+
         List<Contact> contacts = parent.getContacts();
+        for (int record = 1; record < contacts.size() + 1; record++) {
 
-        // start off at one since the table has the first row as the field names. consequently, the no of iterations has to be increased,
-        // so we add 1 to the contact size
-        for (int i = 1; i < (contacts.size() + 1); i++) {
-            String[] contactInfo = {
-                    contacts.get(i - 1).getLastName(),
-                    contacts.get(i - 1).getFirstName(),
-                    contacts.get(i - 1).getMidInitial(),
-                    contacts.get(i - 1).getEmail(),
-                    contacts.get(i - 1).getPhone(), contacts.get(i - 1).getFax(),
-                    contacts.get(i - 1).getAddress(),
-                    contacts.get(i - 1).getAffiliation(),
-                    contacts.get(i - 1).getRole()
-            };
+            Map<String, String> fieldList = contacts.get(record - 1).getFieldValues();
 
-            for (int j = 0; j < contactInfo.length; j++) {
-                dtm.setValueAt(contactInfo[j], j, i);
+            int contactFieldIndex = 0;
+            for (SubFormField field : fields) {
+                String value = fieldList.get(field.getFieldName());
+                dtm.setValueAt(value, contactFieldIndex, record);
+                contactFieldIndex++;
             }
         }
     }
 
     protected void removeItem(int itemToRemove) {
+
         if (parent != null) {
-            String forename = (scrollTable.getModel().getValueAt(1, itemToRemove) != null)
-                    ? scrollTable.getModel().getValueAt(1, itemToRemove).toString()
-                    : "";
-            String surname = (scrollTable.getModel().getValueAt(0, itemToRemove) != null)
-                    ? scrollTable.getModel().getValueAt(0, itemToRemove).toString()
-                    : "";
-            String email = (scrollTable.getModel().getValueAt(3, itemToRemove) != null)
-                    ? scrollTable.getModel().getValueAt(3, itemToRemove).toString()
-                    : "";
+
+            Map<String, String> record = getRecord(itemToRemove);
 
             if (parent instanceof StudyDataEntry) {
-                parent.getStudy().removeContact(forename, surname, email);
+                Contact tmpContact = new StudyContact();
+                tmpContact.addToFields(record);
+                parent.getStudy().removeContact(tmpContact.getFirstName(), tmpContact.getLastName(), tmpContact.getEmail());
             } else {
-                parent.getInvestigation().removeContact(forename, surname, email);
+                Contact tmpContact = new InvestigationContact();
+                tmpContact.addToFields(record);
+                parent.getInvestigation().removeContact(tmpContact.getFirstName(), tmpContact.getLastName().toLowerCase(), tmpContact.getEmail());
             }
         }
         removeColumn(itemToRemove);
     }
 
     public void updateItems() {
+
         int cols = dtm.getColumnCount();
-        int rows = dtm.getRowCount();
+
         final List<Contact> newContacts = new ArrayList<Contact>();
 
-        for (int i = 1; i < cols; i++) {
-            String[] contactVars = new String[9];
+        for (int recordNumber = 1; recordNumber < cols; recordNumber++) {
 
-            for (int j = 0; j < rows; j++) {
-                if (dtm.getValueAt(j, i) != null) {
-                    contactVars[j] = dtm.getValueAt(j, i).toString();
-                } else {
-                    contactVars[j] = "";
-                }
-            }
+            Map<String, String> record = getRecord(recordNumber);
 
-            if (!contactVars[0].equals("")) {
-                if (parent instanceof StudyDataEntry) {
-                    newContacts.add(new StudyContact(contactVars[0], contactVars[1],
-                            contactVars[2], contactVars[3], contactVars[4],
-                            contactVars[5], contactVars[6], contactVars[7],
-                            contactVars[8]));
-                } else {
-                    newContacts.add(new InvestigationContact(contactVars[0], contactVars[1],
-                            contactVars[2], contactVars[3], contactVars[4],
-                            contactVars[5], contactVars[6], contactVars[7],
-                            contactVars[8]));
-                }
+            // todo for each record, create a Map of key to values for each record.
 
+            if (parent instanceof StudyDataEntry) {
+                Contact contact = new StudyContact();
+                contact.addToFields(record);
+
+                if (!contact.getFirstName().equals(""))
+                    newContacts.add(contact);
+            } else {
+
+                Contact contact = new InvestigationContact();
+                contact.addToFields(record);
+
+                if (!contact.getFirstName().equals(""))
+                    newContacts.add(contact);
             }
         }
+
         if (parent instanceof StudyDataEntry) {
             parent.getStudy().setContacts(newContacts);
         } else if (parent instanceof InvestigationDataEntry) {

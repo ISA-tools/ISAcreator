@@ -43,6 +43,7 @@ import org.isatools.isacreator.model.Protocol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ProtocolSubform
@@ -73,37 +74,32 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
 
     public void reformItems() {
         List<Protocol> protocols = parent.getProtocols();
-        int rowNo = dtm.getRowCount();
 
-        for (int i = 1; i < (protocols.size() + 1); i++) {
-            String[] protocolInfo = {
-                    protocols.get(i - 1).getProtocolName(),
-                    protocols.get(i - 1).getProtocolType(),
-                    protocols.get(i - 1).getProtocolDescription(),
-                    protocols.get(i - 1).getProtocolURL(),
-                    protocols.get(i - 1).getProtocolVersion(),
-                    protocols.get(i - 1).getProtocolParameterName(),
-                    protocols.get(i - 1).getProtocolComponentName(),
-                    protocols.get(i - 1).getProtocolComponentType()
-            };
+        for (int record = 1; record < protocols.size() + 1; record++) {
 
-            for (int j = 0; j < rowNo; j++) {
-                if (i >= dtm.getColumnCount()) {
-                    addColumn();
-                    updateTables();
-                }
-                dtm.setValueAt(protocolInfo[j], j, i);
+            Map<String, String> fieldList = protocols.get(record - 1).getFieldValues();
+
+            int protocolFieldIndex = 0;
+            for (SubFormField field : fields) {
+                String value = fieldList.get(field.getFieldName());
+                dtm.setValueAt(value, protocolFieldIndex, record);
+                protocolFieldIndex++;
             }
+
+
         }
     }
 
     protected void removeItem(int itemToRemove) {
-        String protocolName = (scrollTable.getModel()
-                .getValueAt(0, itemToRemove) != null)
-                ? scrollTable.getModel().getValueAt(0, itemToRemove).toString()
-                : null;
 
-        if (protocolName != null) {
+        Map<String, String> record = getRecord(itemToRemove);
+
+        Protocol tmpProtocol = new Protocol();
+        tmpProtocol.addToFields(record);
+
+        String protocolName = tmpProtocol.getProtocolName();
+
+        if (!protocolName.equals("")) {
             parent.getStudy().removeProtocol(protocolName);
             parent.getStudy().replaceProtocols(protocolName, "");
         }
@@ -120,24 +116,18 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
 
     public void updateItems() {
         int cols = dtm.getColumnCount();
-        int rows = dtm.getRowCount();
+
         final List<Protocol> newProtocols = new ArrayList<Protocol>();
 
-        for (int i = 1; i < cols; i++) {
-            String[] protocolVars = new String[8];
+        for (int recordNumber = 1; recordNumber < cols; recordNumber++) {
 
-            for (int j = 0; j < rows; j++) {
-                if (dtm.getValueAt(j, i) != null) {
-                    protocolVars[j] = dtm.getValueAt(j, i).toString();
-                } else {
-                    protocolVars[j] = "";
-                }
-            }
+            Map<String, String> record = getRecord(recordNumber);
 
-            if (!protocolVars[0].equals("")) {
-                newProtocols.add(new Protocol(protocolVars[0], protocolVars[1],
-                        protocolVars[2], protocolVars[3], protocolVars[4],
-                        protocolVars[5], protocolVars[6], protocolVars[7]));
+            Protocol tmpProtocol = new Protocol();
+            tmpProtocol.addToFields(record);
+
+            if (!tmpProtocol.getProtocolName().equals("")) {
+                newProtocols.add(tmpProtocol);
             }
         }
 

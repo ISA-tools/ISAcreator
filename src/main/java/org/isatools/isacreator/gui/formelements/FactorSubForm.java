@@ -45,6 +45,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FactorSubForm
@@ -72,24 +73,17 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
 
     public void reformItems() {
         if (parent != null && parent.getFactors() != null) {
+
             List<Factor> factors = parent.getFactors();
-            int rowNo = dtm.getRowCount();
+            for (int record = 1; record < factors.size() + 1; record++) {
 
-            // start off at one since the table has the first row as the field names. consequently, the no of iterations has to be increased,
-            // so we add 1 to the factor size
-            for (int i = 1; i < (factors.size() + 1); i++) {
+                Map<String, String> fieldList = factors.get(record - 1).getFieldValues();
 
-                String[] factorInfo = {
-                        factors.get(i - 1).getFactorName(),
-                        factors.get(i - 1).getFactorType()
-                };
-
-                for (int j = 0; j < rowNo; j++) {
-                    if (i >= dtm.getColumnCount()) {
-                        addColumn();
-                        updateTables();
-                    }
-                    dtm.setValueAt(factorInfo[j], j, i);
+                int contactFieldIndex = 0;
+                for (SubFormField field : fields) {
+                    String value = fieldList.get(field.getFieldName());
+                    dtm.setValueAt(value, contactFieldIndex, record);
+                    contactFieldIndex++;
                 }
             }
         }
@@ -97,35 +91,31 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
 
     protected void removeItem(int itemToRemove) {
         if (parent != null && parent.getStudy() != null) {
-            String factorName = (scrollTable.getModel()
-                    .getValueAt(0, itemToRemove) != null)
-                    ? scrollTable.getModel().getValueAt(0, itemToRemove).toString()
-                    : null;
 
-            if (factorName != null) {
-                parent.getStudy().removeFactor(factorName);
-            }
+            Map<String, String> record = getRecord(itemToRemove);
+
+            Factor tmpFactor = new Factor();
+            tmpFactor.addToFields(record);
+            parent.getStudy().removeFactor(tmpFactor.getFactorName());
+
         }
         removeColumn(itemToRemove);
     }
 
     public void updateItems() {
         int cols = dtm.getColumnCount();
-        int rows = dtm.getRowCount();
-        final List<Factor> newFactors = new ArrayList<Factor>();
 
-        for (int i = 1; i < cols; i++) {
-            String[] factorVars = new String[2];
+        List<Factor> newFactors = new ArrayList<Factor>();
 
-            for (int j = 0; j < rows; j++) {
-                if (dtm.getValueAt(j, i) != null &&
-                        !dtm.getValueAt(j, i).equals("")) {
-                    factorVars[j] = dtm.getValueAt(j, i).toString();
-                }
-            }
+        for (int recordNumber = 1; recordNumber < cols; recordNumber++) {
 
-            if ((factorVars[0] != null && !factorVars[0].equals("")) && (factorVars[1] != null && !factorVars[1].equals(""))) {
-                newFactors.add(new Factor(factorVars[0], factorVars[1]));
+            Map<String, String> record = getRecord(recordNumber);
+
+            Factor factor = new Factor();
+            factor.addToFields(record);
+
+            if (!factor.getFactorName().equals("")) {
+                newFactors.add(factor);
             }
         }
 
@@ -143,11 +133,18 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
         super.valueChanged(event);
         int columnSelected = scrollTable.getSelectedColumn();
         if (columnSelected > -1) {
-            if (scrollTable.getValueAt(0, columnSelected) != null) {
-                String factorName = scrollTable.getValueAt(0, columnSelected).toString();
-                if (scrollTable.getValueAt(1, columnSelected) == null || scrollTable.getValueAt(1, columnSelected).toString().equals("")) {
-                    System.out.println("factor type: " + factorName);
-                    scrollTable.setValueAt(factorName, 1, columnSelected);
+
+
+            Map<String, String> record = getRecord(columnSelected);
+
+            Factor tmpFactor = new Factor();
+            tmpFactor.addToFields(record);
+
+            if (!tmpFactor.getFactorName().equals("")) {
+
+                if (tmpFactor.getFactorType().equals("")) {
+                    System.out.println("factor type: " + tmpFactor.getFactorName());
+                    scrollTable.setValueAt(tmpFactor.getFactorName(), 1, columnSelected);
                 }
             }
         }

@@ -74,7 +74,15 @@ public class DataEntryReferenceObject {
                 fieldsToIgnore = filterFields(sectionDefinition.get(section), "term accession", "term source");
 
                 for (String ontologyTerm : fieldsToIgnore) {
-                    ontologyFields.add(ontologyTerm.substring(0, ontologyTerm.toLowerCase().indexOf("term")).trim());
+
+                    String toAdd = ontologyTerm.substring(0, ontologyTerm.toLowerCase().indexOf("term")).trim();
+
+                    // if the field edited was a comment, it will include an unclosed square bracket after running the
+                    // previous function. So, we should close it.
+                    if (toAdd.contains("[")) {
+                        toAdd += "]";
+                    }
+                    ontologyFields.add(toAdd);
                 }
             }
         }

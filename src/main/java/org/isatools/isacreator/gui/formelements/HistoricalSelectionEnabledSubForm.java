@@ -77,7 +77,7 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
      * elements in the options panel of the subform.
      */
     public void createCustomOptions() {
-        if (parent != null && parent.getStudy() != null) {
+        if (parent != null) {
             final JLabel selectFromHistory = new JLabel(
                     "select from previous " + fieldType + "s...",
                     selectFromHistoryIcon,
