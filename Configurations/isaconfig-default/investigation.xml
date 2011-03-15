@@ -1,0 +1,450 @@
+<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+    <isatab-configuration table-name="investigation">
+        <measurement term-label="[investigation]" term-accession="" source-abbreviation=""/>
+        <technology term-label="" term-accession="" source-abbreviation=""/>
+
+        <!--Investigation Section -->
+
+        <field header="Investigation Identifier" section="INVESTIGATION" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Description" section="INVESTIGATION" data-type="Long String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Submission Date" section="INVESTIGATION" data-type="Date" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Public Release Date" section="INVESTIGATION" data-type="Date" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <!--Investigation Publications Section -->
+
+        <field header="Investigation PubMed ID" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Publication DOI" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Publication Author list" section="INVESTIGATION PUBLICATIONS"
+               data-type="Long String" is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Publication Title" section="INVESTIGATION PUBLICATIONS" data-type="Long String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <field header="Investigation Publication Status" section="INVESTIGATION PUBLICATIONS" data-type="Ontology term"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <!--Investigation Contacts Section -->
+
+        <field header="Investigation Person Last Name" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Person First Name" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Person Mid Initials" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Person Email" section="INVESTIGATION PUBLICATIONS" data-type="Long String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <field header="Investigation Person Phone" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Person Fax" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Person Address" section="INVESTIGATION PUBLICATIONS" data-type="Long String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Person Affiliation" section="INVESTIGATION PUBLICATIONS" data-type="String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Investigation Person Roles" section="INVESTIGATION PUBLICATIONS" data-type="Ontology term"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <!--Study Section -->
+
+        <field header="Study Identifier" section="STUDY" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Title" section="STUDY" data-type="String" is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Description" section="STUDY" data-type="Long String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Submission Date" section="STUDY" data-type="Date" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Public Release Date" section="STUDY" data-type="Date" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <!-- Study Publications Section -->
+
+        <field header="Study PubMed ID" section="STUDY PUBLICATIONS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Publication DOI" section="STUDY PUBLICATIONS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Publication Author list" section="STUDY PUBLICATIONS" data-type="Long String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Publication  Title" section="STUDY PUBLICATIONS" data-type="Long String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <field header="Study Publication Status" section="STUDY PUBLICATIONS" data-type="Ontology term"
+               is-file-field="false" is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <!--Study Contacts Section -->
+
+        <field header="Study Person Last Name" section="STUDY CONTACTS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Person First Name" section="STUDY CONTACTS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Person Mid Initials" section="STUDY CONTACTS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="true">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Person Email" section="STUDY CONTACTS" data-type="Long String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+
+        <field header="Study Person Phone" section="STUDY CONTACTS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Person Fax" section="STUDY CONTACTS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Person Address" section="STUDY CONTACTS" data-type="Long String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Person Affiliation" section="STUDY CONTACTS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Person Roles" section="STUDY CONTACTS" data-type="Ontology term" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <!--Study Factors Section -->
+
+        <field header="Study Factor Name" section="STUDY FACTORS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Factor Type" section="STUDY FACTORS" data-type="Ontology term" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <!--Study Designs Section -->
+
+        <field header="Study Design Type" section="STUDY DESIGN DESCRIPTORS" data-type="Ontology term"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <!--Study Assays Section -->
+
+        <field header="Study Assay Measurement Type" section="STUDY ASSAYS" data-type="List" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Assay Technology Type" section="STUDY ASSAYS" data-type="List" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Assay Technology Platform" section="STUDY ASSAYS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Assay File Name" section="STUDY ASSAYS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <!--Study Assays Section -->
+
+        <field header="Study Protocol Name" section="STUDY PROTOCOLS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Protocol Type" section="STUDY PROTOCOLS" data-type="Ontology term" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Protocol Description" section="STUDY PROTOCOLS" data-type="Long String"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Protocol URI" section="STUDY PROTOCOLS" data-type="Long String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Protocol Version" section="STUDY PROTOCOLS" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Protocol Parameters Name" section="STUDY PROTOCOLS" data-type="Ontology term"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Protocol Components Name" section="STUDY PROTOCOLS" data-type="String"
+               is-file-field="false" is-multiple-value="true"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Study Protocol Components Type" section="STUDY PROTOCOLS" data-type="Ontology term"
+               is-file-field="false" is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+    </isatab-configuration>
+</isatab-config-file>
