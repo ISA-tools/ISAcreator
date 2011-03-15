@@ -70,6 +70,7 @@ public enum InvestigationFileSection {
     }
 
     public static InvestigationFileSection convertToInstance(String value) {
+        value = value.trim();
         for (InvestigationFileSection section : values()) {
             if (section.toString().equalsIgnoreCase(value)) {
                 return section;

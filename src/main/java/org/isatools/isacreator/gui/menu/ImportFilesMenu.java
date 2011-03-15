@@ -140,8 +140,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         Thread performer = new Thread(new Runnable() {
             public void run() {
                 try {
-                    // TODO test to see if objects are maintained in memory after moving the
-                    // instantiation inside the thread.
+
                     ISAtabImporter iISA = new ISAtabImporter(menu.getMain());
                     if (iISA.importFile(dir)) {
                         // success, so load

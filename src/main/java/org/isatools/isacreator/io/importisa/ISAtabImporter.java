@@ -8,6 +8,7 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Assay;
@@ -132,8 +133,23 @@ public class ISAtabImporter {
                     }
 
                     investigation = mappingResult.snd;
-                    investigation.setReference(investigationFile.getPath());
+                    investigation.setFileReference(investigationFile.getPath());
 
+                    if (investigation.getReferenceObject() != null) {
+                        TableReferenceObject tro = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(MappingObject.INVESTIGATION);
+
+                        System.out.println(tro);
+
+                        DataEntryReferenceObject referenceObject = investigation.getReferenceObject();
+
+                        System.out.println("Loaded investigation definition file with " + tro.getTableFields().getFields().size() + " fields.");
+
+                        referenceObject.setFieldDefinition(tro.getTableFields().getFields());
+
+                        for(Study study : investigation.getStudies().values()) {
+                            study.getReferenceObject().setFieldDefinition(tro.getTableFields().getFields());
+                        }
+                    }
 
                     processInvestigation();
                     if (constructWithGUIs) {
@@ -156,8 +172,6 @@ public class ISAtabImporter {
     }
 
     private void processInvestigation() {
-        // todo take a look and this back reference. Should be a way to provide only one reference.
-
 
         SpreadsheetImport spreadsheetImporter = new SpreadsheetImport();
 

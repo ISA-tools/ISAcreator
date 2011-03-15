@@ -41,6 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
@@ -138,10 +139,6 @@ public class StudyDataEntry extends DataEntryForm {
         subPanel.add(createStudyContactsSubForm());
         subPanel.add(Box.createVerticalStrut(20));
 
-        // todo for next release integrate use of Comment section in Study and Investigation definition.
-//		subPanel.add(createStudyCommentsSubForm());
-//		subPanel.add(Box.createVerticalStrut(20));
-
         container.add(subPanel, BorderLayout.SOUTH);
 
         JScrollPane containerScroller = new JScrollPane(container,
@@ -197,14 +194,29 @@ public class StudyDataEntry extends DataEntryForm {
 
             if (!fieldsToIgnore.contains(assayField)) {
 
+                FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(assayField);
+
+                int fieldType = SubFormField.STRING;
+
                 if (assayField.equals(Assay.MEASUREMENT_ENDPOINT)) {
                     assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempMeasurements.toArray(new String[tempMeasurements.size()])));
                 } else if (assayField.equals(Assay.TECHNOLOGY_TYPE)) {
                     assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempTechnologies.toArray(new String[tempTechnologies.size()])));
                 } else if (ontologyFields.contains(assayField)) {
-                    assayFields.add(new SubFormField(assayField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+
+                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    assayFields.add(new SubFormField(assayField, fieldType));
                 } else {
-                    assayFields.add(new SubFormField(assayField, SubFormField.STRING));
+                    if (fieldDescriptor != null) {
+                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                                fieldDescriptor.isAcceptsMultipleValues());
+                    }
+                    assayFields.add(new SubFormField(assayField, fieldType));
                 }
             }
         }
@@ -240,11 +252,29 @@ public class StudyDataEntry extends DataEntryForm {
 
         for (String contactField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_CONTACTS)) {
 
+            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(contactField);
+
             if (!fieldsToIgnore.contains(contactField)) {
+
+                int fieldType = SubFormField.STRING;
+
                 if (ontologyFields.contains(contactField)) {
-                    contactFields.add(new SubFormField(contactField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+
+                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    contactFields.add(new SubFormField(contactField, fieldType));
                 } else {
-                    contactFields.add(new SubFormField(contactField, SubFormField.STRING));
+
+                    if (fieldDescriptor != null) {
+                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                                fieldDescriptor.isAcceptsMultipleValues());
+                    }
+
+                    contactFields.add(new SubFormField(contactField, fieldType));
                 }
             }
         }
@@ -280,92 +310,7 @@ public class StudyDataEntry extends DataEntryForm {
 
         Box verticalContainer = Box.createVerticalBox();
 
-
-        // Create study identifier fields
-        JPanel studyIDCont = createFieldPanel(1, 2);
-        studyIDCont.add(createLabel("study identifier"));
-        studyIdentifier = new RoundedJTextField(10);
-        studyIdentifier.setText(study.getStudyId());
-        studyIdentifier.setToolTipText(
-                "<html><b>Study ID</b><p>An identifier for the study</p></html>");
-        UIHelper.renderComponent(studyIdentifier, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        studyIDCont.add(studyIdentifier);
-
-
-        verticalContainer.add(studyIDCont);
-        verticalContainer.add(Box.createVerticalStrut(5));
-
-        // create study title fields
-        JPanel studyTitleCont = createFieldPanel(1, 2);
-        studyTitleCont.add(createLabel("study title"));
-        studyTitle = new RoundedJTextField(10);
-        studyTitle.setText(study.getStudyTitle());
-        studyTitle.setToolTipText(
-                "<html><b>Study Title</b><p>The title for this study</p></html>");
-        studyTitleCont.add(createTextEditEnabledField(studyTitle));
-
-        UIHelper.renderComponent(studyTitle, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        verticalContainer.add(studyTitleCont);
-        verticalContainer.add(Box.createVerticalStrut(5));
-
-        // create study description fields
-        JPanel studyDescCont = createFieldPanel(1, 2);
-        studyDescCont.add(createLabel("study description"));
-        studyDescription = new JTextArea(study.getStudyDesc(), 3, 5);
-        studyDescription.setLineWrap(true);
-        studyDescription.setWrapStyleWord(true);
-        studyDescription.setBackground(UIHelper.BG_COLOR);
-        studyDescription.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
-        studyDescription.setToolTipText(
-                "<html><b>Study Description</b><p>A detailed description of the Study.</p></html>");
-
-        UIHelper.renderComponent(studyDescription, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        JScrollPane descScroller = new JScrollPane(studyDescription,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        descScroller.setPreferredSize(new Dimension(100, 75));
-        descScroller.setBorder(UIHelper.STD_ETCHED_BORDER);
-        descScroller.getViewport().setBackground(UIHelper.BG_COLOR);
-
-        IAppWidgetFactory.makeIAppScrollPane(descScroller);
-
-        studyDescCont.add(UIHelper.createTextEditEnableJTextArea(descScroller, studyDescription));
-
-        verticalContainer.add(studyDescCont);
-        verticalContainer.add(Box.createVerticalStrut(5));
-
-        // create date of study submission fields
-        JPanel dateOfStudySubmissionCont = createFieldPanel(1, 2);
-        dateOfStudySubmissionCont.add(createLabel("study submission date"));
-        dateOfStudySubmission = new RoundedJTextField(10);
-        dateOfStudySubmission.setText(study.getDateOfSubmission());
-        dateOfStudySubmission.setToolTipText(
-                "<html><b>Date of Study Submission</b><p>When the study will be submitted</p><p><b>Please use the calendar tool to enter the date!</b></p></html>");
-        dateOfStudySubmissionCont.add(createDateDropDown(dateOfStudySubmission));
-
-        UIHelper.renderComponent(dateOfStudySubmission, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        verticalContainer.add(dateOfStudySubmissionCont);
-        verticalContainer.add(Box.createVerticalStrut(5));
-
-        // create study  public release date fields
-        JPanel publicStudyReleaseDateCont = createFieldPanel(1, 2);
-        publicStudyReleaseDateCont.add(createLabel("study public release date"));
-        dateOfStudyPublicRelease = new RoundedJTextField(10);
-        dateOfStudyPublicRelease.setText(study.getPublicReleaseDate());
-        dateOfStudyPublicRelease.setToolTipText(
-                "<html><b>Date of Study Public Release</b><p>When will the study be released for the public domain</p><p><b>Please use the calendar tool to enter the date!</b></p></html>");
-
-        UIHelper.renderComponent(dateOfStudyPublicRelease, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        publicStudyReleaseDateCont.add(createDateDropDown(
-                dateOfStudyPublicRelease));
-
-        verticalContainer.add(publicStudyReleaseDateCont);
-        verticalContainer.add(Box.createVerticalStrut(5));
+        addFieldsToPanel(verticalContainer, study.getFieldValues(), study.getReferenceObject());
 
         studyDesc.add(verticalContainer, BorderLayout.NORTH);
 
@@ -384,12 +329,29 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String factorField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_FACTORS)) {
+            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(factorField);
 
             if (!fieldsToIgnore.contains(factorField)) {
+
+                int fieldType = SubFormField.STRING;
+
                 if (ontologyFields.contains(factorField)) {
-                    factorFields.add(new SubFormField(factorField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+
+                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    factorFields.add(new SubFormField(factorField, fieldType));
                 } else {
-                    factorFields.add(new SubFormField(factorField, SubFormField.STRING));
+
+                    if (fieldDescriptor != null) {
+                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                                fieldDescriptor.isAcceptsMultipleValues());
+                    }
+
+                    factorFields.add(new SubFormField(factorField, fieldType));
                 }
             }
         }
@@ -418,12 +380,29 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String protocolField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PROTOCOLS)) {
+            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(protocolField);
 
             if (!fieldsToIgnore.contains(protocolField)) {
+
+                int fieldType = SubFormField.STRING;
+
                 if (ontologyFields.contains(protocolField)) {
-                    protocolFields.add(new SubFormField(protocolField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+
+                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    protocolFields.add(new SubFormField(protocolField, fieldType));
                 } else {
-                    protocolFields.add(new SubFormField(protocolField, SubFormField.STRING));
+
+                    if (fieldDescriptor != null) {
+                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                                fieldDescriptor.isAcceptsMultipleValues());
+                    }
+
+                    protocolFields.add(new SubFormField(protocolField, fieldType));
                 }
             }
         }
@@ -451,11 +430,29 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PUBLICATIONS)) {
 
+            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(publicationField);
+
             if (!fieldsToIgnore.contains(publicationField)) {
+
+                int fieldType = SubFormField.STRING;
+
                 if (ontologyFields.contains(publicationField)) {
-                    publicationFields.add(new SubFormField(publicationField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+
+                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    publicationFields.add(new SubFormField(publicationField, fieldType));
                 } else {
-                    publicationFields.add(new SubFormField(publicationField, SubFormField.STRING));
+
+                    if (fieldDescriptor != null) {
+                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                                fieldDescriptor.isAcceptsMultipleValues());
+                    }
+
+                    publicationFields.add(new SubFormField(publicationField, fieldType));
                 }
             }
         }
@@ -482,15 +479,35 @@ public class StudyDataEntry extends DataEntryForm {
 
         Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_DESIGN_SECTION);
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
-        for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_DESIGN_SECTION)) {
 
-            if (!fieldsToIgnore.contains(publicationField)) {
-                if (ontologyFields.contains(publicationField)) {
-                    studyDesignFields.add(new SubFormField(publicationField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+        for (String studyDesignField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_DESIGN_SECTION)) {
+
+            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(studyDesignField);
+
+            if (!fieldsToIgnore.contains(studyDesignField)) {
+
+                int fieldType = SubFormField.STRING;
+
+                if (ontologyFields.contains(studyDesignField)) {
+
+                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    studyDesignFields.add(new SubFormField(studyDesignField, fieldType));
                 } else {
-                    studyDesignFields.add(new SubFormField(publicationField, SubFormField.STRING));
+
+                    if (fieldDescriptor != null) {
+                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                                fieldDescriptor.isAcceptsMultipleValues());
+                    }
+
+                    studyDesignFields.add(new SubFormField(studyDesignField, fieldType));
                 }
             }
+
         }
 
         int numColsToAdd = (study.getStudyDesigns().size() == 0) ? 2
@@ -553,39 +570,35 @@ public class StudyDataEntry extends DataEntryForm {
      * Output the Study definition in tabular format for output to the ISA-TAB files.
      */
     public String toString() {
-        String data = "";
-        data += "STUDY\n";
-        data += ("Study Identifier\t\"" + studyIdentifier.getText() + "\"\n");
-        data += ("Study Title\t\"" + studyTitle.getText() + "\"\n");
-        data += ("Study Submission Date\t\"" +
-                dateOfStudySubmission.getText() + "\"\n");
-        data += ("Study Public Release Date\t\"" +
-                dateOfStudyPublicRelease.getText() + "\"\n");
-        data += ("Study Description\t\"" + studyDescription.getText() + "\"\n");
+        update();
 
-        data += ("Study File Name\t\"" + study.getStudySampleFileIdentifier() + "\"\n");
+        StringBuffer output = new StringBuffer();
+        output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
 
-        data += studyDesignSubform.toString();
-        data += studyPublicationsSubForm.toString();
-        data += factorSubForm.toString();
-        data += assaySubForm.toString();
-        data += protocolSubForm.toString();
-        data += contactSubForm.toString();
+        for (String fieldName : study.getFieldValues().keySet()) {
+            output.append(fieldName).append("\t\"").append(study.getFieldValues().get(fieldName)).append("\"\n");
+        }
 
-        return data;
+        output.append(studyDesignSubform.toString());
+        output.append(studyPublicationsSubForm.toString());
+        output.append(factorSubForm.toString());
+        output.append(assaySubForm.toString());
+        output.append(protocolSubForm.toString());
+        output.append(contactSubForm.toString());
+
+        return output.toString();
     }
 
     /**
      * update method to save all changes in view to the model (Study object)
      */
     public void update() {
-        study.setStudyId(studyIdentifier.getText());
-        study.setStudyDesc(studyDescription.getText());
-        study.setStudyTitle(studyTitle.getText());
-        study.setDateOfSubmission(dateOfStudySubmission.getText());
-        study.setPublicReleaseDate(dateOfStudyPublicRelease.getText());
 
-        // update subform contents
+        for (String fieldName : fieldDefinitions.keySet()) {
+            study.getFieldValues().put(fieldName, fieldDefinitions.get(fieldName).getText());
+        }
+
+
         studyDesignSubform.update();
         studyPublicationsSubForm.update();
         factorSubForm.update();

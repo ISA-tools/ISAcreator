@@ -648,7 +648,7 @@ public class MergeFilesUI extends DataEntryWrapper {
                         f.getParentFile().mkdir();
                     }
 
-                    inv1.setReference(f.getAbsolutePath());
+                    inv1.setFileReference(f.getAbsolutePath());
 
                     menuPanels.getMain().getDataEntryEnvironment().setInvestigation(inv1);
 

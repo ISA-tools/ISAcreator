@@ -38,7 +38,11 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.apache.commons.collections15.OrderedMap;
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
@@ -52,6 +56,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,29 +72,24 @@ public class InvestigationDataEntry extends DataEntryForm {
     @InjectedResource
     private ImageIcon panelHeader;
 
+    private Investigation investigation;
 
-    private Investigation inv;
-    private JTextField invId;
-    private JTextField invTitle;
-    private JTextArea invDesc;
-    private JTextField invSubmissionDate;
-    private JTextField pubReleaseDate;
     private SubForm publicationsSubForm;
     private SubForm contactsSubform;
 
 
-    public InvestigationDataEntry(Investigation inv, DataEntryEnvironment dep) {
+    public InvestigationDataEntry(Investigation investigation, DataEntryEnvironment dep) {
         super(dep);
 
         ResourceInjector.get("gui-package.style").inject(this);
 
-        this.inv = inv;
+        this.investigation = investigation;
         instantiatePane();
-        createFields();
+        createInvestigationSectionFields();
         finalisePane();
     }
 
-    public void createFields() {
+    private void createInvestigationSectionFields() {
         JPanel container = new JPanel(new BorderLayout());
         container.setBackground(UIHelper.BG_COLOR);
 
@@ -107,107 +107,7 @@ public class InvestigationDataEntry extends DataEntryForm {
         // add a spacer to the layout
         fields.add(Box.createVerticalStrut(5));
 
-        // create publication doi fields
-        JPanel invIdPanel = createFieldPanel(1, 2);
-        JLabel invIdLabel = createLabel("investigation identifier");
-
-        invId = new RoundedJTextField(10);
-        invId.setText(inv.getInvestigationId());
-        invId.setToolTipText(
-                "<html><b>investigation identifier</b><p>An identifier for the investigation</p>");
-
-        UIHelper.renderComponent(invId, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        invIdPanel.add(invIdLabel);
-        invIdPanel.add(invId);
-
-        invDescPanel.add(invIdPanel);
-        invDescPanel.add(Box.createVerticalStrut(5));
-
-        // Create investigation title fields and panel to contain components
-        JPanel invTitleCont = createFieldPanel(1, 2);
-
-        invTitle = new RoundedJTextField(10);
-        invTitle.setText(inv.getInvestigationTitle());
-
-        invTitle.setToolTipText(
-                "<html><b>investigation title</b><p>The title of the investigation.</p></html>");
-
-        UIHelper.renderComponent(invTitle, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        JLabel invTitleLab = createLabel("investigation Title");
-
-        invTitleCont.add(invTitleLab);
-        invTitleCont.add(createTextEditEnabledField(invTitle));
-
-        invDescPanel.add(invTitleCont);
-        invDescPanel.add(Box.createVerticalStrut(5));
-
-        // Create investigation description fields and panel to contain components
-        JPanel invDescCont = createFieldPanel(1, 2);
-
-        JLabel invDescLab = createLabel("investigation description");
-
-        invDesc = new JTextArea(inv.getInvestigationDescription());
-        invDesc.setWrapStyleWord(true);
-        invDesc.setLineWrap(true);
-        invDesc.setBackground(UIHelper.BG_COLOR);
-        invDesc.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
-
-        invDesc.setToolTipText(
-                "<html><b>Investigation Description</b><p>A description of the investigation, it's purpose, and so forth.</p></html>");
-
-
-        JScrollPane invDescScroll = new JScrollPane(invDesc,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        invDescScroll.setPreferredSize(new Dimension(200, 75));
-
-        invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
-
-        IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
-
-        UIHelper.renderComponent(invDesc, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        invDescCont.add(invDescLab);
-        invDescCont.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, invDesc));
-
-        invDescPanel.add(invDescCont);
-        invDescPanel.add(Box.createVerticalStrut(5));
-
-        // Create investigation submission date fields and panel to contain components
-        JPanel invSubDatePanel = createFieldPanel(1, 2);
-        JLabel invSubDateLabel = createLabel("investigation submission date");
-
-        invSubmissionDate = new RoundedJTextField(10);
-        invSubmissionDate.setText(inv.getSubmissionDate());
-        invSubmissionDate.setToolTipText(
-                "<html><b>Investigation Submission Date</b><p>The date the investigation is to be submitted</p></html>");
-        UIHelper.renderComponent(invSubmissionDate, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        invSubDatePanel.add(invSubDateLabel);
-        invSubDatePanel.add(createDateDropDown(invSubmissionDate));
-
-        invDescPanel.add(invSubDatePanel);
-        invDescPanel.add(Box.createVerticalStrut(5));
-
-        // Create investigation submission date fields and panel to contain components
-        JPanel pubRelDatePanel = createFieldPanel(1, 2);
-        JLabel pubRelDateLabel = createLabel(
-                "investigation public release date");
-
-        pubReleaseDate = new RoundedJTextField(10);
-        pubReleaseDate.setText(inv.getPublicReleaseDate());
-        pubReleaseDate.setToolTipText(
-                "<html><b>Public Release Date</b><p>The date when the investigation is to be publicly released</p></html>");
-        UIHelper.renderComponent(pubReleaseDate, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-        pubRelDatePanel.add(pubRelDateLabel);
-        pubRelDatePanel.add(createDateDropDown(pubReleaseDate));
-
-        invDescPanel.add(pubRelDatePanel);
-
-        invDescPanel.add(Box.createVerticalStrut(5));
+        addFieldsToPanel(invDescPanel, investigation.getFieldValues(), investigation.getReferenceObject());
 
         fields.add(invDescPanel);
 
@@ -251,22 +151,32 @@ public class InvestigationDataEntry extends DataEntryForm {
         //todo this will have to also take into consideration a config.xml which describes the investigation.
         // todo the desired fields will be the union of both sets of fields.
 
-        Set<String> ontologyFields = inv.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION);
-        Set<String> fieldsToIgnore = inv.getReferenceObject().getFieldsToIgnore();
+        Set<String> ontologyFields = investigation.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION);
+        Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
 
-        for (String contactField : inv.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION)) {
+        for (String contactField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION)) {
+
+            FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(contactField);
 
             if (!fieldsToIgnore.contains(contactField)) {
                 if (ontologyFields.contains(contactField)) {
-                    contactFields.add(new SubFormField(contactField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                    int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if(fieldDescriptor != null)
+                         if(fieldDescriptor.isAcceptsMultipleValues())
+                             fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    contactFields.add(new SubFormField(contactField, fieldType));
                 } else {
-                    contactFields.add(new SubFormField(contactField, SubFormField.STRING));
+
+                    contactFields.add(new SubFormField(contactField,
+                            translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(), fieldDescriptor.isAcceptsMultipleValues())));
                 }
             }
         }
 
-        int numColsToAdd = (inv.getContacts().size() == 0) ? 4
-                : inv.getContacts()
+        int numColsToAdd = (investigation.getContacts().size() == 0) ? 4
+                : investigation.getContacts()
                 .size();
 
         contactsSubform = new ContactSubForm(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), FieldTypes.CONTACT,
@@ -280,21 +190,30 @@ public class InvestigationDataEntry extends DataEntryForm {
     private JPanel createInvestigationPublicationSubForm() {
         List<SubFormField> publicationFields = new ArrayList<SubFormField>();
 
-        Set<String> ontologyFields = inv.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION);
-        Set<String> fieldsToIgnore = inv.getReferenceObject().getFieldsToIgnore();
-        for (String publicationField : inv.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
+        Set<String> ontologyFields = investigation.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION);
+        Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
+        for (String publicationField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
+
+            FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(publicationField);
 
             if (!fieldsToIgnore.contains(publicationField)) {
                 if (ontologyFields.contains(publicationField)) {
-                    publicationFields.add(new SubFormField(publicationField, SubFormField.SINGLE_ONTOLOGY_SELECT));
+                    int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                    if(fieldDescriptor != null)
+                         if(fieldDescriptor.isAcceptsMultipleValues())
+                             fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                    publicationFields.add(new SubFormField(publicationField, fieldType));
                 } else {
-                    publicationFields.add(new SubFormField(publicationField, SubFormField.STRING));
+                    publicationFields.add(new SubFormField(publicationField,
+                            translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(), fieldDescriptor.isAcceptsMultipleValues())));
                 }
             }
         }
 
-        int numColsToAdd = (inv.getPublications().size() == 0) ? 1
-                : inv.getPublications()
+        int numColsToAdd = (investigation.getPublications().size() == 0) ? 1
+                : investigation.getPublications()
                 .size();
 
 
@@ -307,57 +226,51 @@ public class InvestigationDataEntry extends DataEntryForm {
     }
 
     public String toString() {
-        String data = "INVESTIGATION\n";
+        update();
 
-        boolean displayInvestigationInfo = inv.getStudies().size() > 1;
+        StringBuffer output = new StringBuffer();
+        output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
 
-        String invIdStr = displayInvestigationInfo ? invId.getText() : "";
-        data += ("Investigation Identifier\t\"" + invIdStr + "\"\n");
-        String invTitleStr = displayInvestigationInfo ? invTitle.getText() : "";
-        data += ("Investigation Title\t\"" + invTitleStr + "\"\n");
-        String invDescStr = displayInvestigationInfo ? invDesc.getText() : "";
-        data += ("Investigation Description\t\"" + invDescStr + "\"\n");
-        String invSubmissionDateStr = displayInvestigationInfo ? invSubmissionDate.getText() : "";
-        data += ("Investigation Submission Date\t\"" +
-                invSubmissionDateStr + "\"\n");
-        String invPubReleaseDateStr = displayInvestigationInfo ? pubReleaseDate.getText() : "";
-        data += ("Investigation Public Release Date\t\"" +
-                invPubReleaseDateStr + "\"\n");
+        boolean displayInvestigationInfo = investigation.getStudies().size() > 1;
 
-        data += publicationsSubForm.toString();
-        data += contactsSubform.toString();
+        for (String fieldName : investigation.getFieldValues().keySet()) {
+            output.append(fieldName).append("\t\"").append(displayInvestigationInfo ?
+                    investigation.getFieldValues().get(fieldName) : "").append("\"\n");
+        }
+
+        output.append(publicationsSubForm.toString());
+        output.append(contactsSubform.toString());
 
 
-        return data;
+        return output.toString();
     }
 
     public List<Contact> getContacts() {
-        return inv.getContacts();
+        return investigation.getContacts();
     }
 
     @Override
     public List<Publication> getPublications() {
-        return inv.getPublications();
+        return investigation.getPublications();
     }
 
     @Override
     public Investigation getInvestigation() {
-        return inv;
+        return investigation;
     }
 
     public void update() {
-        inv.setInvestigationId(invId.getText());
-        inv.setInvestigationTitle(invTitle.getText());
-        inv.setInvestigationDescription(invDesc.getText());
-        inv.setPublicReleaseDate(pubReleaseDate.getText());
-        inv.setSubmissionDate(invSubmissionDate.getText());
+
+        for (String fieldName : fieldDefinitions.keySet()) {
+            investigation.getFieldValues().put(fieldName, fieldDefinitions.get(fieldName).getText());
+        }
 
         publicationsSubForm.update();
         contactsSubform.update();
     }
 
     public void removeReferences() {
-        System.out.println("removing investigation: " + inv.getInvestigationId());
+        System.out.println("removing investigation: " + investigation.getInvestigationId());
 
         publicationsSubForm.setDataEntryEnvironment(null);
         publicationsSubForm.setParent(null);
@@ -369,16 +282,16 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         setDataEntryEnvironment(null);
 
-        for (String s : inv.getStudies().keySet()) {
-            Study tmpStudy = inv.getStudies().get(s);
+        for (String s : investigation.getStudies().keySet()) {
+            Study tmpStudy = investigation.getStudies().get(s);
             System.out.println("removing study: " + tmpStudy.getStudyId());
             tmpStudy.getUserInterface().removeReferences();
             tmpStudy.setUI(null);
         }
 
-        inv.getUserInterface().removeAll();
-        inv.setUserInterface(null);
+        investigation.getUserInterface().removeAll();
+        investigation.setUserInterface(null);
 
-        inv = null;
+        investigation = null;
     }
 }

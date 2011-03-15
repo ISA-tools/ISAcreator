@@ -37,15 +37,24 @@
 
 package org.isatools.isacreator.gui;
 
+import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.apache.commons.collections15.OrderedMap;
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.calendar.CalendarGUI;
 import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.common.TextEditUtility;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedCancelledEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
@@ -60,6 +69,8 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     private DataEntryEnvironment dataEntryEnvironment;
 
+    protected OrderedMap<String, JTextComponent> fieldDefinitions;
+
     public DataEntryForm(DataEntryEnvironment dataEntryEnvironment) {
         this.dataEntryEnvironment = dataEntryEnvironment;
     }
@@ -71,7 +82,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         // implemented in subclasses
     }
 
-    public JComponent createDateDropDown(JTextField field) {
+    public JComponent createDateDropDown(JTextComponent field) {
 
         CalendarGUI calendar = new CalendarGUI();
         calendar.createGUI();
@@ -120,7 +131,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         return label;
     }
 
-    public JComponent createOntologyDropDown(JTextField field,
+    public JComponent createOntologyDropDown(JTextComponent field,
                                              boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
         OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(dataEntryEnvironment.getParentFrame(),
                 allowsMultiple, recommendedOntologySource);
@@ -214,6 +225,95 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     public List<StudyDesign> getDesigns() {
         return null;
+    }
+
+
+
+    public int translateDataTypeToSubFormFieldType(DataTypes dataType, boolean acceptsMultipleValues) {
+        if(dataType == DataTypes.ONTOLOGY_TERM) {
+            return acceptsMultipleValues ? SubFormField.MULTIPLE_ONTOLOGY_SELECT : SubFormField.SINGLE_ONTOLOGY_SELECT;
+        }
+
+        if(dataType == DataTypes.DATE) {
+            return SubFormField.DATE;
+        }
+
+        if(dataType == DataTypes.LONG_STRING) {
+            return SubFormField.LONG_STRING;
+        }
+
+        if(dataType == DataTypes.LIST) {
+            return SubFormField.COMBOLIST;
+        }
+
+        return SubFormField.STRING;
+
+    }
+
+    public void addFieldsToPanel(Container panel, Map<String, String> fieldValues, DataEntryReferenceObject referenceObject) {
+
+        if(fieldDefinitions == null) {
+            fieldDefinitions = new ListOrderedMap<String, JTextComponent>();
+        }
+
+        for (String fieldName : fieldValues.keySet()) {
+            FieldObject fieldDescriptor = referenceObject.getFieldDefinition(fieldName);
+
+            JPanel fieldPanel = createFieldPanel(1, 2);
+            JLabel fieldLabel = createLabel(fieldName);
+
+            JTextComponent textComponent;
+
+            if (fieldDescriptor.getDatatype() == DataTypes.STRING || fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || fieldDescriptor.getDatatype() == DataTypes.DATE) {
+                textComponent = new RoundedJTextField(10);
+            } else if (fieldDescriptor.getDatatype() == DataTypes.LONG_STRING) {
+                textComponent = new JTextArea();
+                ((JTextArea) textComponent).setWrapStyleWord(true);
+                ((JTextArea) textComponent).setLineWrap(true);
+                textComponent.setBackground(UIHelper.BG_COLOR);
+                textComponent.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
+            } else {
+                // todo should add in the option to have a combobox...
+                textComponent = new RoundedJTextField(10);
+            }
+
+
+            textComponent.setText(fieldValues.get(fieldName).equals("")
+                    ? fieldDescriptor.getDefaultVal() : fieldValues.get(fieldName));
+            textComponent.setToolTipText(fieldDescriptor.getDescription());
+
+            UIHelper.renderComponent(textComponent, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+
+            fieldPanel.add(fieldLabel);
+
+            if (textComponent instanceof JTextArea) {
+
+                JScrollPane invDescScroll = new JScrollPane(textComponent,
+                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                invDescScroll.setPreferredSize(new Dimension(200, 75));
+
+                invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
+
+                IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
+                fieldPanel.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, textComponent));
+            } else {
+
+                if (fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM) {
+                    fieldPanel.add(createOntologyDropDown(textComponent, false, fieldDescriptor.getRecommmendedOntologySource()));
+                } else if (fieldDescriptor.getDatatype() == DataTypes.DATE) {
+                    fieldPanel.add(createDateDropDown(textComponent));
+                } else {
+                    fieldPanel.add(textComponent);
+                }
+            }
+
+            fieldDefinitions.put(fieldName, textComponent);
+
+            panel.add(fieldPanel);
+            panel.add(Box.createVerticalStrut(5));
+
+        }
     }
 
 

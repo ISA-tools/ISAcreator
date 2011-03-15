@@ -300,7 +300,7 @@ public class Investigation extends ISASection {
         this.contacts = contacts;
     }
 
-    public void setReference(String reference) {
+    public void setFileReference(String reference) {
         String directory = reference.substring(0,
                 reference.lastIndexOf(File.separator));
         String investigationFileName = reference.substring(reference.lastIndexOf(

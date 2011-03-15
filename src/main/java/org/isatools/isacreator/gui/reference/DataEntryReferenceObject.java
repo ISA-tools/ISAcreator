@@ -1,13 +1,12 @@
 package org.isatools.isacreator.gui.reference;
 
 import org.apache.commons.collections15.OrderedMap;
+import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by the ISA team
@@ -20,7 +19,7 @@ import java.util.Set;
 public class DataEntryReferenceObject {
 
     private OrderedMap<InvestigationFileSection, Set<String>> sectionDefinition;
-    private Map<String, FieldObject> fieldDefinition;
+    private OrderedMap<String, FieldObject> fieldDefinition;
 
     private Set<String> fieldsToIgnore;
 
@@ -29,10 +28,10 @@ public class DataEntryReferenceObject {
     }
 
     public DataEntryReferenceObject(OrderedMap<InvestigationFileSection, Set<String>> sectionDefinition) {
-        this(sectionDefinition, new HashMap<String, FieldObject>());
+        this(sectionDefinition, new ListOrderedMap<String, FieldObject>());
     }
 
-    public DataEntryReferenceObject(OrderedMap<InvestigationFileSection, Set<String>> sectionDefinition, Map<String, FieldObject> fieldDefinition) {
+    public DataEntryReferenceObject(OrderedMap<InvestigationFileSection, Set<String>> sectionDefinition, OrderedMap<String, FieldObject> fieldDefinition) {
         this.sectionDefinition = sectionDefinition;
         this.fieldDefinition = fieldDefinition;
     }
@@ -41,8 +40,14 @@ public class DataEntryReferenceObject {
         this.sectionDefinition = sectionDefinition;
     }
 
-    public void setFieldDefinition(Map<String, FieldObject> fieldDefinition) {
+    public void setFieldDefinition(OrderedMap<String, FieldObject> fieldDefinition) {
         this.fieldDefinition = fieldDefinition;
+    }
+
+    public void setFieldDefinition(List<FieldObject> fieldDefinition) {
+        for (FieldObject field : fieldDefinition) {
+            this.fieldDefinition.put(field.getFieldName(), field);
+        }
     }
 
     public OrderedMap<InvestigationFileSection, Set<String>> getSectionDefinition() {
@@ -55,6 +60,15 @@ public class DataEntryReferenceObject {
 
     public Set<String> getFieldsForSection(InvestigationFileSection section) {
         return sectionDefinition.get(section);
+    }
+
+    public FieldObject getFieldDefinition(String fieldName) {
+        if (fieldDefinition.containsKey(fieldName)) {
+            return fieldDefinition.get(fieldName);
+        } else {
+            // return a default field definition object for Text
+            return new FieldObject(fieldName, "No further information available", DataTypes.STRING, "", false, false, false);
+        }
     }
 
 

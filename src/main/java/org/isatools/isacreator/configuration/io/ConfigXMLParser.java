@@ -135,7 +135,8 @@ public class ConfigXMLParser {
     private void processTable(IsaTabConfigurationType isaConf) {
         OntologyEntryType measurementInfo = isaConf.getMeasurement();
         OntologyEntryType technologyInfo = isaConf.getTechnology();
-        String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : MappingObject.ASSAY_TYPE;
+
+        String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]") ? MappingObject.INVESTIGATION : MappingObject.ASSAY_TYPE;
 
         MappingObject mo = new MappingObject(tableType, measurementInfo.getTermLabel(),
                 measurementInfo.getSourceAbbreviation(), measurementInfo.getTermAccession(),

@@ -3,7 +3,7 @@ package org.isatools.isacreator.gui.listeners.propertychange;
 import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
-import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -18,9 +18,9 @@ import java.beans.PropertyChangeListener;
 public class OntologySelectedEvent implements PropertyChangeListener {
     private OntologySelectionTool ontologySelectionTool;
     private DropDownComponent dropDownComponent;
-    private JTextField field;
+    private JTextComponent field;
 
-    public OntologySelectedEvent(OntologySelectionTool ontologySelectionTool, DropDownComponent dropDownComponent, JTextField field) {
+    public OntologySelectedEvent(OntologySelectionTool ontologySelectionTool, DropDownComponent dropDownComponent, JTextComponent field) {
         this.ontologySelectionTool = ontologySelectionTool;
         this.dropDownComponent = dropDownComponent;
         this.field = field;

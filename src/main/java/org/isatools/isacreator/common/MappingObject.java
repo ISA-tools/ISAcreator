@@ -47,6 +47,7 @@ public class MappingObject implements Serializable {
 
     public static final String ASSAY_TYPE = "assay";
     public static final String STUDY_SAMPLE = "study sample";
+    public static final String INVESTIGATION = "investigation";
 
     private String measurementType;
     private String measurementSource;

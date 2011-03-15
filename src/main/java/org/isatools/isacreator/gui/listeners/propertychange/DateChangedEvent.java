@@ -3,7 +3,7 @@ package org.isatools.isacreator.gui.listeners.propertychange;
 import org.isatools.isacreator.calendar.CalendarGUI;
 import org.isatools.isacreator.common.DropDownComponent;
 
-import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -19,9 +19,9 @@ public class DateChangedEvent implements PropertyChangeListener {
 
     private CalendarGUI calendar;
     private DropDownComponent dropDownComponent;
-    private JTextField field;
+    private JTextComponent field;
 
-    public DateChangedEvent(CalendarGUI calendar, DropDownComponent dropDownComponent, JTextField field) {
+    public DateChangedEvent(CalendarGUI calendar, DropDownComponent dropDownComponent, JTextComponent field) {
         this.calendar = calendar;
         this.dropDownComponent = dropDownComponent;
         this.field = field;

@@ -980,7 +980,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                 if (curDataEntryEnvironment.getInvestigation().getReference().trim()
                         .equals("")) {
                     curDataEntryEnvironment.getInvestigation()
-                            .setReference(DEFAULT_ISATAB_SAVE_DIRECTORY +
+                            .setFileReference(DEFAULT_ISATAB_SAVE_DIRECTORY +
                                     File.separator + "SubmissionOn" +
                                     c.get(Calendar.DAY_OF_MONTH) + "-" +
                                     c.get(Calendar.MONTH) + "-" +
@@ -1021,7 +1021,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                                         File.separator +
                                         event.getNewValue().toString());
                                 curDataEntryEnvironment.getInvestigation()
-                                        .setReference(fileName);
+                                        .setFileReference(fileName);
 
                                 outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
                                 userProfileIO.saveUserProfiles();
@@ -1229,12 +1229,15 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     /**
      * Select the TableReferenceObject which is required for a given tableType
      *
-     * @param tableType - e.g. study sample
+     * @param tableType - e.g. study sample or investigation
      * @return TableReferenceObject if one exists, null otherwise.
      */
     public synchronized TableReferenceObject selectTROForUserSelection(
             String tableType) {
         for (MappingObject mo : mappings) {
+
+            System.out.println("checking " + mo.getTableType());
+
             if (mo.getTableType().equals(tableType)) {
                 for (TableReferenceObject tro : assayDefinitions) {
                     if (tro.getTableName().equalsIgnoreCase(mo.getAssayName())) {
