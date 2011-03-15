@@ -42,7 +42,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;

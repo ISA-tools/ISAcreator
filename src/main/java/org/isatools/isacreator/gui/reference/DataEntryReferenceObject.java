@@ -2,7 +2,7 @@ package org.isatools.isacreator.gui.reference;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.isatools.isacreator.configuration.FieldObject;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 
 import java.util.HashMap;
 import java.util.HashSet;

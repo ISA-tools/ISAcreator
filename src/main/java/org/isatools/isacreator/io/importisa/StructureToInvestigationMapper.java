@@ -42,11 +42,12 @@ import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
-import org.isatools.isacreator.io.exceptions.MalformedOntologyTermException;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
+import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.utils.GeneralUtils;
 
 import java.util.*;
 
@@ -72,7 +73,7 @@ public class StructureToInvestigationMapper {
         messages = new HashSet<String>();
     }
 
-    public Investigation createInvestigationFromDataStructure(
+    public Pair<Boolean, Investigation> createInvestigationFromDataStructure(
             OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> investigationStructure) {
 
         Investigation investigation = null;
@@ -100,7 +101,7 @@ public class StructureToInvestigationMapper {
         }
 
 
-        return investigation;
+        return new Pair<Boolean, Investigation>(validateInvestigationFile(investigation), investigation);
     }
 
     private Investigation processInvestigation(OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>> investigationSections) {
@@ -451,14 +452,6 @@ public class StructureToInvestigationMapper {
 
         Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
 
-        System.out.println("Found " + ontologyFields.size() + " ontology fields");
-        System.out.println("They are:");
-        for (int hashCode : ontologyFields.keySet()) {
-            for (String key : ontologyFields.get(hashCode).keySet()) {
-                System.out.println("\t" + key + " -> " + ontologyFields.get(hashCode).get(key));
-            }
-        }
-
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Protocol p = new Protocol();
             Map<String, String> record = getRecord(protocolSection, recordIndex);
@@ -673,5 +666,74 @@ public class StructureToInvestigationMapper {
         }
 
         return result;
+    }
+
+    private boolean validateInvestigationFile(Investigation investigation) {
+        // check for duplicate assay names across all studies.
+        Set<String> assayNames = new HashSet<String>();
+        Set<String> studyNames = new HashSet<String>();
+
+        for (Study study : investigation.getStudies().values()) {
+            if (studyNames.contains(study.getStudyId())) {
+                messages.add("Duplicate study names found in investigation! Study with with ID : " + study.getStudyId() + " already exists!");
+                return false;
+            } else {
+                studyNames.add(study.getStudyId());
+            }
+
+            for (Assay assay : study.getAssays().values()) {
+                if (assayNames.contains(assay.getAssayReference())) {
+                    messages.add("Duplicate assay found in investigation! Assay with with name : " + assay.getAssayReference() + " already exists!");
+
+                    return false;
+                } else {
+                    assayNames.add(assay.getAssayReference());
+                }
+            }
+        }
+
+        // check that all ontologies have been defined
+
+        // build up set of ontology sources that have been defined
+        Set<String> definedOntologySources = new HashSet<String>();
+
+        for (OntologySourceRefObject osro : investigation.getOntologiesUsed()) {
+            definedOntologySources.add(osro.getSourceName());
+        }
+
+        // now search through added ontology objects to determine which ontologies haven't been defined
+        Set<String> missingOntologyObjects = new HashSet<String>();
+
+        for (OntologyObject oo : ontologyTermsDefined) {
+            if (!definedOntologySources.contains(oo.getTermSourceRef()) &&
+                    !oo.getTermSourceRef().equals("")) {
+                System.out.println(oo.getUniqueId());
+                if (!GeneralUtils.isValueURL(oo.getUniqueId())) {
+                    missingOntologyObjects.add(oo.getTermSourceRef());
+                }
+            }
+        }
+
+        if (missingOntologyObjects.size() > 0) {
+            String missing = "";
+
+            for (String m : missingOntologyObjects) {
+                missing += (m + " ");
+            }
+
+            messages.add("Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing);
+            log.info("Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing);
+            return false;
+        }
+
+        return true;
+    }
+
+    public Set<String> getMessages() {
+        return messages;
+    }
+
+    public List<OntologyObject> getOntologyTermsDefined() {
+        return ontologyTermsDefined;
     }
 }

@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.jdesktop.fuse.InjectedResource;
@@ -58,6 +59,7 @@ import java.io.File;
 
 public class ImportFilesMenu extends AbstractImportFilesMenu {
 
+    private static Logger log = Logger.getLogger(ImportFilesMenu.class.getName());
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
@@ -131,24 +133,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         }
     }
 
-    private void assignOntologiesToSession(ISAtabImporter iISA) {
-//  TODO reinstate this once initial tests are working
-//        // finally add ontology objects to user history.
-//        for (OntologyObject oo : iISA.getOntologyTermsDefined()) {
-//            if (!oo.getTerm().trim().equals("")) {
-//                menu.getMain().addToUserHistory(oo);
-//            }
-//        }
-//
-//        for (OntologySourceRefObject osro : iISA.getOntologySourcesDefined()) {
-//            if (osro.getSourceName().trim().equals("")) {
-//                menu.getMain().getOntologiesUsed().add(osro);
-//            }
-//        }
-
-    }
-
-
     public void loadFile(final String dir) {
 
 
@@ -165,35 +149,34 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         menu.stopProgressIndicator();
                         menu.resetViewAfterProgress();
                         menu.hideGlassPane();
-                        assignOntologiesToSession(iISA);
                         menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
                         problemScroll.setVisible(false);
-                        iISA = null;
-
                     } else {
+                        log.error("The following problems were encountered when importing the ISAtab files in " + dir);
+                        for (String message : iISA.getMessages()) {
+                            log.error(message);
+                        }
 
                         menu.stopProgressIndicator();
                         menu.resetViewAfterProgress();
 
-//                        problemReport.setText(iISA.getProblemLog());
                         problemScroll.setVisible(true);
                         revalidate();
-
                     }
                 } catch (OutOfMemoryError outOfMemory) {
                     System.gc();
                     menu.stopProgressIndicator();
                     menu.resetViewAfterProgress();
 
-                    problemReport.setText("<html>ISAcreator ran out of memory whilst loading. We have cleared memory now and you can try again. " +
-                            "Alternatively, if this fails you may want to increase the memory available to ISAcreator...</html>");
+                    problemReport.setText("ISAcreator ran out of memory whilst loading. We have cleared memory now and you can try again. " +
+                            "Alternatively, if this fails you may want to increase the memory available to ISAcreator...");
                     problemScroll.setVisible(true);
                     revalidate();
                 } catch (Exception e) {
                     menu.stopProgressIndicator();
                     menu.resetViewAfterProgress();
                     e.printStackTrace();
-                    problemReport.setText("<html>Unexpected problem occurred." + e.getMessage() + "</html>");
+                    problemReport.setText("Unexpected problem occurred." + e.getMessage());
                     problemScroll.setVisible(true);
                     revalidate();
                 }

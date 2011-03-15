@@ -39,7 +39,7 @@ package org.isatools.isacreator.io.importisa;
 
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.junit.Test;
@@ -73,16 +73,28 @@ public class InvestigationImportTest {
             assertTrue("Investigation did not validate\n" + printMessages(importer), result.fst);
 
             StructureToInvestigationMapper mapper = new StructureToInvestigationMapper();
-            Investigation i = mapper.createInvestigationFromDataStructure(result.snd);
 
-            System.out.println("Investigation title: " + i.getInvestigationTitle());
-            System.out.println("Number of studies: " + i.getStudies().size());
+            Pair<Boolean, Investigation> investigationImport = mapper.createInvestigationFromDataStructure(result.snd);
 
-            System.out.println("Getting investigation publications:");
+            if (investigationImport.fst) {
 
-            for (Publication publication : i.getPublications()) {
-                System.out.println("Publication identifier: " + publication.getIdentifier());
-                System.out.println("Publication title: " + publication.getPublicationTitle());
+                Investigation investigation = investigationImport.snd;
+
+                System.out.println("Investigation title: " + investigation.getInvestigationTitle());
+                System.out.println("Number of studies: " + investigation.getStudies().size());
+
+                System.out.println("Getting investigation publications:");
+
+                for (Publication publication : investigation.getPublications()) {
+                    System.out.println("Publication identifier: " + publication.getIdentifier());
+                    System.out.println("Publication title: " + publication.getPublicationTitle());
+                }
+            } else {
+                System.out.println("The following problems were found:");
+
+                for (String message : mapper.getMessages()) {
+                    System.out.println("\t" + message);
+                }
             }
 
         } catch (IOException e) {

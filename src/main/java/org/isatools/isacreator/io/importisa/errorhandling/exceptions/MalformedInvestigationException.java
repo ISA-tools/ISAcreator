@@ -35,15 +35,17 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.io.exceptions;
+package org.isatools.isacreator.io.importisa.errorhandling.exceptions;
 
 
 /**
+ * Duplicate AssayException - Thrown when an assay with the same name tries to get added to the Study
+ *
  * @author Eamonn Maguire
- * @date Jul 17, 2008
+ * @date Jul 20, 2008
  */
-public class MalformedOntologyTermException extends Exception {
-    public MalformedOntologyTermException(String message) {
+public class MalformedInvestigationException extends Exception {
+    public MalformedInvestigationException(String message) {
         super(message);
     }
 

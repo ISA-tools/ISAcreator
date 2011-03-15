@@ -4,7 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
-import org.isatools.isacreator.io.exceptions.MalformedInvestigationException;
+import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -31,7 +31,7 @@ public class SpreadsheetImport {
      * @param defaultTableRef - TableReferenceObject to be used to load in file
      * @return TableReferenceObject describing the table
      * @throws java.io.IOException when file does not exist or if the CSVReader cannot read the next line
-     * @throws org.isatools.isacreator.io.exceptions.MalformedInvestigationException
+     * @throws org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException
      *                             - when a problem is found when reading in file.
      */
     public TableReferenceObject loadInTables(String fileName,

@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.io.importisa.InvestigationFileProperties;
+package org.isatools.isacreator.io.importisa.investigationfileproperties;
 
 import java.util.HashSet;
 import java.util.Set;

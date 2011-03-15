@@ -8,11 +8,13 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
-import org.isatools.isacreator.io.exceptions.MalformedInvestigationException;
-import org.isatools.isacreator.io.importisa.InvestigationFileProperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
+import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 
 import java.io.File;
@@ -121,13 +123,23 @@ public class ISAtabImporter {
                     log.info("Proceeding to map to Investigation...");
 
                     StructureToInvestigationMapper mapper = new StructureToInvestigationMapper();
-                    investigation = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
+
+                    Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
+
+                    if (!mappingResult.fst) {
+                        messages.addAll(mapper.getMessages());
+                        return false;
+                    }
+
+                    investigation = mappingResult.snd;
                     investigation.setReference(investigationFile.getPath());
+
 
                     processInvestigation();
                     if (constructWithGUIs) {
                         attachGUIsToInvestigation();
                         dataEntryEnvironment.createGUIFromSource(investigation);
+                        assignOntologiesToSession(mapper.getOntologyTermsDefined(), investigation.getOntologiesUsed());
                     }
                 } else {
                     messages.addAll(investigationFileImporter.getMessages());
@@ -217,5 +229,17 @@ public class ISAtabImporter {
         }
     }
 
+    private void assignOntologiesToSession(List<OntologyObject> ontologiesUsed, List<OntologySourceRefObject> ontologySourcesAdded) {
 
+        for (OntologyObject oo : ontologiesUsed) {
+            if (!oo.getTerm().trim().equals("")) {
+                dataEntryEnvironment.getParentFrame().addToUserHistory(oo);
+            }
+        }
+
+    }
+
+    public Set<String> getMessages() {
+        return messages;
+    }
 }
