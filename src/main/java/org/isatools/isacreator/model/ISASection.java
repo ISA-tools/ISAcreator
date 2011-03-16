@@ -55,7 +55,7 @@ public class ISASection {
         fieldValues = new ListOrderedMap<String, String>();
     }
 
-    public Map<String, String> getFieldValues() {
+    public OrderedMap<String, String> getFieldValues() {
         return fieldValues;
     }
 

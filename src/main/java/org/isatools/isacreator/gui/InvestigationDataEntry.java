@@ -38,25 +38,23 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.apache.commons.collections15.OrderedMap;
-import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
-import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +105,16 @@ public class InvestigationDataEntry extends DataEntryForm {
         // add a spacer to the layout
         fields.add(Box.createVerticalStrut(5));
 
-        addFieldsToPanel(invDescPanel, investigation.getFieldValues(), investigation.getReferenceObject());
+        if (investigation.getReferenceObject() == null) {
+            TableReferenceObject tro = getISAcreatorEnvironment().selectTROForUserSelection(MappingObject.INVESTIGATION);
+
+            DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
+            referenceObject.setFieldDefinition(tro.getTableFields().getFields());
+
+            investigation.setReferenceObject(referenceObject);
+        }
+
+        addFieldsToPanel(invDescPanel, InvestigationFileSection.INVESTIGATION_SECTION, investigation.getFieldValues(), investigation.getReferenceObject());
 
         fields.add(invDescPanel);
 
@@ -162,9 +169,9 @@ public class InvestigationDataEntry extends DataEntryForm {
                 if (ontologyFields.contains(contactField)) {
                     int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
 
-                    if(fieldDescriptor != null)
-                         if(fieldDescriptor.isAcceptsMultipleValues())
-                             fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
 
                     contactFields.add(new SubFormField(contactField, fieldType));
                 } else {
@@ -200,9 +207,9 @@ public class InvestigationDataEntry extends DataEntryForm {
                 if (ontologyFields.contains(publicationField)) {
                     int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
 
-                    if(fieldDescriptor != null)
-                         if(fieldDescriptor.isAcceptsMultipleValues())
-                             fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+                    if (fieldDescriptor != null)
+                        if (fieldDescriptor.isAcceptsMultipleValues())
+                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
 
                     publicationFields.add(new SubFormField(publicationField, fieldType));
                 } else {

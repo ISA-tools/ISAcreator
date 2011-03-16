@@ -72,4 +72,14 @@ public class CollectionUtils<T extends Comparable, V extends Comparable> {
 
         return sortedMap;
     }
+
+    public static boolean isNullRecord(String[] record) {
+        boolean allNulls = true;
+        for (String key : record) {
+            if (key != null && !key.trim().equals("")) {
+                allNulls = false;
+            }
+        }
+        return allNulls;
+    }
 }

@@ -128,23 +128,24 @@ public class PublicationSubForm extends SubForm {
             Map<String, String> record = getRecord(recordNumber);
 
             // todo for each record, create a Map of key to values for each record.
+            if (!isNullRecord(record)) {
+                if (parent instanceof StudyDataEntry) {
+                    Publication publication = new StudyPublication();
+                    publication.addToFields(record);
 
-            if (parent instanceof StudyDataEntry) {
-                Publication publication = new StudyPublication();
-                publication.addToFields(record);
+                    if (!publication.getPubmedId().equals("") || !publication.getPublicationDOI().equals("") ||
+                            !publication.getPublicationTitle().equals("") || !publication.getPublicationAuthorList().equals(""))
+                        newPublications.add(publication);
+                } else {
 
-                if (!publication.getPubmedId().equals("") || !publication.getPublicationDOI().equals("") ||
-                        !publication.getPublicationTitle().equals("") || !publication.getPublicationAuthorList().equals(""))
-                    newPublications.add(publication);
-            } else {
+                    Publication publication = new InvestigationPublication();
+                    publication.addToFields(record);
 
-                Publication publication = new InvestigationPublication();
-                publication.addToFields(record);
+                    if (!publication.getPubmedId().equals("") || !publication.getPublicationDOI().equals("") ||
+                            !publication.getPublicationTitle().equals("") || !publication.getPublicationAuthorList().equals(""))
+                        newPublications.add(publication);
 
-                if (!publication.getPubmedId().equals("") || !publication.getPublicationDOI().equals("") ||
-                        !publication.getPublicationTitle().equals("") || !publication.getPublicationAuthorList().equals(""))
-                    newPublications.add(publication);
-
+                }
             }
         }
 

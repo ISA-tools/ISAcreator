@@ -116,21 +116,23 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
 
             Map<String, String> record = getRecord(recordNumber);
 
-            // todo for each record, create a Map of key to values for each record.
+            if (!isNullRecord(record)) {
 
-            if (parent instanceof StudyDataEntry) {
-                Contact contact = new StudyContact();
-                contact.addToFields(record);
 
-                if (!contact.getFirstName().equals(""))
-                    newContacts.add(contact);
-            } else {
+                if (parent instanceof StudyDataEntry) {
+                    Contact contact = new StudyContact();
+                    contact.addToFields(record);
 
-                Contact contact = new InvestigationContact();
-                contact.addToFields(record);
+                    if (!contact.getFirstName().equals(""))
+                        newContacts.add(contact);
+                } else {
 
-                if (!contact.getFirstName().equals(""))
-                    newContacts.add(contact);
+                    Contact contact = new InvestigationContact();
+                    contact.addToFields(record);
+
+                    if (!contact.getFirstName().equals(""))
+                        newContacts.add(contact);
+                }
             }
         }
 

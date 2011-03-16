@@ -77,7 +77,8 @@ public class SpreadsheetImport {
 
             return tro;
         } else {
-            throw new FileNotFoundException("<p>The file " + fileName + " was not found. Please ensure that the file exists within the folder and that the name referred to in the investigation file is correct!</p>");
+            throw new FileNotFoundException("<p>The file " + fileName + " was not found. Please ensure that the file exists within " +
+                    "the folder and that the name referred to in the investigation file is correct!</p>");
         }
     }
 

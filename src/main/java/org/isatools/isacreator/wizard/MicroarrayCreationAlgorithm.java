@@ -169,6 +169,9 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         JPanel labelPanel = new JPanel(new GridLayout(2, 2));
         labelPanel.setBackground(UIHelper.BG_COLOR);
 
+        System.out.println("Study user interface is null? " + (study.getUserInterface() == null));
+        System.out.println("Study user interface dep is null? " + (study.getUserInterface().getDataEntryEnvironment() == null));
+
         label1Capture = new LabelCapture("Label (e.g. Cy3)", study.getUserInterface().getDataEntryEnvironment());
         label2Capture = new LabelCapture("Label (e.g. Cy5)", study.getUserInterface().getDataEntryEnvironment());
         label2Capture.setVisible(false);

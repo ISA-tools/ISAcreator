@@ -43,13 +43,13 @@ import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryForm;
+import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
+import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Map;
 
@@ -84,7 +84,8 @@ public class ExtractDetailsCapture extends JPanel {
         poolingPerformed.setToolTipText("<html><b>Pooling event?</b><p>Are there no replicates performed with this sample?</p></html>");
 
         container.add(extract);
-        container.add(dep.createOntologyDropDown(extract, false, Collections.singletonMap("Tissue ontology", new RecommendedOntology(new Ontology("", "", "BTO", "Brenda Tissue Ontology")))));
+        container.add(createOntologyDropDown(extract, false, Collections.singletonMap("Tissue ontology",
+                new RecommendedOntology(new Ontology("", "", "BTO", "Brenda Tissue Ontology")))));
         container.add(poolingPerformed);
 
         add(container);
@@ -98,5 +99,21 @@ public class ExtractDetailsCapture extends JPanel {
         return poolingPerformed.isSelected();
     }
 
+    private JComponent createOntologyDropDown(JTextComponent field,
+                                              boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
 
+        System.out.println("DataEntryEnvironment parent frame is null? " + (dep == null));
+
+        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(dep.getParentFrame(),
+                allowsMultiple, recommendedOntologySource);
+        ontologySelectionTool.createGUI();
+
+        DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
+
+        ontologySelectionTool.addPropertyChangeListener("selectedOntology", new OntologySelectedEvent(ontologySelectionTool, dropdown, field));
+
+        ontologySelectionTool.addPropertyChangeListener("noSelectedOntology", new OntologySelectionCancelledEvent(ontologySelectionTool, dropdown));
+
+        return dropdown;
+    }
 }

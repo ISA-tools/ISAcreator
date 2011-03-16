@@ -123,11 +123,14 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
 
             Map<String, String> record = getRecord(recordNumber);
 
-            Protocol tmpProtocol = new Protocol();
-            tmpProtocol.addToFields(record);
+            if (!isNullRecord(record)) {
 
-            if (!tmpProtocol.getProtocolName().equals("")) {
-                newProtocols.add(tmpProtocol);
+                Protocol tmpProtocol = new Protocol();
+                tmpProtocol.addToFields(record);
+
+                if (!tmpProtocol.getProtocolName().equals("")) {
+                    newProtocols.add(tmpProtocol);
+                }
             }
         }
 

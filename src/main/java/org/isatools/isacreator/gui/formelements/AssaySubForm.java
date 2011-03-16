@@ -157,22 +157,26 @@ public class AssaySubForm extends SubForm implements Serializable {
 
     public void reformItems() {
 
-        Map<String, Assay> assays = parent.getAssays();
+        if (parent != null) {
+            Map<String, Assay> assays = parent.getAssays();
 
-        int colCount = 1;
+            int colCount = 1;
 
-        for (String assayRef : assays.keySet()) {
+            if (assays != null) {
+                for (String assayRef : assays.keySet()) {
 
-            Map<String, String> fieldList = assays.get(assayRef).getFieldValues();
+                    Map<String, String> fieldList = assays.get(assayRef).getFieldValues();
 
-            int contactFieldIndex = 0;
-            for (SubFormField field : fields) {
-                String value = fieldList.get(field.getFieldName());
-                dtm.setValueAt(value, contactFieldIndex, colCount);
-                contactFieldIndex++;
+                    int contactFieldIndex = 0;
+                    for (SubFormField field : fields) {
+                        String value = fieldList.get(field.getFieldName());
+                        dtm.setValueAt(value, contactFieldIndex, colCount);
+                        contactFieldIndex++;
+                    }
+
+                    colCount++;
+                }
             }
-
-            colCount++;
         }
     }
 

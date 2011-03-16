@@ -505,7 +505,7 @@ public class StructureToInvestigationMapper {
     }
 
     private Map<String, String> getRecord(Map<String, List<String>> records, int recordIndex) {
-        Map<String, String> fields = new HashMap<String, String>();
+        OrderedMap<String, String> fields = new ListOrderedMap<String, String>();
 
         for (String fieldName : records.keySet()) {
             String value = "";

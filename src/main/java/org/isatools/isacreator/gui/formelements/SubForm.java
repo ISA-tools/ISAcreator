@@ -652,7 +652,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 } else if (tce instanceof TextCellEditor) {
                     icon = textEditHelp;
                 }
-                if (parent != null) {
+                if (parent != null && parent.getDataEntryEnvironment() != null) {
                     if (icon != null) {
                         parent.getDataEntryEnvironment().setStatusPaneInfo(icon);
                     } else {
@@ -999,6 +999,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     public RowEditor getRowEditor() {
         return rowEditor;
+    }
+
+    protected boolean isNullRecord(Map<String, String> record) {
+        boolean allNulls = true;
+        for (String key : record.keySet()) {
+            if (record.get(key) != null && !record.get(key).trim().equals("")) {
+                allNulls = false;
+            }
+        }
+        return allNulls;
     }
 
     public abstract void update();

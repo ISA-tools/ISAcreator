@@ -67,10 +67,11 @@ public class TableConsistencyChecker {
 
         CheckingModule checkColumnOrder = new ColumnOrderModule(filename, table, dependencies);
 
-        if (!checkColumnOrder.doCheck()) {
-            errorReport.putAll(checkColumnOrder.getReport());
-            incorrectColumnPositions.addAll(checkColumnOrder.getIncorrectColumnPositions());
-        }
+        // todo improve this checking code!
+//        if (!checkColumnOrder.doCheck()) {
+//            errorReport.putAll(checkColumnOrder.getReport());
+//            incorrectColumnPositions.addAll(checkColumnOrder.getIncorrectColumnPositions());
+//        }
 
 //		CheckingModule checkForColumnRepetition = new ColumnDuplicationModule(filename, table);
 //		if(!checkForColumnRepetition.doCheck()) {

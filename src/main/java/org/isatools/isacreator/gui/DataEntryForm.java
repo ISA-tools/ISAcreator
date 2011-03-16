@@ -55,6 +55,7 @@ import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
@@ -64,6 +65,7 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DataEntryForm extends JLayeredPane implements Serializable {
 
@@ -133,6 +135,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     public JComponent createOntologyDropDown(JTextComponent field,
                                              boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
+
         OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(dataEntryEnvironment.getParentFrame(),
                 allowsMultiple, recommendedOntologySource);
         ontologySelectionTool.createGUI();
@@ -228,21 +231,20 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     }
 
 
-
     public int translateDataTypeToSubFormFieldType(DataTypes dataType, boolean acceptsMultipleValues) {
-        if(dataType == DataTypes.ONTOLOGY_TERM) {
+        if (dataType == DataTypes.ONTOLOGY_TERM) {
             return acceptsMultipleValues ? SubFormField.MULTIPLE_ONTOLOGY_SELECT : SubFormField.SINGLE_ONTOLOGY_SELECT;
         }
 
-        if(dataType == DataTypes.DATE) {
+        if (dataType == DataTypes.DATE) {
             return SubFormField.DATE;
         }
 
-        if(dataType == DataTypes.LONG_STRING) {
+        if (dataType == DataTypes.LONG_STRING) {
             return SubFormField.LONG_STRING;
         }
 
-        if(dataType == DataTypes.LIST) {
+        if (dataType == DataTypes.LIST) {
             return SubFormField.COMBOLIST;
         }
 
@@ -250,68 +252,79 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     }
 
-    public void addFieldsToPanel(Container panel, Map<String, String> fieldValues, DataEntryReferenceObject referenceObject) {
+    public void addFieldsToPanel(Container containerToAddTo, InvestigationFileSection sectionToAddTo, OrderedMap<String, String> fieldValues, DataEntryReferenceObject referenceObject) {
 
-        if(fieldDefinitions == null) {
+        if (fieldDefinitions == null) {
             fieldDefinitions = new ListOrderedMap<String, JTextComponent>();
         }
 
+        Set<String> ontologyFields = referenceObject.getOntologyTerms(sectionToAddTo);
+        Set<String> fieldsToIgnore = referenceObject.getFieldsToIgnore();
+
         for (String fieldName : fieldValues.keySet()) {
-            FieldObject fieldDescriptor = referenceObject.getFieldDefinition(fieldName);
 
-            JPanel fieldPanel = createFieldPanel(1, 2);
-            JLabel fieldLabel = createLabel(fieldName);
+            if (!fieldsToIgnore.contains(fieldName)) {
 
-            JTextComponent textComponent;
+                FieldObject fieldDescriptor = referenceObject.getFieldDefinition(fieldName);
 
-            if (fieldDescriptor.getDatatype() == DataTypes.STRING || fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || fieldDescriptor.getDatatype() == DataTypes.DATE) {
-                textComponent = new RoundedJTextField(10);
-            } else if (fieldDescriptor.getDatatype() == DataTypes.LONG_STRING) {
-                textComponent = new JTextArea();
-                ((JTextArea) textComponent).setWrapStyleWord(true);
-                ((JTextArea) textComponent).setLineWrap(true);
-                textComponent.setBackground(UIHelper.BG_COLOR);
-                textComponent.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
-            } else {
-                // todo should add in the option to have a combobox...
-                textComponent = new RoundedJTextField(10);
-            }
+                if (!fieldDescriptor.isHidden()) {
 
 
-            textComponent.setText(fieldValues.get(fieldName).equals("")
-                    ? fieldDescriptor.getDefaultVal() : fieldValues.get(fieldName));
-            textComponent.setToolTipText(fieldDescriptor.getDescription());
+                    JPanel fieldPanel = createFieldPanel(1, 2);
+                    JLabel fieldLabel = createLabel(fieldName);
 
-            UIHelper.renderComponent(textComponent, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+                    JTextComponent textComponent;
 
-            fieldPanel.add(fieldLabel);
+                    if (fieldDescriptor.getDatatype() == DataTypes.STRING || fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || fieldDescriptor.getDatatype() == DataTypes.DATE) {
+                        textComponent = new RoundedJTextField(10);
+                    } else if (fieldDescriptor.getDatatype() == DataTypes.LONG_STRING) {
+                        textComponent = new JTextArea();
+                        ((JTextArea) textComponent).setWrapStyleWord(true);
+                        ((JTextArea) textComponent).setLineWrap(true);
+                        textComponent.setBackground(UIHelper.BG_COLOR);
+                        textComponent.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
+                    } else {
+                        // todo should add in the option to have a combobox...
+                        textComponent = new RoundedJTextField(10);
+                    }
 
-            if (textComponent instanceof JTextArea) {
 
-                JScrollPane invDescScroll = new JScrollPane(textComponent,
-                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                invDescScroll.setPreferredSize(new Dimension(200, 75));
+                    textComponent.setText(fieldValues.get(fieldName).equals("")
+                            ? fieldDescriptor.getDefaultVal() : fieldValues.get(fieldName));
+                    textComponent.setToolTipText(fieldDescriptor.getDescription());
 
-                invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
+                    UIHelper.renderComponent(textComponent, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
-                IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
-                fieldPanel.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, textComponent));
-            } else {
+                    fieldPanel.add(fieldLabel);
 
-                if (fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM) {
-                    fieldPanel.add(createOntologyDropDown(textComponent, false, fieldDescriptor.getRecommmendedOntologySource()));
-                } else if (fieldDescriptor.getDatatype() == DataTypes.DATE) {
-                    fieldPanel.add(createDateDropDown(textComponent));
-                } else {
-                    fieldPanel.add(textComponent);
+                    if (textComponent instanceof JTextArea) {
+
+                        JScrollPane invDescScroll = new JScrollPane(textComponent,
+                                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                        invDescScroll.setPreferredSize(new Dimension(200, 75));
+
+                        invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
+
+                        IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
+                        fieldPanel.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, textComponent));
+                    } else {
+
+                        if (fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || ontologyFields.contains(fieldName)) {
+                            fieldPanel.add(createOntologyDropDown(textComponent, true, fieldDescriptor.getRecommmendedOntologySource()));
+                        } else if (fieldDescriptor.getDatatype() == DataTypes.DATE) {
+                            fieldPanel.add(createDateDropDown(textComponent));
+                        } else {
+                            fieldPanel.add(textComponent);
+                        }
+                    }
+
+                    fieldDefinitions.put(fieldName, textComponent);
+
+                    containerToAddTo.add(fieldPanel);
+                    containerToAddTo.add(Box.createVerticalStrut(5));
                 }
             }
-
-            fieldDefinitions.put(fieldName, textComponent);
-
-            panel.add(fieldPanel);
-            panel.add(Box.createVerticalStrut(5));
 
         }
     }

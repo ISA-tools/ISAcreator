@@ -20,6 +20,7 @@ import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,7 +95,7 @@ public class ISAtabImporter {
         File investigationFile = new File(parentDir);
 
         this.parentDirectoryPath = parentDir;
-        System.out.println("Parent directory is -> " + parentDir);
+        log.info("Parent directory is -> " + parentDir);
 
         boolean investigationFileFound = false;
 
@@ -138,20 +139,21 @@ public class ISAtabImporter {
                     if (investigation.getReferenceObject() != null) {
                         TableReferenceObject tro = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(MappingObject.INVESTIGATION);
 
-                        System.out.println(tro);
-
                         DataEntryReferenceObject referenceObject = investigation.getReferenceObject();
-
-                        System.out.println("Loaded investigation definition file with " + tro.getTableFields().getFields().size() + " fields.");
 
                         referenceObject.setFieldDefinition(tro.getTableFields().getFields());
 
-                        for(Study study : investigation.getStudies().values()) {
+                        for (Study study : investigation.getStudies().values()) {
                             study.getReferenceObject().setFieldDefinition(tro.getTableFields().getFields());
                         }
                     }
 
-                    processInvestigation();
+                    boolean successfullyProcessedInvestigation = processInvestigation();
+
+                    if (!successfullyProcessedInvestigation) {
+                        return false;
+                    }
+
                     if (constructWithGUIs) {
                         attachGUIsToInvestigation();
                         dataEntryEnvironment.createGUIFromSource(investigation);
@@ -171,12 +173,15 @@ public class ISAtabImporter {
         return true;
     }
 
-    private void processInvestigation() {
+    private boolean processInvestigation() {
 
         SpreadsheetImport spreadsheetImporter = new SpreadsheetImport();
 
         for (String studyIdentifier : investigation.getStudies().keySet()) {
             Study study = investigation.getStudies().get(studyIdentifier);
+
+
+            System.out.println("Processing " + studyIdentifier);
 
             // here we process the study sample file
             TableReferenceObject studySampleReference = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(
@@ -193,36 +198,61 @@ public class ISAtabImporter {
                     }
                 } catch (MalformedInvestigationException mie) {
                     messages.add(mie.getMessage());
+                    return false;
                 } catch (Exception e) {
                     messages.add(e.getMessage());
                     e.printStackTrace();
+                    return false;
                 }
             }
 
             // here we process the assay files
-            for (Assay assay : study.getAssays().values()) {
-                TableReferenceObject assayReference = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(assay.getMeasurementEndpoint(),
+
+            List<Assay> noReferenceobjectFound = new ArrayList<Assay>();
+
+            for (String assayReference : study.getAssays().keySet()) {
+
+                Assay assay = study.getAssays().get(assayReference);
+
+                TableReferenceObject assayTableReferenceObject = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(assay.getMeasurementEndpoint(),
                         assay.getTechnologyType());
 
-                if (assayReference != null && !(assay.getAssayReference() == null && assay.getAssayReference().equals(""))) {
+                if (assayTableReferenceObject != null) {
                     try {
+
                         TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath +
-                                assay.getAssayReference(), assayReference);
+                                assay.getAssayReference(), assayTableReferenceObject);
 
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
-                        } else {
-                            messages.add("Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
-                                    " is not recognised. Please ensure you are using the correct configuration!");
                         }
+
                     } catch (IOException e) {
                         messages.add(e.getMessage());
+                        return false;
                     } catch (MalformedInvestigationException e) {
                         messages.add(e.getMessage());
+                        return false;
+                    } catch (Exception e) {
+                        messages.add(e.getMessage());
+                        return false;
                     }
+                } else {
+                    messages.add("Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
+                            " is not recognised. Please ensure you are using the correct configuration!");
+                    log.info("Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
+                            " is not recognised. Please ensure you are using the correct configuration!");
+                    noReferenceobjectFound.add(assay);
                 }
             }
+
+            for (Assay toRemove : noReferenceobjectFound) {
+                log.info("Assay " + toRemove.getAssayReference() + " will not be loaded into ISAcreator because there is no configuration to define it...");
+                study.removeAssay(toRemove.getAssayReference());
+            }
         }
+
+        return true;
     }
 
     private void attachGUIsToInvestigation() {
@@ -236,8 +266,7 @@ public class ISAtabImporter {
             study.getStudySample().setUserInterface(study.getUserInterface());
 
             for (String assay : study.getAssays().keySet()) {
-                log.info("Adding assay " + assay);
-                log.info("Measurement type: " + study.getAssays().get(assay).getMeasurementEndpoint());
+
                 study.getAssays().get(assay).setUserInterface(study.getUserInterface());
             }
         }

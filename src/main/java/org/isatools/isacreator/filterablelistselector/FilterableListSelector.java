@@ -44,6 +44,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -71,6 +72,7 @@ public class FilterableListSelector extends JFrame {
                 setUndecorated(true);
                 setAlwaysOnTop(true);
                 instantiateFrame();
+                ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
                 pack();
             }
         });

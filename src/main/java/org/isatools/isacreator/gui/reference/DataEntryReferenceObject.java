@@ -2,11 +2,15 @@ package org.isatools.isacreator.gui.reference;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by the ISA team
@@ -25,6 +29,7 @@ public class DataEntryReferenceObject {
 
 
     public DataEntryReferenceObject() {
+
     }
 
     public DataEntryReferenceObject(OrderedMap<InvestigationFileSection, Set<String>> sectionDefinition) {
@@ -45,12 +50,37 @@ public class DataEntryReferenceObject {
     }
 
     public void setFieldDefinition(List<FieldObject> fieldDefinition) {
+
+        if (this.fieldDefinition == null) {
+            this.fieldDefinition = new ListOrderedMap<String, FieldObject>();
+        }
+
         for (FieldObject field : fieldDefinition) {
             this.fieldDefinition.put(field.getFieldName(), field);
+        }
+
+    }
+
+    private void createSectionDefinitionsFromField() {
+        sectionDefinition = new ListOrderedMap<InvestigationFileSection, Set<String>>();
+
+        for (String fieldName : fieldDefinition.keySet()) {
+            FieldObject fieldDef = fieldDefinition.get(fieldName);
+
+            InvestigationFileSection section = InvestigationFileSection.convertToInstance(fieldDef.getSection());
+
+            if (!sectionDefinition.containsKey(section)) {
+                sectionDefinition.put(section, new ListOrderedSet<String>());
+            }
+
+            sectionDefinition.get(section).add(fieldName);
         }
     }
 
     public OrderedMap<InvestigationFileSection, Set<String>> getSectionDefinition() {
+        if (sectionDefinition == null) {
+            createSectionDefinitionsFromField();
+        }
         return sectionDefinition;
     }
 
@@ -59,7 +89,7 @@ public class DataEntryReferenceObject {
     }
 
     public Set<String> getFieldsForSection(InvestigationFileSection section) {
-        return sectionDefinition.get(section);
+        return getSectionDefinition().get(section);
     }
 
     public FieldObject getFieldDefinition(String fieldName) {

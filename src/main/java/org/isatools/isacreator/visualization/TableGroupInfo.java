@@ -40,9 +40,9 @@ package org.isatools.isacreator.visualization;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
@@ -71,12 +71,14 @@ public class TableGroupInfo extends JFrame {
         setBackground(UIHelper.BG_COLOR);
         setUndecorated(true);
         setAlwaysOnTop(true);
+
     }
 
     public void createGUI() {
         // create LHS panel for containment of group display and RHS for group information
         JPanel container = new JPanel(new GridLayout(1, 2));
         container.setLayout(new BoxLayout(container, BoxLayout.LINE_AXIS));
+//        container.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 3));
 
         JPanel groupContainer = new JPanel();
         groupContainer.setLayout(new BoxLayout(groupContainer, BoxLayout.PAGE_AXIS));
@@ -118,7 +120,7 @@ public class TableGroupInfo extends JFrame {
         add(titlePanel, BorderLayout.NORTH);
         titlePanel.installListeners();
 
-        ((JComponent) getContentPane()).setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 7));
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
 
         pack();
         setVisible(true);

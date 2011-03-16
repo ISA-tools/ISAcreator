@@ -43,10 +43,11 @@ import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
-import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.*;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -111,6 +112,15 @@ public class StudyDataEntry extends DataEntryForm {
 
         JLabel header = new JLabel(panelHeader, JLabel.RIGHT);
         northPanel.add(header, BorderLayout.NORTH);
+
+        if (study.getReferenceObject() == null) {
+            TableReferenceObject tro = getISAcreatorEnvironment().selectTROForUserSelection(MappingObject.INVESTIGATION);
+
+            DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
+            referenceObject.setFieldDefinition(tro.getTableFields().getFields());
+
+            study.setReferenceObject(referenceObject);
+        }
 
         container.add(northPanel, BorderLayout.NORTH);
         container.add(createStudyDesc(), BorderLayout.CENTER);
@@ -310,7 +320,7 @@ public class StudyDataEntry extends DataEntryForm {
 
         Box verticalContainer = Box.createVerticalBox();
 
-        addFieldsToPanel(verticalContainer, study.getFieldValues(), study.getReferenceObject());
+        addFieldsToPanel(verticalContainer, InvestigationFileSection.STUDY_SECTION, study.getFieldValues(), study.getReferenceObject());
 
         studyDesc.add(verticalContainer, BorderLayout.NORTH);
 
@@ -573,7 +583,7 @@ public class StudyDataEntry extends DataEntryForm {
         update();
 
         StringBuffer output = new StringBuffer();
-        output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
+        output.append(InvestigationFileSection.STUDY_SECTION).append("\n");
 
         for (String fieldName : study.getFieldValues().keySet()) {
             output.append(fieldName).append("\t\"").append(study.getFieldValues().get(fieldName)).append("\"\n");

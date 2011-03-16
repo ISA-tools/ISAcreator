@@ -71,6 +71,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -215,7 +216,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        setTitle("ISAcreator 1.3.2");
+        setTitle("ISAcreator 1.4");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);
@@ -229,6 +230,8 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         FooterPanel fp = new FooterPanel(this);
         add(fp, BorderLayout.SOUTH);
+
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
 
         setupAboutPanel();
         // check that java version is supported!
@@ -1235,8 +1238,6 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     public synchronized TableReferenceObject selectTROForUserSelection(
             String tableType) {
         for (MappingObject mo : mappings) {
-
-            System.out.println("checking " + mo.getTableType());
 
             if (mo.getTableType().equals(tableType)) {
                 for (TableReferenceObject tro : assayDefinitions) {

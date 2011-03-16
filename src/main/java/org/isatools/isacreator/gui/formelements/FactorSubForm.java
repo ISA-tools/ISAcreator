@@ -137,17 +137,22 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
 
             Map<String, String> record = getRecord(columnSelected);
 
-            Factor tmpFactor = new Factor();
-            tmpFactor.addToFields(record);
 
-            if (!tmpFactor.getFactorName().equals("")) {
+            if (!isNullRecord(record)) {
 
-                if (tmpFactor.getFactorType().equals("")) {
-                    System.out.println("factor type: " + tmpFactor.getFactorName());
-                    scrollTable.setValueAt(tmpFactor.getFactorName(), 1, columnSelected);
+                Factor tmpFactor = new Factor();
+                tmpFactor.addToFields(record);
+
+                if (!tmpFactor.getFactorName().equals("")) {
+
+                    if (tmpFactor.getFactorType().equals("")) {
+                        System.out.println("factor type: " + tmpFactor.getFactorName());
+                        scrollTable.setValueAt(tmpFactor.getFactorName(), 1, columnSelected);
+                    }
                 }
             }
         }
     }
+
 
 }

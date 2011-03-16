@@ -47,6 +47,7 @@ import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.ResultCache;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.utils.datastructures.CollectionUtils;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -697,10 +698,12 @@ public class DataEntryEnvironment extends DataEntryWrapper implements
     }
 
     private boolean needToSubstitute(Map<String, String[]> terms) {
+
         for (String category : terms.keySet()) {
             String[] toCheck = terms.get(category);
+
             if (toCheck != null && toCheck.length > 0) {
-                return true;
+                return !CollectionUtils.isNullRecord(toCheck);
             }
         }
 

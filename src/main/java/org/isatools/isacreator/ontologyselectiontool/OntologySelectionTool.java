@@ -47,7 +47,10 @@ import org.isatools.isacreator.common.filterableTree.FilterableJTree;
 import org.isatools.isacreator.common.filterableTree.TreeFilterModel;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.effects.*;
+import org.isatools.isacreator.effects.FooterPanel;
+import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.ontologymanager.*;
@@ -59,6 +62,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -155,7 +159,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         setUndecorated(true);
         setAlwaysOnTop(true);
         createPanels();
-        ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
         pack();
 
     }

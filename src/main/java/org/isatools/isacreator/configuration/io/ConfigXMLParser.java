@@ -153,9 +153,10 @@ public class ConfigXMLParser {
             // check what the obj is an instance of, and handle it accordingly!
             if (obj instanceof FieldType) {
                 FieldType stdField = (FieldType) obj;
-                FieldObject newField = new FieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(),
+
+                FieldObject newField = new FieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(), stdField.getSection(),
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
-                        stdField.getIsFileField());
+                        stdField.getIsFileField(), stdField.getIsHidden());
 
                 newField.setWizardTemplate(stdField.getGeneratedValueTemplate());
 
@@ -197,8 +198,8 @@ public class ConfigXMLParser {
                 colNo++;
             } else if (obj instanceof ProtocolFieldType) {
                 ProtocolFieldType protocolField = (ProtocolFieldType) obj;
-                FieldObject newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(),
-                        protocolField.getIsRequired(), false, false);
+                FieldObject newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, "", protocolField.getProtocolType(),
+                        protocolField.getIsRequired(), false, false, false);
                 newField.setWizardTemplate(newField.getWizardTemplate());
 
                 fields.add(newField);
@@ -208,8 +209,8 @@ public class ConfigXMLParser {
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
-                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "",
-                        unitField.getIsRequired(), false, false);
+                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "", "",
+                        unitField.getIsRequired(), false, false, false);
 
                 if (unitField.getRecommendedOntologies() != null) {
                     processRecommendedOntologies(unitField, newField);

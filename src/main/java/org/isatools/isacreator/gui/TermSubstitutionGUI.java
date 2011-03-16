@@ -55,7 +55,7 @@ import java.util.Set;
 public class TermSubstitutionGUI extends JPanel {
     private Map<String, String[]> termsToBeReplaced;
     private Map<String, String[]> termsToReplaceWith;
-    private Map<String, Set<SingleSubstitutionPanel>> categorySubsitutionPanels;
+    private Map<String, Set<SingleSubstitutionPanel>> categorySubstitutionPanels;
 
 
     private JLabel status;
@@ -64,7 +64,7 @@ public class TermSubstitutionGUI extends JPanel {
     public TermSubstitutionGUI(Map<String, String[]> termsToBeReplaced, Map<String, String[]> termsToReplaceWith) {
         this.termsToBeReplaced = termsToBeReplaced;
         this.termsToReplaceWith = termsToReplaceWith;
-        categorySubsitutionPanels = new HashMap<String, Set<SingleSubstitutionPanel>>();
+        categorySubstitutionPanels = new HashMap<String, Set<SingleSubstitutionPanel>>();
 
     }
 
@@ -124,10 +124,10 @@ public class TermSubstitutionGUI extends JPanel {
                 final SingleSubstitutionPanel ssp = new SingleSubstitutionPanel(toReplace, termsToReplaceWith.get(title));
 
                 ssp.createGUI();
-                if (categorySubsitutionPanels.get(title) == null) {
-                    categorySubsitutionPanels.put(title, new HashSet<SingleSubstitutionPanel>());
+                if (categorySubstitutionPanels.get(title) == null) {
+                    categorySubstitutionPanels.put(title, new HashSet<SingleSubstitutionPanel>());
                 }
-                categorySubsitutionPanels.get(title).add(ssp);
+                categorySubstitutionPanels.get(title).add(ssp);
                 substitutionArea.add(ssp);
                 substitutionArea.add(Box.createVerticalStrut(5));
             }
@@ -174,12 +174,12 @@ public class TermSubstitutionGUI extends JPanel {
                 // reported to the user...
                 Map<String, Set<String>> uniquenessCheck = new HashMap<String, Set<String>>();
 
-                for (String category : categorySubsitutionPanels.keySet()) {
+                for (String category : categorySubstitutionPanels.keySet()) {
                     if (uniquenessCheck.get(category) == null) {
                         uniquenessCheck.put(category, new HashSet<String>());
                     }
 
-                    for (SingleSubstitutionPanel ssp : categorySubsitutionPanels.get(category)) {
+                    for (SingleSubstitutionPanel ssp : categorySubstitutionPanels.get(category)) {
                         if (uniquenessCheck.get(category).contains(ssp.getCurrentlySelectedValue()) && !ssp.getCurrentlySelectedValue().equals(DO_NOT_REPLACE_TEXT)) {
                             status.setText("<html><b>Error occurred</b> <p> <b>" + ssp.getCurrentlySelectedValue() + "</b> selected as more than one replacement in <b>" + category + "</b></p>");
                             revalidate();
@@ -215,12 +215,12 @@ public class TermSubstitutionGUI extends JPanel {
     public Map<String, Map<String, String>> getDefinedSubstitutions() {
         Map<String, Map<String, String>> result = new HashMap<String, Map<String, String>>();
 
-        for (String category : categorySubsitutionPanels.keySet()) {
+        for (String category : categorySubstitutionPanels.keySet()) {
             if (result.get(category) == null) {
                 result.put(category, new HashMap<String, String>());
             }
 
-            for (SingleSubstitutionPanel ssp : categorySubsitutionPanels.get(category)) {
+            for (SingleSubstitutionPanel ssp : categorySubstitutionPanels.get(category)) {
                 result.get(category).put(ssp.getToReplace(), ssp.getCurrentlySelectedValue());
             }
         }

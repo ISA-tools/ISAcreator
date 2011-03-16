@@ -200,6 +200,8 @@ public class Assay extends ISASection implements StudySubData {
                 this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject);
             }
         } else {
+            System.out.println(getMeasurementEndpoint() + " & " + getTechnologyType() + " for " + getAssayReference());
+            System.out.println("Table reference is null? " + (tableReferenceObject == null));
             this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject, getMeasurementEndpoint(), getTechnologyType());
         }
     }

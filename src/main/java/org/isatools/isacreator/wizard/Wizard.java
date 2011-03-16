@@ -133,12 +133,17 @@ public class Wizard extends DataEntryWrapper {
     private Component lastPage;
 
 
-    public Wizard(final ISAcreatorMenu menuPanels) {
+    public Wizard(final ISAcreatorMenu mainMenu) {
         super();
-        currentUser = menuPanels.getMain().getCurrentUser();
-        this.mainMenu = menuPanels;
-
         ResourceInjector.get("wizard-package.style").inject(this);
+
+        currentUser = mainMenu.getMain().getCurrentUser();
+        this.mainMenu = mainMenu;
+
+        dep = new DataEntryEnvironment(mainMenu.getMain());
+        setDataEntryEnvironment(dep);
+        this.mainMenu.getMain().setCurDataEntryPanel(dep);
+
     }
 
     public void createGUI() {
@@ -155,9 +160,7 @@ public class Wizard extends DataEntryWrapper {
 
         createSouthPanel();
         setOpaque(false);
-        dep = new DataEntryEnvironment(mainMenu.getMain());
-        setDataEntryEnvironment(dep);
-        mainMenu.getMain().setCurDataEntryPanel(dep);
+
 
         finaliseStudy = new FinaliseStudyCreationListener();
         initialPane = createInvestigationDefinitionPanel();
@@ -1060,9 +1063,9 @@ public class Wizard extends DataEntryWrapper {
 
         Thread finaliseStudy = new Thread(new Runnable() {
             public void run() {
-                StudyDataEntry sde = new StudyDataEntry(dep, studyBeingEdited);
-
-                studyBeingEdited.setUI(sde);
+//                StudyDataEntry sde = new StudyDataEntry(dep, studyBeingEdited);
+//
+//                studyBeingEdited.setUI(sde);
 
                 Assay studySample = new Assay("s_" + studyId.getText() + ".txt",
                         null);
@@ -1079,7 +1082,7 @@ public class Wizard extends DataEntryWrapper {
 
                 studyBeingEdited.setStudySamples(studySample);
 
-                studyBeingEdited.getStudySample().setUserInterface(sde);
+                studyBeingEdited.getStudySample().setUserInterface(studyBeingEdited.getUserInterface());
 
                 for (Assay a : studyBeingEdited.getAssays().values()) {
                     investigationDefinition.addToAssays(a.getAssayReference(),
@@ -1101,7 +1104,7 @@ public class Wizard extends DataEntryWrapper {
                         }
                     }
 
-                    a.setUserInterface(sde);
+                    a.setUserInterface(studyBeingEdited.getUserInterface());
                 }
 
                 investigationDefinition.addStudy(studyBeingEdited);
@@ -1422,6 +1425,10 @@ public class Wizard extends DataEntryWrapper {
         Thread createStudyThread = new Thread(new Runnable() {
             public void run() {
                 if (assayDefinitionRequired()) {
+                    studyBeingEdited.setUI(new StudyDataEntry(dep, studyBeingEdited));
+
+                    System.out.println("about to create add assay pane, dep is null? " + (studyBeingEdited.getUserInterface() == null));
+                    System.out.println("DataEntryEnvironment parent frame is null? " + (studyBeingEdited.getUserInterface().getDataEntryEnvironment().getParentFrame() == null));
                     addAssayUI = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, dep, currentUser);
                     addAssayUI.createGUI();
                     addAssayUI.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);

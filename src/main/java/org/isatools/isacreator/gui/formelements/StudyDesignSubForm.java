@@ -100,11 +100,14 @@ public class StudyDesignSubForm extends SubForm {
 
             Map<String, String> record = getRecord(recordNumber);
 
-            StudyDesign studyDesign = new StudyDesign();
-            studyDesign.addToFields(record);
+            if (!isNullRecord(record)) {
 
-            if (!studyDesign.getStudyDesignType().equals("")) {
-                newStudyDesigns.add(studyDesign);
+                StudyDesign studyDesign = new StudyDesign();
+                studyDesign.addToFields(record);
+
+                if (!studyDesign.getStudyDesignType().equals("")) {
+                    newStudyDesigns.add(studyDesign);
+                }
             }
         }
 

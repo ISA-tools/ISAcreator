@@ -43,13 +43,13 @@ import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryForm;
+import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
+import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Map;
 
@@ -84,7 +84,7 @@ public class LabelCapture extends JPanel {
         labelVal.setToolTipText("<html><b>Label</b><p>Label used in this assay</p></html>");
 
         container.add(labelVal);
-        container.add(dep.createOntologyDropDown(labelVal, false,
+        container.add(createOntologyDropDown(labelVal, false,
                 Collections.singletonMap("CHEBI", new RecommendedOntology(new Ontology("1007", "", "CHEBI", "Chemicals of Bioligical Interest")))));
         container.add(UIHelper.createLabel(""));
 
@@ -95,6 +95,22 @@ public class LabelCapture extends JPanel {
         return labelVal.getText();
     }
 
+    private JComponent createOntologyDropDown(JTextComponent field,
+                                              boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
 
+        System.out.println("DataEntryEnvironment parent frame is null? " + (dep == null));
+
+        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(dep.getParentFrame(),
+                allowsMultiple, recommendedOntologySource);
+        ontologySelectionTool.createGUI();
+
+        DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
+
+        ontologySelectionTool.addPropertyChangeListener("selectedOntology", new OntologySelectedEvent(ontologySelectionTool, dropdown, field));
+
+        ontologySelectionTool.addPropertyChangeListener("noSelectedOntology", new OntologySelectionCancelledEvent(ontologySelectionTool, dropdown));
+
+        return dropdown;
+    }
 
 }

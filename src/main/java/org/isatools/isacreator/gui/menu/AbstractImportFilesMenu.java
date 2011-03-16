@@ -67,12 +67,16 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     protected File[] previousFiles = null;
     protected ExtendedJList previousFileList;
 
+    private JFileChooser jfc = new JFileChooser();
+
+    private long timeButtonLastClicked = System.currentTimeMillis();
+
     private JLabel chooseFromElsewhere, loadSelected;
 
     public AbstractImportFilesMenu(ISAcreatorMenu menu) {
         super(menu);
 
-
+        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         setLayout(new BorderLayout());
         setOpaque(false);
     }
@@ -134,10 +138,10 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         listPane.add(filterFieldPane, BorderLayout.SOUTH);
 
         listPane.setBorder(new TitledBorder(
-                    new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), getBorderTitle(),
-                    TitledBorder.DEFAULT_JUSTIFICATION,
-                    TitledBorder.CENTER,
-                    UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), getBorderTitle(),
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.CENTER,
+                UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
         setListRenderer();
 
@@ -179,24 +183,31 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         chooseFromElsewhere.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                chooseFromElsewhere.setIcon(getSearchButton());
-                JFileChooser jfc = new JFileChooser();
-                jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-                String directory;
+                // precautionary meaaure to stop double execution of action...
 
-                if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
-                    directory = jfc.getSelectedFile().toString();
+                if (timeButtonLastClicked != System.currentTimeMillis()) {
 
-                    File dirFile = new File(directory);
+                    chooseFromElsewhere.setIcon(getSearchButton());
 
-                    if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
-                        menu.showProgressPanel(loadISAanimation);
-                    } else {
-                        menu.showProgressPanel("attempting to load ISA-TAB submission in directory " +
-                                dirFile.getName());
+
+                    String directory;
+
+                    if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
+                        directory = jfc.getSelectedFile().toString();
+
+                        File dirFile = new File(directory);
+
+                        if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
+                            menu.showProgressPanel(loadISAanimation);
+                        } else {
+                            menu.showProgressPanel("attempting to load ISA-TAB submission in directory " +
+                                    dirFile.getName());
+                        }
+                        loadFile(directory + File.separator);
                     }
-                    loadFile(directory + File.separator);
+
+                    timeButtonLastClicked = System.currentTimeMillis();
                 }
             }
 

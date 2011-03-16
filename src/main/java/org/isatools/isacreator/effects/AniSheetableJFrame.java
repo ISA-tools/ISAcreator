@@ -164,7 +164,7 @@ public class AniSheetableJFrame extends JFrame implements ActionListener, MouseL
         glass.setLayout(new GridBagLayout());
         glass.setBackground(UIHelper.BG_COLOR);
         animatingSheet = new AnimatingSheet();
-        animatingSheet.setBorder(new LineBorder(UIHelper.DARK_GREEN_COLOR, 2));
+        animatingSheet.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
     }
 
     public void maskOutMouseEvents() {
@@ -179,7 +179,7 @@ public class AniSheetableJFrame extends JFrame implements ActionListener, MouseL
      */
     public JComponent showJDialogAsSheet(JDialog dialog) {
         sheet = (JComponent) dialog.getContentPane();
-        sheet.setBorder(new LineBorder(UIHelper.DARK_GREEN_COLOR, 2));
+        sheet.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
         glass.addMouseListener(this);
         setupAnimation();
 
