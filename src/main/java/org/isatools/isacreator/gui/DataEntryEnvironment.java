@@ -78,7 +78,7 @@ import java.util.Map;
  *
  * @author Eamonn Maguire
  */
-public class DataEntryEnvironment extends DataEntryWrapper implements
+public class DataEntryEnvironment extends AbstractDataEntryEnvironment implements
         TreeSelectionListener, PropertyChangeListener {
 
     @InjectedResource

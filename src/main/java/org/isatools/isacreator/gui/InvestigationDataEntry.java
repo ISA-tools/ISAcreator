@@ -44,6 +44,7 @@ import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
@@ -58,6 +59,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -223,7 +225,6 @@ public class InvestigationDataEntry extends DataEntryForm {
                 : investigation.getPublications()
                 .size();
 
-
         // todo should calculate the height of the subform based on the number of fields.
         publicationsSubForm = new PublicationSubForm(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(),
                 FieldTypes.PUBLICATION, publicationFields, numColsToAdd, 300, 125, this);
@@ -240,14 +241,35 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         boolean displayInvestigationInfo = investigation.getStudies().size() > 1;
 
+        Set<String> ontologyFields = IOUtils.filterFields(investigation.getFieldValues().keySet(), IOUtils.ACCESSION, IOUtils.SOURCE_REF);
+
+        Map<Integer, Map<String, String>> ontologyTerms = IOUtils.getOntologyTerms(investigation.getFieldValues().keySet());
+        // now, do ontology processing
+        for (String fieldName : ontologyFields) {
+
+            int fieldHashCode = fieldName.substring(0, fieldName.toLowerCase().indexOf("term")).trim().hashCode();
+
+            if (ontologyTerms.containsKey(fieldHashCode)) {
+
+                Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
+
+                Map<String, String> processedOntologyField = processOntologyField(ontologyField, investigation.getFieldValues());
+
+                investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM), processedOntologyField.get(processedOntologyField.get(IOUtils.TERM)));
+                investigation.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION), processedOntologyField.get(processedOntologyField.get(IOUtils.ACCESSION)));
+                investigation.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF), processedOntologyField.get(processedOntologyField.get(IOUtils.SOURCE_REF)));
+            }
+        }
+
+        // now, do output
         for (String fieldName : investigation.getFieldValues().keySet()) {
+
             output.append(fieldName).append("\t\"").append(displayInvestigationInfo ?
                     investigation.getFieldValues().get(fieldName) : "").append("\"\n");
         }
 
         output.append(publicationsSubForm.toString());
         output.append(contactsSubform.toString());
-
 
         return output.toString();
     }
@@ -277,7 +299,6 @@ public class InvestigationDataEntry extends DataEntryForm {
     }
 
     public void removeReferences() {
-        System.out.println("removing investigation: " + investigation.getInvestigationId());
 
         publicationsSubForm.setDataEntryEnvironment(null);
         publicationsSubForm.setParent(null);
@@ -291,7 +312,6 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         for (String s : investigation.getStudies().keySet()) {
             Study tmpStudy = investigation.getStudies().get(s);
-            System.out.println("removing study: " + tmpStudy.getStudyId());
             tmpStudy.getUserInterface().removeReferences();
             tmpStudy.setUI(null);
         }

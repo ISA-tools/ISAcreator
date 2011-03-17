@@ -55,14 +55,17 @@ import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -252,6 +255,14 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     }
 
+    /**
+     * Adds the fields describing a section to a Container (e.g. JPanel, Box, etc.)
+     *
+     * @param containerToAddTo @see JPanel, @see Box, @see  Container
+     * @param sectionToAddTo   - @see InvestigationFileSection as a reference for where the fields are being added
+     * @param fieldValues      - Map of field name to values.
+     * @param referenceObject  - A @see DataEntryReferenceObject which gives information about
+     */
     public void addFieldsToPanel(Container containerToAddTo, InvestigationFileSection sectionToAddTo, OrderedMap<String, String> fieldValues, DataEntryReferenceObject referenceObject) {
 
         if (fieldDefinitions == null) {
@@ -327,6 +338,87 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
             }
 
         }
+    }
+
+    /**
+     * @param ontologyTerms
+     * @param fieldValues
+     * @return
+     */
+    public Map<String, String> processOntologyField(Map<String, String> ontologyTerms, Map<String, String> fieldValues) {
+
+
+        String term = fieldValues.get(ontologyTerms.get(IOUtils.TERM));
+
+        // At this point, we not have the term, accession and source ref fields. Next, is to set them to their correct values
+
+        String tmpTerm = "";
+        String tmpAccession = "";
+        String tmpSourceRefs = "";
+
+        if (term.contains(";")) {
+            // then we have multiple values
+            String[] ontologies = term.split(";");
+
+            int numberAdded = 0;
+            for (String ontologyTerm : ontologies) {
+                OntologyObject oo = getDataEntryEnvironment().getUserHistory().get(ontologyTerm);
+
+                if (oo.getTerm() != null) {
+                    tmpTerm += oo.getTerm();
+                    tmpAccession += oo.getTermAccession();
+                    tmpSourceRefs += oo.getTermSourceRef();
+                } else {
+                    if (term.contains(":")) {
+                        String[] termAndSource = term.split(":");
+
+                        tmpSourceRefs += termAndSource[0];
+                        tmpTerm += termAndSource[1];
+                    }
+                }
+
+
+                if (numberAdded < ontologies.length - 1) {
+                    tmpTerm += ";";
+                    tmpAccession += ";";
+                    tmpSourceRefs += ";";
+                }
+                numberAdded++;
+            }
+
+        } else {
+            if (term.contains(":")) {
+                OntologyObject oo = getDataEntryEnvironment().getUserHistory().get(term);
+
+                if (oo.getTerm() != null) {
+                    tmpTerm = oo.getTerm();
+                    tmpAccession = oo.getTermAccession();
+                    tmpSourceRefs = oo.getTermSourceRef();
+                } else {
+                    if (term.contains(":")) {
+                        String[] termAndSource = term.split(":");
+
+                        tmpSourceRefs = termAndSource[0];
+                        tmpTerm = termAndSource[1];
+                    } else {
+                        tmpTerm = term;
+                        tmpAccession = "";
+                        tmpSourceRefs = "";
+                    }
+                }
+            } else {
+                tmpTerm = term;
+                tmpAccession = "";
+                tmpSourceRefs = "";
+            }
+        }
+
+        Map<String, String> result = new HashMap<String, String>();
+
+        result.put(ontologyTerms.get(IOUtils.TERM), tmpTerm);
+        result.put(ontologyTerms.get(IOUtils.ACCESSION), tmpAccession);
+        result.put(ontologyTerms.get(IOUtils.SOURCE_REF), tmpSourceRefs);
+        return result;
     }
 
 

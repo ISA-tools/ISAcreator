@@ -42,6 +42,7 @@ import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
@@ -61,9 +62,6 @@ public class StructureToInvestigationMapper {
 
     private static Logger log = Logger.getLogger(StructureToInvestigationMapper.class.getName());
 
-    private static final String TERM = "term";
-    private static final String SOURCE_REF = "term source";
-    private static final String ACCESSION = "term accession";
 
     private List<OntologyObject> ontologyTermsDefined;
     private Set<String> messages;
@@ -160,14 +158,14 @@ public class StructureToInvestigationMapper {
 
         investigation.addToFields(record);
 
-        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
         for (int hashCode : ontologyFields.keySet()) {
             Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
             try {
-                String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
-                investigation.getFieldValues().put(ontologyField.get(TERM), value);
+                String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
                 log.error(e.getMessage());
             }
@@ -255,7 +253,7 @@ public class StructureToInvestigationMapper {
 
         Map<String, String> record = getRecord(studySection, 0);
 
-        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
         study.addToFields(record);
 
@@ -263,8 +261,8 @@ public class StructureToInvestigationMapper {
             Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
             try {
-                String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
-                study.getFieldValues().put(ontologyField.get(TERM), value);
+                String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                study.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
                 log.error(e.getMessage());
             }
@@ -299,7 +297,7 @@ public class StructureToInvestigationMapper {
 
         Set<String> sectionFields = getFieldList(publicationSection);
 
-        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Publication p;
@@ -318,8 +316,8 @@ public class StructureToInvestigationMapper {
                     Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
                     try {
-                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
-                        p.getFieldValues().put(ontologyField.get(TERM), value);
+                        String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
                         log.error(e.getMessage());
                     }
@@ -342,7 +340,7 @@ public class StructureToInvestigationMapper {
 
         Set<String> sectionFields = getFieldList(studyDesignSection);
 
-        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             StudyDesign design = new StudyDesign();
@@ -355,8 +353,8 @@ public class StructureToInvestigationMapper {
                     Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
                     try {
-                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
-                        design.getFieldValues().put(ontologyField.get(TERM), value);
+                        String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        design.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
                         log.error(e.getMessage());
                     }
@@ -376,7 +374,7 @@ public class StructureToInvestigationMapper {
 
         Set<String> sectionFields = getFieldList(contactSection);
 
-        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Contact c;
@@ -395,8 +393,8 @@ public class StructureToInvestigationMapper {
                     Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
                     try {
-                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
-                        c.getFieldValues().put(ontologyField.get(TERM), value);
+                        String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        c.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
                         log.error(e.getMessage());
                     }
@@ -416,7 +414,7 @@ public class StructureToInvestigationMapper {
 
         Set<String> sectionFields = getFieldList(factorSection);
 
-        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Factor f = new Factor();
@@ -429,8 +427,8 @@ public class StructureToInvestigationMapper {
                     Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
                     try {
-                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
-                        f.getFieldValues().put(ontologyField.get(TERM), value);
+                        String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        f.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
                         log.error(e.getMessage());
                     }
@@ -450,7 +448,7 @@ public class StructureToInvestigationMapper {
 
         Set<String> sectionFields = getFieldList(protocolSection);
 
-        Map<Integer, Map<String, String>> ontologyFields = getOntologyTerms(sectionFields);
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Protocol p = new Protocol();
@@ -464,8 +462,8 @@ public class StructureToInvestigationMapper {
                     Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
                     try {
-                        String value = groupElements(ontologyField.get(TERM), record.get(ontologyField.get(TERM)), record.get(ontologyField.get(ACCESSION)), record.get(ontologyField.get(SOURCE_REF)));
-                        p.getFieldValues().put(ontologyField.get(TERM), value);
+                        String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
                         log.error(e.getMessage());
                     }
@@ -612,61 +610,6 @@ public class StructureToInvestigationMapper {
         return toReturn;
     }
 
-    /**
-     * Ontology terms are detected when there is a presence of 3 values in the field set with the same base name and
-     * the words "Term Accession Number" & "Term Source Ref" are found.
-     *
-     * @param fieldNames - field names for the section @see Set<String>
-     * @return Map from hashcode for field to a Map indicating which fields are source refs, terms and term accessions.
-     */
-    public Map<Integer, Map<String, String>> getOntologyTerms(Set<String> fieldNames) {
-
-        Map<Integer, Map<String, String>> fields = new HashMap<Integer, Map<String, String>>();
-
-        if (fieldNames != null) {
-
-            Set<String> ontologyFields = filterFields(fieldNames, ACCESSION, SOURCE_REF);
-
-            for (String ontologyValues : ontologyFields) {
-                String actualFieldName = ontologyValues.substring(0, ontologyValues.toLowerCase().indexOf("term")).trim();
-
-                int hash = actualFieldName.hashCode();
-
-                if (!fields.containsKey(hash)) {
-                    fields.put(hash, new HashMap<String, String>());
-
-                    if (actualFieldName.contains("[")) {
-                        actualFieldName += "]";
-                    }
-
-                    fields.get(hash).put(TERM, actualFieldName);
-                }
-
-                if (ontologyValues.toLowerCase().contains(ACCESSION)) {
-                    fields.get(hash).put(ACCESSION, ontologyValues);
-                } else if (ontologyValues.toLowerCase().contains(SOURCE_REF)) {
-                    fields.get(hash).put(SOURCE_REF, ontologyValues);
-                }
-
-            }
-        }
-
-
-        return fields;
-    }
-
-    public Set<String> filterFields(Set<String> toFilter, String... filters) {
-        Set<String> result = new HashSet<String>();
-        for (String value : toFilter) {
-            for (String filter : filters) {
-                if (value.toLowerCase().contains(filter)) {
-                    result.add(value);
-                }
-            }
-        }
-
-        return result;
-    }
 
     private boolean validateInvestigationFile(Investigation investigation) {
         // check for duplicate assay names across all studies.

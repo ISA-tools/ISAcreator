@@ -45,7 +45,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Utils: a number of utility methods required by the Spreadsheet.
+ * IOUtils: a number of utility methods required by the Spreadsheet.
  *
  * @author Eamonn Maguire
  * @date Jan 11, 2010

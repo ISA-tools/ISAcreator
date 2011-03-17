@@ -42,8 +42,8 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
@@ -85,11 +85,11 @@ public class AddAssayPane extends JPanel {
     private Map<Integer, TreatmentReplicate> treatmentGroups;
     private DataEntryEnvironment dep;
     private ListOrderedMap<String, GeneratedSampleDetails> sampleNameValues;
-    private DataEntryWrapper dew;
+    private AbstractDataEntryEnvironment dew;
     private UserProfile up;
     private MouseListener[] listeners;
 
-    public AddAssayPane(DataEntryWrapper dew, Study study, List<TempFactors> factorsToAdd,
+    public AddAssayPane(AbstractDataEntryEnvironment dew, Study study, List<TempFactors> factorsToAdd,
                         Map<Integer, TreatmentReplicate> treatmentGroups, DataEntryEnvironment dep, UserProfile up) {
         this.dew = dew;
         this.up = up;
@@ -162,7 +162,7 @@ public class AddAssayPane extends JPanel {
 
 
     public void createSouthPanel() {
-        DataEntryWrapper.backButton.setIcon(DataEntryWrapper.back);
+        AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
         listeners[0] = new MouseAdapter() {
             // todo add timer here to ensure that the algorithm isn't run twice!
             public void mousePressed(MouseEvent event) {
@@ -170,15 +170,15 @@ public class AddAssayPane extends JPanel {
             }
 
             public void mouseEntered(MouseEvent event) {
-                DataEntryWrapper.backButton.setIcon(DataEntryWrapper.backOver);
+                AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.backOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                DataEntryWrapper.backButton.setIcon(DataEntryWrapper.back);
+                AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
             }
         };
 
-        dew.assignListenerToLabel(DataEntryWrapper.backButton, listeners[0]);
+        dew.assignListenerToLabel(AbstractDataEntryEnvironment.backButton, listeners[0]);
 
         listeners[1] = new MouseAdapter() {
 
@@ -199,15 +199,15 @@ public class AddAssayPane extends JPanel {
             }
 
             public void mouseEntered(MouseEvent event) {
-                DataEntryWrapper.nextButton.setIcon(DataEntryWrapper.nextOver);
+                AbstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.nextOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                DataEntryWrapper.nextButton.setIcon(DataEntryWrapper.next);
+                AbstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.next);
             }
         };
 
-        dew.assignListenerToLabel(DataEntryWrapper.nextButton, listeners[1]);
+        dew.assignListenerToLabel(AbstractDataEntryEnvironment.nextButton, listeners[1]);
     }
 
     public ListOrderedMap<String, GeneratedSampleDetails> getSampleNameValues() {

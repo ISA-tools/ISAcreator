@@ -45,8 +45,8 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
@@ -64,7 +64,7 @@ import java.io.File;
 import java.util.Stack;
 
 
-public class MergeFilesUI extends DataEntryWrapper {
+public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
     @InjectedResource
     private ImageIcon logo, selectFilesHeader, defineInvestigationHeader, overviewHeader, mergeCompleteHeader,

@@ -42,7 +42,7 @@ import org.isatools.isacreator.model.Publication;
 import javax.swing.*;
 
 /**
- * Utils
+ * IOUtils
  *
  * @author eamonnmaguire
  * @date Oct 11, 2010

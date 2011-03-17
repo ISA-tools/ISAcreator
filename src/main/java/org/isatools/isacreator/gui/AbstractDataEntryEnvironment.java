@@ -48,7 +48,7 @@ import java.awt.event.MouseListener;
  */
 
 
-public abstract class DataEntryWrapper extends DataEntryForm {
+public abstract class AbstractDataEntryEnvironment extends DataEntryForm {
 
     protected Component currentPage = null;
     public static JLabel backButton;
@@ -56,14 +56,14 @@ public abstract class DataEntryWrapper extends DataEntryForm {
 
     private JLabel infoLabel;
 
-    public static ImageIcon back = new ImageIcon(DataEntryWrapper.class.getResource("/images/common/back.png"));
-    public static ImageIcon backOver = new ImageIcon(DataEntryWrapper.class.getResource("/images/common/back_over.png"));
-    public static ImageIcon next = new ImageIcon(DataEntryWrapper.class.getResource("/images/common/next.png"));
-    public static ImageIcon nextOver = new ImageIcon(DataEntryWrapper.class.getResource("/images/common/next_over.png"));
-    public static ImageIcon wizard = new ImageIcon(DataEntryWrapper.class.getResource("/images/wizard/exitwizard.png"));
-    public static ImageIcon wizardOver = new ImageIcon(DataEntryWrapper.class.getResource("/images/wizard/exitwizard_over.png"));
+    public static ImageIcon back = new ImageIcon(AbstractDataEntryEnvironment.class.getResource("/images/common/back.png"));
+    public static ImageIcon backOver = new ImageIcon(AbstractDataEntryEnvironment.class.getResource("/images/common/back_over.png"));
+    public static ImageIcon next = new ImageIcon(AbstractDataEntryEnvironment.class.getResource("/images/common/next.png"));
+    public static ImageIcon nextOver = new ImageIcon(AbstractDataEntryEnvironment.class.getResource("/images/common/next_over.png"));
+    public static ImageIcon wizard = new ImageIcon(AbstractDataEntryEnvironment.class.getResource("/images/wizard/exitwizard.png"));
+    public static ImageIcon wizardOver = new ImageIcon(AbstractDataEntryEnvironment.class.getResource("/images/wizard/exitwizard_over.png"));
 
-    protected DataEntryWrapper() {
+    protected AbstractDataEntryEnvironment() {
         setLayout(new BorderLayout());
     }
 

@@ -19,6 +19,7 @@
         <attribute name="header" type="string"/>
         <attribute name="data-type" type="string"/>
         <attribute name="section" type="string" use="optional"/>
+        <attribute name="is-hidden" type="boolean" use="optional"/>
         <attribute name="is-file-field" type="boolean"/>
         <attribute name="is-multiple-value" type="boolean"/>
         <attribute name="is-required" type="boolean"/>

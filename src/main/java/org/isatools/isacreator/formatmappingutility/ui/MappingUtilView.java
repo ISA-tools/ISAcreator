@@ -53,8 +53,8 @@ import org.isatools.isacreator.formatmappingutility.io.SavedMappings;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.loader.Loader;
 import org.isatools.isacreator.formatmappingutility.logic.MappingLogic;
+import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
@@ -83,7 +83,7 @@ import java.util.Stack;
  * @date Apr 20, 2009
  */
 
-public class MappingUtilView extends DataEntryWrapper {
+public class MappingUtilView extends AbstractDataEntryEnvironment {
     private static final Logger log = Logger.getLogger(MappingUtilView.class.getName());
 
     @InjectedResource

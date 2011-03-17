@@ -41,7 +41,7 @@ package org.isatools.isacreator.common;
 import java.io.File;
 
 /**
- * Utils
+ * IOUtils
  *
  * @author Eamonn Maguire
  * @date Jan 21, 2010

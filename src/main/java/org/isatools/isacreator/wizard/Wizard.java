@@ -46,8 +46,8 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedFormattedTextField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryWrapper;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.gui.formelements.AssaySubForm;
@@ -88,7 +88,7 @@ import java.util.List;
  *
  * @author Eamonn Maguire
  */
-public class Wizard extends DataEntryWrapper {
+public class Wizard extends AbstractDataEntryEnvironment {
 
     private static final Logger log = Logger.getLogger(Wizard.class.getName());
 

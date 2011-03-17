@@ -13,14 +13,6 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Title" section="INVESTIGATION" data-type="String" is-file-field="false"
-               is-multiple-value="false"
-               is-required="true">
-            <description>A user defined identifier for the investigation.
-            </description>
-            <default-value></default-value>
-        </field>
-
         <field header="Investigation Description" section="INVESTIGATION" data-type="Long String" is-file-field="false"
                is-multiple-value="false"
                is-required="true">
@@ -91,7 +83,7 @@
 
         <!--Investigation Contacts Section -->
 
-        <field header="Investigation Person Last Name" section="INVESTIGATION CONTACTS" data-type="String"
+        <field header="Investigation Person Last Name" section="INVESTIGATION PUBLICATIONS" data-type="String"
                is-file-field="false" is-multiple-value="false"
                is-required="true">
             <description>A user defined identifier for the investigation.
@@ -99,7 +91,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Person First Name" section="INVESTIGATION CONTACTS" data-type="String"
+        <field header="Investigation Person First Name" section="INVESTIGATION PUBLICATIONS" data-type="String"
                is-file-field="false" is-multiple-value="false"
                is-required="true">
             <description>A user defined identifier for the investigation.
@@ -107,7 +99,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Person Mid Initials" section="INVESTIGATION CONTACTS" data-type="String"
+        <field header="Investigation Person Mid Initials" section="INVESTIGATION PUBLICATIONS" data-type="String"
                is-file-field="false" is-multiple-value="false"
                is-required="true">
             <description>A user defined identifier for the investigation.
@@ -115,7 +107,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Person Email" section="INVESTIGATION CONTACTS" data-type="Long String"
+        <field header="Investigation Person Email" section="INVESTIGATION PUBLICATIONS" data-type="Long String"
                is-file-field="false" is-multiple-value="false"
                is-required="false">
             <description>A user defined identifier for the investigation.
@@ -124,7 +116,7 @@
         </field>
 
 
-        <field header="Investigation Person Phone" section="INVESTIGATION CONTACTS" data-type="String"
+        <field header="Investigation Person Phone" section="INVESTIGATION PUBLICATIONS" data-type="String"
                is-file-field="false" is-multiple-value="false"
                is-required="false">
             <description>A user defined identifier for the investigation.
@@ -132,7 +124,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Person Fax" section="INVESTIGATION CONTACTS" data-type="String"
+        <field header="Investigation Person Fax" section="INVESTIGATION PUBLICATIONS" data-type="String"
                is-file-field="false" is-multiple-value="false"
                is-required="false">
             <description>A user defined identifier for the investigation.
@@ -140,7 +132,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Person Address" section="INVESTIGATION CONTACTS" data-type="Long String"
+        <field header="Investigation Person Address" section="INVESTIGATION PUBLICATIONS" data-type="Long String"
                is-file-field="false" is-multiple-value="false"
                is-required="false">
             <description>A user defined identifier for the investigation.
@@ -148,7 +140,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Person Affiliation" section="INVESTIGATION CONTACTS" data-type="String"
+        <field header="Investigation Person Affiliation" section="INVESTIGATION PUBLICATIONS" data-type="String"
                is-file-field="false" is-multiple-value="false"
                is-required="false">
             <description>A user defined identifier for the investigation.
@@ -156,7 +148,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Person Roles" section="INVESTIGATION CONTACTS" data-type="Ontology term"
+        <field header="Investigation Person Roles" section="INVESTIGATION PUBLICATIONS" data-type="Ontology term"
                is-file-field="false" is-multiple-value="false"
                is-required="false">
             <description>A user defined identifier for the investigation.

@@ -41,7 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.gui.DataEntryWrapper;
+import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -53,14 +53,14 @@ import java.util.List;
 
 public class TreatmentGroupSelector extends JPanel {
     private List<TreatmentGroupInformation> treatmentGroupDefinitions;
-    private DataEntryWrapper dew;
+    private AbstractDataEntryEnvironment dew;
     private int numTreatmentGroupsSpecified;
     private Collection<String> treatmentGroups;
     private JLabel status;
     private String defaultReplicates;
     private MouseListener[] listeners;
 
-    public TreatmentGroupSelector(DataEntryWrapper dew, int numTreatmentGroupsSpecified,
+    public TreatmentGroupSelector(AbstractDataEntryEnvironment dew, int numTreatmentGroupsSpecified,
                                   final Collection<String> treatmentGroups, String defaultReplicates) {
         this.dew = dew;
         this.numTreatmentGroupsSpecified = numTreatmentGroupsSpecified;
@@ -153,7 +153,7 @@ public class TreatmentGroupSelector extends JPanel {
         southPanel.add(statusPanel);
 
 
-        DataEntryWrapper.backButton.setIcon(DataEntryWrapper.back);
+        AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
         listeners[0] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
@@ -162,15 +162,15 @@ public class TreatmentGroupSelector extends JPanel {
             }
 
             public void mouseEntered(MouseEvent event) {
-                DataEntryWrapper.backButton.setIcon(DataEntryWrapper.backOver);
+                AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.backOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                DataEntryWrapper.backButton.setIcon(DataEntryWrapper.back);
+                AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
             }
         };
 
-        dew.assignListenerToLabel(DataEntryWrapper.backButton, listeners[0]);
+        dew.assignListenerToLabel(AbstractDataEntryEnvironment.backButton, listeners[0]);
 
         listeners[1] = new MouseAdapter() {
 
@@ -208,15 +208,15 @@ public class TreatmentGroupSelector extends JPanel {
             }
 
             public void mouseEntered(MouseEvent event) {
-                DataEntryWrapper.nextButton.setIcon(DataEntryWrapper.nextOver);
+                AbstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.nextOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                DataEntryWrapper.nextButton.setIcon(DataEntryWrapper.next);
+                AbstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.next);
             }
         };
 
-        dew.assignListenerToLabel(DataEntryWrapper.nextButton, listeners[1]);
+        dew.assignListenerToLabel(AbstractDataEntryEnvironment.nextButton, listeners[1]);
 
         add(southPanel, BorderLayout.SOUTH);
     }

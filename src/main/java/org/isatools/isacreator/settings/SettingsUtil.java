@@ -41,7 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
-import org.isatools.isacreator.gui.DataEntryWrapper;
+import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Protocol;
@@ -64,7 +64,7 @@ import java.util.Properties;
  * @date Aug 28, 2009
  */
 
-public class SettingsUtil extends DataEntryWrapper {
+public class SettingsUtil extends AbstractDataEntryEnvironment {
 
     public static final String PROPERTIES_FILE = "settings.properties";
 
