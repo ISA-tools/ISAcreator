@@ -148,16 +148,20 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 return;
             }
 
+            log.info("Starting creating of archive");
             archiveOutputStatus.setText("<html><i>creating archive...please wait</i></html>");
             localFiles = new HashMap<String, List<String>>();
 //			Set<String> remoteFiles = new HashSet<String>();
 
             missingData = new HashMap<String, List<ArchiveOutputError>>();
 
+            log.info("Gathering datafiles to be zipped");
             for (Study s : inv.getStudies().values()) {
                 List<ArchiveOutputError> missingDataResult;
 
                 if ((missingDataResult = s.getStudySample().getSpreadsheetUI().getTable().checkForCompleteness()).size() > 0) {
+                    log.info("Missing " + missingDataResult.size() + " files in the study sample file...");
+
                     missingData.put(s.getStudySample().getAssayReference(), missingDataResult);
                 }
 
@@ -172,6 +176,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                     }
 
                     if ((missingDataResult = a.getSpreadsheetUI().getTable().checkForCompleteness()).size() > 0) {
+                        log.info("Missing " + missingDataResult.size() + " files in file " + a.getAssayReference());
                         missingData.put(a.getAssayReference(), missingDataResult);
                     }
 
@@ -187,7 +192,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
             File[] isaFiles = parentFile.listFiles();
 
-
+            log.info("Starting to zip files and directories");
             // zip up contents. if process is unsuccessful, clean up any files output which may be incomplete.
             if (!zipDirectoryContents(parentFile.getName() + "_archive", outputLocation, localFiles, isaFiles)
                     && archiveLocation != null && archiveLocation.exists()) {
@@ -207,6 +212,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             outputISATAB.saveISAFiles(false, inv);
         } catch (OutOfMemoryError ome) {
             // this will happen only with very large assays! if it does, inform the user to increase the memory allowance to ISAcreator
+            log.info("The system ran out of memory whilst trying to zip the files. Ensure that overall archive size is below 4GB.");
             updateArchiveOutputStatusLabel("<html>increase memory!</html>");
             // force an immediate garbage collect to remove redundant objects immediately!
             System.gc();
@@ -288,7 +294,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
             FileInputStream fis = new FileInputStream(file);
 
-            // todo check if file has been added already before getting to this stage.
+
             out.putNextEntry(new ZipEntry(file.getName()));
 
             int length;
@@ -300,6 +306,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
             fis.close();
             addedFilePaths.add(file.getAbsolutePath());
+            log.info("Successfully added " + file.getAbsolutePath());
         }
 
     }
@@ -326,9 +333,10 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
             // zip up the rest of the ISAfiles
             updateArchiveOutputStatusLabel("zipping files");
-            log.info("zipping files");
+            log.info("zZipping files");
 
             for (File isafile : isaFiles) {
+                log.info("Attempting to zip " + isafile.getName());
                 if (isafile.isFile()) {
                     statistics.addToNumberOfFiles(1);
                     statistics.addToUncompressedSize(isafile.length());
@@ -344,10 +352,10 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                     if (f.exists()) {
 
                         if (f.isDirectory()) {
-                            log.info("zipping directory: " + f.getAbsolutePath());
+                            log.info("Zipping directory: " + f.getAbsolutePath());
                             zipDir(f.getName(), f, out, buffer);
                         } else {
-                            log.info("zipping file: " + f.getAbsolutePath());
+                            log.info("Zipping file: " + f.getAbsolutePath());
                             updateArchiveOutputStatusLabel(
                                     "<html><b>Compressing:</b> " + f.getName() + "</html>");
                             statistics.addToNumberOfFiles(1);
@@ -371,20 +379,23 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             statistics.setEndTime(System.currentTimeMillis());
 
             if (missingFiles.size() > 0 || missingData.size() > 0) {
+                log.info("Archive creation failed, there are " + missingFiles.size() + " missing files referenced in the submission.");
 
                 updateArchiveOutputStatusLabel("<html><strong>Archive output failed<strong>, there are <i>files</i> or <i>data</i> missing.</html>");
+
                 browseViewErrorPane.refreshErrorView(getErrors());
                 browseViewErrorPane.setVisible(true);
                 browseViewErrorPane.setPoppedOut(true);
                 firePropertyChange("archiveOutputFailed", false, true);
                 return false;
             } else {
+                log.error("Archive output successful!");
                 firePropertyChange("archiveOutputCompleted", false, true);
                 return true;
             }
 
         } catch (FileNotFoundException e) {
-            log.error("file not found..." + e.getMessage());
+            log.error("File not found..." + e.getMessage());
             e.printStackTrace();
             return false;
         } catch (IOException e) {
