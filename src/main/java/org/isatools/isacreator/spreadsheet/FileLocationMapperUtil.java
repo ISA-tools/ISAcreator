@@ -104,6 +104,8 @@ public class FileLocationMapperUtil {
                 if (f.isDirectory()) {
                     // just keep calling this method whenever a directory is found so that we can recursively delve
                     // into a Directory and ALL of its contents!
+                    System.out.println("Adding directory " + f.getName() + " to index");
+                    dirContents.put(f.getName(), f.getPath());
                     dirContents.putAll(indexDirectory(f));
                 } else {
                     dirContents.put(f.getName(), f.getPath());
