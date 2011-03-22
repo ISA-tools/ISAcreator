@@ -57,6 +57,7 @@ import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.GeneralUtils;
+import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -381,7 +382,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             for (int row = 0; row < dtm.getRowCount(); row++) {
 
                 val = (dtm.getValueAt(row, col) != null) ? dtm.getValueAt(row, col).toString() : "";
-
+                val = StringProcessing.cleanUpString(val);
                 if (fieldType == FieldTypes.ASSAY) {
                     if (row == 0) {
                         if (val.equals("")) {

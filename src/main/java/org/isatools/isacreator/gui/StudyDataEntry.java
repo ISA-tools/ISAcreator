@@ -49,6 +49,7 @@ import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -583,22 +584,10 @@ public class StudyDataEntry extends DataEntryForm {
 
         Map<Integer, Map<String, String>> ontologyTerms = IOUtils.getOntologyTerms(study.getFieldValues().keySet());
 
-        for (int hashCode : ontologyTerms.keySet()) {
-            System.out.println(hashCode);
-
-            for (String term : ontologyTerms.get(hashCode).keySet()) {
-                System.out.println(term + " -> " + ontologyTerms.get(hashCode).get(term));
-            }
-        }
-
         // now, do ontology processing
         for (int fieldHashCode : ontologyTerms.keySet()) {
 
             Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
-
-            for (String s : ontologyTerms.get(fieldHashCode).values()) {
-                System.out.println("\t" + s);
-            }
 
             Map<String, String> processedOntologyField = processOntologyField(ontologyField, study.getFieldValues());
             study.getFieldValues().put(ontologyField.get(IOUtils.TERM), processedOntologyField.get(ontologyField.get(IOUtils.TERM)));
@@ -608,7 +597,7 @@ public class StudyDataEntry extends DataEntryForm {
 
         // now, output the fields
         for (String fieldName : study.getFieldValues().keySet()) {
-            output.append(fieldName).append("\t\"").append(study.getFieldValues().get(fieldName)).append("\"\n");
+            output.append(fieldName).append("\t\"").append(StringProcessing.cleanUpString(study.getFieldValues().get(fieldName))).append("\"\n");
         }
 
         output.append(studyDesignSubform.toString());

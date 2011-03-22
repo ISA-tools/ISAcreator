@@ -255,11 +255,10 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         problemReport.setOpaque(false);
         problemReport.setContentType("text/html");
         problemReport.setEditable(false);
-        problemReport.setPreferredSize(new Dimension(250, 100));
 
 
         problemScroll = new JScrollPane(problemReport, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        problemScroll.setPreferredSize(new Dimension(350, 100));
+        problemScroll.setPreferredSize(new Dimension(350, 80));
         problemScroll.setBorder(null);
         problemScroll.setOpaque(false);
         problemScroll.getViewport().setOpaque(false);

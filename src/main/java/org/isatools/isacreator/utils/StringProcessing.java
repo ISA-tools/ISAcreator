@@ -68,7 +68,7 @@ public class StringProcessing {
             Pattern p = Pattern.compile(pattern);
             Matcher m = p.matcher(substitution);
 
-            while (m.find()) {
+            if (m.find()) {
                 int startIndex = m.start();
                 int endIndex = m.end();
 

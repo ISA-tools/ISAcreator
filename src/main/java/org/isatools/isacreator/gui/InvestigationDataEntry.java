@@ -51,6 +51,7 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -265,7 +266,7 @@ public class InvestigationDataEntry extends DataEntryForm {
         for (String fieldName : investigation.getFieldValues().keySet()) {
 
             output.append(fieldName).append("\t\"").append(displayInvestigationInfo ?
-                    investigation.getFieldValues().get(fieldName) : "").append("\"\n");
+                    StringProcessing.cleanUpString(investigation.getFieldValues().get(fieldName)) : "").append("\"\n");
         }
 
         output.append(publicationsSubForm.toString());
