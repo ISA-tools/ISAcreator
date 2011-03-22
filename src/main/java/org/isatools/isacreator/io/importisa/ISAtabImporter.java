@@ -181,7 +181,12 @@ public class ISAtabImporter {
                     return false;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+
+                messages.add(e.getMessage());
+
+                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                errors.add(investigationErrorReport);
+
                 return false;
 
             }

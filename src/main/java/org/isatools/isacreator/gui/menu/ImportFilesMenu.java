@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
@@ -157,6 +158,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     } else if (successfulImport) {
                         log.error("The following problems were encountered when importing the ISAtab files in " + dir);
 
+                        for (ISAFileErrorReport report : iISA.getMessages()) {
+                            if (report.getMessages().size() > 0) {
+                                log.info("For " + report.getFileName());
+                                for (String message : report.getMessages()) {
+                                    System.out.println("\t" + message);
+                                }
+                            }
+                        }
 
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
@@ -169,7 +178,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                                 errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
                                     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                                        System.out.println("going back");
                                         menu.changeView(ImportFilesMenu.this);
                                         revalidate();
                                     }
@@ -177,7 +185,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                                 errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
                                     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                                        System.out.println("continuing to load");
                                         menu.hideGlassPane();
                                         menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
                                     }
@@ -194,6 +201,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     } else {
                         log.error("The following problems were encountered when importing the ISAtab files in " + dir);
 
+                        for (ISAFileErrorReport report : iISA.getMessages()) {
+                            if (report.getMessages().size() > 0) {
+                                log.info("For " + report.getFileName());
+                                for (String message : report.getMessages()) {
+                                    System.out.println("\t" + message);
+                                }
+                            }
+                        }
 
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
@@ -233,8 +248,9 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 } catch (Exception e) {
                     menu.stopProgressIndicator();
                     menu.resetViewAfterProgress();
-                    e.printStackTrace();
+                    log.error(e.toString());
                     problemReport.setText("Unexpected problem occurred." + e.getMessage());
+
                     problemScroll.setVisible(true);
                     revalidate();
                 }

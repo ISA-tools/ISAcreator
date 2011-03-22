@@ -251,7 +251,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         problemCont.setOpaque(false);
 
         problemReport = new JEditorPane();
-        UIHelper.renderComponent(problemReport, UIHelper.VER_12_PLAIN, UIHelper.RED_COLOR, false);
+        UIHelper.renderComponent(problemReport, UIHelper.VER_11_BOLD, UIHelper.RED_COLOR, false);
         problemReport.setOpaque(false);
         problemReport.setContentType("text/html");
         problemReport.setEditable(false);
