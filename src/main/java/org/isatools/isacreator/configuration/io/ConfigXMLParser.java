@@ -80,7 +80,7 @@ public class ConfigXMLParser {
         try {
             definitions = getTableDefinitions();
         } catch (Exception e) {
-            problemLog += "<p> problem encountered loading configurations. please make sure the directory contains valid configuration files.";
+            problemLog += "<p> problem encountered loading configurations. please make sure the directory contains valid configuration files.</p>";
             problemsEncountered = true;
             return;
         }
@@ -90,7 +90,7 @@ public class ConfigXMLParser {
                 try {
                     processTable(doc);
                 } catch (Exception e) {
-                    problemLog += "<p> problem processing : " + doc.getTableName();
+                    problemLog += "<p> problem processing : " + doc.getTableName() + "</p>";
                     problemsEncountered = true;
                 }
             }

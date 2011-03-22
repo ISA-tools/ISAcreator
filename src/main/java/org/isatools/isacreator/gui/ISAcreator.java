@@ -337,13 +337,19 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.PAGE_AXIS));
 
-        TitlePanel titlePan = new ISAcreatorTitlePanel();
+        TitlePanel titlePane = new ISAcreatorTitlePanel();
         getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-        topPanel.add(titlePan);
+        titlePane.addPropertyChangeListener(ISAcreatorTitlePanel.CLOSE_EVENT, new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                System.out.println("Close button pressed!");
+            }
+        });
+
+        topPanel.add(titlePane);
         topPanel.add(createMenuBar());
         add(topPanel, BorderLayout.NORTH);
-        titlePan.installListeners();
+        titlePane.installListeners();
     }
 
     private Container createMenuBar() {

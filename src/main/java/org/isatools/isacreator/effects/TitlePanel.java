@@ -57,10 +57,13 @@ import java.awt.event.WindowEvent;
 
 
 public abstract class TitlePanel extends JComponent {
-    private JButton iconifyButton;
-    private JButton maximizeButton;
+
+    public static final String CLOSE_EVENT = "close";
+
+    private JButton iconifyButton, maximizeButton, closeButton;
 
     private int preferredHeight = 26;
+
     private Image backgroundGradient = new ImageIcon(getClass().getResource("/images/titlepanel/background-active.png")).getImage();
     private Image minimize = new ImageIcon(getClass().getResource("/images/titlepanel/title-minimize.png")).getImage();
     private Image minimizeInactive = new ImageIcon(getClass().getResource("/images/titlepanel/title-minimize-inactive.png")).getImage();
@@ -70,6 +73,11 @@ public abstract class TitlePanel extends JComponent {
     private Image maximizeInactive = new ImageIcon(getClass().getResource("/images/titlepanel/title-maximize-inactive.png")).getImage();
     private Image maximizeOver = new ImageIcon(getClass().getResource("/images/titlepanel/title-maximize-over.png")).getImage();
     private Image maximizePressed = new ImageIcon(getClass().getResource("/images/titlepanel/title-maximize-pressed.png")).getImage();
+    private Image close = new ImageIcon(getClass().getResource("/images/titlepanel/title-close.png")).getImage();
+    private Image closeInactive = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-inactive.png")).getImage();
+    private Image closeOver = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-over.png")).getImage();
+    private Image closePressed = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-pressed.png")).getImage();
+
 
     public TitlePanel() {
         ResourceInjector.get("gui-package.style").inject(this);
@@ -104,6 +112,7 @@ public abstract class TitlePanel extends JComponent {
                         GridBagConstraints.NONE,
                         new Insets(1, 0, 0, 2),
                         0, 0));
+        iconifyButton.setToolTipText("<html>Minimise <b>ISAcreator</b></html>");
 
         add(maximizeButton = createButton(new ResizeAction(),
                 maximize, maximizePressed, maximizeOver),
@@ -114,6 +123,20 @@ public abstract class TitlePanel extends JComponent {
                         GridBagConstraints.NONE,
                         new Insets(1, 0, 0, 2),
                         0, 0));
+
+        maximizeButton.setToolTipText("<html>Toggle full/default screen size for <b>ISAcreator</b></html>");
+
+        add(closeButton = createButton(new CloseAction(),
+                close, closePressed, closeOver),
+                new GridBagConstraints(3, 0,
+                        1, 1,
+                        0.0, 1.0,
+                        GridBagConstraints.NORTHEAST,
+                        GridBagConstraints.NONE,
+                        new Insets(1, 0, 0, 2),
+                        0, 0));
+
+        closeButton.setToolTipText("<html>Close <b>ISAcreator</b></html>");
     }
 
     private static JButton createButton(final AbstractAction action,
@@ -207,6 +230,12 @@ public abstract class TitlePanel extends JComponent {
     private class ResizeAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             resize();
+        }
+    }
+
+    private class CloseAction extends AbstractAction {
+        public void actionPerformed(ActionEvent e) {
+            TitlePanel.this.firePropertyChange(CLOSE_EVENT, false, true);
         }
     }
 
