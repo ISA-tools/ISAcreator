@@ -24,6 +24,9 @@ import java.util.Vector;
  */
 public class SpreadsheetImport {
 
+
+    private Set<String> messages;
+
     /**
      * Create tablemodel for item!
      *
@@ -38,6 +41,7 @@ public class SpreadsheetImport {
                                              TableReferenceObject defaultTableRef) throws IOException, MalformedInvestigationException {
         // process headers to build table reference object for table.
         // create new sortable and then read in the data row by row :o)
+        messages = new HashSet<String>();
 
         File f = new File(fileName);
 
@@ -228,13 +232,19 @@ public class SpreadsheetImport {
 
             String invalidHeaderNames = "";
 
+            int headerCount = invalidHeaders.size();
             for (String s : invalidHeaders) {
-                invalidHeaderNames += "<li><b>" + s + "</b></li>";
+                invalidHeaderNames += s;
+                if (headerCount < invalidHeaders.size() - 1) {
+                    invalidHeaderNames += ", ";
+                }
+                headerCount++;
             }
 
-            String colText = invalidHeaders.size() > 1 ? invalidHeaders.size() + " columns do" : "column does";
+            String colText = invalidHeaders.size() > 1 ? invalidHeaders.size() + "The columns" : "The column ";
+            String linkText = invalidHeaders.size() > 1 ? invalidHeaders.size() + " are " : " is ";
 
-            throw new MalformedInvestigationException("The following " + colText + " not exist for the assay defined in " + tableName + ":</p><ul>" + invalidHeaderNames + "</ul>");
+            throw new MalformedInvestigationException(colText + invalidHeaderNames + linkText + " not supported in this assay");
         }
 
         return tro;

@@ -189,7 +189,7 @@ public class InvestigationImport {
                         messages.add(fmt.format(new Object[]{section, mainSection.substring(0, mainSection.lastIndexOf("-"))}));
                     }
                 } else {
-                    messages.add("There are too many or too few major sections, e.g. PUBLICATION Sections than are allowed for " + mainSection.substring(0, mainSection.lastIndexOf("-")) + " section of the ISAtab format");
+                    messages.add("Incorrect number of sections defined for " + mainSection.substring(0, mainSection.lastIndexOf("-")));
                 }
             }
         }

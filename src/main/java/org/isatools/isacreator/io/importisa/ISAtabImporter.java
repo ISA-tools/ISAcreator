@@ -3,6 +3,8 @@ package org.isatools.isacreator.io.importisa;
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ISAFileErrorReport;
+import org.isatools.errorreporter.model.ISAFileType;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
@@ -39,7 +41,7 @@ public class ISAtabImporter {
     private Investigation investigation;
 
     private DataEntryEnvironment dataEntryEnvironment;
-    private Set<String> messages;
+    private List<ISAFileErrorReport> errors;
 
     private String parentDirectoryPath;
     private Boolean constructWithGUIs;
@@ -74,7 +76,7 @@ public class ISAtabImporter {
      */
     public ISAtabImporter(ISAcreator applicationContainer, Boolean constructWithGUIs) {
         this.constructWithGUIs = constructWithGUIs;
-        messages = new HashSet<String>();
+        errors = new ArrayList<ISAFileErrorReport>();
 
         this.dataEntryEnvironment = new DataEntryEnvironment(applicationContainer);
         applicationContainer.setCurDataEntryPanel(dataEntryEnvironment);
@@ -99,6 +101,8 @@ public class ISAtabImporter {
 
         boolean investigationFileFound = false;
 
+        Set<String> messages = new HashSet<String>();
+
         if (investigationFile.exists()) {
             File[] isaDirectorFiles = investigationFile.listFiles();
 
@@ -110,6 +114,7 @@ public class ISAtabImporter {
                 }
             }
 
+
             if (!investigationFileFound) {
                 messages.add("Investigation file does not exist in this folder. Please create an investigation file and name it " +
                         "\"i_<investigation identifier>.txt\"");
@@ -117,8 +122,11 @@ public class ISAtabImporter {
             }
 
             try {
+
                 InvestigationImport investigationFileImporter = new InvestigationImport();
                 Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
+
+                messages.addAll(investigationFileImporter.getMessages());
 
                 if (investigationFileImport.fst) {
                     log.info("Import of Investigation in " + investigationFile.getPath() + " was successful...");
@@ -128,10 +136,14 @@ public class ISAtabImporter {
 
                     Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
 
+                    messages.addAll(mapper.getMessages());
+
                     if (!mappingResult.fst) {
-                        messages.addAll(mapper.getMessages());
+                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                        errors.add(investigationErrorReport);
                         return false;
                     }
+
 
                     investigation = mappingResult.snd;
                     investigation.setFileReference(investigationFile.getPath());
@@ -148,9 +160,10 @@ public class ISAtabImporter {
                         }
                     }
 
-                    boolean successfullyProcessedInvestigation = processInvestigation();
+                    if (!processInvestigation()) {
+                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                        errors.add(investigationErrorReport);
 
-                    if (!successfullyProcessedInvestigation) {
                         return false;
                     }
 
@@ -161,6 +174,10 @@ public class ISAtabImporter {
                     }
                 } else {
                     messages.addAll(investigationFileImporter.getMessages());
+
+                    ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                    errors.add(investigationErrorReport);
+
                     return false;
                 }
             } catch (IOException e) {
@@ -177,6 +194,8 @@ public class ISAtabImporter {
 
         SpreadsheetImport spreadsheetImporter = new SpreadsheetImport();
 
+        boolean errorsFound = false;
+
         for (String studyIdentifier : investigation.getStudies().keySet()) {
             Study study = investigation.getStudies().get(studyIdentifier);
 
@@ -189,6 +208,8 @@ public class ISAtabImporter {
 
             if (studySampleReference != null) {
 
+                Set<String> messages = new HashSet<String>();
+
                 try {
                     TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath +
                             study.getStudySampleFileIdentifier(), studySampleReference);
@@ -198,11 +219,16 @@ public class ISAtabImporter {
                     }
                 } catch (MalformedInvestigationException mie) {
                     messages.add(mie.getMessage());
-                    return false;
+
                 } catch (Exception e) {
                     messages.add(e.getMessage());
-                    e.printStackTrace();
-                    return false;
+
+                } finally {
+                    if (messages.size() > 0) {
+                        ISAFileErrorReport studySampleReport = new ISAFileErrorReport(study.getStudySampleFileIdentifier(), ISAFileType.STUDY_SAMPLE, messages);
+                        errors.add(studySampleReport);
+                        errorsFound = true;
+                    }
                 }
             }
 
@@ -211,6 +237,8 @@ public class ISAtabImporter {
             List<Assay> noReferenceobjectFound = new ArrayList<Assay>();
 
             for (String assayReference : study.getAssays().keySet()) {
+
+                Set<String> messages = new HashSet<String>();
 
                 Assay assay = study.getAssays().get(assayReference);
 
@@ -226,16 +254,18 @@ public class ISAtabImporter {
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
                         }
-
                     } catch (IOException e) {
                         messages.add(e.getMessage());
-                        return false;
                     } catch (MalformedInvestigationException e) {
                         messages.add(e.getMessage());
-                        return false;
                     } catch (Exception e) {
                         messages.add(e.getMessage());
-                        return false;
+                    } finally {
+                        if (messages.size() > 0) {
+                            ISAFileErrorReport studySampleReport = new ISAFileErrorReport(assay.getAssayReference(), inferISAFileType(assay), messages);
+                            errors.add(studySampleReport);
+                            errorsFound = true;
+                        }
                     }
                 } else {
                     messages.add("Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
@@ -243,7 +273,14 @@ public class ISAtabImporter {
                     log.info("Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
                             " is not recognised. Please ensure you are using the correct configuration!");
                     noReferenceobjectFound.add(assay);
+
+                    ISAFileErrorReport studySampleReport = new ISAFileErrorReport(assay.getAssayReference(), inferISAFileType(assay), messages);
+                    errors.add(studySampleReport);
+                    errorsFound = false;
+
                 }
+
+
             }
 
             for (Assay toRemove : noReferenceobjectFound) {
@@ -252,7 +289,7 @@ public class ISAtabImporter {
             }
         }
 
-        return true;
+        return !errorsFound;
     }
 
     private void attachGUIsToInvestigation() {
@@ -282,7 +319,28 @@ public class ISAtabImporter {
 
     }
 
-    public Set<String> getMessages() {
-        return messages;
+    public List<ISAFileErrorReport> getMessages() {
+        return errors;
+    }
+
+    private ISAFileType inferISAFileType(Assay assay) {
+
+
+        String technology = assay.getTechnologyType().toLowerCase();
+        if (technology.contains("microarray")) {
+            return ISAFileType.MICROARRAY;
+        } else if (technology.contains("spectrometry")) {
+            return ISAFileType.MASS_SPECTROMETRY;
+        } else if (technology.contains("nmr")) {
+            return ISAFileType.NMR;
+        } else if (technology.contains("flow")) {
+            return ISAFileType.FLOW_CYT;
+        } else if (technology.contains("electrophoresis")) {
+            return ISAFileType.GEL_ELECTROPHORESIS;
+        } else if (technology.contains("sequencing")) {
+            return ISAFileType.SEQUENCING;
+        } else {
+            return ISAFileType.STUDY_SAMPLE;
+        }
     }
 }

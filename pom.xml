@@ -295,6 +295,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.isatools</groupId>
+            <artifactId>ISAtabErrorReporter</artifactId>
+            <version>0.1-beta</version>
+        </dependency>
+
     </dependencies>
 
     <profiles>

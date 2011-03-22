@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.jdesktop.fuse.InjectedResource;
@@ -46,6 +47,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 /**
@@ -141,26 +144,82 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             public void run() {
                 try {
 
-                    ISAtabImporter iISA = new ISAtabImporter(menu.getMain());
-                    if (iISA.importFile(dir)) {
+                    final ISAtabImporter iISA = new ISAtabImporter(menu.getMain());
+                    boolean successfulImport = iISA.importFile(dir);
+                    if (successfulImport && iISA.getMessages().size() == 0) {
                         // success, so load
 
                         menu.stopProgressIndicator();
                         menu.resetViewAfterProgress();
                         menu.hideGlassPane();
                         menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
-                        problemScroll.setVisible(false);
+
+                    } else if (successfulImport) {
+                        log.error("The following problems were encountered when importing the ISAtab files in " + dir);
+
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                ErrorReporterView view = new ErrorReporterView(iISA.getMessages());
+                                view.createGUI();
+
+                                ErrorReportWrapper errorReportWithControls = new ErrorReportWrapper(view, true);
+                                errorReportWithControls.createGUI();
+                                errorReportWithControls.setPreferredSize(new Dimension(400, 400));
+
+                                errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
+                                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                                        System.out.println("going back");
+                                        menu.changeView(ImportFilesMenu.this);
+                                        revalidate();
+                                    }
+                                });
+
+                                errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
+                                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                                        System.out.println("continuing to load");
+                                        menu.hideGlassPane();
+                                        menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
+                                    }
+                                });
+
+                                menu.stopProgressIndicator();
+                                menu.resetViewAfterProgress();
+                                menu.changeView(errorReportWithControls);
+
+                                revalidate();
+                            }
+                        });
+
                     } else {
                         log.error("The following problems were encountered when importing the ISAtab files in " + dir);
-                        for (String message : iISA.getMessages()) {
-                            log.error(message);
-                        }
 
-                        menu.stopProgressIndicator();
-                        menu.resetViewAfterProgress();
 
-                        problemScroll.setVisible(true);
-                        revalidate();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                ErrorReporterView view = new ErrorReporterView(iISA.getMessages());
+                                view.createGUI();
+
+                                ErrorReportWrapper errorReportWithControls = new ErrorReportWrapper(view, false);
+                                errorReportWithControls.createGUI();
+                                errorReportWithControls.setPreferredSize(new Dimension(400, 400));
+
+                                errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
+                                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                                        System.out.println("going back");
+                                        menu.changeView(ImportFilesMenu.this);
+                                        revalidate();
+                                    }
+                                });
+
+                                menu.stopProgressIndicator();
+                                menu.resetViewAfterProgress();
+                                menu.changeView(errorReportWithControls);
+
+                                revalidate();
+
+                            }
+                        });
                     }
                 } catch (OutOfMemoryError outOfMemory) {
                     System.gc();

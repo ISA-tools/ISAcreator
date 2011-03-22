@@ -167,7 +167,7 @@ public class StructureToInvestigationMapper {
                 String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                 investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
-                log.error(e.getMessage());
+                messages.add(e.getMessage());
             }
         }
 
@@ -264,7 +264,7 @@ public class StructureToInvestigationMapper {
                 String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                 study.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
-                log.error(e.getMessage());
+                messages.add(e.getMessage());
             }
         }
 
@@ -319,7 +319,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        log.error(e.getMessage());
+                        messages.add(e.getMessage());
                     }
                 }
 
@@ -356,7 +356,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         design.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        log.error(e.getMessage());
+                        messages.add(e.getMessage());
                     }
                 }
 
@@ -396,7 +396,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         c.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        log.error(e.getMessage());
+                        messages.add(e.getMessage());
                     }
                 }
 
@@ -430,7 +430,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         f.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        log.error(e.getMessage());
+                        messages.add(e.getMessage());
                     }
                 }
 
@@ -465,7 +465,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        log.error(e.getMessage());
+                        messages.add(e.getMessage());
                     }
                 }
 
@@ -618,7 +618,9 @@ public class StructureToInvestigationMapper {
 
         for (Study study : investigation.getStudies().values()) {
             if (studyNames.contains(study.getStudyId())) {
-                messages.add("Duplicate study names found in investigation! Study with with ID : " + study.getStudyId() + " already exists!");
+                String message = "Duplicate study names found in investigation! Study with with ID : " + study.getStudyId() + " already exists!";
+                messages.add(message);
+                log.info(message);
                 return false;
             } else {
                 studyNames.add(study.getStudyId());
@@ -626,8 +628,9 @@ public class StructureToInvestigationMapper {
 
             for (Assay assay : study.getAssays().values()) {
                 if (assayNames.contains(assay.getAssayReference())) {
-                    messages.add("Duplicate assay found in investigation! Assay with with name : " + assay.getAssayReference() + " already exists!");
-
+                    String message = "Duplicate assay found in investigation! Assay with with name : " + assay.getAssayReference() + " already exists!";
+                    messages.add(message);
+                    log.info(message);
                     return false;
                 } else {
                     assayNames.add(assay.getAssayReference());
