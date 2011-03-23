@@ -304,6 +304,7 @@ public abstract class TitlePanel extends JComponent {
     private class WindowHandler extends WindowAdapter {
         @Override
         public void windowActivated(WindowEvent ev) {
+            closeButton.setIcon(new ImageIcon(close));
             iconifyButton.setIcon(new ImageIcon(minimize));
             maximizeButton.setIcon(new ImageIcon(maximize));
             getRootPane().repaint();
@@ -311,6 +312,7 @@ public abstract class TitlePanel extends JComponent {
 
         @Override
         public void windowDeactivated(WindowEvent ev) {
+            closeButton.setIcon(new ImageIcon(closeInactive));
             iconifyButton.setIcon(new ImageIcon(minimizeInactive));
             maximizeButton.setIcon(new ImageIcon(maximizeInactive));
             getRootPane().repaint();

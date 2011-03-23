@@ -38,6 +38,7 @@
 
 package org.isatools.isacreator.gui;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputUtil;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
@@ -92,6 +93,8 @@ import java.util.List;
  * @author Eamonn Maguire
  */
 public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
+
+    private static Logger log = Logger.getLogger(ISAcreator.class.getName());
 
     public static String DEFAULT_ISATAB_SAVE_DIRECTORY = "isatab files";
     public static String DEFAULT_CONFIGURATIONS_DIRECTORY = "Configurations";
@@ -235,7 +238,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         setupAboutPanel();
         // check that java version is supported!
-        if (!acceptJavaVersion()) {
+        if (!checkSystemRequirements()) {
             lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
             lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
@@ -326,9 +329,12 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         }
     }
 
-    private boolean acceptJavaVersion() {
+    private boolean checkSystemRequirements() {
         String version = System.getProperty("java.version");
-        System.out.println("java runtime environment version is : " + version);
+        log.info("System details");
+        log.info(System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + (System.getProperty("os.arch").equals("x86_64") ? "64 bit" : "32 bit"));
+        log.info("JRE version: " + version);
+
         char minorVersion = version.charAt(2);
         return minorVersion >= '6';
     }
@@ -342,7 +348,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         titlePane.addPropertyChangeListener(ISAcreatorTitlePanel.CLOSE_EVENT, new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                System.out.println("Close button pressed!");
+                closeISAcreator();
             }
         });
 
@@ -695,12 +701,16 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
     private void saveProfilesAndExit() {
 
-        for (UserProfile up : getUserProfiles()) {
-            if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                up.setUserHistory(getUserHistory());
-                userProfileIO.updateUserProfileInformation(up);
+        if (getCurrentUser() != null) {
+            for (UserProfile up : getUserProfiles()) {
 
-                break;
+                if (up.getUsername().equals(getCurrentUser().getUsername())) {
+                    up.setUserHistory(getUserHistory());
+                    userProfileIO.updateUserProfileInformation(up);
+
+                    break;
+                }
+
             }
         }
         userProfileIO.saveUserProfiles();
@@ -857,7 +867,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         }
 
         public void actionPerformed(ActionEvent event) {
-            final LeaveAction curAction = this;
+
             final JOptionPane[] optionPane = new JOptionPane[1];
             final ImageIcon[] icon = new ImageIcon[1];
             SwingUtilities.invokeLater(new Runnable() {
@@ -892,7 +902,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                             JOptionPane.YES_NO_OPTION,
                             icon[0]);
                     UIHelper.applyOptionPaneBackground(optionPane[0], UIHelper.BG_COLOR);
-                    optionPane[0].addPropertyChangeListener(curAction);
+                    optionPane[0].addPropertyChangeListener(LeaveAction.this);
 
                     showJDialogAsSheet(optionPane[0].createDialog(
                             ISAcreator.this, "Confirm"));
@@ -1260,6 +1270,37 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
     public IncorrectColumnOrderGUI getIncorrectGUI() {
         return incorrectGUI;
+    }
+
+    private void closeISAcreator() {
+        // checking for this instance should cover the case of the Wizard, Mapper, and main data entry screen
+        if (currentPage instanceof AbstractDataEntryEnvironment) {
+
+            JOptionPane optionPane = new JOptionPane("Are you sure you want to exit ISAcreator?",
+                    JOptionPane.INFORMATION_MESSAGE,
+                    JOptionPane.YES_NO_OPTION,
+                    confirmExit);
+            UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
+            optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                    if (propertyChangeEvent.getPropertyName()
+                            .equals(JOptionPane.VALUE_PROPERTY)) {
+                        int lastOptionAnswer = Integer.valueOf(propertyChangeEvent.getNewValue()
+                                .toString());
+                        hideSheet();
+                        if (lastOptionAnswer == JOptionPane.YES_OPTION) {
+                            System.exit(0);
+                        }
+                    }
+                }
+            });
+
+            showJDialogAsSheet(optionPane.createDialog(
+                    ISAcreator.this, "Confirm"));
+            // currently showing edit view, so ask for confirmation before exiting
+        } else {
+            saveProfilesAndExit();
+        }
     }
 
 
