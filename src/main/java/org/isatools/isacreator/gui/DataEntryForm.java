@@ -60,6 +60,7 @@ import org.isatools.isacreator.io.importisa.investigationfileproperties.Investig
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
+import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -73,6 +74,11 @@ import java.util.Set;
 public class DataEntryForm extends JLayeredPane implements Serializable {
 
     private DataEntryEnvironment dataEntryEnvironment;
+
+    // this will house the translation between Comment aliases e.g. Publication Journal [c] to Comment[Publication Journal]
+    protected Map<String, String> aliasesToRealNames;
+    protected Map<String, String> realNamesToAliases;
+
 
     protected OrderedMap<String, JTextComponent> fieldDefinitions;
 
@@ -255,6 +261,26 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     }
 
+    protected void generateAliases(Set<String> fieldValues) {
+
+        if (aliasesToRealNames == null) {
+            aliasesToRealNames = new HashMap<String, String>();
+            realNamesToAliases = new HashMap<String, String>();
+        }
+
+
+        for (String fieldName : fieldValues) {
+
+            if (fieldName.toLowerCase().startsWith("comment")) {
+                String alias = StringProcessing.extractQualifierFromField(fieldName) + " [c]";
+
+                System.out.println("Alias for " + fieldName + " is " + alias);
+                aliasesToRealNames.put(alias, fieldName);
+                realNamesToAliases.put(fieldName, alias);
+            }
+        }
+    }
+
     /**
      * Adds the fields describing a section to a Container (e.g. JPanel, Box, etc.)
      *
@@ -280,9 +306,14 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
                 if (!fieldDescriptor.isHidden()) {
 
+                    String tmpFieldName = fieldName;
+
+                    if(realNamesToAliases.containsKey(fieldName)) {
+                        tmpFieldName = realNamesToAliases.get(fieldName);
+                    }
 
                     JPanel fieldPanel = createFieldPanel(1, 2);
-                    JLabel fieldLabel = createLabel(fieldName);
+                    JLabel fieldLabel = createLabel(tmpFieldName);
 
                     JTextComponent textComponent;
 
@@ -330,7 +361,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         }
                     }
 
-                    fieldDefinitions.put(fieldName, textComponent);
+                    fieldDefinitions.put(tmpFieldName, textComponent);
 
                     containerToAddTo.add(fieldPanel);
                     containerToAddTo.add(Box.createVerticalStrut(5));
@@ -347,9 +378,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
      */
     public Map<String, String> processOntologyField(Map<String, String> ontologyTerms, Map<String, String> fieldValues) {
 
-
         String term = fieldValues.get(ontologyTerms.get(IOUtils.TERM));
-
         // At this point, we not have the term, accession and source ref fields. Next, is to set them to their correct values
 
         String tmpTerm = "";
@@ -381,7 +410,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         }
                     }
                 }
-
 
                 if (numberAdded < ontologies.length - 1) {
                     tmpTerm += ";";

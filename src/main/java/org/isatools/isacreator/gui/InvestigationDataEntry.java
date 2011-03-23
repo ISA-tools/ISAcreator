@@ -79,6 +79,7 @@ public class InvestigationDataEntry extends DataEntryForm {
     private SubForm contactsSubform;
 
 
+
     public InvestigationDataEntry(Investigation investigation, DataEntryEnvironment dep) {
         super(dep);
 
@@ -86,6 +87,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         this.investigation = investigation;
         instantiatePane();
+        generateAliases(investigation.getFieldValues().keySet());
         createInvestigationSectionFields();
         finalisePane();
     }
@@ -250,6 +252,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
             int fieldHashCode = fieldName.substring(0, fieldName.toLowerCase().indexOf("term")).trim().hashCode();
 
+
             if (ontologyTerms.containsKey(fieldHashCode)) {
 
                 Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
@@ -265,8 +268,14 @@ public class InvestigationDataEntry extends DataEntryForm {
         // now, do output
         for (String fieldName : investigation.getFieldValues().keySet()) {
 
-            output.append(fieldName).append("\t\"").append(displayInvestigationInfo ?
-                    StringProcessing.cleanUpString(investigation.getFieldValues().get(fieldName)) : "").append("\"\n");
+            String tmpFieldName = fieldName;
+
+            if(aliasesToRealNames.containsKey(fieldName)) {
+                tmpFieldName = aliasesToRealNames.get(fieldName);
+            }
+
+            output.append(tmpFieldName).append("\t\"").append(displayInvestigationInfo ?
+                    StringProcessing.cleanUpString(investigation.getFieldValues().get(tmpFieldName)) : "").append("\"\n");
         }
 
         output.append(publicationsSubForm.toString());
@@ -292,7 +301,14 @@ public class InvestigationDataEntry extends DataEntryForm {
     public void update() {
 
         for (String fieldName : fieldDefinitions.keySet()) {
-            investigation.getFieldValues().put(fieldName, fieldDefinitions.get(fieldName).getText());
+
+            String tmpFieldName = fieldName;
+
+            if(aliasesToRealNames.containsKey(fieldName)) {
+                tmpFieldName = aliasesToRealNames.get(fieldName);
+            }
+
+            investigation.getFieldValues().put(tmpFieldName, fieldDefinitions.get(fieldName).getText());
         }
 
         publicationsSubForm.update();

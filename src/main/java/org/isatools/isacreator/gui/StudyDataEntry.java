@@ -91,7 +91,7 @@ public class StudyDataEntry extends DataEntryForm {
         ResourceInjector.get("gui-package.style").inject(this);
 
         this.study = study;
-
+        generateAliases(study.getFieldValues().keySet());
         instantiatePane();
         createFields();
         finalisePane();
@@ -250,9 +250,6 @@ public class StudyDataEntry extends DataEntryForm {
      */
     private JPanel createStudyContactsSubForm() {
         List<SubFormField> contactFields = new ArrayList<SubFormField>();
-
-        //todo this will have to also take into consideration a config.xml which describes the investigation.
-        // todo the desired fields will be the union of both sets of fields.
 
         Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_CONTACTS);
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
@@ -616,7 +613,14 @@ public class StudyDataEntry extends DataEntryForm {
     public void update() {
 
         for (String fieldName : fieldDefinitions.keySet()) {
-            study.getFieldValues().put(fieldName, fieldDefinitions.get(fieldName).getText());
+
+            String tmpFieldName = fieldName;
+
+            if(aliasesToRealNames.containsKey(fieldName)) {
+                tmpFieldName = aliasesToRealNames.get(fieldName);
+            }
+
+            study.getFieldValues().put(tmpFieldName, fieldDefinitions.get(fieldName).getText());
         }
 
 

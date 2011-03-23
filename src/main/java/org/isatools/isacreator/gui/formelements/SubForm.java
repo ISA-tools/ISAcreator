@@ -406,8 +406,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         for (int col = 0; col < dtm.getColumnCount(); col++) {
             String val;
-//            String termAcc;
-//            String termSource;
+
             int count = 0;
 
             for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -433,11 +432,11 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
                 }
 
+                tmpTerm = val;
+
                 if (scrollTable.getCellEditor(row, 0) instanceof OntologyCellEditor || val.contains("Assay Measurement Type") || val.contains("Assay Technology Type") || ontologyRows.contains(row)) {
                     ontologyRows.add(row);
                     if (col == 0) {
-
-                        tmpTerm = val;
 
                         if (tmpTerm.contains("]")) {
                             String salientValue = tmpTerm.replaceAll("]", "");
@@ -454,16 +453,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                         // code to print out assay accessions and sources from table mapping definitions...
                         if (fieldType == FieldTypes.ASSAY) {
                             if (row == 0 || row == 1) {
-                                String termSourceAcc = getSourceAndAccessionForMapping(val);
+                                String termSourceAcc = getSourceAndAccessionForMapping(tmpTerm);
                                 if (termSourceAcc != null) {
 
                                     String[] parts = termSourceAcc.split(":");
 
                                     if (parts.length > 1) {
                                         tmpTermSource = parts[0];
-                                        tmpTerm = parts[1];
+                                        tmpTermAcc = parts[1];
                                     } else if (parts.length > 0) {
-                                        tmpTerm = parts[0];
+                                        tmpTermSource = parts[0];
                                     }
                                 }
                             }
@@ -491,12 +490,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                                         } else {
                                             if (ontologyTerm.contains(":")) {
 
-                                                System.out.println("Splitting term " + ontologyTerm);
                                                 String[] termAndSource = ontologyTerm.split(":");
-
-                                                for(String value : termAndSource) {
-                                                    System.out.println("\t" + value);
-                                                }
 
                                                 if (termAndSource.length > 1) {
                                                     tmpTermSource += termAndSource[0];
