@@ -38,7 +38,10 @@
 package org.isatools.isacreator.gui.formelements;
 
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.*;
+import org.isatools.isacreator.gui.DataEntryForm;
+import org.isatools.isacreator.gui.HistoricalSelectionGUI;
+import org.isatools.isacreator.gui.InvestigationDataEntry;
+import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.InvestigationPublication;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.StudyPublication;
@@ -65,12 +68,6 @@ import java.util.Map;
 
 
 public class PublicationSubForm extends SubForm {
-
-
-    public PublicationSubForm(String title, FieldTypes fieldType,
-                              List<SubFormField> fields, DataEntryEnvironment dep) {
-        super(title, fieldType, fields, dep);
-    }
 
     public PublicationSubForm(String title, FieldTypes fieldType,
                               List<SubFormField> fields, int initialNoFields,

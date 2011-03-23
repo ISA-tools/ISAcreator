@@ -132,12 +132,13 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
                         ConfigXMLParser configParser = new ConfigXMLParser(dir);
                         configParser.loadConfiguration();
 
+                        System.out.println("Loaded configuration");
                         menu.stopProgressIndicator();
                         if (configParser.isProblemsEncountered()) {
                             menu.resetViewAfterProgress();
-
+                            System.out.println("Problem encountered");
                             problemReport.setText(configParser.getProblemLog());
-                            problemReport.setVisible(true);
+                            problemScroll.setVisible(true);
                             revalidate();
                             repaint();
                         } else {
@@ -189,7 +190,7 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
     }
 
     public String getBorderTitle() {
-        return "configurations";
+        return "selected configuration to load";
     }
 
     public ImageIcon getPanelHeaderImage() {

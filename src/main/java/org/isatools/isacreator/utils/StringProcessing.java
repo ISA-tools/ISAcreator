@@ -105,4 +105,19 @@ public class StringProcessing {
 
         return toClean;
     }
+
+    /**
+     * Extracts the value between [ & ]. Used to extract the qualifier from Factor Values, Comments, etc.
+     *
+     * @param value - String, e.g. Comment[Publication author affiliation]
+     * @return Qualifier in between the square brackets
+     */
+    public static String extractQualifierFromField(String value) {
+        if (value.contains("[") && value.contains("]")) {
+            String tmpValue = value.substring(value.indexOf("[") + 1);
+            return tmpValue.replaceAll("]", "").trim();
+        } else {
+            return value;
+        }
+    }
 }

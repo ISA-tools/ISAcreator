@@ -37,7 +37,6 @@
 
 package org.isatools.isacreator.gui.formelements;
 
-import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.model.Protocol;
 
@@ -54,11 +53,6 @@ import java.util.Map;
 
 
 public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
-
-    public ProtocolSubForm(String title, FieldTypes fieldType,
-                           List<SubFormField> fields, DataEntryEnvironment dep) {
-        super(title, fieldType, fields, dep);
-    }
 
     public ProtocolSubForm(String title, FieldTypes fieldType,
                            List<SubFormField> fields, int initialNoFields,

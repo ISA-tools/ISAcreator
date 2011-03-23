@@ -37,7 +37,6 @@
 
 package org.isatools.isacreator.gui.formelements;
 
-import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
@@ -58,10 +57,6 @@ import java.util.Map;
 
 
 public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
-
-    public ContactSubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dep) {
-        super(title, fieldType, fields, dep);
-    }
 
     public ContactSubForm(String title, FieldTypes fieldType, List<SubFormField> fields, int initialNoFields, int width, int height, DataEntryForm parent) {
         super(title, fieldType, fields, initialNoFields, width, height, parent);

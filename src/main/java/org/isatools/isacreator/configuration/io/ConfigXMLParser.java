@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.configuration.io;
 
+import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.isatools.isaconfigurator.schema.*;
@@ -62,6 +63,8 @@ import java.util.Map;
 
 
 public class ConfigXMLParser {
+    private static Logger log = Logger.getLogger(ConfigXMLParser.class.getName());
+
     private String configDir;
     private List<MappingObject> mappings;
     private List<TableReferenceObject> tables;
@@ -79,21 +82,31 @@ public class ConfigXMLParser {
         List<IsaTabConfigFileType> definitions;
         try {
             definitions = getTableDefinitions();
-        } catch (Exception e) {
-            problemLog += "<p> problem encountered loading configurations. please make sure the directory contains valid configuration files.</p>";
-            problemsEncountered = true;
-            return;
-        }
 
-        for (IsaTabConfigFileType isa : definitions) {
-            for (IsaTabConfigurationType doc : isa.getIsatabConfigurationArray()) {
-                try {
-                    processTable(doc);
-                } catch (Exception e) {
-                    problemLog += "<p> problem processing : " + doc.getTableName() + "</p>";
-                    problemsEncountered = true;
+
+            for (IsaTabConfigFileType isa : definitions) {
+                for (IsaTabConfigurationType doc : isa.getIsatabConfigurationArray()) {
+                    try {
+                        processTable(doc);
+                    } catch (Exception e) {
+                        log.error("A problem was encountered when processing " + doc.getTableName());
+                        problemLog += "<p>A problem was encountered when processing " + doc.getTableName() + "</p>";
+                        problemsEncountered = true;
+                    }
                 }
             }
+        } catch (XmlException e) {
+            log.error("Please ensure you have provided a directory containing only valid configuration xml produced by ISAcreator Configurator!");
+            problemLog = "Please ensure you have provided a directory containing only valid configuration xml produced by ISAcreator Configurator!";
+            problemsEncountered = true;
+        } catch (IOException e) {
+            log.error("Problem encountered when reading files. Please ensure you have specified a valid directory!");
+            problemLog = "Problem encountered when reading files. Please ensure you have specified a valid directory!";
+            problemsEncountered = true;
+        } catch (Exception e) {
+            log.error("Please make sure the directory contains valid configuration files.");
+            problemLog += "Please make sure the directory contains valid configuration files.";
+            problemsEncountered = true;
         }
 
     }
@@ -106,26 +119,23 @@ public class ConfigXMLParser {
         return mappings;
     }
 
-    private List<IsaTabConfigFileType> getTableDefinitions() {
+    private List<IsaTabConfigFileType> getTableDefinitions() throws XmlException, IOException {
         File dir = new File(configDir);
         File[] configFiles = dir.listFiles();
+
+        if (configFiles.length == 0) {
+            log.error("The specified directory " + configDir + " is empty!");
+            throw new IOException("The specified directory " + configDir + " is empty!");
+        }
 
         List<IsaTabConfigFileType> configurations = new ArrayList<IsaTabConfigFileType>();
         for (File tableConfig : configFiles) {
             if (!tableConfig.getName().startsWith(".")) {
                 IsatabConfigFileDocument newISAConfig = null;
-                try {
+
                     newISAConfig = IsatabConfigFileDocument.Factory.parse(tableConfig);
                     IsaTabConfigFileType isa = newISAConfig.getIsatabConfigFile();
                     configurations.add(isa);
-                } catch (XmlException e) {
-                    problemsEncountered = true;
-                    problemLog = "<p>Please ensure you have provided a directory containing only valid configuration xml produced by ISAcreator Configurator!</p>";
-
-                } catch (IOException e) {
-                    problemsEncountered = true;
-                    problemLog = "<p>Problem encountered when reading files. Please ensure you have specified a valid directory!</p>";
-                }
             }
         }
 
@@ -269,8 +279,7 @@ public class ConfigXMLParser {
                 "<style type=\"text/css\">" + "<!--" + ".bodyFont {" +
                 "   font-family: Verdana;" + "   font-size: 10px;" +
                 "   color: #BF1E2D;" + "}" + "-->" + "</style>" + "</head>" +
-                "<body class=\"bodyFont\">" +
-                "<b>Problem loading configuration files</b>" + problemLog +
+                "<body class=\"bodyFont\">" + problemLog +
                 "</body></html>";
     }
 

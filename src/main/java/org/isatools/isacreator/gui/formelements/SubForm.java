@@ -56,7 +56,6 @@ import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-import org.isatools.isacreator.utils.GeneralUtils;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -90,21 +89,23 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     private static final int numFrozenColumns = 1;
 
+    // we create a static instance because the one component can be used across multiple SubForm elements in this way
+    protected static EmptyBorder em = new EmptyBorder(0, 0, 0, 0);
+
+    private static final SubFormCellRenderer DEFAULT_LOCKED_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, new Color(141, 198, 63, 40));
+    private static final SubFormCellRenderer DEFAULT_SCROLL_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, null);
+
+
     @InjectedResource
     protected ImageIcon ontologyLookupHelp, textEditHelp, confirmRemoveColumn, addRecordIcon, addRecordIconOver,
             removeIcon, removeIconOver, selectFromHistoryIcon, selectFromHistoryIconOver, searchIcon, searchIconOver;
 
-    private static final SubFormCellRenderer DEFAULT_LOCKED_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, new Color(141, 198, 63, 40));
-    private static final SubFormCellRenderer DEFAULT_SCROLL_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, null);
     protected String title;
     protected DefaultTableModel dtm;
     protected ExtendedJTable lockedTable;
     protected ExtendedJTable scrollTable;
-
     private JScrollPane frozenTable;
-
     protected List<SubFormField> fields;
-
     protected RowEditor rowEditor = new RowEditor();
     protected FieldTypes fieldType;
     protected DataEntryForm parent;
@@ -115,6 +116,9 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     protected Map<String, OntologyObject> userHistory;
     protected Set<Integer> uneditableRecords = new HashSet<Integer>();
 
+    // this will house the translation between Comment aliases e.g. Publication Journal [c] to Comment[Publication Journal]
+    protected Map<String, String> aliasesToRealNames;
+    protected Map<String, String> realNamesToAliases;
 
     protected int initialNoFields;
     protected int width;
@@ -123,8 +127,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     // we only ever create one textcelleditor.
     protected static TextCellEditor longTextEditor = new TextCellEditor();
 
-    // we create a static instance because the one component can be used across multiple SubForm elements in this way
-    protected static EmptyBorder em = new EmptyBorder(0, 0, 0, 0);
     protected JLabel removeRecord;
 
     protected JPanel options;
@@ -139,7 +141,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         this.fieldType = fieldType;
         this.fields = fields;
         this.dataEntryEnvironment = dataEntryEnvironment;
-
         this.createBorder = createBorder;
     }
 
@@ -161,10 +162,33 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         this.parent = parent;
         this.createBorder = createBorder;
 
+        generateAliases();
+
         if (parent instanceof DataEntryEnvironment) {
             this.dataEntryEnvironment = (DataEntryEnvironment) parent;
         } else {
             this.dataEntryEnvironment = parent.getDataEntryEnvironment();
+        }
+    }
+
+    private void generateAliases() {
+
+        if (aliasesToRealNames == null) {
+            aliasesToRealNames = new HashMap<String, String>();
+            realNamesToAliases = new HashMap<String, String>();
+        }
+
+
+        for (SubFormField field : fields) {
+            String fieldName = field.getFieldName();
+
+            if (fieldName.toLowerCase().startsWith("comment")) {
+                String alias = StringProcessing.extractQualifierFromField(fieldName) + " [c]";
+
+                System.out.println("Alias for " + fieldName + " is " + alias);
+                aliasesToRealNames.put(alias, fieldName);
+                realNamesToAliases.put(fieldName, alias);
+            }
         }
     }
 
@@ -278,7 +302,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             scrollColumnModel.getColumn(i).setPreferredWidth(100);
         }
 
-        lockedTable.getColumnModel().getColumn(0).setPreferredWidth(220);
+        lockedTable.getColumnModel().getColumn(0).setPreferredWidth(250);
         lockedTable.setPreferredScrollableViewportSize(lockedTable.getPreferredSize());
 
         setHeaderProperties(scrollTable, scrollTableHeaderRenderer);
@@ -322,7 +346,14 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         Object[][] rowData = new Object[fields.size()][1];
 
         for (int i = 0; i < fields.size(); i++) {
-            rowData[i][0] = fields.get(i).getFieldName();
+
+            String fieldName = fields.get(i).getFieldName();
+
+            if (realNamesToAliases.containsKey(fieldName)) {
+                fieldName = realNamesToAliases.get(fieldName);
+            }
+
+            rowData[i][0] = fieldName;
 
             if (fields.get(i).getDataType() == SubFormField.LONG_STRING) {
                 rowEditor.addCellEditorForRow(i, longTextEditor);
@@ -375,14 +406,24 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         for (int col = 0; col < dtm.getColumnCount(); col++) {
             String val;
-            String termAcc;
-            String termSource;
+//            String termAcc;
+//            String termSource;
             int count = 0;
 
             for (int row = 0; row < dtm.getRowCount(); row++) {
-
+                String tmpTerm = "";
+                String tmpTermAcc = "";
+                String tmpTermSource = "";
                 val = (dtm.getValueAt(row, col) != null) ? dtm.getValueAt(row, col).toString() : "";
                 val = StringProcessing.cleanUpString(val);
+
+                // only check this in the field name column
+                if (col == 0) {
+                    if (aliasesToRealNames.containsKey(val)) {
+                        val = aliasesToRealNames.get(val);
+                    }
+                }
+
                 if (fieldType == FieldTypes.ASSAY) {
                     if (row == 0) {
                         if (val.equals("")) {
@@ -395,11 +436,19 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 if (scrollTable.getCellEditor(row, 0) instanceof OntologyCellEditor || val.contains("Assay Measurement Type") || val.contains("Assay Technology Type") || ontologyRows.contains(row)) {
                     ontologyRows.add(row);
                     if (col == 0) {
-                        termAcc = val + " Term Accession Number";
-                        termSource = val + " Term Source REF";
+
+                        tmpTerm = val;
+
+                        if (tmpTerm.contains("]")) {
+                            String salientValue = tmpTerm.replaceAll("]", "");
+                            tmpTermAcc = salientValue + " Term Accession Number]";
+                            tmpTermSource = salientValue + " Term Source REF]";
+                        } else {
+                            tmpTermAcc = tmpTerm + " Term Accession Number";
+                            tmpTermSource = tmpTerm + " Term Source REF";
+                        }
+
                     } else {
-                        termAcc = "";
-                        termSource = "";
 
 
                         // code to print out assay accessions and sources from table mapping definitions...
@@ -407,12 +456,14 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                             if (row == 0 || row == 1) {
                                 String termSourceAcc = getSourceAndAccessionForMapping(val);
                                 if (termSourceAcc != null) {
+
                                     String[] parts = termSourceAcc.split(":");
+
                                     if (parts.length > 1) {
-                                        termSource = parts[0];
-                                        termAcc = parts[1];
+                                        tmpTermSource = parts[0];
+                                        tmpTerm = parts[1];
                                     } else if (parts.length > 0) {
-                                        termSource = parts[0];
+                                        tmpTerm = parts[0];
                                     }
                                 }
                             }
@@ -420,43 +471,110 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                         } else {
                             // change val to not have the ontology source ref anymore, and add the ref to
                             // the term source!
-                            if (val.contains(":") && !GeneralUtils.isValueURL(val)) {
-                                OntologyObject oo = history.get(val);
-                                termSource = val.substring(0, val.indexOf(":"));
-                                val = val.substring(val.indexOf(":") + 1);
+                            tmpTerm = val;
 
-                                if (oo != null) {
-                                    termAcc = oo.getTermAccession();
+                            if (!tmpTerm.equals("")) {
+                                if (tmpTerm.contains(";")) {
+                                    // then we have multiple values
+                                    String[] ontologies = tmpTerm.split(";");
+
+                                    int numberAdded = 0;
+                                    for (String ontologyTerm : ontologies) {
+
+                                        OntologyObject oo = history.get(ontologyTerm);
+
+
+                                        if (oo != null) {
+                                            tmpTerm += oo.getTerm();
+                                            tmpTermAcc += oo.getTermAccession();
+                                            tmpTermSource += oo.getTermSourceRef();
+                                        } else {
+                                            if (ontologyTerm.contains(":")) {
+
+                                                System.out.println("Splitting term " + ontologyTerm);
+                                                String[] termAndSource = ontologyTerm.split(":");
+
+                                                for(String value : termAndSource) {
+                                                    System.out.println("\t" + value);
+                                                }
+
+                                                if (termAndSource.length > 1) {
+                                                    tmpTermSource += termAndSource[0];
+                                                    tmpTerm += termAndSource[1];
+                                                } else {
+                                                    tmpTerm = termAndSource[0];
+                                                }
+                                            }
+                                        }
+
+
+                                        if (numberAdded < ontologies.length - 1) {
+                                            tmpTerm += ";";
+                                            tmpTermAcc += ";";
+                                            tmpTermSource += ";";
+                                        }
+                                        numberAdded++;
+                                    }
+
+                                } else {
+                                    if (tmpTerm.contains(":")) {
+                                        OntologyObject oo = history.get(tmpTerm);
+
+                                        if (oo != null) {
+                                            tmpTerm = oo.getTerm();
+                                            tmpTermAcc = oo.getTermAccession();
+                                            tmpTermSource = oo.getTermSourceRef();
+                                        } else {
+                                            if (tmpTerm.contains(":")) {
+                                                String[] termAndSource = tmpTerm.split(":");
+
+                                                if (termAndSource.length > 1) {
+                                                    tmpTermSource += termAndSource[0];
+                                                    tmpTerm += termAndSource[1];
+                                                } else {
+                                                    tmpTerm = termAndSource[0];
+                                                }
+                                            } else {
+
+                                                tmpTermAcc = "";
+                                                tmpTermSource = "";
+                                            }
+                                        }
+                                    } else {
+                                        tmpTermAcc = "";
+                                        tmpTermSource = "";
+                                    }
                                 }
-
                             }
+
                         }
                     }
 
                     //add to array
                     if (col == 0) {
-                        toPrint[count] += val;
+                        toPrint[count] += tmpTerm;
                     } else {
-                        toPrint[count] += ("\t\"" + val + "\"");
+                        toPrint[count] += ("\t\"" + tmpTerm + "\"");
                     }
 
                     count++;
 
                     if (col == 0) {
-                        toPrint[count] += termAcc;
+                        toPrint[count] += tmpTermAcc;
                     } else {
-                        toPrint[count] += ("\t\"" + termAcc + "\"");
+                        toPrint[count] += ("\t\"" + tmpTermAcc + "\"");
                     }
 
                     count++;
 
                     if (col == 0) {
-                        toPrint[count] += termSource;
+                        toPrint[count] += tmpTermSource;
                     } else {
-                        toPrint[count] += ("\t\"" + termSource + "\"");
+                        toPrint[count] += ("\t\"" + tmpTermSource + "\"");
                     }
 
                     count++;
+
                 } else {
                     if (col == 0) {
 
@@ -471,8 +589,11 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         }
 
+        System.out.println("printing out what has been output from Subform " + title);
         for (String line : toPrint) {
             data += (line + "\n");
+            System.out.println(line);
+
         }
 
         return data;
@@ -511,7 +632,11 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         dtm = new DefaultTableModel(getRowData(), getColumnNames(initialFieldNo)) {
             public Object getValueAt(int row, int col) {
                 if (col == 0) {
-                    return fields.get(row);
+                    String fieldName = fields.get(row).toString();
+                    if (realNamesToAliases.containsKey(fieldName)) {
+                        fieldName = realNamesToAliases.get(fieldName);
+                    }
+                    return fieldName;
                 }
 
                 return super.getValueAt(row, col);
@@ -872,7 +997,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         int index = 0;
         for (SubFormField field : fields) {
             Object value = dtm.getValueAt(index, recordNumber);
-            record.put(field.getFieldName(), value == null ? "" : value.toString());
+
+            String fieldName = field.getFieldName();
+            if (aliasesToRealNames.containsKey(field.getFieldName())) {
+                fieldName = aliasesToRealNames.get(fieldName);
+            }
+            record.put(fieldName, value == null ? "" : value.toString());
             index++;
         }
 

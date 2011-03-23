@@ -364,7 +364,8 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
             for (String ontologyTerm : ontologies) {
                 OntologyObject oo = getDataEntryEnvironment().getUserHistory().get(ontologyTerm);
 
-                if (oo.getTerm() != null) {
+
+                if (oo != null) {
                     tmpTerm += oo.getTerm();
                     tmpAccession += oo.getTermAccession();
                     tmpSourceRefs += oo.getTermSourceRef();
@@ -372,8 +373,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                     if (term.contains(":")) {
                         String[] termAndSource = term.split(":");
 
-                        tmpSourceRefs += termAndSource[0];
-                        tmpTerm += termAndSource[1];
+                        if (termAndSource.length > 1) {
+                            tmpSourceRefs += termAndSource[0];
+                            tmpTerm += termAndSource[1];
+                        } else {
+                            tmpTerm = termAndSource[0];
+                        }
                     }
                 }
 

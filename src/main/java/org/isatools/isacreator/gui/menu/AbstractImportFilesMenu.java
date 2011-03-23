@@ -67,16 +67,24 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     protected File[] previousFiles = null;
     protected ExtendedJList previousFileList;
 
-    private JFileChooser jfc = new JFileChooser();
+    private JFileChooser jfc;
 
     private long timeButtonLastClicked = System.currentTimeMillis();
 
     private JLabel chooseFromElsewhere, loadSelected;
+    private boolean showProblemArea;
 
     public AbstractImportFilesMenu(ISAcreatorMenu menu) {
-        super(menu);
+        this(menu, true);
+    }
 
-        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    public AbstractImportFilesMenu(ISAcreatorMenu menu, boolean showProblemArea) {
+        super(menu);
+        this.showProblemArea = showProblemArea;
+
+        jfc = new JFileChooser();
+        jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
         setLayout(new BorderLayout());
         setOpaque(false);
     }
@@ -84,15 +92,6 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     public void createGUI() {
         Box container = Box.createVerticalBox();
         container.setOpaque(false);
-
-
-        /*
-              list should display all previous submission files which are held in a Submissions folder
-              in the ISAcreator directory. Each folder in this directory is named from a reference supplied by
-              the user when they first start a submission. Inside each of these directories will be the Investigation
-              file which is ALWAYS the first point of reference, and should always be called Investigation.
-          */
-
 
         previousFileList = new ExtendedJList();
         previousFileList.setBorder(null);
@@ -167,7 +166,9 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         container.add(Box.createVerticalStrut(10));
         container.add(progress);
 
-        container.add(createProblemDisplay());
+        if (showProblemArea)
+            container.add(createProblemDisplay());
+
         container.add(createAlternativeExitDisplay());
 
         add(container, BorderLayout.CENTER);
@@ -190,18 +191,15 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
                     chooseFromElsewhere.setIcon(getSearchButton());
 
-
-                    String directory;
-
                     if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
-                        directory = jfc.getSelectedFile().toString();
+                        String directory = jfc.getSelectedFile().toString();
 
                         File dirFile = new File(directory);
 
                         if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
                             menu.showProgressPanel(loadISAanimation);
                         } else {
-                            menu.showProgressPanel("attempting to load ISA-TAB submission in directory " +
+                            menu.showProgressPanel("attempting to load configuration files in directory " +
                                     dirFile.getName());
                         }
                         loadFile(directory + File.separator);
@@ -258,7 +256,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
 
         problemScroll = new JScrollPane(problemReport, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        problemScroll.setPreferredSize(new Dimension(350, 80));
+        problemScroll.setPreferredSize(new Dimension(350, 90));
         problemScroll.setBorder(null);
         problemScroll.setOpaque(false);
         problemScroll.getViewport().setOpaque(false);

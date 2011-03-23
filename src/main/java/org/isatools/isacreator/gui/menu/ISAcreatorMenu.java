@@ -229,17 +229,9 @@ public class ISAcreatorMenu extends JLayeredPane {
         return mGUI;
     }
 
-    public Component getView() {
-        return currentPanel;
-    }
-
     public void paintComponent(Graphics g) {
         // check current size to ensure that it's larger than the preferred dimension...
         super.paintChildren(g);
-    }
-
-    public void setCurrentDEP(DataEntryEnvironment newDep) {
-        mGUI.setCurDataEntryPanel(newDep);
     }
 
     public void showGUI(final int guiType) {
