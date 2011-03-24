@@ -41,7 +41,10 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.net.ftp.FTPFile;
 import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.*;
+import org.isatools.isacreator.effects.AniSheetableJFrame;
+import org.isatools.isacreator.effects.FooterPanel;
+import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -844,6 +847,8 @@ public class FileChooserUI extends AniSheetableJFrame implements WindowListener 
         treeScroll.setPreferredSize(new Dimension(300, 200));
         treeScroll.setBorder(new EmptyBorder(0, 0, 0, 0));
         treeContainer.add(treeScroll, BorderLayout.CENTER);
+
+        IAppWidgetFactory.makeIAppScrollPane(treeScroll);
 
         return treeContainer;
     }
