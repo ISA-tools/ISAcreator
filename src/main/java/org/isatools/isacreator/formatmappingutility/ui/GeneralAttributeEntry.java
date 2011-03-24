@@ -89,6 +89,7 @@ public class GeneralAttributeEntry extends MappingInformation {
         normalFieldEntry.addPropertyChangeListener("changeInWhetherToMap", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                 unitField.setVisible(normalFieldEntry.isMappedTo());
+                firePropertyChange("changeInWhetherToMap", "change", "event");
             }
         });
 

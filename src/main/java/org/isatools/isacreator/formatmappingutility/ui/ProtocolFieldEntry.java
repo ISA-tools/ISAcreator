@@ -92,6 +92,7 @@ public class ProtocolFieldEntry extends MappingInformation {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                 performerEntry.setVisible(normalFieldEntry.isMappedTo());
                 dateEntry.setVisible(normalFieldEntry.isMappedTo());
+                firePropertyChange("changeInWhetherToMap", "change", "event");
             }
         });
 

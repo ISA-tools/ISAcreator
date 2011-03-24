@@ -362,6 +362,13 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             if (selectedNode.isLeaf()) {
                 MappedElement mn = (MappedElement) selectedNode.getUserObject();
                 swappableDataEntryContainer.add(mn.getDisplay());
+
+                mn.getDisplay().addPropertyChangeListener("changeInWhetherToMap", new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                        isatabFieldsTree.revalidate();
+                        isatabFieldsTree.repaint();
+                    }
+                });
             } else {
                 if (mappingInfo == null) {
                     mappingInfo = new MappingInfoTab();

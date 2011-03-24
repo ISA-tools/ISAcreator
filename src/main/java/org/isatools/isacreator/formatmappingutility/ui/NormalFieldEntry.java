@@ -90,9 +90,10 @@ public class NormalFieldEntry extends MappingInformation {
             } else {
                 mapTo.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent actionEvent) {
+                        firePropertyChange("changeInWhetherToMap", "changed", mapTo.isSelected());
+
                         fieldNameInfoPanel.setVisible(mapTo.isSelected());
                         formatBuider.setVisible(mapTo.isSelected());
-                        firePropertyChange("changeInWhetherToMap", "", "new");
                         fieldNameInfoPanel.revalidate();
                     }
                 });

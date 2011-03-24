@@ -38,10 +38,12 @@
 package org.isatools.isacreator.formatmappingutility.renderers;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.formatmappingutility.ui.MappedElement;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -60,8 +62,8 @@ public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
     private JLabel text;
 
     @InjectedResource
-    private ImageIcon openedNode, closedNode, characteristicNode, factorNode, protocolNode,
-            parameterNode, commentNode, materialNode, sampleNode, genericNode;
+    private ImageIcon openedNode, closedNode, mappedUnselected, mappedSelected,
+            unmappedUnselected, unmappedSelected;
 
     public MappingSelectionTreeCellRenderer() {
         ResourceInjector.get("formatmappingutility-package.style").inject(this);
@@ -92,41 +94,22 @@ public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
 
 
         text.setText(val.toString());
-        String nodeName = val.toString();
-
         text.setFont(selected ? UIHelper.VER_11_BOLD : UIHelper.VER_11_PLAIN);
+        text.setForeground(selected ? UIHelper.LIGHT_GREEN_COLOR : UIHelper.GREY_COLOR);
+
         text.setPreferredSize(new Dimension(calculateWidth(val.toString()), 15));
 
-        if (nodeName.contains("Characteristics")) {
-            text.setForeground(new Color(141, 198, 63));
-            icon.setIcon(characteristicNode);
-        } else if (nodeName.contains("Factor Value")) {
-            text.setForeground(new Color(39, 170, 225));
-            icon.setIcon(factorNode);
-        } else if (nodeName.contains("Protocol REF")) {
-            text.setForeground(new Color(239, 65, 54));
-            icon.setIcon(protocolNode);
-        } else if (nodeName.contains("Parameter")) {
-            text.setForeground(new Color(147, 149, 152));
-            icon.setIcon(parameterNode);
-        } else if (nodeName.contains("Comment")) {
-            text.setForeground(new Color(33, 64, 154));
-            icon.setIcon(commentNode);
-        } else if (nodeName.contains("Material Type")) {
-            text.setForeground(new Color(247, 148, 30));
-            icon.setIcon(materialNode);
-        } else if (nodeName.contains("Sample Name")) {
-            text.setForeground(new Color(218, 28, 92));
-            icon.setIcon(sampleNode);
+        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) val;
+
+        if (treeNode.getUserObject() instanceof MappedElement) {
+            MappedElement mappedElement = (MappedElement) treeNode.getUserObject();
+
+            boolean isMapped = mappedElement.getDisplay().isMappedTo();
+
+            icon.setIcon(selected ? isMapped ? mappedSelected : unmappedSelected :
+                                    isMapped ? mappedUnselected : unmappedUnselected );
         } else {
-            text.setForeground(UIHelper.GREY_COLOR);
-            if (!leaf) {
-                // don't be confused. I swapped them around since the light green when expanded
-                // makes the tree look nicer.
-                icon.setIcon(expanded ? closedNode : openedNode);
-            } else {
-                icon.setIcon(genericNode);
-            }
+            icon.setIcon(expanded ? openedNode : closedNode);
         }
 
         return contents;
