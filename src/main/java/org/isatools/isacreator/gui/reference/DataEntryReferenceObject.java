@@ -5,7 +5,7 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 
 import java.util.HashSet;
 import java.util.List;

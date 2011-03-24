@@ -12,7 +12,7 @@ import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;

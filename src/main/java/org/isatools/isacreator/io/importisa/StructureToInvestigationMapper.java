@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;

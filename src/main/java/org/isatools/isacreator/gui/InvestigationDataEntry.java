@@ -45,7 +45,7 @@ import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;

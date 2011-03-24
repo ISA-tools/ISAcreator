@@ -41,9 +41,9 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationSection;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationStructureLoader;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationStructureLoader;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.isatools.isacreator.utils.datastructures.SetUtils;
 

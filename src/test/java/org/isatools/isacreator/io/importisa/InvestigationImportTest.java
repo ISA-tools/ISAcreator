@@ -39,7 +39,7 @@ package org.isatools.isacreator.io.importisa;
 
 import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
-import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.junit.Test;
