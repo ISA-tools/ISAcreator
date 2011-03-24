@@ -61,6 +61,8 @@ public class Investigation extends ISASection {
     public static final String INVESTIGATION_DESCRIPTION_KEY = "Investigation Description";
     public static final String INVESTIGATION_SUBMISSION_DATE_KEY = "Investigation Submission Date";
     public static final String INVESTIGATION_PUBLIC_RELEASE_KEY = "Investigation Public Release Date";
+    public static final String CONFIGURATION_CREATED_WITH = "Comment [Created with configuration]";
+    public static final String CONFIGURATION_LAST_OPENED_WITH = "Comment [Last opened with configuration]";
 
     private InvestigationDataEntry userInterface;
     private List<OntologySourceRefObject> ontologiesUsed;
@@ -220,23 +222,23 @@ public class Investigation extends ISASection {
     }
 
     public String getSubmissionDate() {
-        return fieldValues.get(INVESTIGATION_SUBMISSION_DATE_KEY);
+        return getValue(INVESTIGATION_SUBMISSION_DATE_KEY);
     }
 
     public String getInvestigationDescription() {
-        return fieldValues.get(INVESTIGATION_DESCRIPTION_KEY);
+        return getValue(INVESTIGATION_DESCRIPTION_KEY);
     }
 
     public String getInvestigationId() {
-        return fieldValues.get(INVESTIGATION_ID_KEY);
+        return getValue(INVESTIGATION_ID_KEY);
     }
 
     public String getPublicReleaseDate() {
-        return fieldValues.get(INVESTIGATION_PUBLIC_RELEASE_KEY);
+        return getValue(INVESTIGATION_PUBLIC_RELEASE_KEY);
     }
 
     public String getInvestigationTitle() {
-        return fieldValues.get(INVESTIGATION_TITLE_KEY);
+        return getValue(INVESTIGATION_TITLE_KEY);
     }
 
     public String getReference() {
@@ -281,6 +283,22 @@ public class Investigation extends ISASection {
 
     public void setInvestigationTitle(String investigationTitle) {
         fieldValues.put(INVESTIGATION_TITLE_KEY, investigationTitle);
+    }
+
+    public String getLastConfigurationUsed() {
+        return getValue(CONFIGURATION_LAST_OPENED_WITH);
+    }
+
+    public void setLastConfigurationUsed(String configurationName) {
+        fieldValues.put(CONFIGURATION_LAST_OPENED_WITH, configurationName);
+    }
+
+    public String getConfigurationCreateWith() {
+        return getValue(CONFIGURATION_CREATED_WITH);
+    }
+
+    public void setConfigurationCreateWith(String configurationName) {
+        fieldValues.put(CONFIGURATION_CREATED_WITH, configurationName);
     }
 
 

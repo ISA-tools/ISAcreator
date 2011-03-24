@@ -37,6 +37,9 @@
 
 package org.isatools.isacreator.publicationlocator;
 
+import org.isatools.isacreator.gui.DataEntryForm;
+import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.model.InvestigationPublication;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.StudyPublication;
 import uk.ac.ebi.cdb.client.*;
@@ -68,7 +71,7 @@ public class CiteExploreClient {
         return DOI + ":" + doi;
     }
 
-    public Map<String, Publication> getPublication(SearchOption searchOption, String query) throws NoPublicationFoundException {
+    public Map<String, Publication> getPublication(SearchOption searchOption, String query, DataEntryForm parent) throws NoPublicationFoundException {
         Map<String, Publication> publications = new HashMap<String, Publication>();
         try {
             WSCitationImpl port = service.getWSCitationImplPort();
@@ -100,7 +103,12 @@ public class CiteExploreClient {
                         }
                     }
 
-                    Publication pub = new StudyPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                    Publication pub;
+                    if (parent instanceof StudyDataEntry) {
+                        pub = new StudyPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                    } else {
+                        pub = new InvestigationPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                    }
                     pub.setAbstractText(citation.getAbstractText());
                     publications.put(citation.getExternalId(), pub);
 

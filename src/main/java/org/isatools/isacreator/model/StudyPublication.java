@@ -48,7 +48,7 @@ package org.isatools.isacreator.model;
 public class StudyPublication extends Publication {
     public static final String PUBMED_ID = "Study PubMed ID";
     public static final String PUBLICATION_DOI = "Study Publication DOI";
-    public static final String PUBLICATION_AUTHOR_LIST = "Study Publication Author list";
+    public static final String PUBLICATION_AUTHOR_LIST = "Study Publication Author List";
     public static final String PUBLICATION_TITLE = "Study Publication Title";
     public static final String PUBLICATION_STATUS = "Study Publication Status";
     public static final String PUBLICATION_STATUS_TERM_ACC = "Study Publication Status Term Accession Number";

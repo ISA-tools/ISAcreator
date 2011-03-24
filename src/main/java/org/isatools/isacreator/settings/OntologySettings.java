@@ -250,7 +250,7 @@ public class OntologySettings extends SettingsScreen {
 
 
     public boolean updateSettings() {
-        menu.getMain().setUserHistory(userOntologyHistory);
+        menu.getMain().setUserOntologyHistory(userOntologyHistory);
         menu.getMain().saveUserProfiles();
         return true;
     }

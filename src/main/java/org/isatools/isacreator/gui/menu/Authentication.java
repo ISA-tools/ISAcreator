@@ -245,7 +245,7 @@ public class Authentication extends MenuUIComponent {
                     clearFields();
 
                     menu.getMain().setCurrentUser(up);
-                    menu.getMain().setUserHistory(up.getUserHistory());
+                    menu.getMain().setUserOntologyHistory(up.getUserHistory());
                     Spreadsheet.fileSelectEditor.setFtpManager(up.getFtpManager());
                     menu.changeView(menu.getMainMenuGUI());
                     found = true;

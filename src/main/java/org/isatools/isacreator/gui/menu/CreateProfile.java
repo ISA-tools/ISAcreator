@@ -301,7 +301,7 @@ public class CreateProfile extends MenuUIComponent {
                                 if (!dupUser) {
                                     menu.getMain().getUserProfiles().add(newUser);
                                     menu.getMain().setCurrentUser(newUser);
-                                    menu.getMain().setUserHistory(newUser.getUserHistory());
+                                    menu.getMain().setUserOntologyHistory(newUser.getUserHistory());
                                     menu.getMain().saveUserProfiles();
 
                                     menu.changeView(menu.getMainMenuGUI());

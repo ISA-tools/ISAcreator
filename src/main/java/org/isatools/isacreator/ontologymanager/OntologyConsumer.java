@@ -51,9 +51,9 @@ public interface OntologyConsumer {
 
     public void addToUserHistory(OntologyObject oo);
 
-    public Map<String, OntologyObject> getUserHistory();
+    public Map<String, OntologyObject> getUserOntologyHistory();
 
-    public void setUserHistory(Map<String, OntologyObject> userHistory);
+    public void setUserOntologyHistory(Map<String, OntologyObject> userHistory);
 
     public ResultCache<String, Map<String, String>> getResultCache();
 

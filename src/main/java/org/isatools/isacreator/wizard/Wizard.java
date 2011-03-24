@@ -864,6 +864,9 @@ public class Wizard extends AbstractDataEntryEnvironment {
                                                 invSubmission.getText(),
                                                 invPubReleaseDate.getText());
 
+                                        investigationDefinition.setLastConfigurationUsed(mainMenu.getMain().getLoadedConfiguration());
+                                        investigationDefinition.setConfigurationCreateWith(mainMenu.getMain().getLoadedConfiguration());
+
                                         numberStudiesToDefine = Integer.valueOf(howManyStudiesVal.getText());
 
                                         dep.setInvestigation(investigationDefinition);

@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.utils;
 
+import java.text.BreakIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,5 +120,43 @@ public class StringProcessing {
         } else {
             return value;
         }
+    }
+
+    public static String convertStringToTitleCase(String toConvert) {
+        BreakIterator wordBreaker = BreakIterator.getWordInstance();
+        wordBreaker.setText(toConvert);
+        int end;
+
+        String word = "";
+        for (int start = wordBreaker.first();
+             (end = wordBreaker.next()) != BreakIterator.DONE; start = end) {
+
+            word += StringProcessing.wordToTitleCase(toConvert.substring(start, end));
+
+        }
+
+        return word;
+
+    }
+
+    private static String wordToTitleCase(String word) {
+        String result = "";
+		for (int i = 0; i < word.length(); i++){
+			String next = word.substring(i, i + 1);
+			if (i == 0){
+				result += next.toUpperCase();
+			} else {
+				result += next;
+			}
+		}
+		return result;
+    }
+
+    public static void main(String[] args) {
+        String test = "Study Publication author list";
+
+        String result = StringProcessing.convertStringToTitleCase(test);
+
+        System.out.println(result);
     }
 }

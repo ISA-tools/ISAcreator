@@ -71,4 +71,15 @@ public class SetUtils<T> {
             return new Pair<Boolean, Set<T>>(true, null);
         }
     }
+
+
+    public Set<String> getLowerCaseSetContents(Set<String> toConvert) {
+        Set<String> tmpSet = new HashSet<String>();
+
+        for (String value : toConvert) {
+            tmpSet.add(value.toLowerCase());
+        }
+
+        return tmpSet;
+    }
 }

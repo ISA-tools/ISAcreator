@@ -25,7 +25,7 @@
         <requiredValues>
             <value>Investigation PubMed ID</value>
             <value>Investigation Publication DOI</value>
-            <value>Investigation Publication Author list</value>
+            <value>Investigation Publication Author List</value>
             <value>Investigation Publication Title</value>
             <value>Investigation Publication Status</value>
             <value>Investigation Publication Status Term Accession Number</value>

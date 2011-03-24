@@ -190,7 +190,7 @@ public class PublicationSubForm extends SubForm {
                     if (selectPublicationLabel.isEnabled()) {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                final PublicationLocatorUI publicationLocator = new PublicationLocatorUI();
+                                final PublicationLocatorUI publicationLocator = new PublicationLocatorUI(parent);
                                 publicationLocator.createGUI();
                                 publicationLocator.installListeners();
                                 publicationLocator.addPropertyChangeListener("selectedPublication",
@@ -201,10 +201,12 @@ public class PublicationSubForm extends SubForm {
                                                 if (evt.getNewValue() instanceof Publication) {
                                                     Publication p = (Publication) evt.getNewValue();
                                                     boolean added;
+
                                                     if (parent instanceof StudyDataEntry) {
                                                         added = parent.getStudy().addPublication(p);
                                                     } else {
                                                         //parent is instance of InvestigationDataEntry
+                                                        System.out.println("Adding Publication to investigation");
                                                         added = parent.getInvestigation().addPublication(p);
                                                     }
 

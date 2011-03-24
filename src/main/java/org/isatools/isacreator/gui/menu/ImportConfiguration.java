@@ -147,6 +147,9 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
 
                             menu.getMain().setAssayDefinitions(configParser.getTables());
                             menu.getMain().setMappings(configParser.getMappings());
+
+                            menu.getMain().setLoadedConfiguration(new File(dir).getName());
+
                             if (!initialLoadingPassed) {
                                 System.err.println("loading hasn't been performed before, so now going to authentication screen");
                                 menu.changeView(menu.getAuthenticationGUI());

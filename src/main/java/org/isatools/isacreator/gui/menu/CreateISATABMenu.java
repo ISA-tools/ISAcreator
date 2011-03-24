@@ -46,7 +46,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * CreateISATABMenuGUI provides the menu to allow users to either create an ISATAB submission
@@ -146,19 +145,8 @@ public class CreateISATABMenu extends MenuUIComponent {
         createManual.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                menu.getMain().hideGlassPane();
 
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        DataEntryEnvironment blankDEP = new DataEntryEnvironment(menu.getMain());
-                        createManual.setIcon(createManuallyButton);
-                        blankDEP.createGUI();
-                        menu.getMain().setCurDataEntryPanel(blankDEP);
-                        menu.getMain().setCurrentPage(blankDEP);
-                    }
-                });
-
+                createNewISAtabEditView();
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -203,5 +191,30 @@ public class CreateISATABMenu extends MenuUIComponent {
 
         northPanel.setOpaque(false);
         add(northPanel, BorderLayout.CENTER);
+    }
+
+    private void createNewISAtabEditView() {
+        menu.showProgressPanel("creating new ISAtab editing environment");
+        Thread performer = new Thread(new Runnable() {
+            public void run() {
+                createManual.setIcon(createManuallyButton);
+
+                DataEntryEnvironment dataEntryEnvironment = new DataEntryEnvironment(menu.getMain());
+                dataEntryEnvironment.createGUI();
+
+                dataEntryEnvironment.getInvestigation().setLastConfigurationUsed(menu.getMain().getLoadedConfiguration());
+                dataEntryEnvironment.getInvestigation().setConfigurationCreateWith(menu.getMain().getLoadedConfiguration());
+
+                menu.stopProgressIndicator();
+                menu.resetViewAfterProgress();
+                menu.hideGlassPane();
+
+                menu.getMain().setCurrentPage(dataEntryEnvironment);
+                menu.getMain().setCurDataEntryPanel(dataEntryEnvironment);
+
+            }
+        });
+
+        performer.start();
     }
 }

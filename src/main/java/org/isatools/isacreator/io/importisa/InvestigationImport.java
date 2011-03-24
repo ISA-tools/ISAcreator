@@ -44,6 +44,7 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationFileSection;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.investigationfileproperties.InvestigationStructureLoader;
+import org.isatools.isacreator.utils.StringProcessing;
 import org.isatools.isacreator.utils.datastructures.SetUtils;
 
 import java.io.File;
@@ -120,13 +121,16 @@ public class InvestigationImport {
                 String lineLabel = line[0].trim();
 
                 if (!org.apache.axis.utils.StringUtils.isEmpty(lineLabel)) {
-                    if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(lineLabel)) {
-                        importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).put(lineLabel, new ArrayList<String>());
+                    // todo this doesn't work! Since it converts the characters which aren't meant to be lower case, to lower case
+                    String valueToTitleCase = StringProcessing.convertStringToTitleCase(lineLabel);
+
+                    if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(valueToTitleCase)) {
+                        importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).put(valueToTitleCase, new ArrayList<String>());
                     }
 
                     if (line.length > 1) {
                         for (int index = 1; index < line.length; index++) {
-                            importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).get(lineLabel).add(line[index]);
+                            importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).get(valueToTitleCase).add(line[index]);
                         }
                     }
                 }
@@ -162,11 +166,14 @@ public class InvestigationImport {
                 Set<String> minorSectionParts = new HashSet<String>();
                 // we also want to check if the salient information for each minor section is in place.
                 for (String sectionLabelsAndValues : investigationFile.get(mainSection).get(section).keySet()) {
-                    minorSectionParts.add(sectionLabelsAndValues);
+                    minorSectionParts.add(sectionLabelsAndValues.toLowerCase());
                 }
 
                 SetUtils<String> setUtils = new SetUtils<String>();
-                Pair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, sections.get(section).getRequiredValues(), false);
+
+                Set<String> requiredValuesAsLowercase = setUtils.getLowerCaseSetContents(sections.get(section).getRequiredValues());
+
+                Pair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
                 if (!equalityResult.fst) {
                     for (String sectionValue : equalityResult.snd) {
                         messages.add(fmt.format(new Object[]{sectionValue, section}));

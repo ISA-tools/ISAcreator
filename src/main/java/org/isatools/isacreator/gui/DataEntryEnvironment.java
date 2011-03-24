@@ -464,7 +464,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
 
     public Map<String, OntologyObject> getUserHistory() {
-        return mGUI.getUserHistory();
+        return mGUI.getUserOntologyHistory();
     }
 
     private void navigateToPath(DefaultMutableTreeNode nodeToGo) {

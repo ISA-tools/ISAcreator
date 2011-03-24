@@ -55,7 +55,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Investigation Publication Author list" section="INVESTIGATION PUBLICATIONS"
+        <field header="Investigation Publication Author List" section="INVESTIGATION PUBLICATIONS"
                data-type="Long String" is-file-field="false" is-multiple-value="false"
                is-required="true">
             <description>A user defined identifier for the investigation.
@@ -225,7 +225,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Study Publication Author list" section="STUDY PUBLICATIONS" data-type="Long String"
+        <field header="Study Publication Author List" section="STUDY PUBLICATIONS" data-type="Long String"
                is-file-field="false" is-multiple-value="false"
                is-required="true">
             <description>A user defined identifier for the investigation.

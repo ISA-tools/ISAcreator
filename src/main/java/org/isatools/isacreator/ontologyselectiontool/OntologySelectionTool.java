@@ -137,7 +137,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
 
         this.recommendedOntologies = recommendedOntologies;
-        this.history = consumer.getUserHistory();
+        this.history = consumer.getUserOntologyHistory();
         this.searchResultCache = consumer.getResultCache();
         this.consumer = consumer;
         this.multipleTermsAllowed = multipleTermsAllowed;

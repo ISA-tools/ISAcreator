@@ -79,7 +79,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     private MergeFilesUI mergeStudies;
     private SettingsUtil settings;
     private ImportConfiguration importConfiguration;
-    private ISAcreator mGUI;
+    private ISAcreator isacreator;
     private MainMenu mainMenu;
 
     private static InfiniteProgressPanel progressIndicator;
@@ -90,7 +90,7 @@ public class ISAcreatorMenu extends JLayeredPane {
 
 
     public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
-        this.mGUI = ISAcreator;
+        this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
         setLayout(new OverlayLayout(this));
@@ -124,29 +124,29 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                 switch (panelToShow) {
                     case SHOW_MAIN:
-                        mGUI.setGlassPanelContents(mainMenu);
+                        isacreator.setGlassPanelContents(mainMenu);
 
                         break;
 
                     case SHOW_LOGIN:
-                        mGUI.setGlassPanelContents(authGUI);
+                        isacreator.setGlassPanelContents(authGUI);
 
                         break;
 
                     case SHOW_CREATE_ISA:
-                        mGUI.setGlassPanelContents(createISA);
+                        isacreator.setGlassPanelContents(createISA);
 
                         break;
 
                     case SHOW_UNSUPPORTED_JAVA:
                         UnSupportedJava noSupport = new UnSupportedJava(ISAcreatorMenu.this);
                         noSupport.createGUI();
-                        mGUI.setGlassPanelContents(noSupport);
+                        isacreator.setGlassPanelContents(noSupport);
 
                         break;
 
                     default:
-                        mGUI.setGlassPanelContents(importConfiguration);
+                        isacreator.setGlassPanelContents(importConfiguration);
                 }
 
                 UIHelper.applyBackgroundToSubComponents(ISAcreatorMenu.this, UIHelper.BG_COLOR);
@@ -175,7 +175,7 @@ public class ISAcreatorMenu extends JLayeredPane {
             currentPanel = panel;
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    mGUI.setGlassPanelContents((JPanel) currentPanel);
+                    isacreator.setGlassPanelContents((JPanel) currentPanel);
                 }
             });
 
@@ -184,26 +184,26 @@ public class ISAcreatorMenu extends JLayeredPane {
 
 
     protected void showProgressPanel(ImageIcon image) {
-        previousGlassPane = (JPanel) mGUI.getGlassPane();
+        previousGlassPane = (JPanel) isacreator.getGlassPane();
         InfiniteImageProgressPanel imageProgress = new InfiniteImageProgressPanel(image);
         imageProgress.setSize(new Dimension(
-                mGUI.getContentPane().getWidth(),
-                mGUI.getContentPane().getHeight()));
+                isacreator.getContentPane().getWidth(),
+                isacreator.getContentPane().getHeight()));
 
-        mGUI.setGlassPane(imageProgress);
-        mGUI.validate();
+        isacreator.setGlassPane(imageProgress);
+        isacreator.validate();
     }
 
     protected void showProgressPanel(String text) {
-        previousGlassPane = (JPanel) mGUI.getGlassPane();
+        previousGlassPane = (JPanel) isacreator.getGlassPane();
         progressIndicator = new InfiniteProgressPanel(text);
         progressIndicator.setSize(new Dimension(
-                mGUI.getContentPane().getWidth(),
-                mGUI.getContentPane().getHeight()));
+                isacreator.getContentPane().getWidth(),
+                isacreator.getContentPane().getHeight()));
 
-        mGUI.setGlassPane(progressIndicator);
+        isacreator.setGlassPane(progressIndicator);
         progressIndicator.start();
-        mGUI.validate();
+        isacreator.validate();
     }
 
     protected void stopProgressIndicator() {
@@ -213,20 +213,20 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     protected void resetViewAfterProgress() {
-        mGUI.setGlassPane(previousGlassPane);
+        isacreator.setGlassPane(previousGlassPane);
     }
 
     protected void hideGlassPane() {
-        mGUI.hideGlassPane();
+        isacreator.hideGlassPane();
     }
 
 
     public DataEntryEnvironment getCurrentDEP() {
-        return mGUI.getDataEntryEnvironment();
+        return isacreator.getDataEntryEnvironment();
     }
 
     public ISAcreator getMain() {
-        return mGUI;
+        return isacreator;
     }
 
     public void paintComponent(Graphics g) {
@@ -239,17 +239,17 @@ public class ISAcreatorMenu extends JLayeredPane {
             public void run() {
                 switch (guiType) {
                     case SHOW_MAIN:
-                        mGUI.setGlassPanelContents(mainMenu);
+                        isacreator.setGlassPanelContents(mainMenu);
 
                         break;
 
                     case SHOW_LOGIN:
-                        mGUI.setGlassPanelContents(authGUI);
+                        isacreator.setGlassPanelContents(authGUI);
 
                         break;
 
                     default:
-                        mGUI.setGlassPanelContents(mainMenu);
+                        isacreator.setGlassPanelContents(mainMenu);
                 }
             }
         });

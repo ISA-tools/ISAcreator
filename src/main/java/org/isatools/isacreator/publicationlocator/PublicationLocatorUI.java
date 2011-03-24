@@ -41,6 +41,7 @@ import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.DraggablePaneMouseInputHandler;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.model.Publication;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -96,8 +97,10 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
     private JLabel pubmedButton, doiButton, resultButton;
 
     private int selectedSection = PUBMED_SEARCH;
+    private DataEntryForm parent;
 
-    public PublicationLocatorUI() {
+    public PublicationLocatorUI(DataEntryForm parent) {
+        this.parent = parent;
         ResourceInjector.get("publication-package.style").inject(this);
 
     }
@@ -360,7 +363,7 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
 
                         SearchOption so = selectedSection == PUBMED_SEARCH ? SearchOption.PUBMED : SearchOption.DOI;
 
-                        Map<String, Publication> result = pubExplorer.getPublication(so, searchField.getText());
+                        Map<String, Publication> result = pubExplorer.getPublication(so, searchField.getText(), parent);
 
                         for (String key : result.keySet()) {
                             currentPublication = result.get(key);
@@ -432,12 +435,6 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
             swappableContainer.repaint();
             swappableContainer.validate();
         }
-    }
-
-    public static void main(String[] args) {
-        PublicationLocatorUI ui = new PublicationLocatorUI();
-        ui.createGUI();
-        ui.installListeners();
     }
 
     public void windowOpened(WindowEvent event) {

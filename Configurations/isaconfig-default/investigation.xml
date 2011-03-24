@@ -45,6 +45,22 @@
             <default-value></default-value>
         </field>
 
+        <field header="Comment [Created with configuration]" is-hidden="true" section="INVESTIGATION" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
+        <field header="Comment [Last opened with configuration]" is-hidden="true" section="INVESTIGATION" data-type="String" is-file-field="false"
+               is-multiple-value="false"
+               is-required="false">
+            <description>A user defined identifier for the investigation.
+            </description>
+            <default-value></default-value>
+        </field>
+
         <!--Investigation Publications Section -->
 
         <field header="Investigation PubMed ID" section="INVESTIGATION PUBLICATIONS" data-type="String"
@@ -241,7 +257,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Study Publication  Title" section="STUDY PUBLICATIONS" data-type="Long String"
+        <field header="Study Publication Title" section="STUDY PUBLICATIONS" data-type="Long String"
                is-file-field="false" is-multiple-value="false"
                is-required="true">
             <description>A user defined identifier for the investigation.

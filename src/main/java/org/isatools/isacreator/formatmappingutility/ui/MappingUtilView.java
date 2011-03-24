@@ -93,11 +93,11 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
     private JLabel status;
     private Stack<HistoryComponent> previousPage;
-    private Investigation inv;
-    private DataEntryEnvironment dep;
+    private Investigation investigation;
+    private DataEntryEnvironment dataEntryEnvironment;
     private ISAcreatorMenu menuPanels;
     private String fileBeingMapped;
-    private JFileChooser jfc;
+    private JFileChooser fileChooser;
 
     private ErrorDisplay errorPanel;
 
@@ -110,7 +110,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     // list of the assays to be defined
     private List<AssaySelection> assaysToBeDefined;
     // map of from the name of the table to the ASO containing information about the Measurement and Technology
-    private Map<String, AssaySelection> tableNameToASO;
+    private Map<String, AssaySelection> tableNameToAssaySelection;
     // map of from the name of the table to the TableReferenceObject required for definition of the Spreadsheet
     private Map<String, TableReferenceObject> definitions = new HashMap<String, TableReferenceObject>();
     // provides the fields that should have a fixed mapping (e.g. after the study sample definition, the Study Sample
@@ -135,9 +135,9 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
         ResourceInjector.get("formatmappingutility-package.style").inject(this);
 
-        jfc = new JFileChooser("Choose file or directory to load...");
-        jfc.setDialogTitle("Choose file or directory to load...");
-        jfc.setApproveButtonText("Select for mapping");
+        fileChooser = new JFileChooser("Choose file or directory to load...");
+        fileChooser.setDialogTitle("Choose file or directory to load...");
+        fileChooser.setApproveButtonText("Select for mapping");
 
     }
 
@@ -160,8 +160,8 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         setOpaque(false);
 
         // create first pane (select files pane!)
-        dep = new DataEntryEnvironment(menuPanels.getMain());
-        setDataEntryEnvironment(dep);
+        dataEntryEnvironment = new DataEntryEnvironment(menuPanels.getMain());
+        setDataEntryEnvironment(dataEntryEnvironment);
     }
 
     public void changeView() {
@@ -193,7 +193,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
         // create selector for mapping files
         final FileSelectionPanel fileToMapFSP = new FileSelectionPanel("<html>please select file(s) to be mapped. Please ensure " +
-                "that this file has <b>no empty columns</b> and if possible, please remove any special characters e.g. mu.</html>", jfc);
+                "that this file has <b>no empty columns</b> and if possible, please remove any special characters e.g. mu.</html>", fileChooser);
         selectFilesContainer.add(fileToMapFSP);
 
         JPanel selectMappingPanel = new JPanel();
@@ -404,7 +404,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 previousPage.push(new HistoryComponent(finalPanel, listeners));
                 assaysToBeDefined = assaySelection.getAssaysToDefine();
 
-                tableNameToASO = new HashMap<String, AssaySelection>();
+                tableNameToAssaySelection = new HashMap<String, AssaySelection>();
 
                 Thread loadFileProcess = new Thread(new Runnable() {
                     public void run() {
@@ -570,7 +570,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                             fixedMappings.put("Sample Name", mappingTableGUI.getMappingNodeForField("Sample Name"));
                             definitions.put(MappingObject.STUDY_SAMPLE, populatedTRO);
                         } else {
-                            tableNameToASO.put(populatedTRO.getTableName(), assaysToBeDefined.get(sequence));
+                            tableNameToAssaySelection.put(populatedTRO.getTableName(), assaysToBeDefined.get(sequence));
                             definitions.put(populatedTRO.getTableName(), populatedTRO);
                         }
 
@@ -866,15 +866,19 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 nextButton.setIcon(next);
                 Thread performMappingLogic = new Thread(new Runnable() {
                     public void run() {
-                        inv = MappingLogic.createInvestigation(definitions, tableNameToASO, dep);
+                        investigation = MappingLogic.createInvestigation(definitions, tableNameToAssaySelection, dataEntryEnvironment);
                         // now we need to construct the investigation from the defined table reference objects and the
-                        inv.setUserInterface(new InvestigationDataEntry(inv, dep));
-                        dep.createGUIFromSource(inv);
+                        investigation.setUserInterface(new InvestigationDataEntry(investigation, dataEntryEnvironment));
+
+                        investigation.setConfigurationCreateWith(menuPanels.getMain().getLoadedConfiguration());
+                        investigation.setLastConfigurationUsed(menuPanels.getMain().getLoadedConfiguration());
+
+                        dataEntryEnvironment.createGUIFromSource(investigation);
 
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
                         menuPanels.getMain().hideGlassPane();
-                        menuPanels.getMain().setCurDataEntryPanel(dep);
-                        menuPanels.getMain().setCurrentPage(dep);
+                        menuPanels.getMain().setCurDataEntryPanel(dataEntryEnvironment);
+                        menuPanels.getMain().setCurrentPage(dataEntryEnvironment);
                         // todo clear object space
                     }
                 });

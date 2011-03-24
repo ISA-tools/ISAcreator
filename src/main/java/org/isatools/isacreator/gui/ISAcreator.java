@@ -117,9 +117,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     private List<TableReferenceObject> assayDefinitions;
     private List<MappingObject> mappings;
 
-    // should be defined as a Map, but must stay like this for now, at least until major overhaul
-    // of UserProfiles is completed.
-    private Map<String, OntologyObject> userHistory;
+    private Map<String, OntologyObject> userOntologyHistory;
 
     private DataEntryEnvironment curDataEntryEnvironment;
     private GridBagConstraints c;
@@ -138,6 +136,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     private OutputISAFiles outputISATAB;
     private IncorrectColumnOrderGUI incorrectGUI;
     private UserProfileIO userProfileIO;
+    private String loadedConfiguration;
 
     static {
         UIManager.put("Panel.background", UIHelper.BG_COLOR);
@@ -189,13 +188,14 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
     public ISAcreator(String configDir) {
 
+        ResourceInjector.get("gui-package.style").inject(this);
+
         outputISATAB = new OutputISAFiles(this);
         userProfileIO = new UserProfileIO(this);
         resultCache = new ResultCache<String, Map<String, String>>();
-        userHistory = new HashMap<String, OntologyObject>();
+        userOntologyHistory = new HashMap<String, OntologyObject>();
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
-        ResourceInjector.get("gui-package.style").inject(this);
 
         c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -269,8 +269,8 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     }
 
     public void addToUserHistory(OntologyObject oo) {
-        if (!userHistory.containsKey(oo.getUniqueId())) {
-            userHistory.put(oo.getUniqueId(), oo);
+        if (!userOntologyHistory.containsKey(oo.getUniqueId())) {
+            userOntologyHistory.put(oo.getUniqueId(), oo);
         }
     }
 
@@ -675,8 +675,8 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         return resultCache;
     }
 
-    public Map<String, OntologyObject> getUserHistory() {
-        return userHistory;
+    public Map<String, OntologyObject> getUserOntologyHistory() {
+        return userOntologyHistory;
     }
 
     public List<UserProfile> getUserProfiles() {
@@ -705,7 +705,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
             for (UserProfile up : getUserProfiles()) {
 
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(getUserHistory());
+                    up.setUserHistory(getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
 
                     break;
@@ -725,7 +725,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
             for (UserProfile up : getUserProfiles()) {
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(getUserHistory());
+                    up.setUserHistory(getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;
                 }
@@ -734,7 +734,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
             userProfileIO.saveUserProfiles();
             checkMenuRequired();
 
-            userHistory.clear();
+            userOntologyHistory.clear();
 
             curDataEntryEnvironment.removeReferences();
             curDataEntryEnvironment = null;
@@ -759,7 +759,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         for (UserProfile up : getUserProfiles()) {
             if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                up.setUserHistory(getUserHistory());
+                up.setUserHistory(getUserOntologyHistory());
                 userProfileIO.updateUserProfileInformation(up);
 
                 break;
@@ -776,7 +776,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         Spreadsheet.fileSelectEditor.setFtpManager(new FTPManager());
 
         curDataEntryEnvironment = null;
-        userHistory.clear();
+        userOntologyHistory.clear();
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -833,8 +833,8 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         glass.repaint();
     }
 
-    public void setUserHistory(Map<String, OntologyObject> userHistory) {
-        this.userHistory = userHistory;
+    public void setUserOntologyHistory(Map<String, OntologyObject> userOntologyHistory) {
+        this.userOntologyHistory = userOntologyHistory;
     }
 
     public void saveUserProfiles() {
@@ -843,6 +843,14 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
     public Properties getProgramSettings() {
         return programSettings;
+    }
+
+    public void setLoadedConfiguration(String name) {
+        this.loadedConfiguration = name;
+    }
+
+    public String getLoadedConfiguration() {
+        return loadedConfiguration;
     }
 
 

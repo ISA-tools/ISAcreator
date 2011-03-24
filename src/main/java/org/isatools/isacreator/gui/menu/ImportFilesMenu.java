@@ -277,6 +277,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         if (showContinue) {
             errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+
+                    menu.getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(menu.getMain().getLoadedConfiguration());
                     menu.hideGlassPane();
                     menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
                 }

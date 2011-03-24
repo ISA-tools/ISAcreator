@@ -160,9 +160,6 @@ public class InvestigationDataEntry extends DataEntryForm {
     private JPanel createInvestigationContactsSubForm() {
         List<SubFormField> contactFields = new ArrayList<SubFormField>();
 
-        //todo this will have to also take into consideration a config.xml which describes the investigation.
-        // todo the desired fields will be the union of both sets of fields.
-
         Set<String> ontologyFields = investigation.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION);
         Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
 
@@ -274,8 +271,7 @@ public class InvestigationDataEntry extends DataEntryForm {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
 
-            output.append(tmpFieldName).append("\t\"").append(displayInvestigationInfo ?
-                    StringProcessing.cleanUpString(investigation.getFieldValues().get(tmpFieldName)) : "").append("\"\n");
+            output.append(tmpFieldName).append("\t\"").append((StringProcessing.cleanUpString(investigation.getFieldValues().get(tmpFieldName)))).append("\"\n");
         }
 
         output.append(publicationsSubForm.toString());

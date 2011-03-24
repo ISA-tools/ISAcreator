@@ -44,6 +44,7 @@ public class ISAtabImporter {
     private List<ISAFileErrorReport> errors;
 
     private String parentDirectoryPath;
+    private ISAcreator isacreator;
     private Boolean constructWithGUIs;
 
 
@@ -61,25 +62,26 @@ public class ISAtabImporter {
      * ImportISAFiles provides a facility for you to import ISATAB files
      * and convert these files into Java Objects for you to use.
      *
-     * @param applicationContainer - a reference to the Main entry point of the Application
+     * @param isacreator - a reference to the Main entry point of the Application
      */
-    public ISAtabImporter(ISAcreator applicationContainer) {
-        this(applicationContainer, true);
+    public ISAtabImporter(ISAcreator isacreator) {
+        this(isacreator, true);
     }
 
     /**
      * ImportISAFiles provides a facility for you to import ISATAB files
      * and convert these files into Java Objects for you to use.
      *
-     * @param applicationContainer - a reference to the Main entry point of the Application
-     * @param constructWithGUIs    - whether or not to construct the Study/Assay Objects with User Interfaces. There would be no point creating GUIs for those accessing features through the API for example.
+     * @param isacreator        - a reference to the Main entry point of the Application
+     * @param constructWithGUIs - whether or not to construct the Study/Assay Objects with User Interfaces. There would be no point creating GUIs for those accessing features through the API for example.
      */
-    public ISAtabImporter(ISAcreator applicationContainer, Boolean constructWithGUIs) {
+    public ISAtabImporter(ISAcreator isacreator, Boolean constructWithGUIs) {
+        this.isacreator = isacreator;
         this.constructWithGUIs = constructWithGUIs;
         errors = new ArrayList<ISAFileErrorReport>();
 
-        this.dataEntryEnvironment = new DataEntryEnvironment(applicationContainer);
-        applicationContainer.setCurDataEntryPanel(dataEntryEnvironment);
+        this.dataEntryEnvironment = new DataEntryEnvironment(isacreator);
+        isacreator.setCurDataEntryPanel(dataEntryEnvironment);
     }
 
     public Investigation getInvestigation() {
@@ -175,6 +177,22 @@ public class ISAtabImporter {
                         dataEntryEnvironment.createGUIFromSource(investigation);
                         assignOntologiesToSession(mapper.getOntologyTermsDefined(), investigation.getOntologiesUsed());
                     }
+
+
+                    String lastConfigurationUsed = investigation.getLastConfigurationUsed().trim();
+                    System.out.println("last configuration use");
+                    if (!lastConfigurationUsed.equals("")) {
+                        if (!lastConfigurationUsed.equals(isacreator.getLoadedConfiguration())) {
+                            messages.add("The last configuration used to load this ISAtab file was " + lastConfigurationUsed + ". The currently loaded configuration is " + isacreator.getLoadedConfiguration() + ". You can continue to load, but " +
+                                    "the settings from " + lastConfigurationUsed + " may be important.");
+
+                            ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                            errors.add(investigationErrorReport);
+                        }
+                    } else {
+                        investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
+                    }
+
                 } else {
                     messages.addAll(investigationFileImporter.getMessages());
 

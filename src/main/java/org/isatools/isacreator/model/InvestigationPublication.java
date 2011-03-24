@@ -49,7 +49,7 @@ public class InvestigationPublication extends Publication {
 
     public static final String PUBMED_ID = "Investigation PubMed ID";
     public static final String PUBLICATION_DOI = "Investigation Publication DOI";
-    public static final String PUBLICATION_AUTHOR_LIST = "Investigation Publication Author list";
+    public static final String PUBLICATION_AUTHOR_LIST = "Investigation Publication Author List";
     public static final String PUBLICATION_TITLE = "Investigation Publication Title";
     public static final String PUBLICATION_STATUS = "Investigation Publication Status";
     public static final String PUBLICATION_STATUS_TERM_ACC = "Investigation Publication Status Term Accession Number";
