@@ -174,10 +174,10 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                 ISAcreator.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
         ResourceInjector.get("arraydesignbrowser-package.style").load(ISAcreator.class.getResource
                 ("/dependency-injections/arraydesignbrowser-package.properties"));
+
         ResourceInjector.get("effects-package.style").load(ISAcreator.class.getResource
                 ("/dependency-injections/effects-package.properties"));
-        ResourceInjector.get("ontologyselectiontool-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
+
         ResourceInjector.get("calendar-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
     }
@@ -1000,9 +1000,9 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         public void actionPerformed(ActionEvent ae) {
             Calendar c = Calendar.getInstance();
 
-            if ((type != SAVE_AS) &&
-                    !curDataEntryEnvironment.getInvestigation().getReference().trim()
-                            .equals("")) {
+
+            if ((type != SAVE_AS) && curDataEntryEnvironment.getInvestigation().getReference() != null && !curDataEntryEnvironment.getInvestigation().getReference().trim()
+                    .equals("")) {
 
                 if (curDataEntryEnvironment.getInvestigation().getReference().trim()
                         .equals("")) {
@@ -1061,6 +1061,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
                 showJDialogAsSheet(sad);
             }
+
         }
 
 

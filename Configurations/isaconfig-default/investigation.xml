@@ -53,7 +53,7 @@
             <default-value></default-value>
         </field>
 
-        <field header="Comment [Last opened with configuration]" is-hidden="true" section="INVESTIGATION" data-type="String" is-file-field="false"
+        <field header="Comment [Last Opened With Configuration]" is-hidden="true" section="INVESTIGATION" data-type="String" is-file-field="false"
                is-multiple-value="false"
                is-required="false">
             <description>A user defined identifier for the investigation.

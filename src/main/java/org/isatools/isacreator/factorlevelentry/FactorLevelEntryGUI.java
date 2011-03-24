@@ -49,6 +49,8 @@ import org.isatools.isacreator.ontologymanager.OntologyConsumer;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.SpreadsheetCellPoint;
 import org.isatools.isacreator.spreadsheet.SpreadsheetModel;
+import org.jdesktop.fuse.InjectedResource;
+import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -85,11 +87,24 @@ public class FactorLevelEntryGUI extends JFrame {
     private JLabel status;
     private ExcelAdaptor ea;
 
+    static {
+        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
+
+        ResourceInjector.get("factorlevelentry-package.style").load(
+                FactorLevelEntryGUI.class.getResource("/dependency-injections/factorlevelentry-package.properties"));
+    }
+
+    @InjectedResource
+    private ImageIcon headerImage, addRowIcon, addRowOverIcon, removeRowIcon, removeRowOverIcon;
+
     public FactorLevelEntryGUI(OntologyConsumer consumer) {
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        ResourceInjector.get("factorlevelentry-package.style").inject(this);
+
         setTitle("Factor Level Entry");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBackground(UIHelper.BG_COLOR);
+
         setPreferredSize(new Dimension(250, 350));
         setUndecorated(true);
 
@@ -129,7 +144,7 @@ public class FactorLevelEntryGUI extends JFrame {
     private JPanel createTopPanel() {
         JPanel imagePanel = new JPanel(new GridLayout(1, 1));
 
-        JLabel image = new JLabel(new ImageIcon(getClass().getResource("/images/factorlevelselector/factorlevelheader.png")), JLabel.RIGHT);
+        JLabel image = new JLabel(headerImage, JLabel.RIGHT);
         image.setOpaque(false);
 
         imagePanel.add(image);
@@ -330,37 +345,26 @@ public class FactorLevelEntryGUI extends JFrame {
 
         controlPanel.add(Box.createHorizontalStrut(90));
 
-        final JLabel addrow = new JLabel(new ImageIcon(getClass()
-                .getResource("/images/factorlevelselector/addrow.png")), JLabel.RIGHT);
+        final JLabel addrow = new JLabel(addRowIcon, JLabel.RIGHT);
         addrow.setOpaque(false);
-        addrow.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        addrow.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 addRow();
             }
 
-            public void mouseReleased(MouseEvent event) {
-            }
-
             public void mouseEntered(MouseEvent event) {
-                addrow.setIcon(new ImageIcon(getClass()
-                        .getResource("/images/factorlevelselector/addrow_over.png")));
+                addrow.setIcon(addRowOverIcon);
             }
 
             public void mouseExited(MouseEvent event) {
-                addrow.setIcon(new ImageIcon(getClass()
-                        .getResource("/images/factorlevelselector/addrow.png")));
+                addrow.setIcon(addRowIcon);
             }
         });
 
-        final JLabel removerow = new JLabel(new ImageIcon(getClass()
-                .getResource("/images/factorlevelselector/removerow.png")), JLabel.LEFT);
+        final JLabel removerow = new JLabel(removeRowIcon, JLabel.LEFT);
         removerow.setOpaque(false);
-        removerow.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        removerow.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 if (dataEntryTable.getSelectedRow() != -1) {
@@ -376,17 +380,12 @@ public class FactorLevelEntryGUI extends JFrame {
                 }
             }
 
-            public void mouseReleased(MouseEvent event) {
-            }
-
             public void mouseEntered(MouseEvent event) {
-                removerow.setIcon(new ImageIcon(getClass()
-                        .getResource("/images/factorlevelselector/removerow_over.png")));
+                removerow.setIcon(removeRowOverIcon);
             }
 
             public void mouseExited(MouseEvent event) {
-                removerow.setIcon(new ImageIcon(getClass()
-                        .getResource("/images/factorlevelselector/removerow.png")));
+                removerow.setIcon(removeRowIcon);
             }
         });
 
@@ -637,6 +636,12 @@ public class FactorLevelEntryGUI extends JFrame {
             return false;
         }
 
+    }
+
+    public static void main(String[] args) {
+        FactorLevelEntryGUI factorEntry = new FactorLevelEntryGUI(null);
+
+        factorEntry.setVisible(true);
     }
 
 }

@@ -49,6 +49,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,7 +58,8 @@ import java.util.Map;
  * @author Eamonn Maguire
  */
 public class OntologyCellEditor extends JTextField implements TableCellEditor {
-    protected transient ArrayList<CellEditorListener> listeners;
+    protected transient List<CellEditorListener> listeners;
+
     private OntologySelectionTool ontologyTool;
     protected String originalValue;
 

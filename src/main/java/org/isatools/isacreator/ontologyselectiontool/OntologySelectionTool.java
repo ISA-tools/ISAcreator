@@ -86,6 +86,19 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
     private static final Logger log = Logger.getLogger(OntologySelectionTool.class.getName());
 
+    static {
+
+        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
+
+        ResourceInjector.get("ontologyselectiontool-package.style").load(
+                OntologySelectionTool.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
+        ResourceInjector.get("common-package.style").load(
+                OntologySelectionTool.class.getResource("/dependency-injections/common-package.properties"));
+        ResourceInjector.get("effects-package.style").load(OntologySelectionTool.class.getResource
+                   ("/dependency-injections/effects-package.properties"));
+
+    }
+
     @InjectedResource
     private ImageIcon ontologyLookupIcon, recentHistoryIcon, termDefinitionIcon,
             searchButton, searchButtonOver, filterInfo;
@@ -137,8 +150,16 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
 
         this.recommendedOntologies = recommendedOntologies;
-        this.history = consumer.getUserOntologyHistory();
-        this.searchResultCache = consumer.getResultCache();
+
+        if (consumer == null) {
+            this.history = new HashMap<String, OntologyObject>();
+            this.searchResultCache = new ResultCache<String, Map<String, String>>();
+        } else {
+            this.history = consumer.getUserOntologyHistory();
+            this.searchResultCache = consumer.getResultCache();
+        }
+
+
         this.consumer = consumer;
         this.multipleTermsAllowed = multipleTermsAllowed;
 
