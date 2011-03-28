@@ -48,6 +48,7 @@ import org.isatools.isacreator.utils.StringProcessing;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,7 @@ public class ConfigXMLParser {
     private List<MappingObject> mappings;
     private List<TableReferenceObject> tables;
     private String problemLog = "";
+
     private boolean problemsEncountered = false;
 
     public ConfigXMLParser(String configDir) {
@@ -83,6 +85,8 @@ public class ConfigXMLParser {
         try {
             definitions = getTableDefinitions();
 
+            // do check for presence of the Investigation file, if it's not there, this method will load in a default file as well
+            checkInvestigationFileDefinitionFound(definitions);
 
             for (IsaTabConfigFileType isa : definitions) {
                 for (IsaTabConfigurationType doc : isa.getIsatabConfigurationArray()) {
@@ -111,6 +115,37 @@ public class ConfigXMLParser {
 
     }
 
+
+    private void checkInvestigationFileDefinitionFound(List<IsaTabConfigFileType> definitions) {
+
+        boolean found = false;
+        for (IsaTabConfigFileType isaConfigFile : definitions) {
+            for (IsaTabConfigurationType doc : isaConfigFile.getIsatabConfigurationArray()) {
+
+                OntologyEntryType measurementInfo = doc.getMeasurement();
+                if (measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]")) {
+                    log.info("Investigation definition file found in Configurations directory");
+                    found = true;
+                }
+            }
+        }
+
+        if (!found) {
+            log.info("No Investigation definition file found in Configurations directory, will suggest to load default from Resources...");
+
+            try {
+                IsatabConfigFileDocument investigationFiles = IsatabConfigFileDocument.Factory.parse(getClass().getResourceAsStream("/defaultConfigs/investigation.xml"));
+                definitions.add(investigationFiles.getIsatabConfigFile());
+                log.info("Default Investigation file xml file loaded into the tools");
+            } catch (Exception e) {
+                log.error("There was a problem when loading the Default Investigation File from ISAcreator's resources.");
+                problemLog += "There was a problem when loading the Default Investigation File from ISAcreator's resources.";
+                problemsEncountered = true;
+            }
+        }
+
+    }
+
     public List<TableReferenceObject> getTables() {
         return tables;
     }
@@ -131,15 +166,27 @@ public class ConfigXMLParser {
         List<IsaTabConfigFileType> configurations = new ArrayList<IsaTabConfigFileType>();
         for (File tableConfig : configFiles) {
             if (!tableConfig.getName().startsWith(".")) {
-                IsatabConfigFileDocument newISAConfig = null;
 
-                    newISAConfig = IsatabConfigFileDocument.Factory.parse(tableConfig);
-                    IsaTabConfigFileType isa = newISAConfig.getIsatabConfigFile();
-                    configurations.add(isa);
+                IsaTabConfigFileType isa = parseFile(tableConfig);
+                configurations.add(isa);
             }
         }
 
         return configurations;
+    }
+
+    private IsaTabConfigFileType parseFile(File toParse) throws XmlException, IOException {
+
+        IsatabConfigFileDocument newISAConfig = IsatabConfigFileDocument.Factory.parse(toParse);
+
+        return newISAConfig.getIsatabConfigFile();
+    }
+
+    private IsaTabConfigFileType parseInputStream(InputStream toParse) throws XmlException, IOException {
+
+        IsatabConfigFileDocument newISAConfig = IsatabConfigFileDocument.Factory.parse(toParse);
+
+        return newISAConfig.getIsatabConfigFile();
     }
 
     private void processTable(IsaTabConfigurationType isaConf) {

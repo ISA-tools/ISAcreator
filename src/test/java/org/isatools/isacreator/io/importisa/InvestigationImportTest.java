@@ -81,6 +81,7 @@ public class InvestigationImportTest {
                 Investigation investigation = investigationImport.snd;
 
                 System.out.println("Investigation title: " + investigation.getInvestigationTitle());
+
                 System.out.println("Number of studies: " + investigation.getStudies().size());
 
                 System.out.println("Getting investigation publications:");
