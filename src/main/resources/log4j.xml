@@ -17,7 +17,7 @@
     </appender>
 
     <root>
-        <priority value="debug"/>
+        <priority value="info"/>
         <appender-ref ref="FILE"/>
     </root>
 
