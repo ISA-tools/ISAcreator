@@ -33,7 +33,7 @@ public class AnnotatorSearchClient {
 
             // Configure the form parameters
             method.addParameter("longestOnly", "true");
-            method.addParameter("wholeWordOnly", "false");
+            method.addParameter("wholeWordOnly", "true");
             //method.addParameter("stopWords", "choubala");
             //method.addParameter("withDefaultStopWords", "true");
             method.addParameter("scored", "true");

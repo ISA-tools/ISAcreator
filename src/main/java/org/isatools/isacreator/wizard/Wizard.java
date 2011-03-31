@@ -90,8 +90,6 @@ import java.util.List;
  */
 public class Wizard extends AbstractDataEntryEnvironment {
 
-    private static final Logger log = Logger.getLogger(Wizard.class.getName());
-
     private static FinaliseStudyCreationListener finaliseStudy;
 
     @InjectedResource
@@ -99,16 +97,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
             completedHeader, completedInfo, breadcrumb1, breadcrumb2, breadcrumb3, breadcrumb5, breadcrumb6;
 
     // define subset of study fields to get some information about a study before creating it
-    private JTextField studyId;
-    private JTextField studyTitle;
+    private JTextField studyId,studyTitle;
     private JTextArea studyDescription;
 
     // define fields to describe an investigation
-    private JTextField invTitle;
+    private JTextField invTitle, invSubmission, invPubReleaseDate, organism;
     private JTextArea invDescription;
-    private JTextField invSubmission;
-    private JTextField invPubReleaseDate;
-    private JTextField organism;
     private JFormattedTextField numTreatmentGroups;
     private JFormattedTextField numSamplesPerGroup;
     private ISAcreatorMenu mainMenu;
@@ -160,7 +154,6 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         createSouthPanel();
         setOpaque(false);
-
 
         finaliseStudy = new FinaliseStudyCreationListener();
         initialPane = createInvestigationDefinitionPanel();
@@ -458,8 +451,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
                         }
                     });
 
+            status.setText("");
+
             previousPage.push(hc);
             setCurrentPage(finalPane);
+        } else {
+            setCurrentPage(lastPage);
         }
     }
 

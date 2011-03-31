@@ -124,4 +124,5 @@ public class CiteExploreClient {
         return publications;
     }
 
+
 }

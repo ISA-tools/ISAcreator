@@ -583,13 +583,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         }
 
-        System.out.println("printing out what has been output from Subform " + title);
-        for (String line : toPrint) {
-            data += (line + "\n");
-            System.out.println(line);
-
-        }
-
         return data;
     }
 
