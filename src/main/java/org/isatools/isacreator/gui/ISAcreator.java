@@ -50,6 +50,7 @@ import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.filechooser.FTPManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.io.OutputISAFiles;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileIO;
@@ -137,6 +138,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     private IncorrectColumnOrderGUI incorrectGUI;
     private UserProfileIO userProfileIO;
     private String loadedConfiguration;
+    private Mode mode;
 
     static {
         UIManager.put("Panel.background", UIHelper.BG_COLOR);
@@ -182,13 +184,15 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                 ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
     }
 
-    public ISAcreator() {
-        this(null);
+    public ISAcreator(Mode mode) {
+        this(mode, null);
     }
 
-    public ISAcreator(String configDir) {
+    public ISAcreator(Mode mode, String configDir) {
 
         ResourceInjector.get("gui-package.style").inject(this);
+
+        this.mode = mode;
 
         outputISATAB = new OutputISAFiles(this);
         userProfileIO = new UserProfileIO(this);
@@ -693,7 +697,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                ISAcreator main = new ISAcreator();
+                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE);
                 main.createGUI();
             }
         });
@@ -1279,6 +1283,10 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
     public IncorrectColumnOrderGUI getIncorrectGUI() {
         return incorrectGUI;
+    }
+
+    public Mode getMode() {
+        return mode;
     }
 
     private void closeISAcreator() {

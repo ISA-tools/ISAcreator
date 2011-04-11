@@ -39,6 +39,7 @@ package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.formatmappingutility.ui.MappingUtilView;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
+import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.wizard.Wizard;
 import org.jdesktop.fuse.InjectedResource;
 
@@ -179,10 +180,12 @@ public class CreateISATABMenu extends MenuUIComponent {
 
         menuItems.add(createManual);
         menuItems.add(Box.createVerticalStrut(10));
-        menuItems.add(createUsingWizard);
-        menuItems.add(Box.createVerticalStrut(10));
-        menuItems.add(createUsingMapper);
-        menuItems.add(Box.createVerticalStrut(10));
+        if (menu.getMain().getMode() == Mode.NORMAL_MODE) {
+            menuItems.add(createUsingWizard);
+            menuItems.add(Box.createVerticalStrut(10));
+            menuItems.add(createUsingMapper);
+            menuItems.add(Box.createVerticalStrut(10));
+        }
         menuItems.add(back);
 
         JPanel northPanel = new JPanel();

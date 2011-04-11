@@ -10,6 +10,7 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
@@ -55,7 +56,7 @@ public class ISAtabImporter {
      * @param configDir - the directory containing the configuration files you wish to use.
      */
     public ISAtabImporter(String configDir) {
-        this(new ISAcreator(configDir), false);
+        this(new ISAcreator(Mode.LIGHT_MODE, configDir), false);
     }
 
     /**
