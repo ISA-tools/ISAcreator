@@ -637,7 +637,7 @@ public class StudyDataEntry extends DataEntryForm {
     }
 
     public void reformProtocols() {
-        protocolSubForm.reformItems();
+        protocolSubForm.reformPreviousContent();
     }
 
     public void reformFactors() {

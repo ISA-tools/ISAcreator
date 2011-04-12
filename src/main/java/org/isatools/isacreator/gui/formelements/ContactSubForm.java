@@ -74,8 +74,10 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
             Map<String, String> fieldList = contacts.get(record - 1).getFieldValues();
 
             int contactFieldIndex = 0;
+
             for (SubFormField field : fields) {
                 String value = fieldList.get(field.getFieldName());
+
                 dtm.setValueAt(value, contactFieldIndex, record);
                 contactFieldIndex++;
             }

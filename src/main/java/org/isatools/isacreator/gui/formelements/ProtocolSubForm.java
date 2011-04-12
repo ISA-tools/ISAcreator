@@ -69,11 +69,24 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
     public void reformItems() {
         List<Protocol> protocols = parent.getProtocols();
 
+
+        System.out.println("There are " + protocols.size() + " protocols to be added");
+        System.out.println("The current model allows for " + dtm.getColumnCount() + " protocols");
+
+
+
         for (int record = 1; record < protocols.size() + 1; record++) {
 
             Map<String, String> fieldList = protocols.get(record - 1).getFieldValues();
 
             int protocolFieldIndex = 0;
+
+            if(record >= dtm.getColumnCount()) {
+                System.out.println("Adding column...");
+                addColumn();
+
+            }
+
             for (SubFormField field : fields) {
                 String value = fieldList.get(field.getFieldName());
                 dtm.setValueAt(value, protocolFieldIndex, record);
@@ -82,6 +95,9 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
 
 
         }
+
+        updateTables();
+
     }
 
     protected void removeItem(int itemToRemove) {

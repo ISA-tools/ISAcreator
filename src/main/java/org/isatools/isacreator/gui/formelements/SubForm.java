@@ -287,26 +287,29 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     public void updateTables() {
         TableColumnModel scrollColumnModel = scrollTable.getColumnModel();
 
-        for (int i = 0; i < numFrozenColumns; i++) {
-            scrollColumnModel.removeColumn(scrollColumnModel.getColumn(0));
+        if (scrollColumnModel.getColumnCount() > 0) {
+
+            for (int i = 0; i < numFrozenColumns; i++) {
+                scrollColumnModel.removeColumn(scrollColumnModel.getColumn(0));
+            }
+
+            TableColumnModel lockedColumnModel = lockedTable.getColumnModel();
+
+            while (lockedTable.getColumnCount() > numFrozenColumns) {
+                lockedColumnModel.removeColumn(lockedColumnModel.getColumn(
+                        numFrozenColumns));
+            }
+
+            for (int i = 0; i < scrollTable.getColumnCount(); i++) {
+                scrollColumnModel.getColumn(i).setPreferredWidth(100);
+            }
+
+            lockedTable.getColumnModel().getColumn(0).setPreferredWidth(250);
+            lockedTable.setPreferredScrollableViewportSize(lockedTable.getPreferredSize());
+
+            setHeaderProperties(scrollTable, scrollTableHeaderRenderer);
+            setHeaderProperties(lockedTable, lockedTableHeaderRenderer);
         }
-
-        TableColumnModel lockedColumnModel = lockedTable.getColumnModel();
-
-        while (lockedTable.getColumnCount() > numFrozenColumns) {
-            lockedColumnModel.removeColumn(lockedColumnModel.getColumn(
-                    numFrozenColumns));
-        }
-
-        for (int i = 0; i < scrollTable.getColumnCount(); i++) {
-            scrollColumnModel.getColumn(i).setPreferredWidth(100);
-        }
-
-        lockedTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-        lockedTable.setPreferredScrollableViewportSize(lockedTable.getPreferredSize());
-
-        setHeaderProperties(scrollTable, scrollTableHeaderRenderer);
-        setHeaderProperties(lockedTable, lockedTableHeaderRenderer);
     }
 
 
@@ -581,6 +584,11 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 }
             }
 
+        }
+
+
+        for (String line : toPrint) {
+            data += (line + "\n");
         }
 
         return data;

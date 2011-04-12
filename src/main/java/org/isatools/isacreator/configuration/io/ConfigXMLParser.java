@@ -248,7 +248,7 @@ public class ConfigXMLParser {
                 colNo++;
             } else if (obj instanceof ProtocolFieldType) {
                 ProtocolFieldType protocolField = (ProtocolFieldType) obj;
-                FieldObject newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, "", protocolField.getProtocolType(),
+                FieldObject newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(), "",
                         protocolField.getIsRequired(), false, false, false);
                 newField.setWizardTemplate(newField.getWizardTemplate());
 
