@@ -44,6 +44,7 @@ import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
+import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 
@@ -66,10 +67,8 @@ public class ISAcreatorMenu extends JLayeredPane {
     public static final int SHOW_MAIN = 0;
     public static final int SHOW_LOGIN = 1;
     public static final int SHOW_CREATE_ISA = 2;
-    public static final int SHOW_CREATE_PROFILE = 3;
-    public static final int SHOW_IMPORT_ISA = 4;
-    public static final int SHOW_IMPORT_CONFIGURATION = 5;
-    public static final int SHOW_UNSUPPORTED_JAVA = 6;
+    public static final int SHOW_IMPORT_CONFIGURATION = 3;
+    public static final int SHOW_UNSUPPORTED_JAVA = 4;
 
 
     private Authentication authGUI;
@@ -103,7 +102,10 @@ public class ISAcreatorMenu extends JLayeredPane {
         importISA = new ImportFilesMenu(this);
         importConfiguration = new ImportConfiguration(this);
         mergeStudies = new MergeFilesUI(this);
-        settings = new SettingsUtil(this, ISAcreator.getProgramSettings());
+
+        if (isacreator.getMode() == Mode.NORMAL_MODE)
+            settings = new SettingsUtil(this, ISAcreator.getProgramSettings());
+
         mainMenu = new MainMenu(this);
 
         generic = new ISAcreatorBackground();

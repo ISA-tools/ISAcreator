@@ -258,7 +258,7 @@ public class UIHelper {
                 combo.putClientProperty(field.get(null), Boolean.TRUE);
             }
         } catch (Exception e1) {
-            // skip the error
+            combo.setLightWeightPopupEnabled(false);
         }
     }
 

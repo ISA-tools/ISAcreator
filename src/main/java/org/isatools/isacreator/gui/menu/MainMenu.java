@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.isatools.isacreator.gui.modeselection.Mode;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -159,28 +160,30 @@ public class MainMenu extends MenuUIComponent {
         menuItems.add(merge);
         menuItems.add(Box.createVerticalStrut(10));
 
-        settingsButton = new JLabel(settings,
-                JLabel.LEFT);
-        settingsButton.addMouseListener(new MouseAdapter() {
+        if (menu.getMain().getMode() == Mode.NORMAL_MODE) {
+            settingsButton = new JLabel(settings,
+                    JLabel.LEFT);
+            settingsButton.addMouseListener(new MouseAdapter() {
 
-            public void mousePressed(MouseEvent event) {
-                settingsButton.setIcon(settings);
-                confirmExitPanel.setVisible(false);
-                menu.getSettings().createGUI();
-                menu.getSettings().changeView();
-                menu.getMain().setCurrentPage(menu.getSettings());
-            }
+                public void mousePressed(MouseEvent event) {
+                    settingsButton.setIcon(settings);
+                    confirmExitPanel.setVisible(false);
+                    menu.getSettings().createGUI();
+                    menu.getSettings().changeView();
+                    menu.getMain().setCurrentPage(menu.getSettings());
+                }
 
-            public void mouseEntered(MouseEvent event) {
-                settingsButton.setIcon(settingsOver);
-            }
+                public void mouseEntered(MouseEvent event) {
+                    settingsButton.setIcon(settingsOver);
+                }
 
-            public void mouseExited(MouseEvent event) {
-                settingsButton.setIcon(settings);
-            }
-        });
-        menuItems.add(settingsButton);
-        menuItems.add(Box.createVerticalStrut(10));
+                public void mouseExited(MouseEvent event) {
+                    settingsButton.setIcon(settings);
+                }
+            });
+            menuItems.add(settingsButton);
+            menuItems.add(Box.createVerticalStrut(10));
+        }
 
         loadAnotherConfiguration = new JLabel(loadConfiguration,
                 JLabel.LEFT);
