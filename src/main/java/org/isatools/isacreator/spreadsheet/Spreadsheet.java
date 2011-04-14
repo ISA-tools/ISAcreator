@@ -1143,6 +1143,8 @@ public class Spreadsheet extends JComponent implements
             tableGroupInformation.dispose();
         }
 
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
         Map<String, List<Object>> groups = getDataGroupsByColumn(toGroupBy, exactMatch, returnSampleNames);
 
         Map<String, Color> groupColors = new ListOrderedMap<String, Color>();
@@ -1153,6 +1155,8 @@ public class Spreadsheet extends JComponent implements
         // then pass the groups and the colours to the TableGroupInfo class to display the gui
         // showing group distribution!
         final Map<Integer, Color> rowColors = paintRows(groups, groupColors);
+
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
         tableGroupInformation = new TableGroupInfo(groups, groupColors, table.getRowCount());
         tableGroupInformation.setLocation(getWidth() / 2 - tableGroupInformation.getWidth(), getHeight() / 2 - tableGroupInformation.getHeight());

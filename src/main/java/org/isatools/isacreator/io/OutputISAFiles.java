@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.io;
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Assay;
@@ -140,22 +141,20 @@ public class OutputISAFiles {
 
         for (int i = 0; i < headerTerms.length; i++) {
             StringBuffer line = new StringBuffer(headerTerms[i] + "\t");
-            String val;
+            String val = "";
             for (OntologySourceRefObject anOntologiesUsed : main.getOntologiesUsed()) {
 
                 if (headerTerms[i].equals("Term Source Name")) {
                     val = anOntologiesUsed.getSourceName();
-                    addToLine(line, val);
                 } else if (headerTerms[i].equals("Term Source File")) {
                     val = anOntologiesUsed.getSourceFile();
-                    addToLine(line, val);
                 } else if (headerTerms[i].equals("Term Source Version")) {
                     val = anOntologiesUsed.getSourceVersion();
-                    addToLine(line, val);
                 } else if (headerTerms[i].equals("Term Source Description")) {
                     val = anOntologiesUsed.getSourceDescription();
-                    addToLine(line, val);
                 }
+
+                addToLine(line, StringUtils.isEmpty(val) ? " " : val);
             }
 
             // add new line to everything line but the last line

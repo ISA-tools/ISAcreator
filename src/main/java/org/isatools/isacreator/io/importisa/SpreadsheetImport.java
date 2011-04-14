@@ -110,11 +110,13 @@ public class SpreadsheetImport {
         int positionInheaders = 0;
         int parentColPos;
 
-        for (String h : headers) {
+        for (String columnHeader : headers) {
             positionInheaders++;
 
+            String fieldAsLowercase = columnHeader.toLowerCase();
+
             if (expectedNextUnitLocation == positionInheaders) {
-                if (h.toLowerCase().contains("unit")) {
+                if (fieldAsLowercase.contains("unit")) {
                     // add two fields...one accepting string values and the unit, also accepting string values :o)
                     FieldObject newFo = new FieldObject(count,
                             previousCharFactParam, "", DataTypes.STRING, "", false, false, false);
@@ -129,7 +131,7 @@ public class SpreadsheetImport {
 
                     count++;
 
-                    newFo = new FieldObject(count, h, "", DataTypes.ONTOLOGY_TERM, "", false, false, false);
+                    newFo = new FieldObject(count, columnHeader, "", DataTypes.ONTOLOGY_TERM, "", false, false, false);
                     tro.addField(newFo);
 
                     tro.getColumnDependencies().get(parentColPos).add(count);
@@ -164,48 +166,50 @@ public class SpreadsheetImport {
                 expectedNextUnitLocation = -1;
             }
 
-            FieldObject field = startReference.getFieldByName(h);
+            FieldObject field = startReference.getFieldByName(columnHeader);
 
             if (field != null) {
                 tro.addField(field);
                 count++;
             } else {
                 // doesn't exist
-                if (h.toLowerCase().contains("factor value") ||
-                        h.toLowerCase().contains("characteristics") ||
-                        h.toLowerCase().contains("parameter value")) {
 
-                    previousCharFactParam = h;
+
+                if ((fieldAsLowercase.contains("factor value") ||
+                        fieldAsLowercase.contains("characteristics") ||
+                        fieldAsLowercase.contains("parameter value")) && !fieldAsLowercase.contains("comment")) {
+
+                    previousCharFactParam = columnHeader;
                     expectedNextUnitLocation = positionInheaders + 1;
                 }
 
-                if (h.equalsIgnoreCase("performer") ||
-                        h.contains("Comment") ||
-                        h.equalsIgnoreCase("provider")) {
-                    FieldObject additionalFo = new FieldObject(count, h,
+                if (fieldAsLowercase.equals("performer") ||
+                        fieldAsLowercase.contains("comment") ||
+                        fieldAsLowercase.equals("provider")) {
+                    FieldObject additionalFo = new FieldObject(count, columnHeader,
                             "An additional column", DataTypes.STRING, "", false,
                             false, false);
                     tro.addField(additionalFo);
                     count++;
                 }
 
-                if (h.toLowerCase().contains("material type")) {
+                if (fieldAsLowercase.contains("material type")) {
                     FieldObject newFo = new FieldObject(count,
-                            h, "", DataTypes.ONTOLOGY_TERM, "",
+                            columnHeader, "", DataTypes.ONTOLOGY_TERM, "",
                             false, false, false);
                     tro.addField(newFo);
                     count++;
                 }
 
-                if (h.toLowerCase().contains("date")) {
-                    FieldObject dateFo = new FieldObject(count, h,
+                if (fieldAsLowercase.contains("date")) {
+                    FieldObject dateFo = new FieldObject(count, columnHeader,
                             "Date field", DataTypes.DATE, "", false, false, false);
                     tro.addField(dateFo);
 
                     count++;
                 }
 
-                if (h.toLowerCase().contains("protocol ref")) {
+                if (fieldAsLowercase.contains("protocol ref")) {
                     previousProtocol = count;
 
                     FieldObject newFo = new FieldObject(count, "Protocol REF",
