@@ -283,7 +283,7 @@ public class AssaySelectionUI extends JPanel {
     private void populateMeasurements() {
 
         for (String s : measToAllowedTechnologies.keySet()) {
-            if (!s.equalsIgnoreCase("[sample]")) {
+            if (!s.equalsIgnoreCase("[sample]") && !s.equalsIgnoreCase("[investigation]")) {
                 assayMeasurementList.addItem(s);
             }
         }

@@ -173,7 +173,7 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> techTypeSet = new HashSet<String>();
 
         for (MappingObject mo : assayToTypeMapping) {
-            if (!mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]")) {
+            if (!mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]") && !mo.getMeasurementEndpointType().equalsIgnoreCase("[investigation]")) {
                 measurementEndPointSet.add(mo.getMeasurementEndpointType());
                 if (!mo.getTechnologyType().trim().equals("")) {
                     techTypeSet.add(mo.getTechnologyType());

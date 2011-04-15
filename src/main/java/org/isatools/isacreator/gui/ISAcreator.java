@@ -1187,7 +1187,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         for (MappingObject mo : assayToTypeMapping) {
             if (!mo.getTechnologyType().equals("n/a") &&
-                    !mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]")) {
+                    !mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]") && !mo.getMeasurementEndpointType().equalsIgnoreCase("[investigation]")) {
                 measTypeSet.add(mo.getMeasurementEndpointType());
             }
         }
