@@ -239,11 +239,9 @@ public class BioPortalClient implements OntologyService {
                 if (ro.getBranchToSearchUnder() != null && !ro.getBranchToSearchUnder().getBranchIdentifier().equals("")) {
                     String branch = ro.getBranchToSearchUnder().getBranchIdentifier();
 
-                    if (ro.getOntology().getOntologyID().equals(AcceptedOntologies.NCI_THESAURUS.getOntologyID())
-                            || ro.getOntology().getOntologyID().equals(AcceptedOntologies.NPO.getOntologyID()) || ro.getOntology().getOntologyID().equals(AcceptedOntologies.FMA.getOntologyID())) {
+                    if (ro.getOntology().getOntologyID().equals(AcceptedOntologies.NCI_THESAURUS.getOntologyID()) || ro.getOntology().getOntologyID().equals(AcceptedOntologies.NPO.getOntologyID())) {
                         Modifier modifier = new NCIThesaurusModifier();
                         branch = modifier.modifySearch(branch);
-
                     }
 
                     searchString.append("&subtreerootconceptid=").append(branch);

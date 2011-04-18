@@ -287,6 +287,10 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     public void updateTables() {
         TableColumnModel scrollColumnModel = scrollTable.getColumnModel();
 
+        System.out.println("Updating tables.");
+
+        System.out.println("ScrollColumnModel column count is : " + scrollColumnModel.getColumnCount());
+
         if (scrollColumnModel.getColumnCount() > 0) {
 
             for (int i = 0; i < numFrozenColumns; i++) {
@@ -309,6 +313,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             setHeaderProperties(scrollTable, scrollTableHeaderRenderer);
             setHeaderProperties(lockedTable, lockedTableHeaderRenderer);
+
         }
     }
 
@@ -1000,6 +1005,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             record.put(fieldName, value == null ? "" : value.toString());
             index++;
         }
+
 
         return record;
     }
