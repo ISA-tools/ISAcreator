@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+  <dict>
+    <key>CFBundleName</key>
+    <string>ISAcreator</string>
+    <key>CFBundleVersion</key>
+    <string>1.4</string>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <string>true</string>
+    <key>CFBundleExecutable</key>
+    <string>JavaApplicationStub</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleIconFile</key>
+    <string>${iconFile}</string>
+    <key>SplashFile</key>
+    <string>splashscreen.gif</string>
+    <key>CFBundleGetInfoString</key>
+    <string>ISAcreator. Create and Edit ISAtab files. For more information about the tool visit http://isa-tools.org</string>
+    <key>Java</key>
+    <dict>
+      <key>MainClass</key>
+      <string>${mainClass}</string>
+      <key>JVMVersion</key>
+      <string>1.6+</string>
+      <key>ClassPath</key>
+      ${classpath}
+      <key>VMOptions</key>
+      <string>-Xmx512m -Xms128m</string>
+      <key>Properties</key>
+            <dict>
+                <key>apple.laf.useScreenMenuBar</key>
+                <string>true</string>
+            </dict>
+    </dict>
+  </dict>
+</plist>

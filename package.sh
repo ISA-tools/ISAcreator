@@ -30,9 +30,33 @@ fi
 
 mvn $MVNOPTS -Dmaven.test.skip=true clean assembly:assembly
 
-zip --exclude .DS_STORE -r target/ISAcreator-$VERSION.zip Configurations Data "isatab files"
+rm -rf Configurations
+
+mkdir Configurations
+cd Configurations
+wget https://github.com/downloads/ISA-tools/Configuration-Files/isaconfig-default_v2011-02-18.zip --no-check-certificate
+unzip isaconfig-default_v2011-02-18.zip
+rm isaconfig-default_v2011-02-18.zip
+cd ../
+
+# Now package up the tools
+
+zip --exclude .DS_STORE -r target/ISAcreator-$VERSION-all.zip Configurations Data "isatab files"
 cd target
 mv ISAcreator-$VERSION-jar-with-dependencies.jar ISAcreator.jar
-zip -u ISAcreator-$VERSION.zip ISAcreator.jar
+zip -u ISAcreator-$VERSION-all.zip ISAcreator.jar
 
-cd ..
+echo "Replacing JavaApplicationStub with Symbolic link to users Stub."
+rm -r ISAcreator-$VERSION.app/Contents/MacOS/JavaApplicationStub
+
+
+# this will obviously only work on the MAC. If you are using another operating system, you should download from another system
+ln -s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub ISAcreator-$VERSION.app/Contents/MacOS/JavaApplicationStub
+
+pwd
+
+zip --exclude .DS_STORE -r ISAcreator-$VERSION-mac.zip ../Configurations ../Data ../"isatab files"
+zip -u ISAcreator-$VERSION-mac.zip ISAcreator-$VERSION.app
+
+echo "Packaging completed successfully!"
+

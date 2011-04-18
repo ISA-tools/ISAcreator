@@ -51,6 +51,7 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ExtractDetailsCapture extends JPanel {
@@ -60,8 +61,6 @@ public class ExtractDetailsCapture extends JPanel {
 
     private JTextField extract;
     private JCheckBox poolingPerformed;
-
-    private DropDownComponent dropdown;
 
     public ExtractDetailsCapture(String initialVal, DataEntryEnvironment dep) {
         this.initialVal = initialVal;
@@ -84,8 +83,13 @@ public class ExtractDetailsCapture extends JPanel {
         poolingPerformed.setToolTipText("<html><b>Pooling event?</b><p>Are there no replicates performed with this sample?</p></html>");
 
         container.add(extract);
-        container.add(createOntologyDropDown(extract, false, Collections.singletonMap("Tissue ontology",
-                new RecommendedOntology(new Ontology("", "", "BTO", "Brenda Tissue Ontology")))));
+
+        Map<String, RecommendedOntology> recommendedOntologyMap = new HashMap<String, RecommendedOntology>();
+
+        recommendedOntologyMap.put("Tissue ontology",
+                new RecommendedOntology(new Ontology("1005", "44941", "BTO", "BRENDA tissue / enzyme source")));
+
+        container.add(createOntologyDropDown(extract, false, recommendedOntologyMap));
         container.add(poolingPerformed);
 
         add(container);

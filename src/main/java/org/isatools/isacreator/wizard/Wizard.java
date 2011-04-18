@@ -43,6 +43,8 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedFormattedTextField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
@@ -271,19 +273,28 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         organismListPanel.add(organismLab);
         organismListPanel.add(organism);
-        organismListPanel.add(createOntologyDropDown(organism, false, null));
+
+        Map<String, RecommendedOntology> recommendedOntologyMap = new HashMap<String, RecommendedOntology>();
+
+        recommendedOntologyMap.put("NCBI Taxonomy",
+                new RecommendedOntology(new Ontology("1132", "38802", "NCBITaxon", "NCBI organismal classification")));
+
+        recommendedOntologyMap.put("NEWT",
+                new RecommendedOntology(new Ontology("", "1.18.4", "NEWT", "NEWT UniProt Taxonomy Database")));
+
+        organismListPanel.add(createOntologyDropDown(organism, false, recommendedOntologyMap));
 
         // create number of treatment groups field
         JPanel numTreatmentGroupsPanel = createFieldPanel(1, 2);
         numTreatmentGroupsPanel.setBackground(UIHelper.BG_COLOR);
 
         JLabel numTreatmentGroupslabel = UIHelper.createLabel(
-                "no. factor groups *");
+                "how many study groups? *");
 
         numTreatmentGroups = new RoundedFormattedTextField(NumberFormat.getInstance());
         UIHelper.renderComponent(numTreatmentGroups, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         numTreatmentGroups.setToolTipText(
-                "<html><b>Number of factor groups</b> <p>Please specify the number of factor groups which you have in this study.</p></html>");
+                "<html><b>Number of study groups</b> <p>Please specify the number of study groups which you have in this study.</p></html>");
 
         numTreatmentGroupsPanel.add(numTreatmentGroupslabel);
         numTreatmentGroupsPanel.add(numTreatmentGroups);
@@ -292,13 +303,13 @@ public class Wizard extends AbstractDataEntryEnvironment {
         numSubjectsPanel.setBackground(UIHelper.BG_COLOR);
 
         JLabel numSubjectsLabel = UIHelper.createLabel(
-                "no. sample(s) per group *");
+                "how many subjects per study group? *");
         numSubjectsLabel.setBackground(UIHelper.BG_COLOR);
 
         numSamplesPerGroup = new RoundedFormattedTextField(NumberFormat.getInstance());
         UIHelper.renderComponent(numSamplesPerGroup, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         numSamplesPerGroup.setToolTipText(
-                "<html><b>Number of samples per factor group</b><p>Please specify the number of samples per factor group.</p></html>");
+                "<html><b>Number of samples per study group</b><p>Please specify the number of samples per factor group.</p></html>");
 
         numSubjectsPanel.add(numSubjectsLabel);
         numSubjectsPanel.add(numSamplesPerGroup);
@@ -1048,7 +1059,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         factorFields.add(new SubFormField("factor level unit (; separated)",
                 SubFormField.MULTIPLE_ONTOLOGY_SELECT));
 
-        factorSubForm = new FactorSubForm("factors and levels", FieldTypes.FACTOR,
+        factorSubForm = new FactorSubForm("define study groups using factors and levels", FieldTypes.FACTOR,
                 factorFields, 3, 400, 105, mainMenu.getCurrentDEP());
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
