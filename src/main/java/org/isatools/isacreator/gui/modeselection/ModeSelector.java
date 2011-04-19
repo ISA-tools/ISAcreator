@@ -27,9 +27,8 @@ public class ModeSelector extends JFrame {
                 ModeSelector.class.getResource("/dependency-injections/gui-package.properties"));
     }
 
-    private JLabel lightMode, normalMode, loading;
-
-    private Box container;
+    private JLabel lightMode;
+    private JLabel normalMode;
 
     private Box optionContainer;
     private JPanel loadingContainer;
@@ -48,8 +47,8 @@ public class ModeSelector extends JFrame {
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int x = (dim.width - 320) / 2;
-        int y = (dim.height - 160) / 2;
+        int x = (dim.width - 590) / 2;
+        int y = (dim.height - 394) / 2;
 
         this.setLocation(x, y);
 
@@ -58,7 +57,7 @@ public class ModeSelector extends JFrame {
 
     private void createGUI() {
 
-        container = Box.createVerticalBox();
+        Box container = Box.createVerticalBox();
         container.setOpaque(false);
 
         optionContainer = Box.createHorizontalBox();
@@ -111,7 +110,7 @@ public class ModeSelector extends JFrame {
         loadingContainer.setOpaque(false);
         loadingContainer.setVisible(false);
         // create and add loading icon
-        loading = new JLabel(loadingIcon);
+        JLabel loading = new JLabel(loadingIcon);
 
 
         loadingContainer.add(loading);
