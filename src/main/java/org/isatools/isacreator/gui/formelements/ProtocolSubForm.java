@@ -69,14 +69,11 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
     public void reformItems() {
         List<Protocol> protocols = parent.getProtocols();
 
-        if(dtm.getColumnCount() <= 2) {
-            addColumn();
-        }
-
         for (int record = 1; record <= protocols.size() + 1; record++) {
 
-            if (protocols.size() > record-1) {
+            if (protocols.size() > record - 1) {
                 Map<String, String> fieldList = protocols.get(record - 1).getFieldValues();
+
                 if (record >= dtm.getColumnCount()) {
                     addColumn();
                 }
@@ -91,6 +88,7 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
             }
         }
 
+        dtm.fireTableStructureChanged();
         updateTables();
 
     }

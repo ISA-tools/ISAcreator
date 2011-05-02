@@ -39,6 +39,7 @@ package org.isatools.isacreator.gui.formelements;
 
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.model.Factor;
+import org.isatools.isacreator.model.Protocol;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -68,21 +69,34 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
     }
 
     public void reformItems() {
+
         if (parent != null && parent.getFactors() != null) {
 
             List<Factor> factors = parent.getFactors();
+
             for (int record = 1; record < factors.size() + 1; record++) {
 
-                Map<String, String> fieldList = factors.get(record - 1).getFieldValues();
+                if (factors.size() > record - 1) {
+                    Map<String, String> fieldList = factors.get(record - 1).getFieldValues();
 
-                int contactFieldIndex = 0;
-                for (SubFormField field : fields) {
-                    String value = fieldList.get(field.getFieldName());
-                    dtm.setValueAt(value, contactFieldIndex, record);
-                    contactFieldIndex++;
+                    if (record >= dtm.getColumnCount()) {
+                        addColumn();
+                    }
+
+                    int factorFieldIndex = 0;
+
+                    for (SubFormField field : fields) {
+                        String value = fieldList.get(field.getFieldName());
+                        dtm.setValueAt(value, factorFieldIndex, record);
+                        factorFieldIndex++;
+                    }
                 }
             }
+
+            dtm.fireTableStructureChanged();
+            updateTables();
         }
+
     }
 
     protected void removeItem(int itemToRemove) {
