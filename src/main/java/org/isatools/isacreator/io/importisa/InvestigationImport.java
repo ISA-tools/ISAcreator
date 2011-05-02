@@ -38,13 +38,14 @@
 package org.isatools.isacreator.io.importisa;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.sun.tools.javac.util.Pair;
+
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationStructureLoader;
 import org.isatools.isacreator.utils.StringProcessing;
+import org.isatools.isacreator.utils.datastructures.ISAPair;
 import org.isatools.isacreator.utils.datastructures.SetUtils;
 
 import java.io.File;
@@ -67,7 +68,6 @@ public class InvestigationImport {
     private static final Character TAB_DELIM = '\t';
 
     private Set<String> messages;
-    private String currentMajorSection;
 
 
     public InvestigationImport() {
@@ -86,13 +86,13 @@ public class InvestigationImport {
      *         EFO
      *         etc
      */
-    public Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
+    public ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
 
         OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> importedInvestigationFile = new ListOrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>();
 
         List<String[]> investigationFileContents = loadFile(investigationFile);
 
-        currentMajorSection = "Investigation-1";
+        String currentMajorSection = "Investigation-1";
 
         int studyCount = 1;
 
@@ -138,7 +138,7 @@ public class InvestigationImport {
             }
         }
 
-        return new Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>>(
+        return new ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>>(
                 isValidInvestigationSections(importedInvestigationFile), importedInvestigationFile);
     }
 
@@ -173,7 +173,7 @@ public class InvestigationImport {
 
                 Set<String> requiredValuesAsLowercase = setUtils.getLowerCaseSetContents(sections.get(section).getRequiredValues());
 
-                Pair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
+                ISAPair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
                 if (!equalityResult.fst) {
                     for (String sectionValue : equalityResult.snd) {
                         messages.add(fmt.format(new Object[]{sectionValue, section}));
@@ -187,7 +187,7 @@ public class InvestigationImport {
             // the mainsection string is investigation-1 or study-2 - here we strip away from - onwards.
             Set<InvestigationFileSection> requiredSections = loader.getRequiredSections(mainSection.substring(0, mainSection.lastIndexOf("-")));
             SetUtils<InvestigationFileSection> setUtils = new SetUtils<InvestigationFileSection>();
-            Pair<Boolean, Set<InvestigationFileSection>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
+            ISAPair<Boolean, Set<InvestigationFileSection>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
 
             // if false,
             if (!equalityResult.fst) {

@@ -1,6 +1,5 @@
 package org.isatools.isacreator.io.importisa;
 
-import com.sun.tools.javac.util.Pair;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
@@ -20,6 +19,7 @@ import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.utils.datastructures.ISAPair;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,7 +130,7 @@ public class ISAtabImporter {
             try {
 
                 InvestigationImport investigationFileImporter = new InvestigationImport();
-                Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
+                ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
 
                 messages.addAll(investigationFileImporter.getMessages());
 
@@ -140,7 +140,7 @@ public class ISAtabImporter {
 
                     StructureToInvestigationMapper mapper = new StructureToInvestigationMapper();
 
-                    Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
+                    ISAPair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
 
                     messages.addAll(mapper.getMessages());
 

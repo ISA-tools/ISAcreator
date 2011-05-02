@@ -1,8 +1,8 @@
 package org.isatools.isacreator.ontologiser.logic;
 
-import com.sun.tools.javac.util.Pair;
 import org.isatools.isacreator.ontologiser.model.SuggestedAnnotation;
 import org.isatools.isacreator.ontologymanager.bioportal.model.ScoringConfidence;
+import org.isatools.isacreator.utils.datastructures.ISAPair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,9 +20,9 @@ public class ScoreAnalysisUtility {
      * Returns the max score along with the corresponding SuggestedAnnotation object
      *
      * @param annotations List<SuggestedAnnotation> annotations
-     * @return Pair<Integer, SuggestedAnnotation> where the Integer is the highest score and SuggestedAnnotation is the corresponding SuggestedAnnotation instance
+     * @return ISAPair<Integer, SuggestedAnnotation> where the Integer is the highest score and SuggestedAnnotation is the corresponding SuggestedAnnotation instance
      */
-    public static Pair<Integer, SuggestedAnnotation> getMaxScore(List<SuggestedAnnotation> annotations) {
+    public static ISAPair<Integer, SuggestedAnnotation> getMaxScore(List<SuggestedAnnotation> annotations) {
 
         int maxScore = Integer.MIN_VALUE;
         SuggestedAnnotation value = null;
@@ -34,7 +34,7 @@ public class ScoreAnalysisUtility {
             }
         }
 
-        return new Pair<Integer, SuggestedAnnotation>(maxScore, value);
+        return new ISAPair<Integer, SuggestedAnnotation>(maxScore, value);
     }
 
     public static double getMedian(List<SuggestedAnnotation> annotations) {
@@ -72,7 +72,7 @@ public class ScoreAnalysisUtility {
     public static void assignConfidenceLevels(List<SuggestedAnnotation> annotations) {
 
         double medianScore = getMedian(annotations);
-        Pair<Integer, SuggestedAnnotation> maxValue = getMaxScore(annotations);
+        ISAPair<Integer, SuggestedAnnotation> maxValue = getMaxScore(annotations);
 
         for (SuggestedAnnotation annotation : annotations) {
             if (annotation.getAnnotatorResult().getScore() == maxValue.fst) {

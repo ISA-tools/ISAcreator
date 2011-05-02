@@ -1,7 +1,6 @@
 package org.isatools.isacreator.ontologiser.ui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import com.sun.tools.javac.util.Pair;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
@@ -16,6 +15,7 @@ import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.isatools.isacreator.ontologymanager.OntologyService;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologyselectiontool.ViewTermDefinitionUI;
+import org.isatools.isacreator.utils.datastructures.ISAPair;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -317,7 +317,7 @@ public class OntologiserAnnotationPane extends JPanel {
 
             ScoreAnalysisUtility analysisUtility = new ScoreAnalysisUtility();
 
-            Pair<Integer, SuggestedAnnotation> maxResult = analysisUtility.getMaxScore(annotations.get(ontologisedResult));
+            ISAPair<Integer, SuggestedAnnotation> maxResult = analysisUtility.getMaxScore(annotations.get(ontologisedResult));
 
             setAnnotation(maxResult.snd, ontologisedResult);
         }
