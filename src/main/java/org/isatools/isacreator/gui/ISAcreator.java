@@ -384,52 +384,11 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         file.add(new JSeparator());
 
-        JMenuItem saveAndGoToMain = new JMenuItem(new SaveAction(
-                SaveAction.SAVE_MAIN, "save and go to main menu",
-                saveMenuIcon,
-                "save and go to main menu", KeyEvent.VK_M));
-        saveAndGoToMain.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,
-                KeyEvent.CTRL_MASK));
-
-        file.add(saveAndGoToMain);
-
-        JMenuItem saveAndLogout = new JMenuItem(new SaveAction(
-                SaveAction.SAVE_LOGOUT, "save and logout",
-                saveLogoutIcon,
-                "save and logout", KeyEvent.VK_L));
-        saveAndLogout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
-                KeyEvent.CTRL_MASK));
-
-        file.add(saveAndLogout);
-
-        JMenuItem saveAndExit = new JMenuItem(new SaveAction(
-                SaveAction.SAVE_EXIT, "save and exit",
-                saveExitIcon,
-                "save and exit program", KeyEvent.VK_E));
-        saveAndExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
-                KeyEvent.CTRL_MASK));
-
-        file.add(saveAndExit);
-
-        file.add(new JSeparator());
-
-        JMenuItem logout = new JMenuItem(new LeaveAction(LeaveAction.LOGOUT,
-                "logout without saving",
-                logoutIcon,
-                "logout without saving", null));
-        file.add(logout);
-
         JMenuItem main = new JMenuItem(new LeaveAction(LeaveAction.MAIN,
                 "go to main menu",
                 menuIcon,
                 "go back to main menu without saving", null));
         file.add(main);
-
-        JMenuItem exit = new JMenuItem(new LeaveAction(LeaveAction.EXIT,
-                "exit without saving",
-                exitIcon,
-                "exit without saving", null));
-        file.add(exit);
 
         file.add(new JSeparator());
 
