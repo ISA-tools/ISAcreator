@@ -73,6 +73,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
@@ -366,6 +367,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         // create menu bar
         menuBar = new JMenuBar();
         menuBar.setForeground(UIHelper.DARK_GREEN_COLOR);
+        menuBar.setBorder(null);
 
         JMenu file = new JMenu("file");
 
@@ -769,6 +771,9 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         checkMenuRequired();
         getContentPane().add(currentPage, BorderLayout.CENTER);
+
+        currentPage.setBorder(new EmptyBorder(0,0,0,0));
+
         repaint();
         validate();
     }

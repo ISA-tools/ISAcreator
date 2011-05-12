@@ -51,6 +51,11 @@
             <url>http://www.jarvana.com/jarvana/browse/</url>
         </repository>
 
+        <repository>
+            <id>oerc</id>
+            <url>http://frog.oerc.ox.ac.uk:8080/artifactory/repo/</url>
+        </repository>
+
 
     </repositories>
 

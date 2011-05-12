@@ -40,6 +40,7 @@ package org.isatools.isacreator.gui;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.gui.help.Controller;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -63,8 +64,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
@@ -82,19 +83,20 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         TreeSelectionListener, PropertyChangeListener {
 
     @InjectedResource
-    private ImageIcon loading, overviewButton, overviewButtonOver, navigationPanelHeader, informationPanelHeader,
-            warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp, emptySubmission;
+    private ImageIcon loading, visualizationIcon, visualizationIconOver, addStudyIcon, addStudyIconOver, removeStudyIcon,
+                      removeStudyIconOver, removeStudyIconInactive, navigationPanelHeader, informationPanelHeader,
+                      warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp;
 
 
     private DefaultMutableTreeNode overviewTreeRoot;
     private DefaultTreeModel overviewTreeModel;
     private Investigation investigation;
     private JLabel statusInfo;
-    private JLabel overviewMenuIcon;
+    private JLabel visualization, removeStudyButton;
 
     private JTree overviewTree;
     private ISAcreator mGUI;
-    private EmptySubmissionFill emptySubmissionFiller;
+    private Controller newSubmission;
     private DefaultMutableTreeNode lastAddedNode = null;
 
     public DataEntryEnvironment(ISAcreator mGUI) {
@@ -103,7 +105,13 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         ResourceInjector.get("gui-package.style").inject(this);
 
         this.mGUI = mGUI;
-        emptySubmissionFiller = new EmptySubmissionFill();
+        newSubmission = new Controller();
+        newSubmission.createGUI();
+        newSubmission.addPropertyChangeListener("addNewStudy", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                addStudyToTree();
+            }
+        });
     }
 
     /**
@@ -171,9 +179,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
     public void setOverviewIconAsBusy(boolean busy) {
         if (busy) {
-            overviewMenuIcon.setIcon(loading);
+            visualization.setIcon(loading);
         } else {
-            overviewMenuIcon.setIcon(overviewButton);
+            visualization.setIcon(visualizationIcon);
         }
     }
 
@@ -253,7 +261,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             return overviewTreeRoot;
         } else {
             overviewTreeRoot = new DefaultMutableTreeNode("No studies added yet...");
-            setCurrentPage(emptySubmissionFiller);
+            setCurrentPage(newSubmission);
 
             return overviewTreeRoot;
         }
@@ -298,7 +306,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         this.investigation = new Investigation("Investigation", "");
         setBorder(BorderFactory.createEmptyBorder());
         setupWestPanel(investigation);
-        setCurrentPage(emptySubmissionFiller);
+        setCurrentPage(newSubmission);
         setVisible(true);
     }
 
@@ -350,7 +358,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         overviewTree.setShowsRootHandles(false);
         overviewTree.setCellRenderer(new ISAOverviewTreeRenderer());
         overviewTree.addTreeSelectionListener(this);
-        overviewTree.setSelectionRow(0);
+
 
         BasicTreeUI ui = new BasicTreeUI() {
             public Icon getCollapsedIcon() {
@@ -374,16 +382,68 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         navPanel.add(treeScroll, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.setBackground(UIHelper.BG_COLOR);
+        Box buttonBox = Box.createHorizontalBox();
+        buttonBox.setOpaque(true);
+        buttonBox.setBackground(UIHelper.BG_COLOR);
+
+
+        JLabel addStudyButton = new JLabel(addStudyIcon);
+        addStudyButton.setToolTipText("<html>Add a new Study</html>");
+        addStudyButton.setOpaque(false);
+
+        addStudyButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                ((JLabel)mouseEvent.getSource()).setIcon(addStudyIconOver);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                ((JLabel)mouseEvent.getSource()).setIcon(addStudyIcon);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                ((JLabel)mouseEvent.getSource()).setIcon(addStudyIcon);
+                addStudyToTree();
+            }
+        });
+
+
+        removeStudyButton = new JLabel(removeStudyIconInactive);
+        removeStudyButton.setToolTipText("<html>Remove the selected study</html>");
+        removeStudyButton.setOpaque(false);
+
+        removeStudyButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                if(removeStudyButton.getIcon() != removeStudyIconInactive) {
+                    removeStudyButton.setIcon(removeStudyIconOver);
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                if(removeStudyButton.getIcon() != removeStudyIconInactive) {
+                    removeStudyButton.setIcon(removeStudyIcon);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                if(removeStudyButton.getIcon() != removeStudyIconInactive) {
+                    removeStudyButton.setIcon(removeStudyIcon);
+                    removeStudy();
+                }
+            }
+        });
 
 
         //buttonPanel.add(Box.createHorizontalStrut(5));
-        overviewMenuIcon = new JLabel(overviewButton);
-        overviewMenuIcon.setOpaque(false);
-        overviewMenuIcon.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
+        visualization = new JLabel(visualizationIcon);
+        visualization.setToolTipText("<html>Visualize the submission</html>");
+        visualization.setOpaque(false);
+        visualization.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
                 ExperimentVisualization expViz = new ExperimentVisualization(investigation);
@@ -409,21 +469,23 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 setCurrentPage(expViz);
             }
 
-            public void mouseReleased(MouseEvent event) {
-            }
-
             public void mouseEntered(MouseEvent event) {
-                overviewMenuIcon.setIcon(overviewButtonOver);
+                visualization.setIcon(visualizationIconOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                overviewMenuIcon.setIcon(overviewButton);
+                visualization.setIcon(visualizationIcon);
             }
         });
 
-        buttonPanel.add(overviewMenuIcon, BorderLayout.EAST);
+        buttonBox.add(Box.createHorizontalStrut(125));
+        buttonBox.add(addStudyButton);
+        buttonBox.add(removeStudyButton);
+        buttonBox.add(visualization);
 
-        navPanel.add(buttonPanel, BorderLayout.SOUTH);
+        navPanel.add(buttonBox, BorderLayout.SOUTH);
+
+        overviewTree.setSelectionRow(0);
 
         return navPanel;
     }
@@ -625,18 +687,21 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         Object nodeInfo = selectedNode.getUserObject();
 
+        removeStudyButton.setIcon(removeStudyIconInactive);
+
         if (nodeInfo instanceof Investigation) {
             setCurrentPage(((Investigation) nodeInfo).getUserInterface());
             setStatusPaneInfo(investigationHelp);
         } else if (nodeInfo instanceof Study) {
             setCurrentPage(((Study) nodeInfo).getUserInterface());
             setStatusPaneInfo(studyHelp);
+            removeStudyButton.setIcon(removeStudyIcon);
         } else if (nodeInfo instanceof Assay) {
             setCurrentPage(((Assay) nodeInfo).getSpreadsheetUI());
             setStatusPaneInfo("");
         } else {
             setStatusPaneInfo("");
-            setCurrentPage(emptySubmissionFiller);
+            setCurrentPage(newSubmission);
         }
 
         if (curDataEntry instanceof StudyDataEntry) {
@@ -708,30 +773,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         }
 
         return false;
-    }
-
-    class EmptySubmissionFill extends JLayeredPane {
-        public EmptySubmissionFill() {
-            setLayout(new BorderLayout());
-            setBackground(UIHelper.BG_COLOR);
-            setBorder(BorderFactory.createLineBorder(UIHelper.LIGHT_GREEN_COLOR));
-
-            JPanel labelContainer = new JPanel(new GridLayout(1, 1));
-            labelContainer.setBackground(UIHelper.BG_COLOR);
-
-            JLabel image = new JLabel(
-                    emptySubmission);
-            image.setOpaque(false);
-
-            labelContainer.add(image);
-
-            add(labelContainer, BorderLayout.CENTER);
-            setVisible(true);
-        }
-
-        public String toString() {
-            return "Empty Submission";
-        }
     }
 
     public void removeReferences() {
