@@ -92,7 +92,6 @@ public class BioPortalXMLModifier {
 
     private static File getNewFileName(File originalFile) {
         String filePath = originalFile.getAbsolutePath();
-        System.out.println("filepath is: " + filePath);
 
         filePath = filePath.substring(0, filePath.lastIndexOf(File.separator));
 

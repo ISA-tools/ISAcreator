@@ -45,6 +45,7 @@ import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * BioPortalClassBeanResultHandler
@@ -55,6 +56,8 @@ import java.util.Map;
 
 
 public class BioPortalClassBeanResultHandler {
+
+
 
     public SuccessDocument getDocument(String fileLocation) {
         SuccessDocument resultDocument = null;
@@ -95,7 +98,7 @@ public class BioPortalClassBeanResultHandler {
         return ontology;
     }
 
-    public Map<String, BioPortalOntology> parseRootConceptFile(String fileLocation) {
+    public Map<String, BioPortalOntology> parseRootConceptFile(String fileLocation, Set<String> termHasNoChildren) {
         SuccessDocument resultDocument = getDocument(fileLocation);
 
         Map<String, BioPortalOntology> result = new HashMap<String, BioPortalOntology>();
@@ -116,7 +119,25 @@ public class BioPortalClassBeanResultHandler {
                             for (ListDocument.List listItem : entry.getListArray()) {
                                 System.out.println(listItem.getClass());
                                 for (ClassBeanDocument.ClassBean classBeanItem : listItem.getClassBeanArray()) {
-                                    result.put(classBeanItem.getIdArray(0), createOntologyFromClassBean(classBeanItem));
+
+                                    BioPortalOntology ontology = createOntologyFromClassBean(classBeanItem);
+
+                                    result.put(classBeanItem.getIdArray(0), ontology);
+                                    for(RelationsDocument.Relations classBeanRelation :classBeanItem.getRelationsArray()) {
+                                        for(EntryDocument.Entry relationEntry : classBeanRelation.getEntryArray()) {
+                                            if(relationEntry.getStringArray(0).equals("ChildCount")) {
+
+
+                                                // if there are no children, add the term accession to quicken up later queries
+                                                if(relationEntry.getInt().intValue() == 0) {
+                                                    termHasNoChildren.add(ontology.getOntologySourceAccession());
+                                                    break;
+                                                }
+
+
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

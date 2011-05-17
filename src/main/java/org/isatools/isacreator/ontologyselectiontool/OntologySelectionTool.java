@@ -55,8 +55,10 @@ import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.ontologymanager.*;
 import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
+import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.utils.OntologyURLProcessing;
+import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -105,8 +107,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
             searchButton, searchButtonOver, filterInfo;
 
 
-    private static char MULTIPLE_TERM_SEPARATOR = ';';
-
     public static final int WIDTH = 800;
     public static final int HEIGHT = 400;
 
@@ -116,7 +116,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
     private Map<String, OntologyObject> history;
 
-    private JRadioButton useRecommendedOntologies;
     private JRadioButton useOntologies;
 
     private ExtendedJList historyList;
@@ -233,7 +232,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         // create source choice
         Box sourceContainer = Box.createHorizontalBox();
 
-        useRecommendedOntologies = new JRadioButton("recommended search", true);
+        JRadioButton useRecommendedOntologies = new JRadioButton("recommended search", true);
         UIHelper.renderComponent(useRecommendedOntologies, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
 
         useOntologies = new JRadioButton("all ontologies", false);
@@ -592,8 +591,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
     private void addToMultipleTerms(String valToEnter) {
         if (!selectedTerm.getText().contains(valToEnter)) { // if the term is not already in the list of values, then add it
             if (!selectedTerm.getText().equals("")) {
+                char multipleTermSeparator = ';';
                 selectedTerm.setText(selectedTerm.getText() +
-                        MULTIPLE_TERM_SEPARATOR + valToEnter);
+                        multipleTermSeparator + valToEnter);
             } else {
                 selectedTerm.setText(valToEnter);
             }
@@ -759,7 +759,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
                                 OntologySourceManager.placeRecommendedOntologyInformationInRecords(recommendedOntologies.values());
 
-                                List<RecommendedOntology> olsOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), "ols");
+                                List<RecommendedOntology> olsOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.OLS);
 
                                 Map<String, String> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), olsOntologies);
 
@@ -768,7 +768,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
                                     result.putAll(olsResult);
                                 }
 
-                                List<RecommendedOntology> bioportalOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), "bioportal");
+                                List<RecommendedOntology> bioportalOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.BIOPORTAL);
 
                                 System.out.println("going to search bioportal for: ");
                                 for (RecommendedOntology ro : bioportalOntologies) {
@@ -832,18 +832,14 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
      * @param filter     - 'bioportal' to filter out those ROs for BioPortal at NCBO and 'ols' for OLS at the EBI
      * @return a filtered List of RecommendedOntology
      */
-    private List<RecommendedOntology> filterRecommendedOntologiesForService(Collection<RecommendedOntology> ontologies, String filter) {
+    private List<RecommendedOntology> filterRecommendedOntologiesForService(Collection<RecommendedOntology> ontologies, OntologyPortal filter) {
         List<RecommendedOntology> filteredOntologies = new ArrayList<RecommendedOntology>();
         for (RecommendedOntology ro : ontologies) {
-            if (filter.equals("ols")) {
-                if (ro.getOntology().getOntologyVersion().length() > 5) {
-                    filteredOntologies.add(ro);
-                }
-            } else {
-                if (!ro.getOntology().getOntologyVersion().contains(".")) {
-                    filteredOntologies.add(ro);
-                }
+
+            if (OntologyUtils.getSourceOntologyPortal(ro.getOntology()) == filter) {
+                filteredOntologies.add(ro);
             }
+
         }
 
         return filteredOntologies;

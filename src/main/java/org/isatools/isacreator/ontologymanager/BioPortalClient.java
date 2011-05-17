@@ -54,10 +54,7 @@ import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class BioPortalClient implements OntologyService {
@@ -69,6 +66,7 @@ public class BioPortalClient implements OntologyService {
 
     public static final String REST_URL = "http://rest.bioontology.org/bioportal/";
 
+    private Set<String> noChildren;
 
     private boolean doneOntologyCheck = false;
 
@@ -77,22 +75,16 @@ public class BioPortalClient implements OntologyService {
     private Map<String, String> ontologyVersions;
 
     private Map<String, BioPortalOntology> searchResults;
-    private static Map<String, Map<String, String>> cachedNodeChildrenQueries;
+    private Map<String, Map<String, String>> cachedNodeChildrenQueries;
 
-
-    static {
-        cachedNodeChildrenQueries = new HashMap<String, Map<String, String>>();
-
-        File dataDir = new File("Data");
-        if (!dataDir.exists() && !dataDir.isDirectory()) {
-            dataDir.mkdir();
-        }
-    }
 
     public BioPortalClient() {
         ontologySources = new HashMap<String, String>();
         ontologyVersions = new HashMap<String, String>();
         searchResults = new HashMap<String, BioPortalOntology>();
+        cachedNodeChildrenQueries = new HashMap<String, Map<String, String>>();
+
+        noChildren = new HashSet<String>();
     }
 
     public List<Ontology> getAllOntologies() {
@@ -341,7 +333,7 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
-            Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath());
+            Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath(), noChildren);
 
             Map<String, String> processedResult = new HashMap<String, String>();
 
@@ -385,39 +377,42 @@ public class BioPortalClient implements OntologyService {
      * @return Map<String, String> from term accession -> term label
      */
     public Map<String, String> getTermChildOrParent(String termAccession, String ontology, int type) {
-        if (!cachedNodeChildrenQueries.containsKey(ontology + "-" + termAccession)) {
 
-            String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession;
+        if (!noChildren.contains(termAccession)) {
+            if (!cachedNodeChildrenQueries.containsKey(ontology + "-" + termAccession)) {
 
-            System.out.printf("Search string is %s\n", searchString);
+                String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession;
 
-            String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + DownloadUtils.XML_EXT;
+                String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + DownloadUtils.XML_EXT;
 
-            DownloadUtils.downloadFile(searchString, downloadLocation);
+                DownloadUtils.downloadFile(searchString, downloadLocation);
 
-            BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
+                BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
-            File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation),
-                    "http://bioontology.org/bioportal/classBeanSchema#", "<success>");
+                File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation),
+                        "http://bioontology.org/bioportal/classBeanSchema#", "<success>");
 
-            if (fileWithNameSpace != null) {
+                if (fileWithNameSpace != null) {
 
-                Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath());
+                    Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath(), noChildren);
 
-                Map<String, String> processedResult = new HashMap<String, String>();
+                    Map<String, String> processedResult = new HashMap<String, String>();
 
-                if (result != null) {
-                    searchResults.putAll(result);
-                    processedResult.putAll(processBioPortalOntology(result));
-                    cachedNodeChildrenQueries.put(ontology + "-" + termAccession, processedResult);
+                    if (result != null) {
+                        searchResults.putAll(result);
+                        processedResult.putAll(processBioPortalOntology(result));
+                        cachedNodeChildrenQueries.put(ontology + "-" + termAccession, processedResult);
+                    }
+
+                    return processedResult;
+                } else {
+                    return new HashMap<String, String>();
                 }
-
-                return processedResult;
             } else {
-                return new HashMap<String, String>();
+                return cachedNodeChildrenQueries.get(ontology + "-" + termAccession);
             }
         } else {
-            return cachedNodeChildrenQueries.get(ontology + "-" + termAccession);
+            return new HashMap<String, String>();
         }
 
     }
@@ -441,12 +436,11 @@ public class BioPortalClient implements OntologyService {
 
         BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
-        Map<String, String> result = handler.parseOntologyParentPathFile(fileWithNameSpace.getAbsolutePath());
+        //
+//        DownloadUtils.deleteFile(downloadLocation);
+//        DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
-        DownloadUtils.deleteFile(downloadLocation);
-        DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
-
-        return result;
+        return handler.parseOntologyParentPathFile(fileWithNameSpace.getAbsolutePath());
     }
 
     public Map<String, BioPortalOntology> getSearchResults() {
