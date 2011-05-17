@@ -57,7 +57,7 @@ import java.io.IOException;
 public class FileImage extends JPanel {
     private static final Logger log = Logger.getLogger(FileImage.class.getName());
 
-    public static final String FILE_IMG_DIR = "Data/images/filechooser/filechooser_icons";
+    public static final String FILE_IMG_DIR = System.getProperty("java.io.tmpdir") + "/images/filechooser/filechooser_icons";
 
     private static final int WIDTH = 30;
     private static final int HEIGHT = 20;

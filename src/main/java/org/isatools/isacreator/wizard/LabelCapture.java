@@ -85,7 +85,7 @@ public class LabelCapture extends JPanel {
 
         container.add(labelVal);
         container.add(createOntologyDropDown(labelVal, false,
-                Collections.singletonMap("CHEBI", new RecommendedOntology(new Ontology("1007", "", "CHEBI", "Chemicals of Bioligical Interest")))));
+                Collections.singletonMap("CHEBI", new RecommendedOntology(new Ontology("1007", "", "CHEBI", "Chemicals of Biological Interest")))));
         container.add(UIHelper.createLabel(""));
 
         add(container);

@@ -72,7 +72,7 @@ import java.io.File;
 
 
 public class TreeView extends Display {
-    public static final String TREE_CHI = "Data" + File.separator + "view.xml";
+    public static final String TREE_CHI = System.getProperty("java.io.tmpdir") + File.separator + "view.xml";
     private static final String tree = "tree";
     private static final String treeNodes = "tree.nodes";
     private static final String treeEdges = "tree.edges";

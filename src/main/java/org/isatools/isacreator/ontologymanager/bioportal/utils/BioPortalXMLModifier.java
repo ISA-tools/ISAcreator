@@ -102,9 +102,4 @@ public class BioPortalXMLModifier {
         return new File(filePath + File.separator + fileName);
     }
 
-    public static void main(String[] args) {
-        BioPortalXMLModifier.addNameSpaceToFile(new File("Data/root.xml"),
-                "http://bioontology.org/bioportal/classBeanSchema#",
-                "<success>");
-    }
 }

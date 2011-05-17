@@ -60,9 +60,9 @@ public class GenerateMappingView {
 
     public String generateView() {
         // construct XML file from investigation
-        Utils.createDir("Data");
 
-        File f = new File("Data" + File.separator + "mapping_view.xml");
+
+        File f = new File(System.getProperty("java.io.tmpdir") + File.separator + "mapping_view.xml");
         PrintStream ps = null;
 
         try {

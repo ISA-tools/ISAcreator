@@ -48,13 +48,14 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 public class GenerateView {
+
     public GenerateView() {
     }
 
     public void generateView(Investigation inv) {
         // construct XML file from investigation
-        Utils.createDir("Data");
-        File f = new File("Data" + File.separator + "view.xml");
+//        Utils.createDir("Data");
+        File f = new File(System.getProperty("java.io.tmpdir") + File.separator + "view.xml");
         PrintStream ps = null;
 
         try {
@@ -82,8 +83,8 @@ public class GenerateView {
 
     public void generateView(Study s) {
         // construct XML file from investigation
-        Utils.createDir("Data");
-        File f = new File("Data" + File.separator + "view.xml");
+
+        File f = new File(System.getProperty("java.io.tmpdir") + File.separator + "view.xml");
         PrintStream ps = null;
 
         try {

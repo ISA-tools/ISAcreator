@@ -142,7 +142,7 @@ public class ExperimentVisualization extends JLayeredPane {
 
         containerPanel.add(createSouthPanel(), BorderLayout.SOUTH);
 
-        containerPanel.add(createTreeView("Data" + File.separator + "view.xml", "name"),
+        containerPanel.add(createTreeView(System.getProperty("java.io.tmpdir") + File.separator + "view.xml", "name"),
                 BorderLayout.CENTER);
 
 

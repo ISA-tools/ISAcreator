@@ -102,11 +102,7 @@ public class BioPortalClient implements OntologyService {
 
         BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
-        List<Ontology> ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
-
-        DownloadUtils.deleteFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
-
-        return ontologies;
+        return parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
     }
 
     public Ontology getOntologyById(String ontologyId) {
@@ -118,8 +114,6 @@ public class BioPortalClient implements OntologyService {
         BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
         List<Ontology> ontologies = parser.parseFile(downloadLocation);
-
-        DownloadUtils.deleteFile(downloadLocation);
 
         if (ontologies != null && !ontologies.isEmpty()) {
             return ontologies.get(0);
@@ -199,8 +193,6 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalOntology result = handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
 
-            DownloadUtils.deleteFile(downloadLocation);
-            DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
             return result;
         } else {
             return null;
@@ -210,7 +202,7 @@ public class BioPortalClient implements OntologyService {
     public Map<String, String> getTermByAccessionId(String id) {
         String searchString = REST_URL + "ontologies";
 
-        DownloadUtils.downloadFile(searchString, "Data/ontology_" + id + DownloadUtils.XML_EXT);
+        DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + id + DownloadUtils.XML_EXT);
 
         return null;
     }
@@ -273,9 +265,6 @@ public class BioPortalClient implements OntologyService {
 
         if (fileWithNameSpace != null) {
             Map<String, BioPortalOntology> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
-
-            DownloadUtils.deleteFile(downloadLocation);
-            DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
             updateOntologyManagerWithOntologyInformation();
 
@@ -342,6 +331,8 @@ public class BioPortalClient implements OntologyService {
 
             String searchString = REST_URL + "concepts/" + ontology + "/root";
 
+            System.out.println("Search string is: " + searchString);
+
             String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-roots" + DownloadUtils.XML_EXT;
 
             DownloadUtils.downloadFile(searchString, downloadLocation);
@@ -359,9 +350,6 @@ public class BioPortalClient implements OntologyService {
                 processedResult.putAll(processBioPortalOntology(result));
                 cachedNodeChildrenQueries.put(ontology, processedResult);
             }
-
-            DownloadUtils.deleteFile(downloadLocation);
-            DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
             return processedResult;
         } else {
@@ -399,9 +387,12 @@ public class BioPortalClient implements OntologyService {
     public Map<String, String> getTermChildOrParent(String termAccession, String ontology, int type) {
         if (!cachedNodeChildrenQueries.containsKey(ontology + "-" + termAccession)) {
 
-            String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents" : "children") + "/" + ontology + "/" + termAccession + "?level=1";
+            String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession;
+
+            System.out.printf("Search string is %s\n", searchString);
 
             String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + DownloadUtils.XML_EXT;
+
             DownloadUtils.downloadFile(searchString, downloadLocation);
 
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
@@ -411,7 +402,7 @@ public class BioPortalClient implements OntologyService {
 
             if (fileWithNameSpace != null) {
 
-                Map<String, BioPortalOntology> result = handler.parseParentOrChildrenConceptFile(fileWithNameSpace.getAbsolutePath());
+                Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath());
 
                 Map<String, String> processedResult = new HashMap<String, String>();
 
@@ -421,8 +412,6 @@ public class BioPortalClient implements OntologyService {
                     cachedNodeChildrenQueries.put(ontology + "-" + termAccession, processedResult);
                 }
 
-                DownloadUtils.deleteFile(downloadLocation);
-                DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
                 return processedResult;
             } else {
                 return new HashMap<String, String>();
@@ -466,56 +455,6 @@ public class BioPortalClient implements OntologyService {
 
     private String correctTermForHTTPTransport(String term) {
         return term.replaceAll("[\\s]+", "%20");
-    }
-
-
-    public void downloadOntology(Ontology ontology) {
-        String searchString = REST_URL + "ontologies/download/" + ontology.getOntologyVersion();
-
-        File downloadDir = new File(DownloadUtils.DOWNLOAD_ONTOLOGY_LOC);
-        if (!downloadDir.exists()) {
-            downloadDir.mkdir();
-        }
-
-        String fileDownload = downloadDir.getAbsolutePath() + File.separator + ontology.getOntologyVersion() + "." + ontology.getFormat();
-        // only download an ontology file if it doesn't already exist!
-        if (!new File(fileDownload).exists()) {
-            DownloadUtils.downloadFile(searchString, fileDownload);
-        }
-
-    }
-
-    /**
-     * Processes Map of ID -> SearchBeans to return the information in a way readable into the OntologySelectionTool
-     * and stores the ontology source details for provision of source information...
-     *
-     * @param result - Map<String, SearchBean> returned from ProcessBioportalXML classes parseFile method.
-     * @return - Map of Source:Accession to Term for entry into the tree view in the ontology lookup tool.
-     */
-    private Map<String, String> processResult(Map<String, BioPortalOntology> result) {
-
-        Map<String, String> finalResult = new HashMap<String, String>();
-
-        if (result != null) {
-            for (String key : result.keySet()) {
-
-                String tempKey = key.substring(key.indexOf(":") + 1);
-                boolean validSourceAccession = key.contains(":") || key.contains("_");
-
-                if (validSourceAccession) {
-
-                    finalResult.put(tempKey, result.get(tempKey).getOntologyTermName());
-                    String separator = tempKey.contains(":") ? ":" : "_";
-                    tempKey = tempKey.substring(0, tempKey.indexOf(separator));
-                    ontologySources.put(tempKey, result.get(tempKey).getOntologySource());
-                    ontologyVersions.put(tempKey, result.get(tempKey).getOntologyVersionId());
-                }
-
-                ontologySources.put("IAO", "Information Artifact Ontology");
-            }
-        }
-
-        return finalResult;
     }
 
     private Map<String, String> processBioPortalOntology(Map<String, BioPortalOntology> toConvert) {

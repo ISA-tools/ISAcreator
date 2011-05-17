@@ -358,7 +358,7 @@ public class TreatmentGroupViewer extends Display {
 
         zoneManager = new ZoneManager(m_vis, fsim);
 
-        zoneManager.addZonesFromFile("Data" + File.separator + "zones.xml");
+        zoneManager.addZonesFromFile(System.getProperty("java.io.tmpdir") + File.separator + "zones.xml");
 
         // setting the colors
         HashMap allZones = zoneManager.getZones();
@@ -401,9 +401,9 @@ public class TreatmentGroupViewer extends Display {
      */
     public void createZones(final Map<String, List<Object>> groups) {
 
-        Utils.createDir("Data");
 
-        File f = new File("Data" + File.separator + "zones.xml");
+
+        File f = new File(System.getProperty("java.io.tmpdir") + File.separator + "zones.xml");
         PrintStream ps = null;
 
         float shapeRadius = 7.5f;
