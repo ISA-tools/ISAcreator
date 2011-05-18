@@ -280,7 +280,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                 new RecommendedOntology(new Ontology("1132", "38802", "NCBITaxon", "NCBI organismal classification")));
 
         recommendedOntologyMap.put("NEWT",
-                new RecommendedOntology(new Ontology("", "1.18.4", "NEWT", "NEWT UniProt Taxonomy Database")));
+                new RecommendedOntology(new Ontology("", "Jun 2011", "NEWT", "NEWT UniProt Taxonomy Database")));
 
         organismListPanel.add(createOntologyDropDown(organism, false, recommendedOntologyMap));
 
@@ -478,11 +478,6 @@ public class Wizard extends AbstractDataEntryEnvironment {
      * @return JPanel containing the study definition.
      */
     public JLayeredPane createDefineStudyPanel(String studyRef) {
-        File dataDirectory = new File("Data");
-
-        if (!dataDirectory.exists() || !dataDirectory.isDirectory()) {
-            dataDirectory.mkdir();
-        }
 
         JPanel finalPanel = new JPanel();
 

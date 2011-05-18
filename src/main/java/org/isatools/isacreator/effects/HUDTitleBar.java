@@ -60,10 +60,10 @@ public class HUDTitleBar extends JComponent {
     private Image backgroundGradientInactive = new ImageIcon(getClass().getResource("/images/visualization/title-background-inactive.png")).getImage();
     private Image grip;
     private Image inactiveGrip;
-    private Image close = new ImageIcon(getClass().getResource("/images/visualization/title-close.png")).getImage();
-    private Image closeInactive = new ImageIcon(getClass().getResource("/images/visualization/title-close-inactive.png")).getImage();
-    private Image closeOver = new ImageIcon(getClass().getResource("/images/visualization/title-close-over.png")).getImage();
-    private Image closePressed = new ImageIcon(getClass().getResource("/images/visualization/title-close-pressed.png")).getImage();
+    private Image close = new ImageIcon(getClass().getResource("/images/titlepanel/title-close.png")).getImage();
+    private Image closeInactive = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-inactive.png")).getImage();
+    private Image closeOver = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-over.png")).getImage();
+    private Image closePressed = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-pressed.png")).getImage();
     private boolean dispose;
 
     public HUDTitleBar(Image activeImage, Image inactiveImage) {

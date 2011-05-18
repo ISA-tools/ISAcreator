@@ -598,7 +598,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
                 selectedTerm.setText(valToEnter);
             }
         }
-
     }
 
     /**

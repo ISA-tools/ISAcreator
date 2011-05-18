@@ -55,6 +55,7 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -105,11 +106,11 @@ public class FactorLevelEntryGUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBackground(UIHelper.BG_COLOR);
 
-        setPreferredSize(new Dimension(250, 350));
+        setPreferredSize(new Dimension(300, 350));
         setUndecorated(true);
 
-        unitOCE = new OntologyCellEditor(consumer, false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "", "UO", "Unit Ontology"))));
-        levelOCE = new OntologyCellEditor(consumer, false, Collections.singletonMap("Factor", new RecommendedOntology(new Ontology("", "", "EFO", "Experimental Factor Ontology"))));
+        unitOCE = new OntologyCellEditor(consumer, false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "Jun 2011", "UO", "Unit Ontology"))));
+        levelOCE = new OntologyCellEditor(consumer, false, Collections.singletonMap("Factor", new RecommendedOntology(new Ontology("", "Jun 2011", "EFO", "Experimental Factor Ontology"))));
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -125,7 +126,7 @@ public class FactorLevelEntryGUI extends JFrame {
         add(createCentralPanel());
         add(createButtonPanel(), BorderLayout.SOUTH);
 
-        ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.DARK_GREEN_COLOR, UIHelper.DARK_GREEN_COLOR));
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
     }
 
     public void makeVisible() {
@@ -272,7 +273,9 @@ public class FactorLevelEntryGUI extends JFrame {
         tableScroller.setPreferredSize(new Dimension(350, 250));
 
 
+        container.add(Box.createVerticalStrut(10));
         container.add(createControlPanel());
+        container.add(Box.createVerticalStrut(10));
         container.add(tableScroller);
 
         JPanel statusPanel = new JPanel(new GridLayout(1, 1));
@@ -343,7 +346,7 @@ public class FactorLevelEntryGUI extends JFrame {
 
         controlPanel.add(useUnit);
 
-        controlPanel.add(Box.createHorizontalStrut(90));
+        controlPanel.add(Box.createHorizontalStrut(70));
 
         final JLabel addrow = new JLabel(addRowIcon, JLabel.RIGHT);
         addrow.setOpaque(false);
