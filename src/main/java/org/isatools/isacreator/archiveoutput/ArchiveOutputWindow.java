@@ -150,9 +150,9 @@ public class ArchiveOutputWindow extends JFrame {
         selectedCompression = UIHelper.createLabel("", UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, JLabel.CENTER);
 
         OptionGroup<String> compressionOptions = new OptionGroup<String>(OptionGroup.HORIZONTAL_ALIGNMENT, true, 90);
-        compressionOptions.addOptionItem("<html><strong>fast</strong> speed & <strong>low</strong> compression</html>", true, fastLowCompressionSelected, fastLowCompressionNotSelected);
-        compressionOptions.addOptionItem("<html><strong>medium</strong> speed & <strong>medium</strong> compression</html>", false, medCompressionSelected, medCompressionNotSelected);
-        compressionOptions.addOptionItem("<html><strong>slow</strong> speed & <strong>high</strong> compression</html>", false, slowHighCompressionSelected, slowHighCompressionNotSelected);
+        compressionOptions.addOptionItem("<html><strong>fast</strong> speed & <strong>low</strong> compression</html>", true, fastLowCompressionSelected, fastLowCompressionNotSelected, true, false);
+        compressionOptions.addOptionItem("<html><strong>medium</strong> speed & <strong>medium</strong> compression</html>", false, medCompressionSelected, medCompressionNotSelected, true, false);
+        compressionOptions.addOptionItem("<html><strong>slow</strong> speed & <strong>high</strong> compression</html>", false, slowHighCompressionSelected, slowHighCompressionNotSelected, true, false);
 
         compressionOptionContainer.add(new JLabel(chooseCompression, JLabel.LEFT), BorderLayout.NORTH);
         compressionOptionContainer.add(compressionOptions, BorderLayout.CENTER);

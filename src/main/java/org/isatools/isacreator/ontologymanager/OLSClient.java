@@ -394,16 +394,4 @@ public class OLSClient implements OntologyService {
         return result;
     }
 
-
-    public static void main(String[] args) {
-        OLSClient olsClient = new OLSClient();
-        Map<String, String> results = olsClient.getTermChildren("ENVO:00002297", "ENVO");
-
-        System.out.println("found " + results.size() + " terms");
-        for (String term : results.keySet()) {
-            System.out.println(term + " -> " + results.get(term));
-        }
-    }
-
-
 }

@@ -99,21 +99,30 @@ public class OptionGroup<T> extends JPanel implements MouseListener {
         addOptionItem(item, false);
     }
 
-
     public void addOptionItem(T item, boolean setSelected) {
-        addOptionItem(item, setSelected, null, null);
+        addOptionItem(item, setSelected, null, null, true, false);
     }
 
-    public void addOptionItem(T item, boolean setSelected, ImageIcon selectedImage, ImageIcon unselectedImage) {
-        OptionItem<T> option = new OptionItem<T>(setSelected, item, selectedImage, unselectedImage);
+    public void addOptionItem(T item, boolean setSelected, boolean enabled) {
+        addOptionItem(item, setSelected, null, null, enabled, false);
+    }
+
+    public void addOptionItem(T item, boolean setSelected, boolean enabled, boolean useStringRepresentation) {
+        addOptionItem(item, setSelected, null, null, enabled, useStringRepresentation);
+    }
+
+    public void addOptionItem(T item, boolean setSelected, ImageIcon selectedImage, ImageIcon unselectedImage, boolean enabled, boolean useStringRepresentation) {
+        OptionItem<T> option = new OptionItem<T>(setSelected, item, selectedImage, unselectedImage, useStringRepresentation);
         option.addMouseListener(this);
         if (!availableOptions.containsKey(item)) {
             availableOptions.put(item, option);
+            option.setEnabled(enabled);
             add(option);
             add(alignment == OptionGroup.HORIZONTAL_ALIGNMENT ? Box.createHorizontalStrut(5)
                     : Box.createVerticalStrut(5));
         }
     }
+
 
     /**
      * When singleSelection is enabled, this will return the selected option. If singleSelection is not enabled and multiple
@@ -170,16 +179,18 @@ public class OptionGroup<T> extends JPanel implements MouseListener {
     public void mousePressed(MouseEvent mouseEvent) {
         if (mouseEvent.getSource() instanceof OptionItem) {
             OptionItem<T> item = (OptionItem<T>) mouseEvent.getSource();
-            if (singleSelection) {
-                if (!item.getSelectedIcon()) {
-                    clearSelections();
-                    item.setSelectedIcon(!item.getSelectedIcon());
-                    fireItemSelectionEventToListeners(item);
-                }
-            } else {
-                if (checkForSelectedItems(item)) {
-                    item.setSelectedIcon(!item.getSelectedIcon());
-                    fireItemSelectionEventToListeners(item);
+            if (item.isEnabled()) {
+                if (singleSelection) {
+                    if (!item.getSelectedIcon()) {
+                        clearSelections();
+                        item.setSelectedIcon(!item.getSelectedIcon());
+                        fireItemSelectionEventToListeners(item);
+                    }
+                } else {
+                    if (checkForSelectedItems(item)) {
+                        item.setSelectedIcon(!item.getSelectedIcon());
+                        fireItemSelectionEventToListeners(item);
+                    }
                 }
             }
 
@@ -214,32 +225,5 @@ public class OptionGroup<T> extends JPanel implements MouseListener {
         return false;
     }
 
-    public static void main(String[] args) {
-        JFrame testFrame = new JFrame("Option group test");
 
-        JPanel container = new JPanel(new BorderLayout());
-        container.setBackground(UIHelper.BG_COLOR);
-
-        final JLabel test = UIHelper.createLabel("", UIHelper.VER_10_BOLD, UIHelper.LIGHT_GREEN_COLOR);
-
-        final OptionGroup<String> optionGroup = new OptionGroup<String>(OptionGroup.HORIZONTAL_ALIGNMENT, true);
-        optionGroup.addOptionItem("fast speed and low compression", true, new ImageIcon(OptionGroup.class.getResource("/images/gui/output_archive_fast.png")), new ImageIcon(OptionGroup.class.getResource("/images/gui/output_archive_fast_unchecked.png")));
-        optionGroup.addOptionItem("medium speed and medium compression", false, new ImageIcon(OptionGroup.class.getResource("/images/gui/output_archive_medium.png")), new ImageIcon(OptionGroup.class.getResource("/images/gui/output_archive_medium_unchecked.png")));
-        optionGroup.addOptionItem("slow speed and high compression", false, new ImageIcon(OptionGroup.class.getResource("/images/gui/output_archive_slow.png")), new ImageIcon(OptionGroup.class.getResource("/images/gui/output_archive_slow_unchecked.png")));
-
-        optionGroup.addPropertyChangeListener("optionSelectionChange", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                test.setText(optionGroup.getSelectedItem());
-            }
-        });
-
-        container.add(new JLabel(new ImageIcon(OptionGroup.class.getResource("/images/gui/output_archive_choose_compression.png")), JLabel.LEFT), BorderLayout.NORTH);
-        container.add(optionGroup);
-
-        container.add(test, BorderLayout.SOUTH);
-
-        testFrame.add(container);
-        testFrame.pack();
-        testFrame.setVisible(true);
-    }
 }

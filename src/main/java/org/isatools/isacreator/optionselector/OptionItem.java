@@ -61,20 +61,20 @@ public class OptionItem<T> extends JLabel {
     private T userObject;
 
     public OptionItem(T userObject) {
-        this(false, userObject, null, null);
+        this(false, userObject, null, null, false);
     }
 
     public OptionItem(boolean selected, T userObject) {
-        this(selected, userObject, null, null);
+        this(selected, userObject, null, null, false);
     }
 
-    public OptionItem(T userObject, ImageIcon customSelectedIcon, ImageIcon customUnselectedIcon) {
-        this(false, userObject, customSelectedIcon, customUnselectedIcon);
+    public OptionItem(T userObject, ImageIcon customSelectedIcon, ImageIcon customUnselectedIcon, boolean useStringRepresentationOfObject) {
+        this(false, userObject, customSelectedIcon, customUnselectedIcon, useStringRepresentationOfObject);
     }
 
     public OptionItem(boolean selected, T userObject, ImageIcon customSelectedIcon,
-                      ImageIcon customUnselectedIcon) {
-//		super(item.toString());
+                      ImageIcon customUnselectedIcon, boolean useStringRepresentationOfObject) {
+
         this.userObject = userObject;
         setOpaque(false);
         setFont(UIHelper.VER_11_BOLD);
@@ -91,6 +91,12 @@ public class OptionItem<T> extends JLabel {
 
         this.selected = selected;
         setSelectedIcon(selected);
+
+        if (useStringRepresentationOfObject) {
+            setText(userObject.toString());
+            setFont(UIHelper.VER_10_BOLD);
+            setForeground(UIHelper.DARK_GREEN_COLOR);
+        }
     }
 
     public boolean getSelectedIcon() {
