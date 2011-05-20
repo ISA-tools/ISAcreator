@@ -37,7 +37,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     private DefaultTreeModel treeModel;
     private Map<String, RecommendedOntology> ontologies;
 
-    private JPanel browser;
+    private Container browser;
     private OntologyService bioportalClient;
     private OntologyService olsClient;
     private JTree tree;
@@ -46,7 +46,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     private Set<String> knownLeaves;
 
 
-    public WSOntologyTreeCreator(JPanel browser, JTree tree) {
+    public WSOntologyTreeCreator(Container browser, JTree tree) {
         this.browser = browser;
         this.tree = tree;
         observers = new ArrayList<TreeObserver>();
@@ -93,13 +93,13 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
             String nodeLabel = recommendedOntology.getOntology().getOntologyDisplayLabel();
 
-            OntologyService service  = getCorrectOntologyService(recommendedOntology.getOntology());
+            OntologyService service = getCorrectOntologyService(recommendedOntology.getOntology());
 
             if (recommendedOntology.getBranchToSearchUnder() != null) {
 
                 nodeLabel += " under " + recommendedOntology.getBranchToSearchUnder().getBranchName();
 
-                rootTerms = service.getTermChildren(recommendedOntology.getBranchToSearchUnder().getBranchIdentifier(),  getCorrectQueryString(service, recommendedOntology.getOntology()));
+                rootTerms = service.getTermChildren(recommendedOntology.getBranchToSearchUnder().getBranchIdentifier(), getCorrectQueryString(service, recommendedOntology.getOntology()));
 
             } else {
                 rootTerms = service.getOntologyRoots(
@@ -108,7 +108,6 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
             }
 
             DefaultMutableTreeNode ontologyNode = new DefaultMutableTreeNode(nodeLabel);
-
 
             rootNode.add(ontologyNode);
 
@@ -134,7 +133,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         return OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS ? olsClient : bioportalClient;
     }
 
-    private String getCorrectQueryString(OntologyService service, Ontology ontology){
+    private String getCorrectQueryString(OntologyService service, Ontology ontology) {
         return service instanceof BioPortalClient ? ontology.getOntologyVersion() : ontology.getOntologyAbbreviation();
     }
 
@@ -157,7 +156,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
         Ontology ontology = extractOntologyFromNode(parentTerm);
 
-         OntologyService service  = getCorrectOntologyService(ontology);
+        OntologyService service = getCorrectOntologyService(ontology);
 
         Map<String, String> termChildren = service.getTermChildren(termAccession, getCorrectQueryString(service, ontology));
 
@@ -238,7 +237,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
                 // load children only for leaf nodes and those that have not been marked as processed
                 if (node.isLeaf() && node.getAllowsChildren()) {
-                    OntologyService service  = getCorrectOntologyService(ontologyTerm.getOntology());
+                    OntologyService service = getCorrectOntologyService(ontologyTerm.getOntology());
                     // load children. if no children, set allowsChildren to false
                     Map<String, String> termChildren = service.getTermChildren(ontologyTerm.getBranch().getBranchIdentifier(),
                             getCorrectQueryString(service, ontologyTerm.getOntology()));

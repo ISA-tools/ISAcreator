@@ -53,6 +53,7 @@ import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Contact;
+import org.isatools.isacreator.ontologybrowsingutils.WSOntologyTreeCreator;
 import org.isatools.isacreator.ontologymanager.*;
 import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
@@ -69,11 +70,14 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -126,7 +130,15 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
     private JTextField searchField, selectedTerm;
 
-    private FilterableJTree ontologySearchResults;
+    private FilterableJTree ontologySearchResultsTree;
+    private JTree browseRecommendedOntologyTree;
+
+    private JPanel ontologyViewContainer;
+    private JPanel searchUIContainer;
+    private JPanel browseUIContainer;
+
+    private WSOntologyTreeCreator wsOntologyTreeCreator;
+
     private Map<String, String> result = null;
 
     // maps an ontology id e.g. 1123 for OBI to it's version e.g. 40832
@@ -156,8 +168,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
                                  boolean multipleTermsAllowed, Map<String, RecommendedOntology> recommendedOntologies) {
         this.addWindowListener(this);
 
-
         this.recommendedOntologies = recommendedOntologies;
+
+        this.ontologyViewContainer = new JPanel(new FlowLayout());
 
         if (consumer == null) {
             this.history = new HashMap<String, OntologyObject>();
@@ -235,6 +248,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         searchOntologies.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                resetButtons();
+                swapContainers(searchUIContainer);
                 searchOntologies.setIcon(searchOntologiesIconOver);
                 mode = SEARCH_MODE;
                 // todo change view
@@ -265,21 +280,19 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                resetButtons();
+                swapContainers(browseUIContainer);
+                browseRecommendedOntologies.setIcon(browseOntologiesIconOver);
+                mode = BROWSE_MODE;
+
+                try {
+                    wsOntologyTreeCreator.createTree(recommendedOntologies);
+                } catch (FileNotFoundException e) {
+                    log.error(e.getMessage());
+                    browseRecommendedOntologyTree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Unable to load recommended ontologies")));
+                }
             }
         });
-
-        Box buttonContainer = Box.createHorizontalBox();
-        buttonContainer.add(searchOntologies);
-        buttonContainer.add(Box.createHorizontalStrut(5));
-        buttonContainer.add(browseRecommendedOntologies);
-
-
-        container.add(buttonContainer, BorderLayout.NORTH);
-
-        JPanel searchUIContainer = new JPanel();
-        searchUIContainer.setLayout(new BorderLayout());
-        searchUIContainer.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), ""));
-        searchUIContainer.setBackground(UIHelper.BG_COLOR);
 
         boolean recommendedOntologiesAvailable = false;
         if ((recommendedOntologies != null) &&
@@ -287,6 +300,42 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
             recommendedOntologiesAvailable = true;
 
         }
+
+        Box buttonContainer = Box.createHorizontalBox();
+        buttonContainer.add(searchOntologies);
+
+        if (recommendedOntologiesAvailable) {
+            buttonContainer.add(Box.createHorizontalStrut(5));
+            buttonContainer.add(browseRecommendedOntologies);
+        }
+
+
+        container.add(buttonContainer, BorderLayout.NORTH);
+
+
+        if (recommendedOntologiesAvailable) {
+            // instantiate the recommended ontology browser...
+            createBrowseUI();
+        }
+
+
+        // todo searchUIContainer will be one JPanel and browseUIcontainer will be another. depending on which button is pressed, the containers are swapped
+        // searchUIContainer will be initialised
+        createSearchUI(recommendedOntologiesAvailable);
+
+        ontologyViewContainer.add(recommendedOntologiesAvailable ? browseUIContainer : searchUIContainer);
+
+        container.add(ontologyViewContainer, BorderLayout.CENTER);
+
+        return container;
+    }
+
+    private void createSearchUI(boolean recommendedOntologiesAvailable) {
+        searchUIContainer = new JPanel();
+        searchUIContainer.setLayout(new BorderLayout());
+        searchUIContainer.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), ""));
+        searchUIContainer.setBackground(UIHelper.BG_COLOR);
+
 
         // instantiate the searchSpan OptionGroup object
         createOntologySearchSpanOptions(recommendedOntologiesAvailable);
@@ -344,18 +393,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
         searchFieldCont.add(horBox, BorderLayout.NORTH);
 
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode("result");
-
-        ontologySearchResults = new FilterableJTree();
-        TreeFilterModel treeModel = new FilterableOntologyTreeModel<Contact, Set<String>>(top, ontologySearchResults);
-
-        ontologySearchResults.setModel(treeModel);
-        ontologySearchResults.setCellRenderer(new CustomTreeRenderer());
-        ontologySearchResults.expandRow(0);
-        ontologySearchResults.expandRow(1); // expand root and first result node on acquiring result! if there is no result, no exceptions will be thrown!
-        ontologySearchResults.setShowsRootHandles(false);
-
-        // remove standard icon used to indicate that node is open.
         BasicTreeUI ui = new BasicTreeUI() {
             public Icon getCollapsedIcon() {
                 return null;
@@ -366,10 +403,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
             }
         };
 
-        ontologySearchResults.setUI(ui);
-        UIHelper.renderComponent(ontologySearchResults, UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
+        createSearchResultsTree(ui);
 
-        JScrollPane treeScroll = new JScrollPane(ontologySearchResults,
+
+        JScrollPane treeScroll = new JScrollPane(ontologySearchResultsTree,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         treeScroll.setBorder(new EtchedBorder());
@@ -377,7 +414,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         treeScroll.setPreferredSize(new Dimension(400, 170));
         IAppWidgetFactory.makeIAppScrollPane(treeScroll);
 
-        ontologySearchResults.addMouseListener(this);
+        ontologySearchResultsTree.addMouseListener(this);
 
 
         JPanel searchFields = new JPanel();
@@ -386,6 +423,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
         searchFields.add(searchSpan);
         searchFields.add(searchFieldCont);
+        searchFields.add(Box.createVerticalStrut(10));
 
         searchUIContainer.add(searchFields, BorderLayout.NORTH);
         searchUIContainer.add(treeScroll);
@@ -394,20 +432,75 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         filterPanel.setBackground(UIHelper.BG_COLOR);
         filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.LINE_AXIS));
 
-        ((JComponent) ontologySearchResults.getFilterField()).setBorder(null);
-        UIHelper.renderComponent(ontologySearchResults.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        ((JComponent) ontologySearchResultsTree.getFilterField()).setBorder(null);
+        UIHelper.renderComponent(ontologySearchResultsTree.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         filterPanel.add(new JLabel(filterInfo));
         filterPanel.add(new JLabel(leftFieldIcon));
-        filterPanel.add(ontologySearchResults.getFilterField());
-        filterPanel.add(new ClearFieldUtility(ontologySearchResults.getFilterField()));
+        filterPanel.add(ontologySearchResultsTree.getFilterField());
+        filterPanel.add(new ClearFieldUtility(ontologySearchResultsTree.getFilterField()));
         filterPanel.add(new JLabel(rightFieldIcon));
 
         searchUIContainer.add(filterPanel, BorderLayout.SOUTH);
+    }
 
-        container.add(searchUIContainer, BorderLayout.CENTER);
+    private void createSearchResultsTree(BasicTreeUI ui) {
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode("result");
 
-        return container;
+        ontologySearchResultsTree = new FilterableJTree();
+        TreeFilterModel treeModel = new FilterableOntologyTreeModel<Contact, Set<String>>(top, ontologySearchResultsTree);
+
+        ontologySearchResultsTree.setModel(treeModel);
+        ontologySearchResultsTree.setCellRenderer(new CustomTreeRenderer());
+        ontologySearchResultsTree.expandRow(0);
+        ontologySearchResultsTree.expandRow(1); // expand root and first result node on acquiring result! if there is no result, no exceptions will be thrown!
+        ontologySearchResultsTree.setShowsRootHandles(false);
+
+        ontologySearchResultsTree.setUI(ui);
+        // UIHelper.renderComponent(ontologySearchResultsTree, UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
+
+    }
+
+    private void createBrowseUI() {
+        browseUIContainer = new JPanel();
+        browseUIContainer.setLayout(new BorderLayout());
+        browseUIContainer.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), ""));
+        browseUIContainer.setBackground(UIHelper.BG_COLOR);
+
+        BasicTreeUI ui = new BasicTreeUI() {
+            public Icon getCollapsedIcon() {
+                return null;
+            }
+
+            public Icon getExpandedIcon() {
+                return null;
+            }
+        };
+
+        createBrowseRecommendedOntologyTree(ui, recommendedOntologies);
+
+        JScrollPane treeScroll = new JScrollPane(browseRecommendedOntologyTree,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        treeScroll.setBorder(new EtchedBorder());
+        treeScroll.getViewport().setBackground(UIHelper.BG_COLOR);
+        treeScroll.setPreferredSize(new Dimension(400, 170));
+        IAppWidgetFactory.makeIAppScrollPane(treeScroll);
+
+        browseUIContainer.add(treeScroll, BorderLayout.CENTER);
+    }
+
+    private void createBrowseRecommendedOntologyTree(BasicTreeUI ui, Map<String, RecommendedOntology> ontologies) {
+
+        browseRecommendedOntologyTree = new JTree();
+        wsOntologyTreeCreator = new WSOntologyTreeCreator(this, browseRecommendedOntologyTree);
+
+        browseRecommendedOntologyTree.setCellRenderer(new CustomTreeRenderer());
+        browseRecommendedOntologyTree.setShowsRootHandles(false);
+
+        browseRecommendedOntologyTree.setUI(ui);
+
+
     }
 
     private void createOntologySearchSpanOptions(boolean recommendedOntologiesAvailable) {
@@ -995,7 +1088,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
             sortedAndProcessedResults.put(title, terms);
         }
 
-        ontologySearchResults.setItems(sortedAndProcessedResults);
+        ontologySearchResultsTree.setItems(sortedAndProcessedResults);
     }
 
     /**
@@ -1045,11 +1138,32 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 setVisible(true);
+
                 searchField.requestFocusInWindow();
                 repaint();
             }
         });
 
+    }
+
+    public void loadRecommendedOntologiesIfAllowed() {
+        if (recommendedOntologies != null && recommendedOntologies.size() > 0) {
+            swapContainers(browseUIContainer);
+            try {
+                wsOntologyTreeCreator.createTree(recommendedOntologies);
+
+            } catch (FileNotFoundException e) {
+                log.error(e.getMessage());
+                browseRecommendedOntologyTree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Unable to load recommended ontologies")));
+
+            } finally {
+                resetButtons();
+                mode = BROWSE_MODE;
+                browseRecommendedOntologies.setIcon(browseOntologiesIconOver);
+
+                repaint();
+            }
+        }
     }
 
     private OntologyBranch createOntologyBranchFromSelectedTerm(TreeNode selectedNode) {
@@ -1078,7 +1192,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
     public void mousePressed(MouseEvent event) {
 
-        final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) ontologySearchResults.getLastSelectedPathComponent();
+        final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) ontologySearchResultsTree.getLastSelectedPathComponent();
         if (selectedNode != null) {
 
             if (selectedNode.isLeaf()) {
@@ -1149,11 +1263,25 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         firePropertyChange("noSelectedOntology", "canceled", "");
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                historyList.getFilterField().setText("");
-                historyList.clearSelection();
+//                historyList.getFilterField().setText("");
+//                historyList.clearSelection();
                 setVisible(false);
             }
         });
+    }
+
+    private void resetButtons() {
+        searchOntologies.setIcon(searchOntologiesIcon);
+        browseRecommendedOntologies.setIcon(browseOntologiesIcon);
+    }
+
+    private void swapContainers(Container newContainer) {
+        if (newContainer != null) {
+            ontologyViewContainer.removeAll();
+            ontologyViewContainer.add(newContainer);
+            ontologyViewContainer.repaint();
+            ontologyViewContainer.validate();
+        }
     }
 
 }

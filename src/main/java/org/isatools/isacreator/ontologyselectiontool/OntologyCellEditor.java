@@ -199,6 +199,8 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
         ontologyTool.setLocation(proposedX, proposedY);
         ontologyTool.makeVisible();
 
+        ontologyTool.loadRecommendedOntologiesIfAllowed();
+
         return this;
     }
 
