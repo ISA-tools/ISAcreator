@@ -53,6 +53,9 @@ import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Contact;
+import org.isatools.isacreator.ontologybrowsingutils.OntologyTreeItem;
+import org.isatools.isacreator.ontologybrowsingutils.TreeObserver;
+import org.isatools.isacreator.ontologybrowsingutils.TreeSubject;
 import org.isatools.isacreator.ontologybrowsingutils.WSOntologyTreeCreator;
 import org.isatools.isacreator.ontologymanager.*;
 import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
@@ -89,8 +92,7 @@ import java.util.regex.Pattern;
  *
  * @author Eamonn Maguire
  */
-public class OntologySelectionTool extends JFrame implements MouseListener,
-        OntologySelector, WindowListener {
+public class OntologySelectionTool extends JFrame implements MouseListener, OntologySelector, WindowListener {
 
     private static final Logger log = Logger.getLogger(OntologySelectionTool.class.getName());
 
@@ -155,6 +157,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
     private OptionGroup<String> searchSpan;
 
+    private boolean treeCreated = false;
+
     private JLabel searchOntologies, browseRecommendedOntologies;
 
     /**
@@ -170,7 +174,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
         this.recommendedOntologies = recommendedOntologies;
 
-        this.ontologyViewContainer = new JPanel(new FlowLayout());
+        ontologyViewContainer = new JPanel(new BorderLayout());
+        ontologyViewContainer.setPreferredSize(new Dimension(400, 170));
 
         if (consumer == null) {
             this.history = new HashMap<String, OntologyObject>();
@@ -252,7 +257,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
                 swapContainers(searchUIContainer);
                 searchOntologies.setIcon(searchOntologiesIconOver);
                 mode = SEARCH_MODE;
-                // todo change view
             }
 
             @Override
@@ -285,12 +289,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
                 browseRecommendedOntologies.setIcon(browseOntologiesIconOver);
                 mode = BROWSE_MODE;
 
-                try {
-                    wsOntologyTreeCreator.createTree(recommendedOntologies);
-                } catch (FileNotFoundException e) {
-                    log.error(e.getMessage());
-                    browseRecommendedOntologyTree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Unable to load recommended ontologies")));
-                }
+                loadTree();
             }
         });
 
@@ -318,8 +317,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
             createBrowseUI();
         }
 
-
-        // todo searchUIContainer will be one JPanel and browseUIcontainer will be another. depending on which button is pressed, the containers are swapped
         // searchUIContainer will be initialised
         createSearchUI(recommendedOntologiesAvailable);
 
@@ -402,6 +399,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
                 return null;
             }
         };
+
 
         createSearchResultsTree(ui);
 
@@ -487,6 +485,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         treeScroll.setPreferredSize(new Dimension(400, 170));
         IAppWidgetFactory.makeIAppScrollPane(treeScroll);
 
+        browseRecommendedOntologyTree.addMouseListener(this);
+
         browseUIContainer.add(treeScroll, BorderLayout.CENTER);
     }
 
@@ -507,7 +507,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         searchSpan = new OptionGroup<String>(OptionGroup.HORIZONTAL_ALIGNMENT, true);
 
         searchSpan.addOptionItem("Recommended Ontologies", recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
-        searchSpan.addOptionItem("All Ontologies", !recommendedOntologiesAvailable, !recommendedOntologiesAvailable, true);
+        searchSpan.addOptionItem("All Ontologies", !recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
 
     }
 
@@ -786,14 +786,16 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
             // add the item to the history list
             history.put(historyObject.getUniqueId(), historyObject);
-            historyList.addItem(valToEnter);
+//            historyList.addItem(valToEnter);
         }
     }
 
     private void addSourceToUsedOntologies(String source, String url) {
-        if (!checkOntologySourceRecorded(source)) {
-            consumer.addToUsedOntologies(new OntologySourceRefObject(source, url, OntologySourceManager.getOntologyVersion(source),
-                    OntologySourceManager.getOntologyDescription(source)));
+        if (source != null) {
+            if (!checkOntologySourceRecorded(source)) {
+                consumer.addToUsedOntologies(new OntologySourceRefObject(source, url, OntologySourceManager.getOntologyVersion(source),
+                        OntologySourceManager.getOntologyDescription(source)));
+            }
         }
     }
 
@@ -1138,7 +1140,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 setVisible(true);
-
                 searchField.requestFocusInWindow();
                 repaint();
             }
@@ -1149,21 +1150,54 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
     public void loadRecommendedOntologiesIfAllowed() {
         if (recommendedOntologies != null && recommendedOntologies.size() > 0) {
             swapContainers(browseUIContainer);
-            try {
-                wsOntologyTreeCreator.createTree(recommendedOntologies);
-
-            } catch (FileNotFoundException e) {
-                log.error(e.getMessage());
-                browseRecommendedOntologyTree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Unable to load recommended ontologies")));
-
-            } finally {
-                resetButtons();
-                mode = BROWSE_MODE;
-                browseRecommendedOntologies.setIcon(browseOntologiesIconOver);
-
-                repaint();
-            }
+            loadTree();
         }
+    }
+
+    private void loadTree() {
+
+        Thread loadTreeThread = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    log.info("performing search");
+                    progressIndicator.setText("connecting to ontology resources");
+                    progressIndicator.setSize(new Dimension(
+                            getWidth(),
+                            getHeight()));
+                    setGlassPane(progressIndicator);
+                    progressIndicator.start();
+
+
+                    wsOntologyTreeCreator.createTree(recommendedOntologies);
+                    treeCreated = true;
+
+                } catch (FileNotFoundException e) {
+                    log.error(e.getMessage());
+                    browseRecommendedOntologyTree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Unable to load recommended ontologies")));
+
+                } finally {
+                    resetButtons();
+                    mode = BROWSE_MODE;
+                    browseRecommendedOntologies.setIcon(browseOntologiesIconOver);
+
+                    if (progressIndicator.isStarted()) {
+                        EventQueue.invokeLater(new Runnable() {
+                            public void run() {
+                                progressIndicator.stop();
+                                OntologySelectionTool.this.validate();
+                            }
+                        });
+
+                    }
+
+                    repaint();
+                }
+            }
+        });
+        if (!treeCreated) {
+            loadTreeThread.start();
+        }
+
     }
 
     private OntologyBranch createOntologyBranchFromSelectedTerm(TreeNode selectedNode) {
@@ -1192,44 +1226,60 @@ public class OntologySelectionTool extends JFrame implements MouseListener,
 
     public void mousePressed(MouseEvent event) {
 
-        final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) ontologySearchResultsTree.getLastSelectedPathComponent();
-        if (selectedNode != null) {
+        if (event.getSource() instanceof JTree) {
+            JTree tree = (JTree) event.getSource();
 
-            if (selectedNode.isLeaf()) {
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+            if (selectedNode != null) {
+
+                if (selectedNode.isLeaf()) {
 
 
-                String source = selectedNode.getParent().toString();
+                    String source = selectedNode.getParent().toString();
 
-                if (source.contains("-")) {
-                    source = source.substring(0,
-                            selectedNode.getParent().toString().indexOf("-")).trim();
-                }
+                    if (source.contains("-")) {
+                        source = source.substring(0,
+                                selectedNode.getParent().toString().indexOf("-")).trim();
+                    }
 
-                String term = selectedNode.toString();
+                    String term = selectedNode.toString();
 
-                if (event.getClickCount() == 2) {
-                    addTerm(source, term);
-                }
+                    if (event.getClickCount() == 2) {
+                        addTerm(source, term);
+                    }
 
-                OntologyBranch ontologyTerm = createOntologyBranchFromSelectedTerm(selectedNode);
+                    if (tree == ontologySearchResultsTree) {
+                        OntologyBranch ontologyTerm = createOntologyBranchFromSelectedTerm(selectedNode);
 
-                if (ontologyTerm != null) {
-                    if (source.contains("OBI")) {
-                        String ontologyVersion = "";
+                        if (ontologyTerm != null) {
+                            if (source.contains("OBI")) {
+                                String ontologyVersion = "";
 
-                        if (ontologyIdToVersion.containsKey(AcceptedOntologies.OBI.toString())) {
-                            ontologyVersion = ontologyIdToVersion.get(AcceptedOntologies.OBI.toString());
-                        } else {
-                            String idToVersion = ((BioPortalClient) bioportalClient).getLatestOntologyVersion(AcceptedOntologies.OBI.toString());
-                            if (idToVersion != null) {
-                                ontologyVersion = idToVersion;
-                                ontologyIdToVersion.put(AcceptedOntologies.OBI.toString(), ontologyVersion);
+                                if (ontologyIdToVersion.containsKey(AcceptedOntologies.OBI.toString())) {
+                                    ontologyVersion = ontologyIdToVersion.get(AcceptedOntologies.OBI.toString());
+                                } else {
+                                    String idToVersion = ((BioPortalClient) bioportalClient).getLatestOntologyVersion(AcceptedOntologies.OBI.toString());
+                                    if (idToVersion != null) {
+                                        ontologyVersion = idToVersion;
+                                        ontologyIdToVersion.put(AcceptedOntologies.OBI.toString(), ontologyVersion);
+                                    }
+                                }
+
+                                viewTermDefinition.setContent(ontologyTerm, ontologyVersion, bioportalClient == null ? new BioPortalClient() : bioportalClient);
+                            } else {
+                                viewTermDefinition.setContent(ontologyTerm, source, olsClient);
                             }
                         }
-
-                        viewTermDefinition.setContent(ontologyTerm, ontologyVersion, bioportalClient == null ? new BioPortalClient() : bioportalClient);
                     } else {
-                        viewTermDefinition.setContent(ontologyTerm, source, olsClient);
+                        if (selectedNode.getUserObject() instanceof OntologyTreeItem) {
+                            OntologyTreeItem termNode = (OntologyTreeItem) selectedNode.getUserObject();
+
+                            if (OntologyUtils.getSourceOntologyPortal(termNode.getOntology()) == OntologyPortal.BIOPORTAL) {
+                                viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyVersion(), bioportalClient == null ? new BioPortalClient() : bioportalClient);
+                            } else {
+                                viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyAbbreviation(), olsClient == null ? new OLSClient() : olsClient);
+                            }
+                        }
                     }
                 }
             }

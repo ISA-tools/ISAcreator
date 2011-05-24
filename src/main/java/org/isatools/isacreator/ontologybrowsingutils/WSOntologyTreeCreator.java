@@ -29,7 +29,7 @@ import java.util.List;
  *         Date: 16/05/2011
  *         Time: 15:46
  */
-public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelectionListener, TreeModelListener, TreeExpansionListener, TreeSubject {
+public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelectionListener, TreeModelListener, TreeExpansionListener {
 
     private List<TreeObserver> observers;
 
@@ -41,10 +41,6 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     private OntologyService bioportalClient;
     private OntologyService olsClient;
     private JTree tree;
-
-    // modify the BioPortal client to serve back which nodes are known to have children. This way, we can avoid unnecesary queries.
-    private Set<String> knownLeaves;
-
 
     public WSOntologyTreeCreator(Container browser, JTree tree) {
         this.browser = browser;
@@ -231,7 +227,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
             OntologyTreeItem ontologyTerm = (OntologyTreeItem) node.getUserObject();
 
             // tell the observers that an item has been selected.
-            notifyObservers();
+
             // load the children and the meta data, unless the term is the 'no roots defined' dummy term
             if (ontologyTerm != null && !ontologyTerm.getBranch().getBranchIdentifier().equalsIgnoreCase("No Root Terms Defined!")) {
 
@@ -268,27 +264,6 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     }
 
     public void treeCollapsed(TreeExpansionEvent treeExpansionEvent) {
-    }
-
-
-    public void notifyObservers() {
-        for (TreeObserver observer : observers) {
-            observer.notifyOfSelection();
-        }
-    }
-
-    public void registerObserver(TreeObserver observer) {
-        if (observer != null) {
-            observers.add(observer);
-        }
-    }
-
-    public void unregisterObserver(TreeObserver observer) {
-        if (observer != null) {
-            if (observers.contains(observer)) {
-                observers.remove(observer);
-            }
-        }
     }
 
     public static void main(String[] args) {
