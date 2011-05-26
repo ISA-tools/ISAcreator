@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.configuration;
 
+import org.isatools.isacreator.utils.StringProcessing;
+
 import java.io.Serializable;
 
 
@@ -65,6 +67,9 @@ public class OntologyBranch implements Serializable {
     public String getBranchIdentifier() {
         return branchIdentifier;
     }
+
+
+
 
     public String getBranchName() {
         return branchName == null ? "" : branchName;

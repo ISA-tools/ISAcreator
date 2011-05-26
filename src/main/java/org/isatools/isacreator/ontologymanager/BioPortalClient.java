@@ -323,6 +323,8 @@ public class BioPortalClient implements OntologyService {
 
             String searchString = REST_URL + "concepts/" + ontology + "/root";
 
+
+
             System.out.println("Search string is: " + searchString);
 
             String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-roots" + DownloadUtils.XML_EXT;
@@ -387,6 +389,8 @@ public class BioPortalClient implements OntologyService {
 
                 String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession;
 
+                System.out.println("Searching for : " + searchString);
+
                 String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-" + termAccession + DownloadUtils.XML_EXT;
 
                 DownloadUtils.downloadFile(searchString, downloadLocation);
@@ -439,10 +443,6 @@ public class BioPortalClient implements OntologyService {
         File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation), "http://bioontology.org/bioportal/classBeanSchema#", "<success>");
 
         BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
-
-        //
-//        DownloadUtils.deleteFile(downloadLocation);
-//        DownloadUtils.deleteFile(fileWithNameSpace.getAbsolutePath());
 
         return handler.parseOntologyParentPathFile(fileWithNameSpace.getAbsolutePath());
     }

@@ -152,10 +152,14 @@ public class StringProcessing {
 		return result;
     }
 
-    public static void main(String[] args) {
-        String test = "Study Publication author list";
+    public static boolean isURL(String toCheck) {
+        return toCheck.matches("^(https?|ftp|file).*");
+    }
 
-        String result = StringProcessing.convertStringToTitleCase(test);
+    public static void main(String[] args) {
+        String test = "http://www.bioassayontology.org/bao#BAO_0000020";
+
+        boolean result = StringProcessing.isURL(test);
 
         System.out.println(result);
     }

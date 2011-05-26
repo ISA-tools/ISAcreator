@@ -10,6 +10,7 @@ import org.isatools.isacreator.ontologymanager.OntologyQueryAdapter;
 import org.isatools.isacreator.ontologymanager.OntologyService;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
+import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -91,11 +92,20 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
             OntologyService service = getCorrectOntologyService(recommendedOntology.getOntology());
 
+
             if (recommendedOntology.getBranchToSearchUnder() != null) {
 
                 nodeLabel += " under " + recommendedOntology.getBranchToSearchUnder().getBranchName();
 
-                rootTerms = service.getTermChildren(recommendedOntology.getBranchToSearchUnder().getBranchIdentifier(), getCorrectQueryString(service, recommendedOntology.getOntology()));
+                String branchIdentifier = recommendedOntology.getBranchToSearchUnder().getBranchIdentifier();
+
+                if (StringProcessing.isURL(branchIdentifier)) {
+                    branchIdentifier = OntologyUtils.getModifiedBranchIdentifier(branchIdentifier, "#");
+                }
+
+                System.out.println("Going to search for " + branchIdentifier + " in " + recommendedOntology.getOntology().getOntologyDisplayLabel());
+
+                rootTerms = service.getTermChildren(branchIdentifier, getCorrectQueryString(service, recommendedOntology.getOntology()));
 
             } else {
                 rootTerms = service.getOntologyRoots(
@@ -107,6 +117,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
             rootNode.add(ontologyNode);
 
+
             // update the tree
             for (String termId : rootTerms.keySet()) {
                 addTermToTree(ontologyNode, termId, rootTerms.get(termId), recommendedOntology.getOntology());
@@ -114,7 +125,11 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
             // not root terms found
             if (rootTerms.size() == 0) {
-                addTermToTree(ontologyNode, "Problem loading ontology!", "", recommendedOntology.getOntology());
+                if (recommendedOntology.getOntology().getOntologyAbbreviation().equalsIgnoreCase("newt")) {
+                    addTermToTree(ontologyNode, "NEWT cannot be loaded from the Ontology lookup service", "", recommendedOntology.getOntology());
+                } else {
+                    addTermToTree(ontologyNode, "Problem loading ontology from the ontology resource!", "", recommendedOntology.getOntology());
+                }
             }
 
         }

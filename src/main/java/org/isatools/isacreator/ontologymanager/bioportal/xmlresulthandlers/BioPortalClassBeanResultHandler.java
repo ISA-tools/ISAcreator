@@ -117,7 +117,7 @@ public class BioPortalClassBeanResultHandler {
                     if (entryType.equalsIgnoreCase("subclass")) {
                         if (entry.getListArray().length > 0) {
                             for (ListDocument.List listItem : entry.getListArray()) {
-                                System.out.println(listItem.getClass());
+
                                 for (ClassBeanDocument.ClassBean classBeanItem : listItem.getClassBeanArray()) {
 
                                     BioPortalOntology ontology = createOntologyFromClassBean(classBeanItem);
@@ -180,32 +180,9 @@ public class BioPortalClassBeanResultHandler {
             }
         }
 
-        System.out.println("path to resource will be: ");
-        for (String accession : result.keySet()) {
-            System.out.println(accession);
-        }
-
         return result;
     }
 
-    public Map<String, BioPortalOntology> parseParentOrChildrenConceptFile(String fileLocation) {
-        SuccessDocument resultDocument = getDocument(fileLocation);
-
-
-        Map<String, BioPortalOntology> result = new HashMap<String, BioPortalOntology>();
-
-        if (!proceedWithProcessing(resultDocument)) {
-            return result;
-        }
-
-        ClassBeanDocument.ClassBean[] classes = resultDocument.getSuccess().getData().getList().getClassBeanArray();
-
-        for (ClassBeanDocument.ClassBean currentClass : classes) {
-            result.put(currentClass.getIdArray(0), createOntologyFromClassBean(currentClass));
-        }
-
-        return result;
-    }
 
     public BioPortalOntology createOntologyFromClassBean(ClassBeanDocument.ClassBean classToConvert) {
         BioPortalOntology ontology = new BioPortalOntology();
@@ -230,12 +207,4 @@ public class BioPortalClassBeanResultHandler {
 
     }
 
-    public static void main(String[] args) {
-        BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
-        Map<String, String> result = handler.parseOntologyParentPathFile("/Users/eamonnmaguire/IdeaProjects/ISAcreatorConfigurator/Data/ontologies_matching_40832-all-parents-span:TemporalRegion.xml-modified.xml");
-
-        for (String accession : result.keySet()) {
-            System.out.println(accession);
-        }
-    }
 }
