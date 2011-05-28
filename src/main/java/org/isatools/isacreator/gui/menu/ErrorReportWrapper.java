@@ -51,17 +51,14 @@ import java.awt.event.MouseEvent;
  * Created by the ISA team
  *
  * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 22/03/2011
- *         Time: 11:12
  */
 public class ErrorReportWrapper extends JPanel {
 
     public static final String BACK_BUTTON_CLICKED_EVENT = "back_button_clicked";
     public static final String CONTINUE_BUTTON_CLICKED_EVENT = "continue_button_clicked";
 
-    private Color stdButtonTextColor = UIHelper.GREY_COLOR;
-    private Color overButtonTextColor = UIHelper.RED_COLOR;
+    private Color stdButtonTextColor = UIHelper.LIGHT_GREY_COLOR;
+    private Color overButtonTextColor = UIHelper.LIGHT_GREEN_COLOR;
 
     private ErrorReporterView view;
     private boolean showContinue;

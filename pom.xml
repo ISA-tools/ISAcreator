@@ -322,7 +322,13 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>ISAtabErrorReporter</artifactId>
-            <version>0.1-beta</version>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.explodingpixels</groupId>
+            <artifactId>scroller</artifactId>
+            <version>0.1</version>
         </dependency>
 
     </dependencies>
