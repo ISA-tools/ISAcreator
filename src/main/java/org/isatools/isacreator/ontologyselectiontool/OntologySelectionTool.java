@@ -506,7 +506,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         JScrollPane treeScroll = new JScrollPane(browseRecommendedOntologyTree,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        treeScroll.setBorder(new EtchedBorder());
+        treeScroll.setBorder(null);
         treeScroll.getViewport().setBackground(UIHelper.BG_COLOR);
         treeScroll.setPreferredSize(new Dimension(400, 170));
         IAppWidgetFactory.makeIAppScrollPane(treeScroll);
@@ -814,8 +814,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      * @param term   - the term to be added.
      */
     private void addTerm(String source, String term) {
+
         String accession = extractAccession(term); // extract the accession from the term.
         String url = "";
+
         term = term.replaceAll(getAccessionPattern(), ""); // remove the accession placeholder in the term String
 
         if (source.startsWith("http://")) {
@@ -848,9 +850,40 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
             // add the item to the history list
             history.put(historyObject.getUniqueId(), historyObject);
-//            historyList.addItem(valToEnter);
+            historyList.addItem(valToEnter);
         }
     }
+
+
+    private void addTerm(OntologyBranch termInformation, Ontology ontology) {
+
+        String accession = termInformation.getBranchIdentifier(); // extract the accession from the term.
+        String url = "";
+
+
+        String valToEnter = ontology.getOntologyAbbreviation() + ":" + termInformation.getBranchName();
+
+        if (multipleTermsAllowed) {
+            addToMultipleTerms(valToEnter);
+        } else {
+            selectedTerm.setText(valToEnter);
+        }
+
+        // add ontology source to the OntologySources list if it doesn't already exist
+        if (!ontology.getOntologyAbbreviation().trim().equals("")) {
+            addSourceToUsedOntologies(ontology.getOntologyAbbreviation(), url);
+        }
+
+        if (!checkHistoryForValue(valToEnter, accession)) {
+            OntologyObject historyObject = new OntologyObject(termInformation.getBranchName(), accession,
+                    ontology.getOntologyAbbreviation());
+
+            // add the item to the history list
+            history.put(historyObject.getUniqueId(), historyObject);
+            historyList.addItem(valToEnter);
+        }
+    }
+
 
     private void addSourceToUsedOntologies(String source, String url) {
         if (source != null) {
@@ -1211,6 +1244,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     public void loadRecommendedOntologiesIfAllowed() {
         if (recommendedOntologies != null && recommendedOntologies.size() > 0) {
+            resetButtons();
+            browseRecommendedOntologies.setIcon(browseOntologiesIconOver);
             swapContainers(browseUIContainer);
             loadTree();
         }
@@ -1288,29 +1323,31 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     public void mousePressed(MouseEvent event) {
 
+        // todo instead of using Strings, we should try to maintain as much information as possible about each of the ontologies.
         if (event.getSource() instanceof JTree) {
             JTree tree = (JTree) event.getSource();
 
             DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
             if (selectedNode != null) {
 
-                if (selectedNode.isLeaf()) {
+                if (tree == ontologySearchResultsTree) {
+                    if (selectedNode.isLeaf()) {
 
 
-                    String source = selectedNode.getParent().toString();
+                        String source = selectedNode.getParent().toString();
 
-                    if (source.contains("-")) {
-                        source = source.substring(0,
-                                selectedNode.getParent().toString().indexOf("-")).trim();
-                    }
+                        if (source.contains("-")) {
+                            source = source.substring(0,
+                                    selectedNode.getParent().toString().indexOf("-")).trim();
+                        }
 
-                    String term = selectedNode.toString();
+                        String term = selectedNode.toString();
 
-                    if (event.getClickCount() == 2) {
-                        addTerm(source, term);
-                    }
+                        if (event.getClickCount() == 1) {
+                            addTerm(source, term);
+                        }
 
-                    if (tree == ontologySearchResultsTree) {
+
                         OntologyBranch ontologyTerm = createOntologyBranchFromSelectedTerm(selectedNode);
 
                         if (ontologyTerm != null) {
@@ -1332,21 +1369,27 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                 viewTermDefinition.setContent(ontologyTerm, source, olsClient);
                             }
                         }
-                    } else {
-                        if (selectedNode.getUserObject() instanceof OntologyTreeItem) {
-                            OntologyTreeItem termNode = (OntologyTreeItem) selectedNode.getUserObject();
+                    }
 
-                            if (OntologyUtils.getSourceOntologyPortal(termNode.getOntology()) == OntologyPortal.BIOPORTAL) {
-                                viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyVersion(), bioportalClient == null ? new BioPortalClient() : bioportalClient);
-                            } else {
-                                viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyAbbreviation(), olsClient == null ? new OLSClient() : olsClient);
+                } else if (tree == browseRecommendedOntologyTree) {
+                    if (selectedNode.getUserObject() instanceof OntologyTreeItem) {
+                        OntologyTreeItem termNode = (OntologyTreeItem) selectedNode.getUserObject();
+
+                        if (selectedNode.isLeaf()) {
+                            if (event.getClickCount() == 1) {
+                                addTerm(termNode.getBranch(), termNode.getOntology());
                             }
+                        }
+
+                        if (OntologyUtils.getSourceOntologyPortal(termNode.getOntology()) == OntologyPortal.BIOPORTAL) {
+                            viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyVersion(), bioportalClient == null ? new BioPortalClient() : bioportalClient);
+                        } else {
+                            viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyAbbreviation(), olsClient == null ? new OLSClient() : olsClient);
                         }
                     }
                 }
             }
         }
-
     }
 
     public void mouseReleased(MouseEvent event) {

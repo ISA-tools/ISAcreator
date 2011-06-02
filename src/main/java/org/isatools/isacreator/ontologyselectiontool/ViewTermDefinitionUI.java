@@ -155,7 +155,9 @@ public class ViewTermDefinitionUI extends JPanel {
                 }
             }
         } else {
-            labelContent += "<p>No definition found for this term! Unfortunately, not all terms have their definitions supplied!</p>";
+            labelContent += "<p>No definition found for this term! This can be due to 2 reasons: " +
+                    "1) Unfortunately, not all terms have their definitions supplied; and 2) the " +
+                    "ability to view the definitions for a term in this tool is not yet fully supported.</p>";
         }
 
         labelContent += "</body></html>";
@@ -195,9 +197,6 @@ public class ViewTermDefinitionUI extends JPanel {
         if (properties != null) {
             properties.clear();
         }
-
-        System.out.println("Searching for on this ontology -> " + searchOntology);
-        System.out.println("For this term: branchIdentifier: " + term.getBranchIdentifier() + " & branch name:" + term.getBranchName());
 
         setCurrentPage(new JLabel(LOADING));
         performSearch(term, searchOntology, ontologyService);
