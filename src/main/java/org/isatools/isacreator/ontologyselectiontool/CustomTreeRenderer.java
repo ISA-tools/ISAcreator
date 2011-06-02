@@ -99,12 +99,12 @@ public class CustomTreeRenderer implements TreeCellRenderer {
             }
         } else if (((TreeNode) val).getParent() == null) {
             // this is the root node
-            if (selected) {
+            if (expanded) {
                 icon.setIcon(rootNodeSelected);
             } else {
                 icon.setIcon(rootNode);
             }
-        } else if (selected) {
+        } else if (expanded) {
             icon.setIcon(branchNodeSelected);
         } else {
             icon.setIcon(branchNode);

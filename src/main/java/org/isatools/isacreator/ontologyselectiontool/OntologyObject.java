@@ -121,4 +121,9 @@ public class OntologyObject implements Serializable {
     public void incrementUsageFrequency() {
         usageFrequency++;
     }
+
+    @Override
+    public String toString() {
+        return uniqueId;
+    }
 }

@@ -70,6 +70,7 @@ public class BioPortalClient implements OntologyService {
 
     private boolean doneOntologyCheck = false;
 
+    private List<Ontology> ontologies;
 
     private Map<String, String> ontologySources;
     private Map<String, String> ontologyVersions;
@@ -88,13 +89,23 @@ public class BioPortalClient implements OntologyService {
     }
 
     public List<Ontology> getAllOntologies() {
-        String searchString = REST_URL + "ontologies";
 
-        DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
+        if (ontologies == null || ontologies.size() == 0) {
 
-        BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
+            String searchString = REST_URL + "ontologies";
 
-        return parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
+            DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
+
+            BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
+
+            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
+
+            for(Ontology ontology : ontologies) {
+                ontologyVersions.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
+            }
+        }
+
+        return ontologies;
     }
 
     public Ontology getOntologyById(String ontologyId) {
@@ -130,6 +141,8 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Map<String, String> getOntologyVersions() {
+        getAllOntologies();
+
         return ontologyVersions;
     }
 
@@ -324,7 +337,6 @@ public class BioPortalClient implements OntologyService {
             String searchString = REST_URL + "concepts/" + ontology + "/root";
 
 
-
             System.out.println("Search string is: " + searchString);
 
             String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-roots" + DownloadUtils.XML_EXT;
@@ -335,8 +347,8 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
-            if(fileWithNameSpace == null) {
-                return new HashMap<String,String>();
+            if (fileWithNameSpace == null) {
+                return new HashMap<String, String>();
             }
 
             Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath(), noChildren);

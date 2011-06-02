@@ -192,6 +192,10 @@ public class ViewTermDefinitionUI extends JPanel {
 
     public void setContent(OntologyBranch term, String searchOntology, OntologyService ontologyService) {
 
+        if (properties != null) {
+            properties.clear();
+        }
+
         System.out.println("Searching for on this ontology -> " + searchOntology);
         System.out.println("For this term: branchIdentifier: " + term.getBranchIdentifier() + " & branch name:" + term.getBranchName());
 

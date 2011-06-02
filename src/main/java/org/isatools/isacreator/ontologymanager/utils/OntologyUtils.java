@@ -2,6 +2,7 @@ package org.isatools.isacreator.ontologymanager.utils;
 
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
+import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.utils.StringProcessing;
 
 /**
@@ -15,7 +16,11 @@ import org.isatools.isacreator.utils.StringProcessing;
 public class OntologyUtils {
 
     public static OntologyPortal getSourceOntologyPortal(Ontology ontology) {
-        return ontology.getOntologyVersion().length() > 5 ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
+        return getSourceOntologyPortal(ontology.getOntologyVersion());
+    }
+
+    public static OntologyPortal getSourceOntologyPortal(String version) {
+        return version.length() > 5 ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
     }
 
      public static String getModifiedBranchIdentifier(String branchIdentifier, String splitOn) {
@@ -25,5 +30,17 @@ public class OntologyUtils {
             }
         }
         return branchIdentifier;
+    }
+
+    public static OntologyPortal getSourcePortalByAbbreviation(String abbreviation) {
+        boolean isBioPortal = false;
+        for(AcceptedOntologies bioPortalOntologies : AcceptedOntologies.values()) {
+            if(bioPortalOntologies.getOntologyAbbreviation().equalsIgnoreCase(abbreviation)) {
+                isBioPortal = true;
+                break;
+            }
+        }
+
+        return isBioPortal ? OntologyPortal.BIOPORTAL : OntologyPortal.OLS;
     }
 }

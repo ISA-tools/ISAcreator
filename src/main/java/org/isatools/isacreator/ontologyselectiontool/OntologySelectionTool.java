@@ -45,6 +45,7 @@ import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.filterableTree.FilterableJTree;
 import org.isatools.isacreator.common.filterableTree.TreeFilterModel;
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.FooterPanel;
@@ -54,8 +55,6 @@ import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.ontologybrowsingutils.OntologyTreeItem;
-import org.isatools.isacreator.ontologybrowsingutils.TreeObserver;
-import org.isatools.isacreator.ontologybrowsingutils.TreeSubject;
 import org.isatools.isacreator.ontologybrowsingutils.WSOntologyTreeCreator;
 import org.isatools.isacreator.ontologymanager.*;
 import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
@@ -71,10 +70,10 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.*;
@@ -98,6 +97,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private static final int SEARCH_MODE = 0;
     private static final int BROWSE_MODE = 1;
+    private static final int HISTORY_MODE = 2;
 
     public static final int WIDTH = 800;
     public static final int HEIGHT = 400;
@@ -117,8 +117,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     @InjectedResource
-    private ImageIcon recentHistoryIcon, termDefinitionIcon, searchButton, searchButtonOver, filterInfo, browseOntologiesIcon,
-            browseOntologiesIconOver, searchOntologiesIcon, searchOntologiesIconOver, leftFieldIcon, rightFieldIcon;
+    private ImageIcon termDefinitionIcon, searchButton, searchButtonOver, filterInfo, browseOntologiesIcon,
+            browseOntologiesIconOver, searchOntologiesIcon, searchOntologiesIconOver, leftFieldIcon, rightFieldIcon,
+            viewHistoryIcon, viewHistoryIconOver;
 
     private static OntologyService olsClient = null;
     private static OntologyService bioportalClient = null;
@@ -138,6 +139,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private JPanel ontologyViewContainer;
     private JPanel searchUIContainer;
     private JPanel browseUIContainer;
+    private JPanel historyUIContainer;
 
     private WSOntologyTreeCreator wsOntologyTreeCreator;
 
@@ -159,7 +161,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private boolean treeCreated = false;
 
-    private JLabel searchOntologies, browseRecommendedOntologies;
+    private JLabel searchOntologies, browseRecommendedOntologies, viewHistory;
 
     /**
      * OntologySelectionTool constructor.
@@ -270,6 +272,27 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
             }
         });
 
+        viewHistory = new JLabel(viewHistoryIcon);
+        viewHistory.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                resetButtons();
+                swapContainers(historyUIContainer);
+                viewHistory.setIcon(viewHistoryIconOver);
+                mode = HISTORY_MODE;
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                viewHistory.setIcon(viewHistoryIconOver);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                viewHistory.setIcon(mode == HISTORY_MODE ? viewHistoryIconOver : viewHistoryIcon);
+            }
+        });
+
         browseRecommendedOntologies = new JLabel(browseOntologiesIcon);
         browseRecommendedOntologies.addMouseListener(new MouseAdapter() {
             @Override
@@ -308,6 +331,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
             buttonContainer.add(browseRecommendedOntologies);
         }
 
+        buttonContainer.add(Box.createHorizontalStrut(5));
+        buttonContainer.add(viewHistory);
 
         container.add(buttonContainer, BorderLayout.NORTH);
 
@@ -319,6 +344,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         // searchUIContainer will be initialised
         createSearchUI(recommendedOntologiesAvailable);
+        createHistoryPanel();
 
         ontologyViewContainer.add(recommendedOntologiesAvailable ? browseUIContainer : searchUIContainer);
 
@@ -517,12 +543,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      *
      * @return - JPanel containing the required components.
      */
-    private JPanel createHistoryPanel() {
-        JPanel container = createStandardBorderPanel(false);
-        container.setPreferredSize(new Dimension(225, 200));
-        container.add(new JLabel(
-                recentHistoryIcon,
-                JLabel.LEFT), BorderLayout.NORTH);
+    private void createHistoryPanel() {
+        historyUIContainer = createStandardBorderPanel(false);
+        historyUIContainer.setPreferredSize(new Dimension(400, 200));
 
         JPanel historySelectionList = createStandardBorderPanel(true);
         historySelectionList.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), ""));
@@ -530,7 +553,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         try {
             for (OntologyObject h : history.values()) {
-                historyList.addItem(h.getUniqueId());
+                historyList.addItem(h);
             }
         } catch (ConcurrentModificationException cme) {
             log.info("Concurrent modification of history list encountered. This should never happen!");
@@ -538,18 +561,45 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         historyList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                String historyTerm = propertyChangeEvent.getNewValue().toString();
 
-                if (historyTerm != null) {
-                    String source = historyTerm.substring(0,
-                            historyTerm.indexOf(":"));
+                if (propertyChangeEvent.getNewValue() instanceof OntologyObject) {
 
-                    String description = OntologySourceManager.getOntologyDescription(source);
-                    addSourceToUsedOntologies(source, description);
-                    if (multipleTermsAllowed) {
-                        addToMultipleTerms(historyTerm);
-                    } else {
-                        selectedTerm.setText(historyTerm);
+                    OntologyObject historyTerm = (OntologyObject) propertyChangeEvent.getNewValue();
+
+                    if (historyTerm != null) {
+                        // todo show term definition...
+
+
+                        String source = historyTerm.getUniqueId().substring(0,
+                                historyTerm.getUniqueId().indexOf(":"));
+
+                        OntologyPortal portal = OntologyUtils.getSourcePortalByAbbreviation(source);
+
+                        System.out.println("Ontology portal is " + portal.name());
+
+                        if (portal == OntologyPortal.OLS) {
+                            viewTermDefinition.setContent(
+                                    new OntologyBranch(historyTerm.getTermAccession(), historyTerm.getTerm()), historyTerm.getTermSourceRef(),
+                                    olsClient == null ? new OLSClient() : olsClient);
+                        } else {
+                            bioportalClient = bioportalClient == null ? new BioPortalClient() : bioportalClient;
+
+                            Map<String, String> ontologyVersions = bioportalClient.getOntologyVersions();
+
+                            System.out.println("Ontology version is: " + ontologyVersions.get(source));
+
+                            viewTermDefinition.setContent(
+                                    new OntologyBranch(historyTerm.getTermAccession(), historyTerm.getTerm()), ontologyVersions.get(source), bioportalClient);
+                        }
+
+                        String description = OntologySourceManager.getOntologyDescription(historyTerm.getTermSourceRef());
+
+                        addSourceToUsedOntologies(source, description);
+                        if (multipleTermsAllowed) {
+                            addToMultipleTerms(historyTerm.toString());
+                        } else {
+                            selectedTerm.setText(historyTerm.toString());
+                        }
                     }
                 }
 
@@ -568,13 +618,22 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         UIHelper.renderComponent(historyList.getFilterField(),
                 UIHelper.VER_10_BOLD, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
 
-        historySelectionList.add(historyList.getFilterField(),
-                BorderLayout.NORTH);
+        historyList.getFilterField().setBorder(null);
+
+        Box historyFilterContainer = Box.createHorizontalBox();
+        historyFilterContainer.add(new JLabel(filterInfo));
+        historyFilterContainer.add(new JLabel(leftFieldIcon));
+        historyFilterContainer.add(historyList.getFilterField());
+        historyFilterContainer.add(new ClearFieldUtility(historyList.getFilterField()));
+        historyFilterContainer.add(new JLabel(rightFieldIcon));
+
         historySelectionList.add(historyScroll, BorderLayout.CENTER);
 
-        container.add(historySelectionList);
+        historySelectionList.add(historyFilterContainer,
+                BorderLayout.SOUTH);
 
-        return container;
+        historyUIContainer.add(historySelectionList);
+
     }
 
     private JPanel createTermDefinitionPanel() {
@@ -663,6 +722,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private void confirmSelection() {
         firePropertyChange("selectedOntology", "OLD_VALUE",
                 selectedTerm.getText());
+        if (historyList.getSelectedIndex() != -1) {
+            history.put(historyList.getSelectedValue().toString(), (OntologyObject) historyList.getSelectedValue());
+        }
         historyList.getFilterField().setText("");
         historyList.clearSelection();
         setVisible(false);
@@ -1101,11 +1163,11 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
             public void run() {
                 if ((historyList != null) && (history != null)) {
 
-                    String[] newHistory = new String[history.size()];
+                    OntologyObject[] newHistory = new OntologyObject[history.size()];
 
                     int count = 0;
                     for (OntologyObject oo : history.values()) {
-                        newHistory[count] = oo.getUniqueId();
+                        newHistory[count] = oo;
                         count++;
                     }
 
@@ -1313,8 +1375,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         firePropertyChange("noSelectedOntology", "canceled", "");
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-//                historyList.getFilterField().setText("");
-//                historyList.clearSelection();
+                historyList.getFilterField().setText("");
+                historyList.clearSelection();
                 setVisible(false);
             }
         });
@@ -1323,6 +1385,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private void resetButtons() {
         searchOntologies.setIcon(searchOntologiesIcon);
         browseRecommendedOntologies.setIcon(browseOntologiesIcon);
+        viewHistory.setIcon(viewHistoryIcon);
     }
 
     private void swapContainers(Container newContainer) {

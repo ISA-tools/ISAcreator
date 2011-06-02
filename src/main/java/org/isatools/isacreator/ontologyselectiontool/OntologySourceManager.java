@@ -80,6 +80,9 @@ public class OntologySourceManager {
 
     public static String getOntologyVersion(String shortSource) {
         String version = "";
+
+        printMap(ontologyVersions);
+
         if (ontologyVersions.containsKey(shortSource)) {
             version = ontologyVersions.get(shortSource);
         } else {
@@ -90,6 +93,12 @@ public class OntologySourceManager {
             return version;
         } else {
             return "";
+        }
+    }
+
+    private static void printMap(Map<String, String> map) {
+        for(String key : map.keySet()) {
+            System.out.println(key + " -> " + map.get(key));
         }
     }
 
