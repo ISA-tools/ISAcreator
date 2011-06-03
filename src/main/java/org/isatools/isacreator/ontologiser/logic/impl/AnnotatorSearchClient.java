@@ -32,7 +32,7 @@ public class AnnotatorSearchClient {
             PostMethod method = new PostMethod(BASE_QUERY_URL);
 
             // Configure the form parameters
-            method.addParameter("longestOnly", "true");
+//            method.addParameter("longestOnly", "true");
             method.addParameter("wholeWordOnly", "true");
             //method.addParameter("stopWords", "choubala");
             //method.addParameter("withDefaultStopWords", "true");
@@ -69,6 +69,8 @@ public class AnnotatorSearchClient {
                 createFileForContent(content), "http://bioontology.org/bioportal/annotator#", "<success>");
 
         BioPortalAnnotatorResultHandler handler = new BioPortalAnnotatorResultHandler();
+
+        System.out.println("File saved in " + fileWithNameSpace.getAbsolutePath());
 
         return handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
     }

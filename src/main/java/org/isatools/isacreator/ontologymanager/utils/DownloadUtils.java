@@ -21,7 +21,6 @@ public class DownloadUtils {
 
     public static final String TMP_LOCATION = System.getProperty("java.io.tmpdir");
 
-    public static final String DOWNLOAD_ONTOLOGY_LOC = TMP_LOCATION + File.separator + "ontologies" + File.separator;
     public static final String DOWNLOAD_FILE_LOC = TMP_LOCATION + File.separator + "ontologies_matching_";
     public static final String XML_EXT = ".xml";
 

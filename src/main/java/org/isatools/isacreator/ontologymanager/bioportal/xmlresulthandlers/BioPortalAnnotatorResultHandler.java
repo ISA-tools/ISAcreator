@@ -60,6 +60,8 @@ public class BioPortalAnnotatorResultHandler {
 
                     if (annotatorResult != null) {
 
+                        System.out.println("Original test to annotate: " + originalTextToAnnotate);
+
                         String originalTerm = originalTextToAnnotate.substring(annotatorResult.getStartIndex() - 1, annotatorResult.getEndIndex());
 
                         if (!result.containsKey(originalTerm)) {
@@ -80,6 +82,7 @@ public class BioPortalAnnotatorResultHandler {
     }
 
     private String extractOriginalSearchText(SuccessDocument resultDocument) {
+
         return resultDocument.getSuccess().getData().getAnnotatorResultBean().getParameters().getTextToAnnotate();
     }
 
