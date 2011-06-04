@@ -66,14 +66,12 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
     /**
      * OntologyCellEditor constructor.
      *
-     * @param consumer            - current DataEntryEnvironment
      * @param allowsMultipleTerms - Whether or not the user is allowed to enter multiple ontology values into a field
      * @param recommendedSource   - A recommended source - can be null, could be something like UO for a unit field for example.
      */
-    public OntologyCellEditor(OntologyConsumer consumer,
-                              final boolean allowsMultipleTerms, Map<String, RecommendedOntology> recommendedSource) {
+    public OntologyCellEditor(final boolean allowsMultipleTerms, Map<String, RecommendedOntology> recommendedSource) {
         super();
-        ontologyTool = new OntologySelectionTool(consumer, allowsMultipleTerms,
+        ontologyTool = new OntologySelectionTool(allowsMultipleTerms,
                 recommendedSource);
         ontologyTool.createGUI();
         // OntologySelectionTool doesn't directly interact with the CellEditor. Instead, a PropertyChange event is

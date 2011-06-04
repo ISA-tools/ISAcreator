@@ -369,12 +369,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             if (fields.get(i).getDataType() == SubFormField.SINGLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(dataEntryEnvironment.getParentFrame(), false, null));
+                        new OntologyCellEditor(false, null));
             }
 
             if (fields.get(i).getDataType() == SubFormField.MULTIPLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(dataEntryEnvironment.getParentFrame(), true, null));
+                        new OntologyCellEditor(true, null));
             }
 
             if (fields.get(i).getDataType() == SubFormField.COMBOLIST) {
@@ -388,7 +388,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             }
 
             if (fields.get(i).getDataType() == SubFormField.FACTOR_LEVEL_UNITS) {
-                rowEditor.addCellEditorForRow(i, new FactorLevelEntryCellEditor(dataEntryEnvironment.getParentFrame()));
+                rowEditor.addCellEditorForRow(i, new FactorLevelEntryCellEditor());
             }
 
         }
@@ -406,7 +406,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         Set<Integer> ontologyRows = new HashSet<Integer>();
 
-        Map<String, OntologyObject> history = dataEntryEnvironment.getUserHistory();
+        Map<String, OntologyObject> history = OntologySourceManager.getUserOntologyHistory();
 
         for (int col = 0; col < dtm.getColumnCount(); col++) {
             String val;
@@ -610,6 +610,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     private int calculateNoRows() {
         int noOntologyRows = 0;
+
 
         for (int i = 0; i < scrollTable.getRowCount(); i++) {
             if (scrollTable.getCellEditor(i, 0) instanceof OntologyCellEditor || dtm.getValueAt(i, 0).toString().contains("Assay Measurement Type") || dtm.getValueAt(i, 0).toString().contains("Assay Technology Type")) {

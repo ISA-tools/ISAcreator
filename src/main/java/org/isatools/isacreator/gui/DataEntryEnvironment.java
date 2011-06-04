@@ -46,6 +46,7 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.ontologyselectiontool.ResultCache;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.CollectionUtils;
@@ -513,20 +514,11 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public List<OntologySourceRefObject> getOntologySources() {
-        return mGUI.getOntologiesUsed();
+        return OntologySourceManager.getOntologiesUsed();
     }
 
     public ISAcreator getParentFrame() {
         return mGUI;
-    }
-
-    public ResultCache<String, Map<String, String>> getResultCache() {
-        return mGUI.getResultCache();
-    }
-
-
-    public Map<String, OntologyObject> getUserHistory() {
-        return mGUI.getUserOntologyHistory();
     }
 
     private void navigateToPath(DefaultMutableTreeNode nodeToGo) {

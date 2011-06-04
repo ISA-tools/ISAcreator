@@ -41,6 +41,7 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class Investigation extends ISASection {
     public static final String CONFIGURATION_LAST_OPENED_WITH = "Comment [Last opened with configuration]";
 
     private InvestigationDataEntry userInterface;
-    private List<OntologySourceRefObject> ontologiesUsed;
+
     private List<Publication> publications;
     private List<Contact> contacts;
     private Map<String, Study> studies;
@@ -118,13 +119,9 @@ public class Investigation extends ISASection {
         assays = new HashMap<String, String>();
         contacts = new ArrayList<Contact>();
         publications = new ArrayList<Publication>();
-        instantiateOntologySources();
+        OntologySourceManager.newInvestigation(getInvestigationId().equals("") ? "investigation-" + System.currentTimeMillis() : getInvestigationId());
     }
 
-    private void instantiateOntologySources() {
-        ontologiesUsed = new ArrayList<OntologySourceRefObject>();
-        ontologiesUsed.add(new OntologySourceRefObject("OBI", "", "", "Ontology for Biomedical Investigations"));
-    }
 
     public boolean addStudy(Study study) {
         if (studies.get(study.getStudyId()) == null) {
@@ -177,36 +174,6 @@ public class Investigation extends ISASection {
             return true;
         }
         return false;
-    }
-
-    public List<OntologySourceRefObject> getOntologiesUsed() {
-        return ontologiesUsed;
-    }
-
-    public void setOntologiesUsed(List<OntologySourceRefObject> ontologiesUsed) {
-        this.ontologiesUsed = ontologiesUsed;
-    }
-
-    public boolean checkOntologySourceRefExists(OntologySourceRefObject osro) {
-        for (OntologySourceRefObject o : ontologiesUsed) {
-            if (o.getSourceName().equals(osro.getSourceName())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void clearUsedOntologies() {
-        ontologiesUsed.clear();
-    }
-
-    public void addToOntologies(List<OntologySourceRefObject> ontologiesToAdd) {
-        for (OntologySourceRefObject osro : ontologiesToAdd) {
-            if (!checkOntologySourceRefExists(osro)) {
-                ontologiesUsed.add(osro);
-            }
-        }
     }
 
     public void addToPublications(List<Publication> publicationsToAdd) {

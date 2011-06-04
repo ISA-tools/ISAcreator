@@ -48,4 +48,6 @@ public interface OntologySelector {
     void updatehistory();
 
     void makeVisible();
+
+    void loadRecommendedOntologiesIfAllowed();
 }

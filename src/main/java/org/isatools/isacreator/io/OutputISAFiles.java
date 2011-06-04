@@ -44,6 +44,7 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
@@ -73,7 +74,7 @@ public class OutputISAFiles {
     }
 
 
-    public void saveISAFiles(boolean removeEmptyColumns, Investigation inv) {
+    public void saveISAFiles(boolean removeEmptyColumns, Investigation investigation) {
 
         try {
             // keep a list of saved files for reference!
@@ -87,18 +88,18 @@ public class OutputISAFiles {
                 icGUI.dispose();
             }
 
-            File file = new File(inv.getReference());
+            File file = new File(investigation.getReference());
 
             PrintStream ps = new PrintStream(file);
 
             // print section defining the Ontologies Used
-            ps.println(getOntologiesUsedOutput());
+            ps.println(getOntologiesUsedOutput(investigation));
             // print the Investigation section.
-            ps.println(inv.getUserInterface().toString());
+            ps.println(investigation.getUserInterface().toString());
 
             File fileToSave;
 
-            for (Study s : inv.getStudies().values()) {
+            for (Study s : investigation.getStudies().values()) {
                 ps.println(s.getUserInterface().toString());
 
                 fileToSave = new File(file.getParentFile().getPath() +
@@ -132,7 +133,7 @@ public class OutputISAFiles {
         }
     }
 
-    public String getOntologiesUsedOutput() {
+    public String getOntologiesUsedOutput(Investigation investigation) {
         String[] headerTerms = new String[]{
                 "Term Source Name", "Term Source File", "Term Source Version",
                 "Term Source Description"
@@ -142,7 +143,7 @@ public class OutputISAFiles {
         for (int i = 0; i < headerTerms.length; i++) {
             StringBuffer line = new StringBuffer(headerTerms[i] + "\t");
             String val = "";
-            for (OntologySourceRefObject anOntologiesUsed : main.getOntologiesUsed()) {
+            for (OntologySourceRefObject anOntologiesUsed : OntologySourceManager.getOntologiesUsed()) {
 
                 if (headerTerms[i].equals("Term Source Name")) {
                     val = anOntologiesUsed.getSourceName();

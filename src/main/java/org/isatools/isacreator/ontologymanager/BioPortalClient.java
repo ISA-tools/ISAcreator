@@ -100,8 +100,9 @@ public class BioPortalClient implements OntologyService {
 
             ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
-            for(Ontology ontology : ontologies) {
+            for (Ontology ontology : ontologies) {
                 ontologyVersions.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
+                ontologySources.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
             }
         }
 
@@ -137,11 +138,17 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Map<String, String> getOntologyNames() {
+        if (ontologySources.size() == 0) {
+            getAllOntologies();
+        }
+
         return ontologySources;
     }
 
     public Map<String, String> getOntologyVersions() {
-        getAllOntologies();
+        if (ontologyVersions.size() == 0) {
+            getAllOntologies();
+        }
 
         return ontologyVersions;
     }
@@ -301,8 +308,8 @@ public class BioPortalClient implements OntologyService {
             for (AcceptedOntologies ao : AcceptedOntologies.values()) {
                 Ontology o = getOntologyById(ao.getOntologyID());
                 if (o != null) {
-                    OntologySourceManager.appendOntologyDescriptions(Collections.singletonMap(o.getOntologyAbbreviation(), o.getOntologyDisplayLabel()));
-                    OntologySourceManager.appendOntologyVersions(Collections.singletonMap(o.getOntologyAbbreviation(), o.getOntologyVersion()));
+                    OntologySourceManager.addOLSOntologyDefinitions(Collections.singletonMap(o.getOntologyAbbreviation(),
+                            o.getOntologyDisplayLabel()), Collections.singletonMap(o.getOntologyAbbreviation(), o.getOntologyVersion()));
                 }
             }
             doneOntologyCheck = true;

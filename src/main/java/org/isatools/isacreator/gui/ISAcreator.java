@@ -57,10 +57,8 @@ import org.isatools.isacreator.io.UserProfileIO;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
-import org.isatools.isacreator.ontologymanager.OntologyConsumer;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
-import org.isatools.isacreator.ontologyselectiontool.ResultCache;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.qrcode.ui.QRCodeGeneratorUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
@@ -94,7 +92,7 @@ import java.util.List;
  *
  * @author Eamonn Maguire
  */
-public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
+public class ISAcreator extends AniSheetableJFrame {
 
     private static Logger log = Logger.getLogger(ISAcreator.class.getName());
 
@@ -119,14 +117,11 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
     private List<TableReferenceObject> assayDefinitions;
     private List<MappingObject> mappings;
 
-    private Map<String, OntologyObject> userOntologyHistory;
-
     private DataEntryEnvironment curDataEntryEnvironment;
     private GridBagConstraints c;
     private JLayeredPane currentPage = null;
     private JPanel glass;
 
-    private ResultCache<String, Map<String, String>> resultCache;
     private ISAcreatorMenu lp = null;
     private UserProfile currentUser = null;
     private JMenuBar menuBar;
@@ -197,8 +192,6 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         outputISATAB = new OutputISAFiles(this);
         userProfileIO = new UserProfileIO(this);
-        resultCache = new ResultCache<String, Map<String, String>>();
-        userOntologyHistory = new HashMap<String, OntologyObject>();
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
 
@@ -262,22 +255,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         this.assayDefinitions = assayDefinitions;
     }
 
-    /**
-     * Add an OntologySourceRefObject to the list of defined Ontologies
-     *
-     * @param osro - OntologySourceReferenceObject to be added.
-     */
-    public void addToUsedOntologies(OntologySourceRefObject osro) {
-        if (!curDataEntryEnvironment.getInvestigation().checkOntologySourceRefExists(osro)) {
-            curDataEntryEnvironment.getInvestigation().getOntologiesUsed().add(osro);
-        }
-    }
 
-    public void addToUserHistory(OntologyObject oo) {
-        if (!userOntologyHistory.containsKey(oo.getUniqueId())) {
-            userOntologyHistory.put(oo.getUniqueId(), oo);
-        }
-    }
 
     private void checkMenuRequired() {
         boolean menuRequired = currentPage instanceof DataEntryEnvironment;
@@ -559,29 +537,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                 for (final String study_id : studies) {
 
                     JMenuItem item = new JMenuItem(study_id);
-//                    if (menuType.equals("mgrast")) {
-//                        item.addActionListener(new ActionListener() {
-//                            public void actionPerformed(ActionEvent e) {
-//
-//                                final MGRastUI mgRastUI = new MGRastUI(ISAcreator.this);
-//
-//
-//                                Thread loader = new Thread(new Runnable() {
-//                                    public void run() {
-//                                        SwingUtilities.invokeLater(new Runnable() {
-//                                            public void run() {
-//                                                mgRastUI.createGUI();
-//                                                showJDialogAsSheet(mgRastUI);
-//                                                maskOutMouseEvents();
-//                                            }
-//                                        });
-//
-//                                        mgRastUI.loadAndMapData(study_id);
-//                                    }
-//                                });
-//                                loader.start();
-//                            }
-//                        });
+
                     if (menuType.equalsIgnoreCase("qr")) {
                         item.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
@@ -631,19 +587,6 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         return mappings;
     }
 
-    public List<OntologySourceRefObject> getOntologiesUsed() {
-        return getDataEntryEnvironment().getInvestigation().getOntologiesUsed();
-    }
-
-
-    public ResultCache<String, Map<String, String>> getResultCache() {
-        return resultCache;
-    }
-
-    public Map<String, OntologyObject> getUserOntologyHistory() {
-        return userOntologyHistory;
-    }
-
     public List<UserProfile> getUserProfiles() {
         return userProfileIO.getUserProfiles();
     }
@@ -652,25 +595,13 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         glass.setVisible(false);
     }
 
-
-    public static void main(String[] args) {
-
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE);
-                main.createGUI();
-            }
-        });
-    }
-
     private void saveProfilesAndExit() {
 
         if (getCurrentUser() != null) {
             for (UserProfile up : getUserProfiles()) {
 
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(getUserOntologyHistory());
+                    up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
 
                     break;
@@ -690,7 +621,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
             for (UserProfile up : getUserProfiles()) {
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(getUserOntologyHistory());
+                    up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;
                 }
@@ -699,7 +630,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
             userProfileIO.saveUserProfiles();
             checkMenuRequired();
 
-            userOntologyHistory.clear();
+            OntologySourceManager.clearReferencedOntologySources();
 
             curDataEntryEnvironment.removeReferences();
             curDataEntryEnvironment = null;
@@ -724,7 +655,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
         for (UserProfile up : getUserProfiles()) {
             if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                up.setUserHistory(getUserOntologyHistory());
+                up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
                 userProfileIO.updateUserProfileInformation(up);
 
                 break;
@@ -737,11 +668,13 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         currentUser = null;
 
         // reset information pertinent to a certain user
-//        getDataEntryEnvironment().getInvestigation().clearUsedOntologies();
+        OntologySourceManager.clearReferencedOntologySources();
+        OntologySourceManager.clearUserHistory();
+
         Spreadsheet.fileSelectEditor.setFtpManager(new FTPManager());
 
         curDataEntryEnvironment = null;
-        userOntologyHistory.clear();
+        OntologySourceManager.getUserOntologyHistory().clear();
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -754,7 +687,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
 
 
     public void setCurDataEntryPanel(DataEntryEnvironment dataEntryEnvironment) {
-        this.curDataEntryEnvironment = dataEntryEnvironment;
+       curDataEntryEnvironment = dataEntryEnvironment;
         System.out.println("Data entry panel changed & initialised");
     }
 
@@ -772,7 +705,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         checkMenuRequired();
         getContentPane().add(currentPage, BorderLayout.CENTER);
 
-        currentPage.setBorder(new EmptyBorder(0,0,0,0));
+        currentPage.setBorder(new EmptyBorder(0, 0, 0, 0));
 
         repaint();
         validate();
@@ -801,8 +734,8 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         glass.repaint();
     }
 
-    public void setUserOntologyHistory(Map<String, OntologyObject> userOntologyHistory) {
-        this.userOntologyHistory = userOntologyHistory;
+    public static void setUserOntologyHistory(Map<String, OntologyObject> userOntologyHistory) {
+        OntologySourceManager.setOntologySelectionHistory(userOntologyHistory);
     }
 
     public void saveUserProfiles() {
@@ -994,7 +927,7 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
                 closeWindowTimer.start();
 
                 if (type != SAVE_ONLY) {
-                    getDataEntryEnvironment().getInvestigation().clearUsedOntologies();
+                    OntologySourceManager.clearReferencedOntologySources();
                 }
             } else {
                 // need to get a new reference from the user!
@@ -1282,6 +1215,18 @@ public class ISAcreator extends AniSheetableJFrame implements OntologyConsumer {
         } else {
             saveProfilesAndExit();
         }
+    }
+
+
+    public static void main(String[] args) {
+
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE);
+                main.createGUI();
+            }
+        });
     }
 
 

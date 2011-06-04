@@ -233,8 +233,7 @@ public class AddColumnGUI extends JDialog {
      */
     protected DropDownComponent createOntologyDropDown(final JTextField field,
                                                        boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
-        ost = new OntologySelectionTool(st.getDataEntryEnv().getParentFrame(),
-                allowsMultiple, recommendedOntologySource);
+        ost = new OntologySelectionTool(allowsMultiple, recommendedOntologySource);
         ost.createGUI();
 
         dropdown = new DropDownComponent(field, ost, DropDownComponent.ONTOLOGY);

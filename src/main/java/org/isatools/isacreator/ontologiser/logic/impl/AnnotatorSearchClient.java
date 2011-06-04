@@ -49,7 +49,6 @@ public class AnnotatorSearchClient {
             // Execute the POST method
             int statusCode = client.executeMethod(method);
 
-
             if (statusCode != -1) {
                 String contents = method.getResponseBodyAsString();
                 method.releaseConnection();

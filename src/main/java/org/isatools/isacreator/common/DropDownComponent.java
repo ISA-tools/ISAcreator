@@ -226,6 +226,7 @@ public class DropDownComponent extends JComponent implements ActionListener,
 
             if (container instanceof OntologySelector) {
                 ((OntologySelector) container).makeVisible();
+                ((OntologySelector) container).loadRecommendedOntologiesIfAllowed();
             } else {
                 container.setVisible(true);
                 container.requestFocusInWindow();

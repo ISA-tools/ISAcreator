@@ -37,12 +37,12 @@
 
 package org.isatools.isacreator.ontologyselectiontool;
 
+import com.sun.tools.corba.se.idl.toJavaPortable.StringGen;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Eamonn Maguire
@@ -53,62 +53,163 @@ import java.util.Map;
 public class OntologySourceManager {
     public static final String OLS_TEXT = "OLS";
 
-    private static Map<String, String> ontologyDescription = new HashMap<String, String>();
-    private static Map<String, String> ontologyVersions = new HashMap<String, String>();
+    // map from the investigation accession to the OntologySourceReference Objects used
+    private static Map<String, List<OntologySourceRefObject>> usedOntologySources = new HashMap<String, List<OntologySourceRefObject>>();
 
+    private static Map<String, OntologySourceRefObject> completeOntologySourceDictionary = new HashMap<String, OntologySourceRefObject>();
 
-    public static void appendOntologyDescriptions(Map<String, String> ontologyDescription) {
-        if (ontologyDescription != null) {
-            OntologySourceManager.ontologyDescription.putAll(ontologyDescription);
-        }
+    private static Map<String, OntologyObject> ontologySelectionHistory = new HashMap<String, OntologyObject>();
+
+    public static Map<String, OntologyObject> getUserOntologyHistory() {
+        return ontologySelectionHistory;
     }
 
-    public static void appendOntologyVersions(Map<String, String> ontologyVersions) {
-        if (ontologyVersions != null) {
-            OntologySourceManager.ontologyVersions.putAll(ontologyVersions);
-        }
+    public static void setOntologySelectionHistory(Map<String, OntologyObject> ontologySelectionHistory) {
+        OntologySourceManager.ontologySelectionHistory = ontologySelectionHistory;
     }
 
-    public static String getOntologyDescription(String shortSource) {
-        String source = ontologyDescription.get(shortSource);
-        if (source != null) {
-            return source;
-        } else {
-            return "";
-        }
-    }
-
-    public static String getOntologyVersion(String shortSource) {
-        String version = "";
-
-        printMap(ontologyVersions);
-
-        if (ontologyVersions.containsKey(shortSource)) {
-            version = ontologyVersions.get(shortSource);
-        } else {
-            version = ontologyVersions.get(OLS_TEXT);
-        }
-
-        if (version != null) {
-            return version;
-        } else {
-            return "";
-        }
-    }
-
-    private static void printMap(Map<String, String> map) {
-        for(String key : map.keySet()) {
-            System.out.println(key + " -> " + map.get(key));
-        }
-    }
 
     public static void placeRecommendedOntologyInformationInRecords(Collection<RecommendedOntology> recommendedOntologies) {
         if (recommendedOntologies != null) {
             for (RecommendedOntology ro : recommendedOntologies) {
                 Ontology o = ro.getOntology();
-                ontologyDescription.put(o.getOntologyAbbreviation(), o.getOntologyDisplayLabel());
-                ontologyVersions.put(o.getOntologyAbbreviation(), o.getOntologyVersion());
+
+                completeOntologySourceDictionary.put(o.getOntologyAbbreviation(),
+                        new OntologySourceRefObject(o.getOntologyAbbreviation(), "", o.getOntologyVersion(), o.getOntologyDisplayLabel()));
             }
+        }
+    }
+
+    public static String getOntologyDescription(String ontologyAbbreviation) {
+        if (completeOntologySourceDictionary.containsKey(ontologyAbbreviation)) {
+            return completeOntologySourceDictionary.get(ontologyAbbreviation).getSourceDescription();
+        }
+
+        return "";
+    }
+
+    public static String getOntologyVersion(String ontologyAbbreviation) {
+        if (completeOntologySourceDictionary.containsKey(ontologyAbbreviation)) {
+            return completeOntologySourceDictionary.get(ontologyAbbreviation).getSourceVersion();
+        }
+
+        return "";
+    }
+
+    public static void addOLSOntologyDefinitions(Map<String, String> ontologyAbbrevToNames, Map<String, String> ontologyAbbrevToVersion) {
+
+        for (String ontologyAbbreviation : ontologyAbbrevToNames.keySet()) {
+            completeOntologySourceDictionary.put(ontologyAbbreviation, new OntologySourceRefObject(ontologyAbbreviation, "",
+                    ontologyAbbrevToVersion.get(ontologyAbbreviation), ontologyAbbrevToNames.get(ontologyAbbreviation)));
+        }
+    }
+
+    /**
+     * Add an OntologySourceRefObject to the list of defined Ontologies
+     *
+     * @param osro - OntologySourceReferenceObject to be added.
+     */
+    public static void addToUsedOntologies(OntologySourceRefObject osro) {
+        String key = getValidKey();
+        removeAnyPreexistingOntologySourceRefForUpdate(key, osro);
+        getOntologiesUsed(key).add(osro);
+    }
+
+    private static String getValidKey() {
+        if(usedOntologySources.isEmpty()) {
+            usedOntologySources.put("investigation", new ArrayList<OntologySourceRefObject>());
+            return "investigation";
+        } else {
+            for (String key : usedOntologySources.keySet()) {
+                return key;
+            }
+        }
+
+        return "investigation";
+    }
+
+    /**
+     * Add an OntologySourceRefObject to the list of defined Ontologies
+     *
+     * @param osro - OntologySourceReferenceObject to be added.
+     */
+    public static void addToUsedOntologies(String investigationAccession, OntologySourceRefObject osro) {
+        removeAnyPreexistingOntologySourceRefForUpdate(investigationAccession, osro);
+        getOntologiesUsed(investigationAccession).add(osro);
+    }
+
+    public static void clearUsedOntologies(String investigationAccession) {
+        if (usedOntologySources.containsKey(investigationAccession)) {
+            usedOntologySources.remove(investigationAccession);
+        }
+    }
+
+    public static List<OntologySourceRefObject> getOntologiesUsed(String investigationAccession) {
+        return usedOntologySources.get(investigationAccession);
+    }
+
+    public static List<OntologySourceRefObject> getOntologiesUsed() {
+        return getAllOntologiesUsed();
+    }
+
+    private static List<OntologySourceRefObject> getAllOntologiesUsed() {
+        List<OntologySourceRefObject> sourceRefObjects = new ArrayList<OntologySourceRefObject>();
+        for (String investigationAcc : usedOntologySources.keySet()) {
+            sourceRefObjects.addAll(usedOntologySources.get(investigationAcc));
+        }
+
+        return sourceRefObjects;
+    }
+
+    public static void setOntologiesUsed(String investigationAccession, List<OntologySourceRefObject> ontologiesUsed) {
+        usedOntologySources.put(investigationAccession, ontologiesUsed);
+    }
+
+    public static void removeAnyPreexistingOntologySourceRefForUpdate(String investigationAccession, OntologySourceRefObject osro) {
+
+        if (usedOntologySources.get(investigationAccession) != null) {
+            Iterator<OntologySourceRefObject> iterator = usedOntologySources.get(investigationAccession).iterator();
+            while (iterator.hasNext())
+
+                if (iterator.next().getSourceName().equals(osro.getSourceName())) {
+                    iterator.remove();
+                    return;
+                }
+        }
+    }
+
+    public static void clearReferencedOntologySources() {
+        usedOntologySources.clear();
+    }
+
+    public static void clearUserHistory() {
+        ontologySelectionHistory.clear();
+    }
+
+    public static void addToUsedOntologySources(String investigationAccession, List<OntologySourceRefObject> ontologiesToAdd) {
+        for (OntologySourceRefObject osro : ontologiesToAdd) {
+            addToUsedOntologySources(investigationAccession, osro);
+        }
+    }
+
+    public static void addToUsedOntologySources(String investigationAccession, OntologySourceRefObject ontologyToAdd) {
+        removeAnyPreexistingOntologySourceRefForUpdate(investigationAccession, ontologyToAdd);
+        usedOntologySources.get(investigationAccession).add(ontologyToAdd);
+
+    }
+
+
+
+
+    public static void newInvestigation(String investigationAccession) {
+
+        usedOntologySources.put(investigationAccession, new ArrayList<OntologySourceRefObject>());
+        usedOntologySources.get(investigationAccession).add(new OntologySourceRefObject("OBI", "", "", "Ontology for Biomedical Investigations"));
+    }
+
+    public static void addToUserHistory(OntologyObject oo) {
+        if (!ontologySelectionHistory.containsKey(oo.getUniqueId())) {
+            ontologySelectionHistory.put(oo.getUniqueId(), oo);
         }
     }
 }

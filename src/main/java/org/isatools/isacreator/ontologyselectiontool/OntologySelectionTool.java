@@ -53,6 +53,7 @@ import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.ontologybrowsingutils.OntologyTreeItem;
 import org.isatools.isacreator.ontologybrowsingutils.WSOntologyTreeCreator;
@@ -95,6 +96,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private static final Logger log = Logger.getLogger(OntologySelectionTool.class.getName());
 
+    // We'll store recently searched terms in a cache so that multiple searches on the same term in a short period
+    // of time do not result in identical queries to the OLS on each occasion. if the user searches all ontologies for
+    // "mito", then the map will consist of all:mito -> result map.
+    private static ResultCache<String, Map<String, String>> searchResultCache
+            = new ResultCache<String, Map<String, String>>();
+
     private static final int SEARCH_MODE = 0;
     private static final int BROWSE_MODE = 1;
     private static final int HISTORY_MODE = 2;
@@ -127,8 +134,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private int mode = SEARCH_MODE;
 
-    private Map<String, OntologyObject> history;
-
     private ExtendedJList historyList;
 
     private JTextField searchField, selectedTerm;
@@ -148,13 +153,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     // maps an ontology id e.g. 1123 for OBI to it's version e.g. 40832
     private static Map<String, String> ontologyIdToVersion = new HashMap<String, String>();
 
-    // We'll store recently searched terms in a cache so that multiple searches on the same term in a short period
-    // of time do not result in identical queries to the OLS on each occasion. if the user searches all ontologies for
-    // "mito", then the map will consist of all:mito -> result map.
-    private ResultCache<String, Map<String, String>> searchResultCache;
     private Map<String, RecommendedOntology> recommendedOntologies;
     private boolean multipleTermsAllowed;
-    private OntologyConsumer consumer;
     private ViewTermDefinitionUI viewTermDefinition;
 
     private OptionGroup<String> searchSpan;
@@ -166,12 +166,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     /**
      * OntologySelectionTool constructor.
      *
-     * @param consumer              - The parent DataEntryEnvironment
      * @param multipleTermsAllowed  - Whether or not multiple terms are allowed to be selected.
      * @param recommendedOntologies - the recommended ontology source e.g. EFO, UO, NEWT, CHEBI.
      */
-    public OntologySelectionTool(OntologyConsumer consumer,
-                                 boolean multipleTermsAllowed, Map<String, RecommendedOntology> recommendedOntologies) {
+    public OntologySelectionTool(boolean multipleTermsAllowed, Map<String, RecommendedOntology> recommendedOntologies) {
         this.addWindowListener(this);
 
         this.recommendedOntologies = recommendedOntologies;
@@ -179,16 +177,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         ontologyViewContainer = new JPanel(new BorderLayout());
         ontologyViewContainer.setPreferredSize(new Dimension(400, 170));
 
-        if (consumer == null) {
-            this.history = new HashMap<String, OntologyObject>();
-            this.searchResultCache = new ResultCache<String, Map<String, String>>();
-        } else {
-            this.history = consumer.getUserOntologyHistory();
-            this.searchResultCache = consumer.getResultCache();
-        }
-
-
-        this.consumer = consumer;
         this.multipleTermsAllowed = multipleTermsAllowed;
 
         ResourceInjector.get("ontologyselectiontool-package.style").inject(this);
@@ -552,7 +540,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         historyList = new ExtendedJList(new SingleSelectionListCellRenderer());
 
         try {
-            for (OntologyObject h : history.values()) {
+            for (OntologyObject h : OntologySourceManager.getUserOntologyHistory().values()) {
                 historyList.addItem(h);
             }
         } catch (ConcurrentModificationException cme) {
@@ -723,7 +711,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         firePropertyChange("selectedOntology", "OLD_VALUE",
                 selectedTerm.getText());
         if (historyList.getSelectedIndex() != -1) {
-            history.put(historyList.getSelectedValue().toString(), (OntologyObject) historyList.getSelectedValue());
+            OntologySourceManager.getUserOntologyHistory().put(historyList.getSelectedValue().toString(), (OntologyObject) historyList.getSelectedValue());
         }
         historyList.getFilterField().setText("");
         historyList.clearSelection();
@@ -752,12 +740,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private void getOntologyVersionsAndDescriptions() {
         try {
-            OntologySourceManager.appendOntologyDescriptions(olsClient.getOntologyNames());
-            Map<String, String> ontologyVersions = olsClient.getOntologyVersions();
-            OntologySourceManager.appendOntologyVersions(ontologyVersions);
-
+            OntologySourceManager.addOLSOntologyDefinitions(olsClient.getOntologyNames(), olsClient.getOntologyVersions());
         } catch (Exception e) {
-            log.error("Failed to connect to ontology service (OLS): " + e.getMessage());
+            log.error("Failed to connect to ontology service (OLS) to add Ontology versioning information: " + e.getMessage());
         }
     }
 
@@ -768,7 +753,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      * @return Boolean - true if the source already exists, false otherwise.
      */
     private boolean checkOntologySourceRecorded(String source) {
-        for (OntologySourceRefObject oRef : consumer.getOntologiesUsed()) {
+        for (OntologySourceRefObject oRef : OntologySourceManager.getOntologiesUsed()) {
             if (oRef.getSourceName().equals(source)) {
                 return true;
             }
@@ -785,7 +770,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      */
     private boolean checkHistoryForValue(String uniqueId, String accession) {
 
-        OntologyObject oo = history.get(uniqueId);
+        OntologyObject oo = OntologySourceManager.getUserOntologyHistory().get(uniqueId);
         return oo != null && oo.getTermAccession().equals(accession);
     }
 
@@ -849,7 +834,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                     source);
 
             // add the item to the history list
-            history.put(historyObject.getUniqueId(), historyObject);
+            OntologySourceManager.getUserOntologyHistory().put(historyObject.getUniqueId(), historyObject);
             historyList.addItem(valToEnter);
         }
     }
@@ -879,7 +864,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                     ontology.getOntologyAbbreviation());
 
             // add the item to the history list
-            history.put(historyObject.getUniqueId(), historyObject);
+            OntologySourceManager.getUserOntologyHistory().put(historyObject.getUniqueId(), historyObject);
             historyList.addItem(valToEnter);
         }
     }
@@ -888,7 +873,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private void addSourceToUsedOntologies(String source, String url) {
         if (source != null) {
             if (!checkOntologySourceRecorded(source)) {
-                consumer.addToUsedOntologies(new OntologySourceRefObject(source, url, OntologySourceManager.getOntologyVersion(source),
+                OntologySourceManager.addToUsedOntologies(new OntologySourceRefObject(source, url, OntologySourceManager.getOntologyVersion(source),
                         OntologySourceManager.getOntologyDescription(source)));
             }
         }
@@ -995,8 +980,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                                 System.out.println("almalgamated result is " + result.size() + " terms");
 
-                                OntologySourceManager.appendOntologyDescriptions(bioportalClient.getOntologyNames());
-                                OntologySourceManager.appendOntologyVersions(bioportalClient.getOntologyVersions());
+
+                                OntologySourceManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
                             } else {
 
                                 OntologySourceManager.placeRecommendedOntologyInformationInRecords(recommendedOntologies.values());
@@ -1194,12 +1179,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     public void updatehistory() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if ((historyList != null) && (history != null)) {
+                if ((historyList != null) && (OntologySourceManager.getUserOntologyHistory() != null)) {
 
-                    OntologyObject[] newHistory = new OntologyObject[history.size()];
+                    OntologyObject[] newHistory = new OntologyObject[OntologySourceManager.getUserOntologyHistory().size()];
 
                     int count = 0;
-                    for (OntologyObject oo : history.values()) {
+                    for (OntologyObject oo : OntologySourceManager.getUserOntologyHistory().values()) {
                         newHistory[count] = oo;
                         count++;
                     }

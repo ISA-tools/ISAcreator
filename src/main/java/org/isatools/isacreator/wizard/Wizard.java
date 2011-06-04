@@ -38,7 +38,6 @@
 package org.isatools.isacreator.wizard;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.MappingObject;
@@ -62,6 +61,7 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
@@ -78,7 +78,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -1244,7 +1243,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             public void mousePressed(MouseEvent mouseEvent) {
                 // go back to define assay page.
 
-                investigationDefinition.getOntologiesUsed().addAll(getISAcreatorEnvironment().getOntologiesUsed());
+                // todo may need to investigate the inclusion of ontology information
                 mainMenu.getMain().setCurDataEntryPanel(dep);
                 investigationDefinition.setUserInterface(new InvestigationDataEntry(
                         investigationDefinition, dep));

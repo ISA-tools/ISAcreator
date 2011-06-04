@@ -52,6 +52,8 @@ import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -624,7 +626,10 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
                     final Investigation inv2 = importISA2.getInvestigation();
 
                     // add all ontologies used to inv 1
-                    inv1.addToOntologies(inv2.getOntologiesUsed());
+                    OntologySourceManager.addToUsedOntologySources(inv1.getInvestigationId(),
+                            OntologySourceManager.getOntologiesUsed(inv2.getInvestigationId()));
+
+                    OntologySourceManager.clearUsedOntologies(inv2.getInvestigationId());
 
                     // add all publications and contacts...
                     inv1.addToPublications(inv2.getPublications());

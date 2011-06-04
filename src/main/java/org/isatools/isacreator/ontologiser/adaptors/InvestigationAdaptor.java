@@ -1,9 +1,12 @@
 package org.isatools.isacreator.ontologiser.adaptors;
 
 import org.isatools.isacreator.apiutils.InvestigationUtils;
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,10 +36,25 @@ public class InvestigationAdaptor implements ContentAdaptor {
     }
 
     public void replaceTerms(Set<OntologisedResult> annotations) {
-        // todo replace terms in sheet
-//        for (OntologisedResult annotation : annotations) {
-//
-//        }
+
+        for (OntologisedResult annotation : annotations) {
+            // todo for each annotation, if it has an ontology selected, use that and replace the values in the spreadsheet.
+
+            if(annotation.getAssignedOntology() != null) {
+
+                Ontology sourceOntology = annotation.getAssignedOntology().getOntologySource();
+
+                // adding ontology source in case it has not already been added
+                OntologySourceManager.addToUsedOntologySources(investigation.getInvestigationId(),
+                        new OntologySourceRefObject(sourceOntology.getOntologyAbbreviation(), "",
+                                sourceOntology.getOntologyVersion(), sourceOntology.getOntologyDisplayLabel()));
+
+                // todo add the term to the ontology history.
+
+
+            }
+
+        }
     }
 
     public Set<String> getTerms() {

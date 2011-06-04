@@ -60,6 +60,7 @@ import org.isatools.isacreator.io.importisa.investigationproperties.Investigatio
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.*;
@@ -145,8 +146,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public JComponent createOntologyDropDown(JTextComponent field,
                                              boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
 
-        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(dataEntryEnvironment.getParentFrame(),
-                allowsMultiple, recommendedOntologySource);
+        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, recommendedOntologySource);
         ontologySelectionTool.createGUI();
 
         DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
@@ -391,7 +391,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
             int numberAdded = 0;
             for (String ontologyTerm : ontologies) {
-                OntologyObject oo = getDataEntryEnvironment().getUserHistory().get(ontologyTerm);
+                OntologyObject oo = OntologySourceManager.getUserOntologyHistory().get(ontologyTerm);
 
 
                 if (oo != null) {
@@ -421,7 +421,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
         } else {
             if (term.contains(":")) {
-                OntologyObject oo = getDataEntryEnvironment().getUserHistory().get(term);
+                OntologyObject oo = OntologySourceManager.getUserOntologyHistory().get(term);
 
                 if (oo.getTerm() != null) {
                     tmpTerm = oo.getTerm();

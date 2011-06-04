@@ -63,9 +63,9 @@ public class FactorLevelEntryCellEditor extends JTextField implements TableCellE
     private int LEVEL_ROW = 2;
     private int UNIT_ROW = 3;
 
-    public FactorLevelEntryCellEditor(OntologyConsumer consumer) {
+    public FactorLevelEntryCellEditor() {
 
-        factorLevelGUI = new FactorLevelEntryGUI(consumer);
+        factorLevelGUI = new FactorLevelEntryGUI();
         factorLevelGUI.createGUI();
 
         // add two property change listeners. these listen for when a date is selected, and when

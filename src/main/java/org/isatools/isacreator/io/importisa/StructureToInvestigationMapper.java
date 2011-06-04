@@ -47,6 +47,7 @@ import org.isatools.isacreator.io.importisa.investigationproperties.Investigatio
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.GeneralUtils;
 import org.isatools.isacreator.utils.datastructures.ISAPair;
 
@@ -139,7 +140,7 @@ public class StructureToInvestigationMapper {
         }
 
         if (investigation != null) {
-            investigation.setOntologiesUsed(ontologySources);
+            OntologySourceManager.setOntologiesUsed(investigation.getInvestigationId(), ontologySources);
             investigation.addToPublications(publications);
             investigation.addToContacts(contacts);
 
@@ -643,7 +644,7 @@ public class StructureToInvestigationMapper {
         // build up set of ontology sources that have been defined
         Set<String> definedOntologySources = new HashSet<String>();
 
-        for (OntologySourceRefObject osro : investigation.getOntologiesUsed()) {
+        for (OntologySourceRefObject osro : OntologySourceManager.getOntologiesUsed()) {
             definedOntologySources.add(osro.getSourceName());
         }
 

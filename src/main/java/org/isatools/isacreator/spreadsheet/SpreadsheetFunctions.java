@@ -43,6 +43,7 @@ import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;
@@ -225,7 +226,7 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyObject> history = spreadsheet.getDataEntryEnv().getUserHistory();
+        Map<String, OntologyObject> history = OntologySourceManager.getUserOntologyHistory();
 
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
@@ -857,8 +858,7 @@ public class SpreadsheetFunctions {
         }
 
         if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.ONTOLOGY_TERM) {
-            col.setCellEditor(new OntologyCellEditor(spreadsheet.getDataEntryEnv().getParentFrame(),
-                    spreadsheet.getTableReferenceObject().acceptsMultipleValues(col.getHeaderValue().toString()),
+            col.setCellEditor(new OntologyCellEditor(spreadsheet.getTableReferenceObject().acceptsMultipleValues(col.getHeaderValue().toString()),
                     spreadsheet.getTableReferenceObject().getRecommendedSource(col.getHeaderValue().toString())));
             return;
         }

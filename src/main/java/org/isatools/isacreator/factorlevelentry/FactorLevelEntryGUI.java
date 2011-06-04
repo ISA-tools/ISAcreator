@@ -98,7 +98,7 @@ public class FactorLevelEntryGUI extends JFrame {
     @InjectedResource
     private ImageIcon headerImage, addRowIcon, addRowOverIcon, removeRowIcon, removeRowOverIcon;
 
-    public FactorLevelEntryGUI(OntologyConsumer consumer) {
+    public FactorLevelEntryGUI() {
 
         ResourceInjector.get("factorlevelentry-package.style").inject(this);
 
@@ -109,8 +109,8 @@ public class FactorLevelEntryGUI extends JFrame {
         setPreferredSize(new Dimension(300, 350));
         setUndecorated(true);
 
-        unitOCE = new OntologyCellEditor(consumer, false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "Jun 2011", "UO", "Unit Ontology"))));
-        levelOCE = new OntologyCellEditor(consumer, false, Collections.singletonMap("Factor", new RecommendedOntology(new Ontology("", "Jun 2011", "EFO", "Experimental Factor Ontology"))));
+        unitOCE = new OntologyCellEditor(false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "Jun 2011", "UO", "Unit Ontology"))));
+        levelOCE = new OntologyCellEditor(false, Collections.singletonMap("Factor", new RecommendedOntology(new Ontology("", "Jun 2011", "EFO", "Experimental Factor Ontology"))));
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -639,12 +639,6 @@ public class FactorLevelEntryGUI extends JFrame {
             return false;
         }
 
-    }
-
-    public static void main(String[] args) {
-        FactorLevelEntryGUI factorEntry = new FactorLevelEntryGUI(null);
-
-        factorEntry.setVisible(true);
     }
 
 }

@@ -52,8 +52,7 @@ public interface OntologyService {
 
     public Map<String, String> getTermMetadata(String termId, String ontology);
 
-    public Map<String, String> getTermsByPartialNameFromSource(String term,
-                                                               String source, boolean reverseOrder);
+    public Map<String, String> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder);
 
     public Map<String, String> getTermsByPartialNameFromSource(String term,
                                                                List<RecommendedOntology> recommendedOntology);

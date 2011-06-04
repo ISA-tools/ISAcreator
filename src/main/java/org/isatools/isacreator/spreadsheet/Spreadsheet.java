@@ -54,6 +54,7 @@ import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetModel;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetView;
@@ -299,7 +300,7 @@ public class Spreadsheet extends JComponent implements
 
         if (tableReferenceObject.getDefinedOntologies().size() > 0) {
             for (OntologyObject oo : tableReferenceObject.getDefinedOntologies().values()) {
-                studyDataEntryEnvironment.getDataEntryEnvironment().getUserHistory().put(oo.getUniqueId(), oo);
+                OntologySourceManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
             }
         }
 
@@ -1318,10 +1319,8 @@ public class Spreadsheet extends JComponent implements
      * @param uniqueId- the ID being searched for in the previous user history.
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
-    private OntologyObject searchUserHistory
-    (String
-             uniqueId) {
-        return studyDataEntryEnvironment.getDataEntryEnvironment().getUserHistory().get(uniqueId);
+    private OntologyObject searchUserHistory(String uniqueId) {
+        return OntologySourceManager.getUserOntologyHistory().get(uniqueId);
     }
 
     /**

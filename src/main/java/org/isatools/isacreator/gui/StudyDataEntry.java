@@ -411,7 +411,7 @@ public class StudyDataEntry extends DataEntryForm {
             }
         }
 
-        int numColsToAdd = study.getProtocols().size();
+        int numColsToAdd = study.getProtocols().size() == 0 ? 1 : study.getProtocols().size();
 
         protocolSubForm = new ProtocolSubForm(InvestigationFileSection.STUDY_PROTOCOLS.toString(), FieldTypes.PROTOCOL,
                 protocolFields, numColsToAdd, 300, 180, this);
