@@ -27,10 +27,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This pane will contain the CORE GUI components for the Ontologiser function. Including 3 sections containing:
@@ -345,6 +343,10 @@ public class OntologiserAnnotationPane extends JPanel {
 
             repaint();
         }
+    }
+
+    public Set<OntologisedResult> getAnnotations() {
+        return annotations.keySet();
     }
 
 

@@ -57,7 +57,6 @@ public class AnnotatorSearchClient {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // todo should throw error to next level to be dealt with by the GUI.
         }
 
         return null;
@@ -86,7 +85,7 @@ public class AnnotatorSearchClient {
 
 
     private String flattenSetToString(Set<String> terms) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (String term : terms) {
             buffer.append(term);
             buffer.append(" ");
@@ -94,23 +93,5 @@ public class AnnotatorSearchClient {
 
         // return Substring to remove last comma
         return buffer.toString();
-    }
-
-    public static void main(String[] args) {
-        AnnotatorSearchClient sc = new AnnotatorSearchClient();
-
-        Set<String> testTerms = new HashSet<String>();
-        testTerms.add("CY3");
-        testTerms.add("DOSE");
-        testTerms.add("ASSAY");
-
-        Map<String, Map<String, AnnotatorResult>> result = sc.searchForTerms(testTerms);
-
-        for (String key : result.keySet()) {
-            System.out.println(key + " matched:");
-            for (String ontologyVersion : result.get(key).keySet()) {
-                System.out.println("\t" + ontologyVersion + " -> " + result.get(key).get(ontologyVersion).getOntologyTerm().getOntologyTermName() + " (" + result.get(key).get(ontologyVersion).getOntologySource().getOntologyDisplayLabel() + ")");
-            }
-        }
     }
 }

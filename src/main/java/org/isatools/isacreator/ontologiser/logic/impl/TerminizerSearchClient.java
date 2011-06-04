@@ -36,7 +36,7 @@ public class TerminizerSearchClient implements SearchClient {
     }
 
     private String flattenSetToString(Set<String> terms) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (String term : terms) {
             buffer.append(term);
             buffer.append(",");
