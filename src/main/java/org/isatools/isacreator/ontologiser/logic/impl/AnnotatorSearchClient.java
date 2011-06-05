@@ -52,7 +52,7 @@ public class AnnotatorSearchClient {
             if (statusCode != -1) {
                 String contents = method.getResponseBodyAsString();
                 method.releaseConnection();
-                return processContent(contents);
+                return processContent(contents, terms);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class AnnotatorSearchClient {
         return null;
     }
 
-    private Map<String, Map<String, AnnotatorResult>> processContent(String content) throws FileNotFoundException {
+    private Map<String, Map<String, AnnotatorResult>> processContent(String content, Set<String> terms) throws FileNotFoundException {
 
         File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(
                 createFileForContent(content), "http://bioontology.org/bioportal/annotator#", "<success>");
@@ -70,7 +70,7 @@ public class AnnotatorSearchClient {
 
         System.out.println("File saved in " + fileWithNameSpace.getAbsolutePath());
 
-        return handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
+        return handler.getSearchResults(fileWithNameSpace.getAbsolutePath(), terms);
     }
 
     private File createFileForContent(String content) throws FileNotFoundException {

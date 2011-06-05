@@ -1,11 +1,15 @@
 package org.isatools.isacreator.ontologiser.adaptors;
 
 import org.isatools.isacreator.apiutils.InvestigationUtils;
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
+import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
+import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.util.HashMap;
@@ -37,10 +41,13 @@ public class InvestigationAdaptor implements ContentAdaptor {
 
     public void replaceTerms(Set<OntologisedResult> annotations) {
 
-        for (OntologisedResult annotation : annotations) {
-            // todo for each annotation, if it has an ontology selected, use that and replace the values in the spreadsheet.
+        Map<String, OntologyObject> mappingsForReplacement = new HashMap<String, OntologyObject>();
 
-            if(annotation.getAssignedOntology() != null) {
+        // for each annotation, if it has an ontology selected, use that and replace the values in the spreadsheet.
+
+        for (OntologisedResult annotation : annotations) {
+
+            if (annotation.getAssignedOntology() != null) {
 
                 Ontology sourceOntology = annotation.getAssignedOntology().getOntologySource();
 
@@ -49,11 +56,28 @@ public class InvestigationAdaptor implements ContentAdaptor {
                         new OntologySourceRefObject(sourceOntology.getOntologyAbbreviation(), "",
                                 sourceOntology.getOntologyVersion(), sourceOntology.getOntologyDisplayLabel()));
 
-                // todo add the term to the ontology history.
+                BioPortalOntology ontology = annotation.getAssignedOntology().getOntologyTerm();
 
+                // add the term to the ontology history.
+                OntologyObject ontologyObject = new OntologyObject(ontology.getOntologyTermName(), ontology.getOntologySourceAccession(), ontology.getOntologySource());
 
+                mappingsForReplacement.put(annotation.getFreeTextTerm(), ontologyObject);
+
+                OntologySourceManager.addToUserHistory(ontologyObject);
             }
+        }
 
+        // now replace the terms in each of the Spreadsheets available within ISAcreator
+        for (String studyAccession : investigation.getStudies().keySet()) {
+            Study study = investigation.getStudies().get(studyAccession);
+
+            System.out.println("Replacing terms in " + studyAccession);
+            SpreadsheetUtils.replaceFreeTextWithOntologyTerms(study.getStudySample().getSpreadsheetUI().getTable(), mappingsForReplacement);
+
+            for (Assay assay : study.getAssays().values()) {
+                System.out.println("Replacing terms in " + assay.getAssayReference());
+                SpreadsheetUtils.replaceFreeTextWithOntologyTerms(assay.getSpreadsheetUI().getTable(), mappingsForReplacement);
+            }
         }
     }
 

@@ -21,7 +21,8 @@ public class AnnotatorSearchClientTest {
         testTerms.add("CY3");
         testTerms.add("DOSE");
         testTerms.add("ASSAY");
-        testTerms.add("SULPHUR");
+        testTerms.add("Ethanol");
+        testTerms.add("drug vehicle (90% ethanol/10% tween-20)");
 
         Map<String, Map<String, AnnotatorResult>> result = sc.searchForTerms(testTerms);
 

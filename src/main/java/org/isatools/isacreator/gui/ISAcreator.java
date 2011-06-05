@@ -453,7 +453,7 @@ public class ISAcreator extends AniSheetableJFrame {
             }
         });
 
-        JMenuItem tagInvestigation = new JMenuItem("Autotagging");
+        JMenuItem tagInvestigation = new JMenuItem("Autotagging (beta)");
         tagInvestigation.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {

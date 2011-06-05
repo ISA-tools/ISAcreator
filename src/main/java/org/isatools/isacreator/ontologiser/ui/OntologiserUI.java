@@ -47,6 +47,8 @@ public class OntologiserUI extends JDialog {
 
     }
 
+    private boolean isLoading = false;
+
     private JPanel swappableContainer;
 
     private JLabel termTaggerButton;
@@ -60,6 +62,8 @@ public class OntologiserUI extends JDialog {
     private ContentAdaptor content;
 
     private int selectedSection = HELP;
+
+    private Map<String, Map<String, AnnotatorResult>> terms;
 
     @InjectedResource
     private ImageIcon termTaggerLogo, termTaggerIcon, termTaggerIconOver, visualiseInactiveIcon, visualiseIcon, visualiseIconOver,
@@ -92,10 +96,8 @@ public class OntologiserUI extends JDialog {
         swappableContainer = new JPanel();
         swappableContainer.setBorder(new EmptyBorder(1, 1, 1, 1));
         swappableContainer.setPreferredSize(new Dimension(650, 350));
-        helpPane = new OntologyHelpPane();
-        helpPane.createGUI();
 
-        swappableContainer.add(helpPane);
+        tagTerms();
 
         add(swappableContainer, BorderLayout.CENTER);
         add(createSouthPanel(), BorderLayout.SOUTH);
@@ -106,7 +108,7 @@ public class OntologiserUI extends JDialog {
     private Container createTopPanel() {
         Box topPanel = Box.createHorizontalBox();
 
-        termTaggerButton = new JLabel(termTaggerIcon);
+        termTaggerButton = new JLabel(termTaggerIconOver);
         termTaggerButton.setHorizontalAlignment(SwingConstants.LEFT);
         termTaggerButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -127,49 +129,7 @@ public class OntologiserUI extends JDialog {
                 suggestButton.setIcon(suggestInactiveIcon);
                 clearAllButton.setIcon(clearAllInactiveIcon);
 
-                selectedSection = TERM_TAGGER_VIEW;
-
-
-                Thread performer = new Thread(new Runnable() {
-                    public void run() {
-
-                        Map<String, Map<String, AnnotatorResult>> terms = getTerms();
-
-                        boolean haveTerms = terms != null;
-
-                        if (haveTerms) {
-
-                            if (annotationPane == null) {
-
-                                annotationPane = new OntologiserAnnotationPane(terms);
-
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        annotationPane.createGUI();
-                                    }
-                                });
-                            }
-
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    swapContainers(annotationPane);
-
-                                    termTaggerButton.setIcon(termTaggerIconOver);
-                                    visualiseButton.setIcon(visualiseIcon);
-                                    suggestButton.setIcon(suggestIcon);
-                                    clearAllButton.setIcon(clearAllIcon);
-                                }
-                            });
-                        } else {
-                            // todo add info pane saying there are no terms to annotate
-                            swapContainers(helpPane);
-                        }
-                    }
-
-                });
-
-                swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
-                performer.start();
+                tagTerms();
             }
         });
 
@@ -178,22 +138,15 @@ public class OntologiserUI extends JDialog {
         visualiseButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                visualiseButton.setIcon((selectedSection == TERM_TAGGER_VIEW || selectedSection == VISUALISATION) ? visualiseIconOver : visualiseInactiveIcon);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                visualiseButton.setIcon((selectedSection == TERM_TAGGER_VIEW || selectedSection == VISUALISATION) ? visualiseIcon : visualiseInactiveIcon);
             }
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                if (visualiseButton.getIcon() != visualiseInactiveIcon) {
 
-                    visualiseButton.setIcon(visualiseIcon);
-                    selectedSection = VISUALISATION;
-                    // todo show visualisation...
-                }
             }
         });
 
@@ -203,12 +156,12 @@ public class OntologiserUI extends JDialog {
         suggestButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                suggestButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? suggestIconOver : suggestInactiveIcon);
+                suggestButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading) ? suggestIconOver : suggestInactiveIcon);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                suggestButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? suggestIcon : suggestInactiveIcon);
+                suggestButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading) ? suggestIcon : suggestInactiveIcon);
             }
 
             @Override
@@ -226,12 +179,12 @@ public class OntologiserUI extends JDialog {
         clearAllButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                clearAllButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? clearAllIconOver : clearAllInactiveIcon);
+                clearAllButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading) ? clearAllIconOver : clearAllInactiveIcon);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                clearAllButton.setIcon(selectedSection == TERM_TAGGER_VIEW ? clearAllIcon : clearAllInactiveIcon);
+                clearAllButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading)? clearAllIcon : clearAllInactiveIcon);
             }
 
             @Override
@@ -243,7 +196,7 @@ public class OntologiserUI extends JDialog {
             }
         });
 
-        helpButton = new JLabel(helpIconOver);
+        helpButton = new JLabel(helpIcon);
 
         helpButton.setHorizontalAlignment(SwingConstants.LEFT);
         helpButton.addMouseListener(new
@@ -361,7 +314,11 @@ public class OntologiserUI extends JDialog {
 
                 Thread performer = new Thread(new Runnable() {
                     public void run() {
-                        // todo do String replace in current Spreadsheet or all spreadsheets (give option)
+                        if (annotationPane != null) {
+                            content.replaceTerms(annotationPane.getAnnotations());
+                        }
+                        // todo show summary page stating what has been replaced.
+                        closeWindow();
                     }
 
                 });
@@ -404,16 +361,62 @@ public class OntologiserUI extends JDialog {
         }
     }
 
-    public Map<String, Map<String, AnnotatorResult>> getTerms() {
+    private void tagTerms() {
+        selectedSection = TERM_TAGGER_VIEW;
+
+        Thread performer = new Thread(new Runnable() {
+            public void run() {
+
+                if(terms == null) {
+                    terms = getTerms();
+                }
+
+
+                boolean haveTerms = terms != null;
+
+                if (haveTerms) {
+
+                    if (annotationPane == null) {
+
+                        annotationPane = new OntologiserAnnotationPane(terms);
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                annotationPane.createGUI();
+                            }
+                        });
+                    }
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            swapContainers(annotationPane);
+
+                            termTaggerButton.setIcon(termTaggerIconOver);
+                            suggestButton.setIcon(suggestIcon);
+                            clearAllButton.setIcon(clearAllIcon);
+                        }
+                    });
+                } else {
+                    // todo add info pane saying there are no terms to annotate
+                    swapContainers(helpPane);
+                }
+
+                isLoading = false;
+            }
+
+        });
+        isLoading = true;
+        swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
+        performer.start();
+    }
+
+     public Map<String, Map<String, AnnotatorResult>> getTerms() {
 
         AnnotatorSearchClient sc = new AnnotatorSearchClient();
 
         if (content != null && content.getTerms().size() > 0) {
-
             return sc.searchForTerms(content.getTerms());
-
         }
-
         return null;
 
     }

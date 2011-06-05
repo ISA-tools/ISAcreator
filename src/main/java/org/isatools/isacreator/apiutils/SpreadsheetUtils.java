@@ -40,6 +40,8 @@ package org.isatools.isacreator.apiutils;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.ontologiser.model.OntologisedResult;
+import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
 
@@ -181,13 +183,40 @@ public class SpreadsheetUtils {
         return columnToFreeText;
     }
 
+    public static void replaceFreeTextWithOntologyTerms(Spreadsheet spreadsheet, Map<String, OntologyObject> annotations) {
+        Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+
+            if (spreadsheet.getTableReferenceObject().getClassType(tc.getHeaderValue().toString().trim())
+                    == DataTypes.ONTOLOGY_TERM) {
+                int colIndex = Utils.convertModelIndexToView(spreadsheet.getTable(), tc.getModelIndex());
+
+                for (int row = 0; row < spreadsheet.getTable().getRowCount(); row++) {
+
+                    String columnValue = (spreadsheet.getTable().getValueAt(row, colIndex) == null) ? ""
+                            : spreadsheet.getTable().getValueAt(row,
+                            colIndex).toString();
+
+                    if(annotations.containsKey(columnValue)) {
+                        System.out.println("Replacing " + columnValue + " with " + annotations.get(columnValue).getUniqueId());
+                        spreadsheet.getTable().setValueAt(annotations.get(columnValue).getUniqueId(), row, colIndex);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Method returns a Set of all the files defined in a spreadsheet. These locations are used to zip up the data files
      * in the ISArchive for submission to the index.
      *
      * @return Set of files defined in the spreadsheet
      */
-    public static Set<String> getFilesDefinedInTable(Spreadsheet spreadsheet) {
+    public static Set<String> getFilesDefinedInTable
+    (Spreadsheet
+             spreadsheet) {
         Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
         Set<String> files = new HashSet<String>();
 

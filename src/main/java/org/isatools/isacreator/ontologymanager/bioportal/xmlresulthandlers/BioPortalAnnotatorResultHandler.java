@@ -11,6 +11,7 @@ import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by the ISA team
@@ -35,14 +36,10 @@ public class BioPortalAnnotatorResultHandler {
         return resultDocument;
     }
 
-    public Map<String, Map<String, AnnotatorResult>> getSearchResults(String fileLocation) {
+    public Map<String, Map<String, AnnotatorResult>> getSearchResults(String fileLocation, Set<String> originalTerms) {
         SuccessDocument resultDocument = getDocument(fileLocation);
 
         Map<String, Ontology> ontologies = getOntologyInformation(resultDocument);
-
-        for (String ontology : ontologies.keySet()) {
-            System.out.println(ontology);
-        }
 
         // map from search term to a map of full id to the ontology term.
         Map<String, Map<String, AnnotatorResult>> result = new HashMap<String, Map<String, AnnotatorResult>>();
@@ -56,6 +53,7 @@ public class BioPortalAnnotatorResultHandler {
                         .getAnnotationBeanArray();
 
                 for (AnnotationBeanDocument.AnnotationBean annotationBean : searchResults) {
+
                     AnnotatorResult annotatorResult = extractAnnotatorResult(annotationBean, ontologies);
 
                     if (annotatorResult != null) {
@@ -64,14 +62,17 @@ public class BioPortalAnnotatorResultHandler {
 
                         String originalTerm = originalTextToAnnotate.substring(annotatorResult.getStartIndex() - 1, annotatorResult.getEndIndex());
 
-                        if (!result.containsKey(originalTerm)) {
-                            result.put(originalTerm, new HashMap<String, AnnotatorResult>());
-                        }
+                        if (originalTerms.contains(originalTerm)) {
 
-                        String ontologyId = annotatorResult.getOntologySource().getOntologyID();
+                            if (!result.containsKey(originalTerm)) {
+                                result.put(originalTerm, new HashMap<String, AnnotatorResult>());
+                            }
 
-                        if (!result.get(originalTerm).containsKey(ontologyId)) {
-                            result.get(originalTerm).put(ontologyId, annotatorResult);
+                            String ontologyId = annotatorResult.getOntologySource().getOntologyID();
+
+                            if (!result.get(originalTerm).containsKey(ontologyId)) {
+                                result.get(originalTerm).put(ontologyId, annotatorResult);
+                            }
                         }
                     }
                 }
@@ -92,6 +93,7 @@ public class BioPortalAnnotatorResultHandler {
         if (ontologies.containsKey(concept.getLocalOntologyId().toString())) {
             BioPortalOntology ontologyTerm = new BioPortalOntology();
 
+            ontologyTerm.setOntologySource(ontologies.get(concept.getLocalOntologyId().toString()).getOntologyAbbreviation());
             ontologyTerm.setOntologySourceAccession(concept.getLocalConceptId());
             ontologyTerm.setOntologyPurl(concept.getFullId());
             ontologyTerm.setOntologyTermName(concept.getPreferredName());
@@ -119,6 +121,7 @@ public class BioPortalAnnotatorResultHandler {
 
                 for (AcceptedOntologies accceptedOntology : AcceptedOntologies.values()) {
                     if (accceptedOntology.toString().equals(newOntology.getOntologyID())) {
+                        newOntology.setOntologyAbbreviation(accceptedOntology.getOntologyAbbreviation());
                         ontologies.put(ontology.getLocalOntologyId().toString(), newOntology);
                         break;
                     }

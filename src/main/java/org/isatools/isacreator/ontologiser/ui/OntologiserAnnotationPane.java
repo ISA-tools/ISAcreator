@@ -112,7 +112,7 @@ public class OntologiserAnnotationPane extends JPanel {
             }
         });
 
-        listPanel.add(createListPanel(freeTextList, "Freetext Terms"));
+        listPanel.add(createListPanel(freeTextList, "Freetext Terms in ISAtab"));
 
         suggestedTermsList = new ExtendedJList(new ScoringConfidenceListRenderer(), false);
 
