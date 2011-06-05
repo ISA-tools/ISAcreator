@@ -550,13 +550,11 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         historyList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
 
-                if (propertyChangeEvent.getNewValue() instanceof OntologyObject) {
+                if (historyList.getSelectedValue() instanceof OntologyObject) {
 
                     OntologyObject historyTerm = (OntologyObject) propertyChangeEvent.getNewValue();
 
                     if (historyTerm != null) {
-                        // todo show term definition...
-
 
                         String source = historyTerm.getUniqueId().substring(0,
                                 historyTerm.getUniqueId().indexOf(":"));
@@ -570,7 +568,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                     new OntologyBranch(historyTerm.getTermAccession(), historyTerm.getTerm()), historyTerm.getTermSourceRef(),
                                     olsClient == null ? new OLSClient() : olsClient);
                         } else {
-                            bioportalClient = bioportalClient == null ? new BioPortalClient() : bioportalClient;
+                            if (bioportalClient == null) {
+                                bioportalClient = new BioPortalClient();
+                            }
 
                             Map<String, String> ontologyVersions = bioportalClient.getOntologyVersions();
 

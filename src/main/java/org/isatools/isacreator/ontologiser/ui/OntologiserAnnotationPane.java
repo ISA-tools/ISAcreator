@@ -49,7 +49,7 @@ public class OntologiserAnnotationPane extends JPanel {
 
 
     @InjectedResource
-    private ImageIcon confidenceKey, useTerm, useTermOver, doNotUseTerm, doNotUseTermOver;
+    private ImageIcon confidenceKey, useTerm, useTermOver, doNotUseTerm, doNotUseTermOver, leftFieldIcon, rightFieldIcon;
 
     private ExtendedJList freeTextList, suggestedTermsList;
 
@@ -163,12 +163,15 @@ public class OntologiserAnnotationPane extends JPanel {
         IAppWidgetFactory.makeIAppScrollPane(scrollPane);
 
         UIHelper.renderComponent(list.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        list.getFilterField().setBorder(null);
 
         Box fieldContainer = Box.createHorizontalBox();
+        fieldContainer.add(new JLabel(leftFieldIcon));
         fieldContainer.add(list.getFilterField());
         fieldContainer.add(new ClearFieldUtility(list.getFilterField()));
+        fieldContainer.add(new JLabel(rightFieldIcon));
 
-        listContainer.add(fieldContainer, BorderLayout.NORTH);
+        listContainer.add(fieldContainer, BorderLayout.SOUTH);
         listContainer.add(scrollPane, BorderLayout.CENTER);
 
         listContainer.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), listTitle,
@@ -180,8 +183,6 @@ public class OntologiserAnnotationPane extends JPanel {
     private Container createSuggestionListKeyAndOptions() {
         Box container = Box.createVerticalBox();
         container.setBackground(UIHelper.BG_COLOR);
-
-        container.add(UIHelper.wrapComponentInPanel(new JLabel(confidenceKey)));
 
         JPanel confirmDeletionContainer = createShowUseOfAnnotationPane();
 
