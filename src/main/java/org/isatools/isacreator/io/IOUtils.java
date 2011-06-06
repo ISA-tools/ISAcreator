@@ -1,5 +1,8 @@
 package org.isatools.isacreator.io;
 
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -74,6 +77,89 @@ public class IOUtils {
             }
         }
 
+        return result;
+    }
+
+    /**
+     * @param ontologyTerms
+     * @param fieldValues
+     * @return
+     */
+    public static Map<String, String> processOntologyField(Map<String, String> ontologyTerms, Map<String, String> fieldValues) {
+
+        String term = fieldValues.get(ontologyTerms.get(IOUtils.TERM));
+        // At this point, we not have the term, accession and source ref fields. Next, is to set them to their correct values
+
+        String tmpTerm = "";
+        String tmpAccession = "";
+        String tmpSourceRefs = "";
+
+        if (term.contains(";")) {
+            // then we have multiple values
+            String[] ontologies = term.split(";");
+
+            int numberAdded = 0;
+            for (String ontologyTerm : ontologies) {
+                OntologyTerm oo = OntologySourceManager.getUserOntologyHistory().get(ontologyTerm);
+
+
+                if (oo != null) {
+                    tmpTerm += oo.getOntologyTermName();
+                    tmpAccession += oo.getOntologySourceAccession();
+                    tmpSourceRefs += oo.getOntologySource();
+                } else {
+                    if (term.contains(":")) {
+                        String[] termAndSource = term.split(":");
+
+                        if (termAndSource.length > 1) {
+                            tmpSourceRefs += termAndSource[0];
+                            tmpTerm += termAndSource[1];
+                        } else {
+                            tmpTerm = termAndSource[0];
+                        }
+                    }
+                }
+
+                if (numberAdded < ontologies.length - 1) {
+                    tmpTerm += ";";
+                    tmpAccession += ";";
+                    tmpSourceRefs += ";";
+                }
+                numberAdded++;
+            }
+
+        } else {
+            if (term.contains(":")) {
+                OntologyTerm oo = OntologySourceManager.getUserOntologyHistory().get(term);
+
+                if (oo.getOntologyTermName() != null) {
+                    tmpTerm = oo.getOntologyTermName();
+                    tmpAccession = oo.getOntologySourceAccession();
+                    tmpSourceRefs = oo.getOntologySource();
+                } else {
+                    if (term.contains(":")) {
+                        String[] termAndSource = term.split(":");
+
+                        tmpSourceRefs = termAndSource[0];
+                        tmpTerm = termAndSource[1];
+                    } else {
+                        tmpTerm = term;
+                        tmpAccession = "";
+                        tmpSourceRefs = "";
+                    }
+                }
+            } else {
+                tmpTerm = term;
+                tmpAccession = "";
+                tmpSourceRefs = "";
+            }
+        }
+
+        Map<String, String> result = new HashMap<String, String>();
+
+        result.put(ontologyTerms.get(IOUtils.TERM), tmpTerm);
+        result.put(ontologyTerms.get(IOUtils.ACCESSION), tmpAccession);
+        result.put(ontologyTerms.get(IOUtils.SOURCE_REF), tmpSourceRefs);
         return result;
     }
 

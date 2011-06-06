@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.apache.xmlbeans.impl.common.IOUtil;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
@@ -314,7 +315,8 @@ public class StudyDataEntry extends DataEntryForm {
 
         Box verticalContainer = Box.createVerticalBox();
 
-        addFieldsToPanel(verticalContainer, InvestigationFileSection.STUDY_SECTION, study.getFieldValues(), study.getReferenceObject());
+        addFieldsToPanel(verticalContainer, InvestigationFileSection.STUDY_SECTION,
+                study.getFieldValues(), study.getReferenceObject());
 
         studyDesc.add(verticalContainer, BorderLayout.NORTH);
 
@@ -335,27 +337,30 @@ public class StudyDataEntry extends DataEntryForm {
         for (String factorField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_FACTORS)) {
             FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(factorField);
 
-            if (!fieldsToIgnore.contains(factorField)) {
+            if (!fieldDescriptor.isHidden()) {
 
-                int fieldType = SubFormField.STRING;
+                if (!fieldsToIgnore.contains(factorField)) {
 
-                if (ontologyFields.contains(factorField)) {
+                    int fieldType = SubFormField.STRING;
 
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+                    if (ontologyFields.contains(factorField)) {
 
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+                        fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
 
-                    factorFields.add(new SubFormField(factorField, fieldType));
-                } else {
+                        if (fieldDescriptor != null)
+                            if (fieldDescriptor.isAcceptsMultipleValues())
+                                fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
 
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
+                        factorFields.add(new SubFormField(factorField, fieldType));
+                    } else {
+
+                        if (fieldDescriptor != null) {
+                            fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                                    fieldDescriptor.isAcceptsMultipleValues());
+                        }
+
+                        factorFields.add(new SubFormField(factorField, fieldType));
                     }
-
-                    factorFields.add(new SubFormField(factorField, fieldType));
                 }
             }
         }
@@ -584,7 +589,7 @@ public class StudyDataEntry extends DataEntryForm {
 
             Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
 
-            Map<String, String> processedOntologyField = processOntologyField(ontologyField, study.getFieldValues());
+            Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, study.getFieldValues());
             study.getFieldValues().put(ontologyField.get(IOUtils.TERM), processedOntologyField.get(ontologyField.get(IOUtils.TERM)));
             study.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION), processedOntologyField.get(ontologyField.get(IOUtils.ACCESSION)));
             study.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF), processedOntologyField.get(ontologyField.get(IOUtils.SOURCE_REF)));
@@ -614,7 +619,7 @@ public class StudyDataEntry extends DataEntryForm {
 
             String tmpFieldName = fieldName;
 
-            if(aliasesToRealNames.containsKey(fieldName)) {
+            if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
 

@@ -254,7 +254,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
                 Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
 
-                Map<String, String> processedOntologyField = processOntologyField(ontologyField, investigation.getFieldValues());
+                Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, investigation.getFieldValues());
 
                 investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM), processedOntologyField.get(processedOntologyField.get(IOUtils.TERM)));
                 investigation.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION), processedOntologyField.get(processedOntologyField.get(IOUtils.ACCESSION)));

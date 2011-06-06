@@ -38,8 +38,12 @@
 package org.isatools.isacreator.model;
 
 import org.isatools.isacreator.gui.StudySubData;
+import org.isatools.isacreator.io.IOUtils;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.utils.StringProcessing;
 
 import java.io.Serializable;
+import java.util.Map;
 
 
 /**
