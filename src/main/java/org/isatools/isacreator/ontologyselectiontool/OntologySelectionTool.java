@@ -542,13 +542,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                     if (historyTerm != null) {
 
-                        OntologyPortal portal = OntologyUtils.getSourcePortalByAbbreviation(historyTerm.getOntologySource());
+                        OntologyPortal portal = OntologyUtils.getSourceOntologyPortal(historyTerm.getOntologySourceInformation().getSourceVersion());
 
                         System.out.println("Ontology portal is " + portal.name());
 
                         if (portal == OntologyPortal.OLS) {
                             viewTermDefinition.setContent(
-                                    new OntologyBranch(historyTerm.getOntologySourceAccession(), historyTerm.getOntologyTermName()), historyTerm.getOntologySource(),
+                                    new OntologyBranch(historyTerm.getOntologySource() + ":" + historyTerm.getOntologySourceAccession(), historyTerm.getOntologyTermName()), historyTerm.getOntologySource(),
                                     olsClient == null ? new OLSClient() : olsClient);
                         } else {
                             if (bioportalClient == null) {
