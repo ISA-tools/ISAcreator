@@ -618,11 +618,6 @@ public class FileChooserUI extends AniSheetableJFrame implements WindowListener 
         updateTree(defaultFTPNode);
     }
 
-    public JFrame getMe() {
-        return this;
-    }
-
-
     private void updateTree(TreeNode newTree) {
         TreeNode tree;
 
@@ -750,8 +745,7 @@ public class FileChooserUI extends AniSheetableJFrame implements WindowListener 
 
                             // else, if a leaf node, then add file to to list
                             if (node.isLeaf() &&
-                                    (node.getType() != FileBrowserTreeNode.DIRECTORY)
-                                    && node.toString().contains(".")) {
+                                    (node.getType() != FileBrowserTreeNode.DIRECTORY)) {
                                 String extension = node.toString()
                                         .substring(node.toString()
                                                 .lastIndexOf(".") +

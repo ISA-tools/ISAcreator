@@ -87,9 +87,8 @@ public class LocalBrowser extends FileBrowser {
 
     public FileBrowserTreeNode getHomeDirectory() throws IOException {
         currentDirectory = HOME;
-        FileBrowserTreeNode ctn = refreshTree(currentDirectory);
 
-        return ctn;
+        return refreshTree(currentDirectory);
     }
 
     public TreeNode getParentDirectory() throws IOException {
