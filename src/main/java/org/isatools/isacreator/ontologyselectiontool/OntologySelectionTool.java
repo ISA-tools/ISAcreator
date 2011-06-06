@@ -61,6 +61,7 @@ import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.optionselector.OptionGroup;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -1184,23 +1185,25 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                             viewTermDefinition.setContent(new OntologyBranch(ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession(), ontologyTerm.getOntologyTermName()), ontologySource.getSourceName(), olsClient);
                         }
                     }
-                }
+                } else if (tree == browseRecommendedOntologyTree) {
 
-            } else if (tree == browseRecommendedOntologyTree) {
-                if (selectedNode.getUserObject() instanceof OntologyTreeItem) {
-                    OntologyTreeItem termNode = (OntologyTreeItem) selectedNode.getUserObject();
+                    if (selectedNode.getUserObject() instanceof OntologyTreeItem) {
+                        OntologyTreeItem termNode = (OntologyTreeItem) selectedNode.getUserObject();
 
-                    if (selectedNode.isLeaf()) {
-                        if (event.getClickCount() == 1) {
-                            OntologySourceRefObject ontologySourceRefObject =  OntologyUtils.convertOntologyToOntologySourceReferenceObject(termNode.getOntology());
-                            addTerm(ontologySourceRefObject, OntologyUtils.convertOntologyBranchToOntologyTerm(termNode.getBranch(), ontologySourceRefObject));
+                        if (selectedNode.isLeaf()) {
+                            if (event.getClickCount() == 1) {
+                                OntologySourceRefObject ontologySourceRefObject = OntologyUtils.convertOntologyToOntologySourceReferenceObject(termNode.getOntology());
+                                addTerm(ontologySourceRefObject, OntologyUtils.convertOntologyBranchToOntologyTerm(termNode.getBranch(), ontologySourceRefObject));
+                            }
                         }
-                    }
 
-                    if (OntologyUtils.getSourceOntologyPortal(termNode.getOntology()) == OntologyPortal.BIOPORTAL) {
-                        viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyVersion(), bioportalClient == null ? new BioPortalClient() : bioportalClient);
-                    } else {
-                        viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyAbbreviation(), olsClient == null ? new OLSClient() : olsClient);
+                        if (OntologyUtils.getSourceOntologyPortal(termNode.getOntology()) == OntologyPortal.BIOPORTAL) {
+
+                            viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyVersion(), bioportalClient == null ? new BioPortalClient() : bioportalClient);
+                        } else {
+
+                            viewTermDefinition.setContent(termNode.getBranch(), termNode.getOntology().getOntologyAbbreviation(), olsClient == null ? new OLSClient() : olsClient);
+                        }
                     }
                 }
             }
