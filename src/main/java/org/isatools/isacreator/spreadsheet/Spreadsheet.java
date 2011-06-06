@@ -53,7 +53,7 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetModel;
@@ -299,7 +299,7 @@ public class Spreadsheet extends JComponent implements
 
 
         if (tableReferenceObject.getDefinedOntologies().size() > 0) {
-            for (OntologyObject oo : tableReferenceObject.getDefinedOntologies().values()) {
+            for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
                 OntologySourceManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
             }
         }
@@ -1319,7 +1319,7 @@ public class Spreadsheet extends JComponent implements
      * @param uniqueId- the ID being searched for in the previous user history.
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
-    private OntologyObject searchUserHistory(String uniqueId) {
+    private OntologyTerm searchUserHistory(String uniqueId) {
         return OntologySourceManager.getUserOntologyHistory().get(uniqueId);
     }
 
@@ -1647,7 +1647,7 @@ public class Spreadsheet extends JComponent implements
             String s = table.getValueAt(rowSelected, columnSelected)
                     .toString();
 
-            OntologyObject ooForSelectedTerm = searchUserHistory(s);
+            OntologyTerm ooForSelectedTerm = searchUserHistory(s);
 
             if (ooForSelectedTerm != null) {
                 // update status panel in bottom left hand corner of workspace to contain the ontology
@@ -1655,11 +1655,11 @@ public class Spreadsheet extends JComponent implements
                 // the ontology tree itself.
                 studyDataEntryEnvironment.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
                         "<b>ontology term information</b>" + "</hr>" +
-                        "<p><term name: >" + ooForSelectedTerm.getTerm() +
+                        "<p><term name: >" + ooForSelectedTerm.getOntologyTermName() +
                         "</p>" + "<p><b>source ref: </b> " +
-                        ooForSelectedTerm.getTermSourceRef() + "</p>" +
+                        ooForSelectedTerm.getOntologySource() + "</p>" +
                         "<p><b>accession no: </b>" +
-                        ooForSelectedTerm.getTermAccession() + "</p>" +
+                        ooForSelectedTerm.getOntologySourceAccession() + "</p>" +
                         "</html>");
             }
         }

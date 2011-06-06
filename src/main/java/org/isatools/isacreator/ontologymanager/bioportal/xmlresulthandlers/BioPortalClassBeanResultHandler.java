@@ -40,7 +40,7 @@ package org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers;
 
 import bioontology.bioportal.classBean.schema.*;
 import org.apache.commons.collections15.map.ListOrderedMap;
-import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.io.File;
 import java.util.HashMap;
@@ -73,11 +73,11 @@ public class BioPortalClassBeanResultHandler {
     }
 
 
-    public BioPortalOntology parseMetadataFile(String fileLocation) {
+    public OntologyTerm parseMetadataFile(String fileLocation) {
         SuccessDocument resultDocument = getDocument(fileLocation);
         ClassBeanDocument.ClassBean classBean = resultDocument.getSuccess().getData().getClassBean();
 
-        BioPortalOntology ontology = createOntologyFromClassBean(classBean);
+        OntologyTerm ontology = createOntologyFromClassBean(classBean);
 
         for (RelationsDocument.Relations relation : classBean.getRelationsArray()) {
             for (EntryDocument.Entry entry : relation.getEntryArray()) {
@@ -98,10 +98,10 @@ public class BioPortalClassBeanResultHandler {
         return ontology;
     }
 
-    public Map<String, BioPortalOntology> parseRootConceptFile(String fileLocation, Set<String> termHasNoChildren) {
+    public Map<String, OntologyTerm> parseRootConceptFile(String fileLocation, Set<String> termHasNoChildren) {
         SuccessDocument resultDocument = getDocument(fileLocation);
 
-        Map<String, BioPortalOntology> result = new HashMap<String, BioPortalOntology>();
+        Map<String, OntologyTerm> result = new HashMap<String, OntologyTerm>();
 
         if (resultDocument == null) {
             return result;
@@ -120,7 +120,7 @@ public class BioPortalClassBeanResultHandler {
 
                                 for (ClassBeanDocument.ClassBean classBeanItem : listItem.getClassBeanArray()) {
 
-                                    BioPortalOntology ontology = createOntologyFromClassBean(classBeanItem);
+                                    OntologyTerm ontology = createOntologyFromClassBean(classBeanItem);
 
                                     result.put(classBeanItem.getIdArray(0), ontology);
                                     for(RelationsDocument.Relations classBeanRelation :classBeanItem.getRelationsArray()) {
@@ -149,10 +149,10 @@ public class BioPortalClassBeanResultHandler {
         return result;
     }
 
-    public Map<String, String> parseOntologyParentPathFile(String fileLocation) {
+    public Map<String, OntologyTerm> parseOntologyParentPathFile(String fileLocation) {
         SuccessDocument resultDocument = getDocument(fileLocation);
 
-        Map<String, String> result = new ListOrderedMap<String, String>();
+        Map<String, OntologyTerm> result = new ListOrderedMap<String, OntologyTerm>();
 
         if (resultDocument == null) {
             return result;
@@ -170,9 +170,9 @@ public class BioPortalClassBeanResultHandler {
 
                             String[] paths = path.split("\\.");
                             for (String p : paths) {
-                                BioPortalOntology ontology = new BioPortalOntology();
+                                OntologyTerm ontology = new OntologyTerm();
                                 ontology.setOntologySourceAccession(p);
-                                result.put(p, p);
+                                result.put(p, ontology);
                             }
                         }
                     }
@@ -184,8 +184,8 @@ public class BioPortalClassBeanResultHandler {
     }
 
 
-    public BioPortalOntology createOntologyFromClassBean(ClassBeanDocument.ClassBean classToConvert) {
-        BioPortalOntology ontology = new BioPortalOntology();
+    public OntologyTerm createOntologyFromClassBean(ClassBeanDocument.ClassBean classToConvert) {
+        OntologyTerm ontology = new OntologyTerm();
 
         if (classToConvert.getIdArray().length > 0) {
             ontology.setOntologySourceAccession(classToConvert.getIdArray(0));

@@ -58,7 +58,7 @@ import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -391,13 +391,13 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
             int numberAdded = 0;
             for (String ontologyTerm : ontologies) {
-                OntologyObject oo = OntologySourceManager.getUserOntologyHistory().get(ontologyTerm);
+                OntologyTerm oo = OntologySourceManager.getUserOntologyHistory().get(ontologyTerm);
 
 
                 if (oo != null) {
-                    tmpTerm += oo.getTerm();
-                    tmpAccession += oo.getTermAccession();
-                    tmpSourceRefs += oo.getTermSourceRef();
+                    tmpTerm += oo.getOntologyTermName();
+                    tmpAccession += oo.getOntologySourceAccession();
+                    tmpSourceRefs += oo.getOntologySource();
                 } else {
                     if (term.contains(":")) {
                         String[] termAndSource = term.split(":");
@@ -421,12 +421,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
         } else {
             if (term.contains(":")) {
-                OntologyObject oo = OntologySourceManager.getUserOntologyHistory().get(term);
+                OntologyTerm oo = OntologySourceManager.getUserOntologyHistory().get(term);
 
-                if (oo.getTerm() != null) {
-                    tmpTerm = oo.getTerm();
-                    tmpAccession = oo.getTermAccession();
-                    tmpSourceRefs = oo.getTermSourceRef();
+                if (oo.getOntologyTermName() != null) {
+                    tmpTerm = oo.getOntologyTermName();
+                    tmpAccession = oo.getOntologySourceAccession();
+                    tmpSourceRefs = oo.getOntologySource();
                 } else {
                     if (term.contains(":")) {
                         String[] termAndSource = term.split(":");

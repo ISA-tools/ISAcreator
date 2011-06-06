@@ -42,14 +42,12 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
-import org.isatools.isacreator.ontologymanager.bioportal.utils.Modifier;
-import org.isatools.isacreator.ontologymanager.bioportal.utils.NCIThesaurusModifier;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalClassBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalSearchBeanResultHandler;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
@@ -75,15 +73,17 @@ public class BioPortalClient implements OntologyService {
     private Map<String, String> ontologySources;
     private Map<String, String> ontologyVersions;
 
-    private Map<String, BioPortalOntology> searchResults;
-    private Map<String, Map<String, String>> cachedNodeChildrenQueries;
+    private Map<String, OntologyTerm> searchResults;
+    private Map<String, Map<String, OntologyTerm>> cachedNodeChildrenQueries;
+
+    public static final String DIRECT_ONTOLOGY_URL = "http://bioportal.bioontology.org/ontologies/";
 
 
     public BioPortalClient() {
         ontologySources = new HashMap<String, String>();
         ontologyVersions = new HashMap<String, String>();
-        searchResults = new HashMap<String, BioPortalOntology>();
-        cachedNodeChildrenQueries = new HashMap<String, Map<String, String>>();
+        searchResults = new HashMap<String, OntologyTerm>();
+        cachedNodeChildrenQueries = new HashMap<String, Map<String, OntologyTerm>>();
 
         noChildren = new HashSet<String>();
     }
@@ -155,7 +155,7 @@ public class BioPortalClient implements OntologyService {
 
     public Map<String, String> getTermMetadata(String termAccession, String ontology) {
 
-        BioPortalOntology ontologyResult = getTermInformation(termAccession, ontology);
+        OntologyTerm ontologyResult = getTermInformation(termAccession, ontology);
         Map<String, String> result = new ListOrderedMap<String, String>();
         result.put("accession", termAccession);
 
@@ -164,8 +164,8 @@ public class BioPortalClient implements OntologyService {
         return result;
     }
 
-    public BioPortalOntology getTermInformation(String termAccession, String ontology) {
-        BioPortalOntology bpo;
+    public OntologyTerm getTermInformation(String termAccession, String ontology) {
+        OntologyTerm bpo;
         if (searchResults.containsKey(ontology + "-" + termAccession)) {
             bpo = searchResults.get(ontology + "-" + termAccession);
             if (bpo != null) {
@@ -185,7 +185,7 @@ public class BioPortalClient implements OntologyService {
         return bpo;
     }
 
-    private BioPortalOntology performMetadataQuery(String termAccession, String ontology) {
+    private OntologyTerm performMetadataQuery(String termAccession, String ontology) {
         String searchString = REST_URL + "concepts/" + ontology + "/" + termAccession;
 
         System.out.println("Search string is: " + searchString);
@@ -203,7 +203,7 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
-            BioPortalOntology result = handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
+            OntologyTerm result = handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
 
             return result;
         } else {
@@ -211,21 +211,14 @@ public class BioPortalClient implements OntologyService {
         }
     }
 
-    public Map<String, String> getTermByAccessionId(String id) {
-        String searchString = REST_URL + "ontologies";
 
-        DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + id + DownloadUtils.XML_EXT);
-
-        return null;
-    }
-
-    public Map<String, String> getTermsByPartialNameFromSource(String term, List<RecommendedOntology> recommendedOntologies) {
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term, List<RecommendedOntology> recommendedOntologies) {
 
         term = correctTermForHTTPTransport(term);
 
         // need to accommodate more complicated search strings in the case where the recommended source contains the branch
         // to search under as well!
-        Map<String, String> result = new HashMap<String, String>();
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
         // need to do a loop over all branches and do a single query on those recommended ontologies only defined
         // by the source, not the branch.
@@ -242,18 +235,12 @@ public class BioPortalClient implements OntologyService {
 
                 if (ro.getBranchToSearchUnder() != null && !ro.getBranchToSearchUnder().getBranchIdentifier().equals("")) {
                     String branch = ro.getBranchToSearchUnder().getBranchIdentifier();
-
-                    if (ro.getOntology().getOntologyID().equals(AcceptedOntologies.NCI_THESAURUS.getOntologyID()) || ro.getOntology().getOntologyID().equals(AcceptedOntologies.NPO.getOntologyID())) {
-                        Modifier modifier = new NCIThesaurusModifier();
-                        branch = modifier.modifySearch(branch);
-                    }
-
                     searchString.append("&subtreerootconceptid=").append(branch);
                 }
 
                 System.out.println("sending query: " + searchString);
 
-                Map<String, String> searchResult = downloadAndProcessBranch(term, searchString.toString());
+                Map<OntologySourceRefObject, List<OntologyTerm>> searchResult = downloadAndProcessBranch(term, searchString.toString());
 
                 if (searchResult != null) {
                     result.putAll(searchResult);
@@ -266,7 +253,7 @@ public class BioPortalClient implements OntologyService {
     }
 
 
-    private Map<String, String> downloadAndProcessBranch(String term, String searchString) {
+    private Map<OntologySourceRefObject, List<OntologyTerm>> downloadAndProcessBranch(String term, String searchString) {
         String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + term + DownloadUtils.XML_EXT;
 
         DownloadUtils.downloadFile(searchString, downloadLocation);
@@ -276,18 +263,18 @@ public class BioPortalClient implements OntologyService {
         File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation), "http://bioontology.org/bioportal/resultBeanSchema#", "<success>");
 
         if (fileWithNameSpace != null) {
-            Map<String, BioPortalOntology> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
+            Map<OntologySourceRefObject, List<OntologyTerm>> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
 
             updateOntologyManagerWithOntologyInformation();
 
-            return processBioPortalOntology(result);
+            return result;
         }
 
-        return new HashMap<String, String>();
+        return new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
     }
 
-    public Map<String, String> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder) {
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder) {
 
         System.out.println("Searching for source: " + source);
 
@@ -296,11 +283,11 @@ public class BioPortalClient implements OntologyService {
         String searchString = REST_URL + "search/" + term + "/?ontologyids=" + (((source == null) || source.trim().equalsIgnoreCase("") || source.trim().equalsIgnoreCase("all")) ? constructSourceStringFromAllowedOntologies() : source);
         log.info("search string " + searchString);
 
-        Map<String, String> searchResult = downloadAndProcessBranch(term, searchString);
+        Map<OntologySourceRefObject, List<OntologyTerm>> searchResult = downloadAndProcessBranch(term, searchString);
 
         log.info("found " + (searchResult == null ? "0" : searchResult.size()) + " ontology terms");
 
-        return searchResult == null ? new HashMap<String, String>() : searchResult;
+        return searchResult == null ? new HashMap<OntologySourceRefObject, List<OntologyTerm>>() : searchResult;
     }
 
     private void updateOntologyManagerWithOntologyInformation() {
@@ -337,7 +324,7 @@ public class BioPortalClient implements OntologyService {
      * @param ontology - ontology to search in as it's version ID e.g. 39002 for BRO
      * @return Map<String,String> representing ontology term accession to term label mappings.
      */
-    public Map<String, String> getOntologyRoots(String ontology) {
+    public Map<String, OntologyTerm> getOntologyRoots(String ontology) {
 
         if (!cachedNodeChildrenQueries.containsKey(ontology)) {
 
@@ -355,27 +342,24 @@ public class BioPortalClient implements OntologyService {
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
             if (fileWithNameSpace == null) {
-                return new HashMap<String, String>();
+                return new HashMap<String, OntologyTerm>();
             }
 
-            Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath(), noChildren);
-
-            Map<String, String> processedResult = new HashMap<String, String>();
+            Map<String, OntologyTerm> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath(), noChildren);
 
             if (result != null) {
                 searchResults.putAll(result);
-                processedResult.putAll(processBioPortalOntology(result));
-                cachedNodeChildrenQueries.put(ontology, processedResult);
+                cachedNodeChildrenQueries.put(ontology, result);
             }
 
-            return processedResult;
+            return result;
         } else {
             System.out.println("using cached version for display.");
             return cachedNodeChildrenQueries.get(ontology);
         }
     }
 
-    public Map<String, String> getTermParent(String termAccession, String ontology) {
+    public Map<String, OntologyTerm> getTermParent(String termAccession, String ontology) {
         return getTermChildOrParent(termAccession, ontology, PARENTS);
     }
 
@@ -389,7 +373,7 @@ public class BioPortalClient implements OntologyService {
      * @param ontology      - ontology term is located in
      * @return Map<String,String> with mappings from term accession to the term label
      */
-    public Map<String, String> getTermChildren(String termAccession, String ontology) {
+    public Map<String, OntologyTerm> getTermChildren(String termAccession, String ontology) {
         return getTermChildOrParent(termAccession, ontology, CHILDREN);
     }
 
@@ -399,9 +383,9 @@ public class BioPortalClient implements OntologyService {
      * @param termAccession - accession of term e.g. snap:Continuant
      * @param ontology      - ontology version id e.g. 40832 for OBI
      * @param type          - @see PARENTS, CHILDREN - what type of search to make
-     * @return Map<String, String> from term accession -> term label
+     * @return Map<OntologySourceRefObject, List<OntologyTerm>> from Ontology Source object -> List of found terms
      */
-    public Map<String, String> getTermChildOrParent(String termAccession, String ontology, int type) {
+    public Map<String, OntologyTerm> getTermChildOrParent(String termAccession, String ontology, int type) {
 
         if (!noChildren.contains(termAccession)) {
             if (!cachedNodeChildrenQueries.containsKey(ontology + "-" + termAccession)) {
@@ -421,25 +405,22 @@ public class BioPortalClient implements OntologyService {
 
                 if (fileWithNameSpace != null) {
 
-                    Map<String, BioPortalOntology> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath(), noChildren);
-
-                    Map<String, String> processedResult = new HashMap<String, String>();
+                    Map<String, OntologyTerm> result = handler.parseRootConceptFile(fileWithNameSpace.getAbsolutePath(), noChildren);
 
                     if (result != null) {
                         searchResults.putAll(result);
-                        processedResult.putAll(processBioPortalOntology(result));
-                        cachedNodeChildrenQueries.put(ontology + "-" + termAccession, processedResult);
+                        cachedNodeChildrenQueries.put(ontology + "-" + termAccession, result);
                     }
 
-                    return processedResult;
+                    return result;
                 } else {
-                    return new HashMap<String, String>();
+                    return new HashMap<String, OntologyTerm>();
                 }
             } else {
                 return cachedNodeChildrenQueries.get(ontology + "-" + termAccession);
             }
         } else {
-            return new HashMap<String, String>();
+            return new HashMap<String, OntologyTerm>();
         }
 
     }
@@ -452,7 +433,7 @@ public class BioPortalClient implements OntologyService {
      * @param ontology      - version access for the ontology you wish to query e.g. 40832 for OBI
      * @return Map<String, String> representing the parents of the Term
      */
-    public Map<String, String> getAllTermParents(String termAccession, String ontology) {
+    public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology) {
         String searchString = REST_URL + "concepts/rootpath/" + ontology + "/" + termAccession;
 
         String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontology + "-all-parents-" + termAccession + DownloadUtils.XML_EXT;
@@ -466,7 +447,7 @@ public class BioPortalClient implements OntologyService {
         return handler.parseOntologyParentPathFile(fileWithNameSpace.getAbsolutePath());
     }
 
-    public Map<String, BioPortalOntology> getSearchResults() {
+    public Map<String, OntologyTerm> getSearchResults() {
         return searchResults;
     }
 
@@ -474,16 +455,20 @@ public class BioPortalClient implements OntologyService {
         return term.replaceAll("[\\s]+", "%20");
     }
 
-    private Map<String, String> processBioPortalOntology(Map<String, BioPortalOntology> toConvert) {
+    private Map<String, String> processBioPortalOntology(Map<String, OntologyTerm> toConvert) {
         Map<String, String> convertedMap = new HashMap<String, String>();
         for (String ontologyAccession : toConvert.keySet()) {
-            BioPortalOntology bpo = toConvert.get(ontologyAccession);
+            OntologyTerm bpo = toConvert.get(ontologyAccession);
 
             if (bpo != null) {
                 convertedMap.put(bpo.getOntologySourceAccession(), bpo.getOntologyTermName());
             }
         }
         return convertedMap;
+    }
+
+    public String getOntologyURL() {
+        return DIRECT_ONTOLOGY_URL;
     }
 
 }

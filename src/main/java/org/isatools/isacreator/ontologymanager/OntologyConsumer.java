@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.ontologymanager;
 
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.ResultCache;
 
 import java.util.List;
@@ -49,11 +49,11 @@ import java.util.Map;
  */
 public interface OntologyConsumer {
 
-    public void addToUserHistory(OntologyObject oo);
+    public void addToUserHistory(OntologyTerm oo);
 
-    public Map<String, OntologyObject> getUserOntologyHistory();
+    public Map<String, OntologyTerm> getUserOntologyHistory();
 
-    public void setUserOntologyHistory(Map<String, OntologyObject> userHistory);
+    public void setUserOntologyHistory(Map<String, OntologyTerm> userHistory);
 
     public ResultCache<String, Map<String, String>> getResultCache();
 

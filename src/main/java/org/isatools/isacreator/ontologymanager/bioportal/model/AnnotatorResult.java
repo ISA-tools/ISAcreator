@@ -1,6 +1,7 @@
 package org.isatools.isacreator.ontologymanager.bioportal.model;
 
 import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 /**
  * Created by the ISA team
@@ -12,8 +13,8 @@ import org.isatools.isacreator.configuration.Ontology;
  */
 public class AnnotatorResult {
 
-    private BioPortalOntology ontologyTerm;
-    private Ontology OntologySource;
+    private OntologyTerm ontologyTerm;
+    private Ontology ontologySource;
 
     private int score;
     private int startIndex;
@@ -21,20 +22,20 @@ public class AnnotatorResult {
 
     private ScoringConfidence confidenceLevel = ScoringConfidence.MEDIUM;
 
-    public AnnotatorResult(BioPortalOntology ontologyTerm, Ontology ontologySource, int score, int startIndex, int endIndex) {
+    public AnnotatorResult(OntologyTerm ontologyTerm, Ontology ontologySource, int score, int startIndex, int endIndex) {
         this.ontologyTerm = ontologyTerm;
-        OntologySource = ontologySource;
+        this.ontologySource = ontologySource;
         this.score = score;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
     }
 
-    public BioPortalOntology getOntologyTerm() {
+    public OntologyTerm getOntologyTerm() {
         return ontologyTerm;
     }
 
     public Ontology getOntologySource() {
-        return OntologySource;
+        return ontologySource;
     }
 
     public int getScore() {
@@ -49,7 +50,6 @@ public class AnnotatorResult {
         return endIndex;
     }
 
-    // TODO Properly calculate the score confidence
     public ScoringConfidence getScoringConfidenceLevel() {
         return confidenceLevel;
     }

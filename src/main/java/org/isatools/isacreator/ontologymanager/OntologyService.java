@@ -38,7 +38,10 @@
 
 package org.isatools.isacreator.ontologymanager;
 
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import sun.rmi.log.LogInputStream;
 
 import java.util.List;
 import java.util.Map;
@@ -48,13 +51,11 @@ public interface OntologyService {
 
     public Map<String, String> getOntologyNames();
 
-    public Map<String, String> getTermByAccessionId(String id);
-
     public Map<String, String> getTermMetadata(String termId, String ontology);
 
-    public Map<String, String> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder);
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder);
 
-    public Map<String, String> getTermsByPartialNameFromSource(String term,
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term,
                                                                List<RecommendedOntology> recommendedOntology);
 
     public Map<String, String> getOntologyVersions();
@@ -65,7 +66,7 @@ public interface OntologyService {
      * @param ontology - ontology to search in
      * @return Map<String,String> with mappings from term accession to the term label
      */
-    public Map<String, String> getOntologyRoots(String ontology);
+    public Map<String, OntologyTerm> getOntologyRoots(String ontology);
 
     /**
      * Return the parents of a term
@@ -74,7 +75,7 @@ public interface OntologyService {
      * @param ontology      - ontology term is located in
      * @return Map<String,String> with mappings from term accession to the term label
      */
-    public Map<String, String> getTermParent(String termAccession, String ontology);
+    public Map<String, OntologyTerm> getTermParent(String termAccession, String ontology);
 
     /**
      * Return the children of a term
@@ -83,7 +84,7 @@ public interface OntologyService {
      * @param ontology      - ontology term is located in
      * @return Map<String,String> with mappings from term accession to the term label
      */
-    public Map<String, String> getTermChildren(String termAccession, String ontology);
+    public Map<String, OntologyTerm> getTermChildren(String termAccession, String ontology);
 
     /**
      * Method will search the Ontology space to determine the parents of a given term. This can then be used in searches to make
@@ -93,6 +94,8 @@ public interface OntologyService {
      * @param ontology      - Abbreviation for the Ontology e.g. ENVO for OLS or 40832 for OBI.
      * @return Map<String, String> representing the parents of the Term
      */
-    public Map<String, String> getAllTermParents(String termAccession, String ontology);
+    public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology);
+
+    public String getOntologyURL();
 
 }

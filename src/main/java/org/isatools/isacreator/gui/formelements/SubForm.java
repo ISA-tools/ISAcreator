@@ -53,8 +53,8 @@ import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
@@ -113,7 +113,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     private boolean createBorder = true;
 
-    protected Map<String, OntologyObject> userHistory;
+    protected Map<String, OntologyTerm> userHistory;
     protected Set<Integer> uneditableRecords = new HashSet<Integer>();
 
     // this will house the translation between Comment aliases e.g. Publication Journal [c] to Comment[Publication Journal]
@@ -406,7 +406,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         Set<Integer> ontologyRows = new HashSet<Integer>();
 
-        Map<String, OntologyObject> history = OntologySourceManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologySourceManager.getUserOntologyHistory();
 
         for (int col = 0; col < dtm.getColumnCount(); col++) {
             String val;
@@ -484,13 +484,13 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                                     int numberAdded = 0;
                                     for (String ontologyTerm : ontologies) {
 
-                                        OntologyObject oo = history.get(ontologyTerm);
+                                        OntologyTerm oo = history.get(ontologyTerm);
 
 
                                         if (oo != null) {
-                                            tmpTerm += oo.getTerm();
-                                            tmpTermAcc += oo.getTermAccession();
-                                            tmpTermSource += oo.getTermSourceRef();
+                                            tmpTerm += oo.getOntologyTermName();
+                                            tmpTermAcc += oo.getOntologySourceAccession();
+                                            tmpTermSource += oo.getOntologySource();
                                         } else {
                                             if (ontologyTerm.contains(":")) {
 
@@ -516,12 +516,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
                                 } else {
                                     if (tmpTerm.contains(":")) {
-                                        OntologyObject oo = history.get(tmpTerm);
+                                        OntologyTerm oo = history.get(tmpTerm);
 
                                         if (oo != null) {
-                                            tmpTerm = oo.getTerm();
-                                            tmpTermAcc = oo.getTermAccession();
-                                            tmpTermSource = oo.getTermSourceRef();
+                                            tmpTerm = oo.getOntologyTermName();
+                                            tmpTermAcc = oo.getOntologySourceAccession();
+                                            tmpTermSource = oo.getOntologySource();
                                         } else {
                                             if (tmpTerm.contains(":")) {
                                                 String[] termAndSource = tmpTerm.split(":");
@@ -753,16 +753,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 String s = scrollTable.getValueAt(rowSelected, columnSelected)
                         .toString();
 
-                OntologyObject ooForSelectedTerm = searchUserHistory(s);
+                OntologyTerm ooForSelectedTerm = searchUserHistory(s);
 
                 if (ooForSelectedTerm != null) {
                     parent.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
                             "<b>ontology term information</b>" +
-                            "<p><term name: >" + ooForSelectedTerm.getTerm() +
+                            "<p><term name: >" + ooForSelectedTerm.getOntologyTermName() +
                             "</p>" + "<p><b>source ref: </b> " +
-                            ooForSelectedTerm.getTermSourceRef() + "</p>" +
+                            ooForSelectedTerm.getOntologySource() + "</p>" +
                             "<p><b>accession no: </b>" +
-                            ooForSelectedTerm.getTermAccession() + "</p>" +
+                            ooForSelectedTerm.getOntologySourceAccession() + "</p>" +
                             "</html>");
                 }
             } else {
@@ -789,12 +789,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     }
 
-    private OntologyObject searchUserHistory(String uniqueId) {
+    private OntologyTerm searchUserHistory(String uniqueId) {
         if (userHistory == null) {
             return null;
         }
 
-        for (OntologyObject oo : userHistory.values()) {
+        for (OntologyTerm oo : userHistory.values()) {
 
             if (oo.getUniqueId().equals(uniqueId)) {
                 return oo;

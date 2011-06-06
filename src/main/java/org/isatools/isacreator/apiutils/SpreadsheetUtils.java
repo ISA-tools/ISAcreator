@@ -40,8 +40,7 @@ package org.isatools.isacreator.apiutils;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
-import org.isatools.isacreator.ontologiser.model.OntologisedResult;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
 
@@ -183,7 +182,7 @@ public class SpreadsheetUtils {
         return columnToFreeText;
     }
 
-    public static void replaceFreeTextWithOntologyTerms(Spreadsheet spreadsheet, Map<String, OntologyObject> annotations) {
+    public static void replaceFreeTextWithOntologyTerms(Spreadsheet spreadsheet, Map<String, OntologyTerm> annotations) {
         Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
 
         while (columns.hasMoreElements()) {

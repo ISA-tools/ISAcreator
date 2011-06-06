@@ -5,8 +5,8 @@ import bioontology.bioportal.annotator.schema.ConceptDocument;
 import bioontology.bioportal.annotator.schema.OntologyUsedBeanDocument;
 import bioontology.bioportal.annotator.schema.SuccessDocument;
 import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
-import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
 
 import java.io.File;
 import java.util.HashMap;
@@ -91,13 +91,11 @@ public class BioPortalAnnotatorResultHandler {
         ConceptDocument.Concept concept = annotation.getConcept();
 
         if (ontologies.containsKey(concept.getLocalOntologyId().toString())) {
-            BioPortalOntology ontologyTerm = new BioPortalOntology();
+            OntologyTerm ontologyTerm = new OntologyTerm();
 
-            ontologyTerm.setOntologySource(ontologies.get(concept.getLocalOntologyId().toString()).getOntologyAbbreviation());
             ontologyTerm.setOntologySourceAccession(concept.getLocalConceptId());
             ontologyTerm.setOntologyPurl(concept.getFullId());
             ontologyTerm.setOntologyTermName(concept.getPreferredName());
-            ontologyTerm.setOntologyVersionId(concept.getLocalOntologyId().toString());
 
             Ontology ontologySource = ontologies.get(concept.getLocalOntologyId().toString());
 

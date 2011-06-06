@@ -38,6 +38,7 @@
 package org.isatools.isacreator.ontologymanager;
 
 import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.junit.Test;
 
 import java.util.List;
@@ -101,12 +102,16 @@ public class BioPortalClientTest {
     public void getTermsByPartialNameFromSource() {
         System.out.println("_____Testing getTermsByPartialNameFromSource()____");
 
-        Map<String, String> result = client.getTermsByPartialNameFromSource(testSearchTerm, testOntologyID, false);
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, testOntologyID, false);
 
         assertTrue("No results found for " + testSearchTerm + " in " + testOntologyID, result.size() > 0);
 
-        for (String key : result.keySet()) {
-            System.out.println(key + " -> " + result.get(key));
+        for (OntologySourceRefObject source : result.keySet()) {
+            System.out.println(source.getSourceName()  + " (" + source.getSourceVersion() + ")");
+
+            for(OntologyTerm term : result.get(source)) {
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
+            }
         }
 
         System.out.println("Found " + result.values().size() + " matches...\n");
@@ -114,7 +119,7 @@ public class BioPortalClientTest {
 
     @Test
     public void getOntologyRoots() {
-        Map<String, String> ontologyRoots = client.getOntologyRoots(testOntologyVersion);
+        Map<String, OntologyTerm> ontologyRoots = client.getOntologyRoots(testOntologyVersion);
 
         assertTrue("No ontology roots found for " + testOntologyID, ontologyRoots.size() > 0);
 

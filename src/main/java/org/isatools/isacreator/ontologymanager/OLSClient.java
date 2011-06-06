@@ -42,7 +42,9 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyFormats;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import uk.ac.ebi.ook.web.services.Query;
 import uk.ac.ebi.ook.web.services.QueryServiceLocator;
 
@@ -61,20 +63,29 @@ import java.util.regex.Pattern;
 public class OLSClient implements OntologyService {
     private static final Logger log = Logger.getLogger(OLSClient.class.getName());
 
-    public List<Ontology> getOntologies() {
-        List<Ontology> ontologies = new ArrayList<Ontology>();
+    public static final String DIRECT_ONTOLOGY_URL = "http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=";
 
-        Map<String, String> ontologyNames = getOntologyNames();
-        Map<String, String> ontologyVersions = getOntologyVersions();
+    private Map<String, OntologySourceRefObject> ontologies;
 
-        String olsVersion = ontologyVersions.get("OLS");
+    public OLSClient() {
+        this.ontologies = new HashMap<String, OntologySourceRefObject>();
+    }
 
-        for (String ontologyAbbreviation : ontologyNames.keySet()) {
-            Ontology newOntology = new Ontology("", olsVersion, ontologyAbbreviation, ontologyNames.get(ontologyAbbreviation));
-            newOntology.setFormat(OntologyFormats.OBO);
-            ontologies.add(newOntology);
+    public Map<String, OntologySourceRefObject> getOntologies() {
+
+        if (ontologies.size() == 0) {
+
+            Map<String, String> ontologyNames = getOntologyNames();
+            Map<String, String> ontologyVersions = getOntologyVersions();
+
+            String olsVersion = ontologyVersions.get("OLS");
+
+            for (String ontologyAbbreviation : ontologyNames.keySet()) {
+                OntologySourceRefObject newOntology =
+                        new OntologySourceRefObject(ontologyAbbreviation, DIRECT_ONTOLOGY_URL + ontologyAbbreviation, olsVersion, ontologyNames.get(ontologyAbbreviation));
+                ontologies.put(ontologyAbbreviation, newOntology);
+            }
         }
-
         return ontologies;
     }
 
@@ -96,40 +107,6 @@ public class OLSClient implements OntologyService {
                     "unexpected exception occurred. probably as a result of no internet connection!");
         }
 
-        return answer;
-    }
-
-    /**
-     * Return terms by their accession ID.
-     *
-     * @param id - accession id, e.g. 9606
-     * @return Map of matching accessions and terms. e.g. 9606 homo sapiens.
-     */
-    public Map<String, String> getTermByAccessionId(String id) {
-        Map<String, String> answer = new HashMap<String, String>();
-        QueryServiceLocator locator = new QueryServiceLocator();
-
-        try {
-            String source = "NEWT";
-            String idShort = id;
-
-            if (id.contains(":")) {
-                source = id.substring(0, id.indexOf(":"));
-                idShort = idShort.substring(idShort.indexOf(":") + 1);
-            }
-
-            Query service = locator.getOntologyQuery();
-            String termVal = service.getTermById(id, source);
-
-            if (termVal != null) {
-                answer.put(source + ":" + idShort, termVal);
-            }
-        } catch (RemoteException e) {
-            log.error("remote exception thrown: " + e.getMessage());
-        } catch (Exception e) {
-            log.error(
-                    "unexpected exception occurred. probably as a result of no internet connection!");
-        }
         return answer;
     }
 
@@ -172,8 +149,8 @@ public class OLSClient implements OntologyService {
      * @param reverseOrder - Whether or not to flip the mappings from term -> source:accession to source:accession -> term.
      * @return - Mapping of source:accession to term, depending on reverse order being true or false.
      */
-    public Map<String, String> getTermsByPartialNameFromSource(String term,
-                                                               String source, boolean reverseOrder) {
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term,
+                                                                                            String source, boolean reverseOrder) {
         Map<String, String> answer = new HashMap<String, String>();
 
         try {
@@ -190,7 +167,7 @@ public class OLSClient implements OntologyService {
             log.error(
                     "unexpected exception occurred. probably as a result of no internet connection!");
         }
-        return answer;
+        return processOntologyResult(answer);
     }
 
     /**
@@ -228,7 +205,7 @@ public class OLSClient implements OntologyService {
      * @param ontologyAbbreviation - The ontology to get the root terms for e.g. EFO, ENVO, CHEBI
      * @return Map<String, String> representing the Root terms with the Source:Accession as the key and the Label as the Value
      */
-    public Map<String, String> getOntologyRoots(String ontologyAbbreviation) {
+    public Map<String, OntologyTerm> getOntologyRoots(String ontologyAbbreviation) {
         QueryServiceLocator locator = new QueryServiceLocator();
         Map<String, String> answer = new HashMap<String, String>();
         try {
@@ -242,7 +219,7 @@ public class OLSClient implements OntologyService {
         } catch (ServiceException e) {
             log.error("service exception thrown " + e.getMessage());
         }
-        return answer;
+        return processOntologyHierarchyResult(answer);
     }
 
     /**
@@ -252,7 +229,7 @@ public class OLSClient implements OntologyService {
      * @param ontologyAbbreviation - The ontology to get the root terms for e.g. EFO, ENVO, CHEBI
      * @return Map<String, String> representing the child terms with the Source:Accession as the key and the Label as the Value
      */
-    public Map<String, String> getTermParent(String termAccession, String ontologyAbbreviation) {
+    public Map<String, OntologyTerm> getTermParent(String termAccession, String ontologyAbbreviation) {
         QueryServiceLocator locator = new QueryServiceLocator();
         Map<String, String> answer = new HashMap<String, String>();
         try {
@@ -266,7 +243,7 @@ public class OLSClient implements OntologyService {
         } catch (ServiceException e) {
             log.error("service exception thrown " + e.getMessage());
         }
-        return answer;
+        return processOntologyHierarchyResult(answer);
     }
 
     /**
@@ -276,7 +253,7 @@ public class OLSClient implements OntologyService {
      * @param ontologyAbbreviation - The ontology to get the root terms for e.g. EFO, ENVO, CHEBI
      * @return Map<String, String> representing the child terms with the Source:Accession as the key and the Label as the Value
      */
-    public Map<String, String> getTermChildren(String termAccession, String ontologyAbbreviation) {
+    public Map<String, OntologyTerm> getTermChildren(String termAccession, String ontologyAbbreviation) {
         QueryServiceLocator locator = new QueryServiceLocator();
         Map<String, String> answer = new HashMap<String, String>();
         try {
@@ -290,14 +267,14 @@ public class OLSClient implements OntologyService {
         } catch (ServiceException e) {
             log.error("service exception thrown " + e.getMessage());
         }
-        return answer;
+        return processOntologyHierarchyResult(answer);
     }
 
-    public Map<String, String> getTermsByPartialNameFromSource(String term, List<RecommendedOntology> recommendedOntology) {
-        Map<String, String> searchResult = new HashMap<String, String>();
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term, List<RecommendedOntology> recommendedOntology) {
+        Map<OntologySourceRefObject, List<OntologyTerm>> searchResult = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
         for (RecommendedOntology ro : recommendedOntology) {
-            Map<String, String> subSearchResult = null;
+            Map<OntologySourceRefObject, List<OntologyTerm>> subSearchResult = null;
 
             if (ro.getBranchToSearchUnder() == null) {
 
@@ -323,24 +300,91 @@ public class OLSClient implements OntologyService {
      * @param recommendedOntology - Recommended ontology to be searched under e.g. OBI_0003212
      * @return Map<String, String> comprising of the matching term source:accession pair to the term label e.g. ENVO:00002216 -> vegetable.
      */
-    private Map<String, String> getTermsByPartialNameFromSource(String termLabel, RecommendedOntology recommendedOntology) {
+    private Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String termLabel, RecommendedOntology recommendedOntology) {
 
-        Map<String, String> filteredResult = new HashMap<String, String>();
+        Map<OntologySourceRefObject, List<OntologyTerm>> filteredResult = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
         // first step is to search for the term in OLS
-        Map<String, String> termSearchResult = getTermsByPartialNameFromSource(termLabel, recommendedOntology.getOntology().getOntologyAbbreviation(), false);
+        Map<OntologySourceRefObject, List<OntologyTerm>> termSearchResult = getTermsByPartialNameFromSource(termLabel, recommendedOntology.getOntology().getOntologyAbbreviation(), false);
 
         Set<String> termsInBranch = getAllTermsAccessionsBelowBranch(recommendedOntology.getBranchToSearchUnder().getBranchIdentifier(),
                 recommendedOntology.getOntology().getOntologyAbbreviation());
 
         // now, since we have the terms in the branch, we simple filter out any Terms in termSearchResult which do not have
         // accessions in the termsInBranch Set
-        for (String termAccession : termSearchResult.keySet()) {
-            if (termsInBranch.contains(termAccession)) {
-                filteredResult.put(termAccession, termSearchResult.get(termAccession));
+        for (OntologySourceRefObject termSource : termSearchResult.keySet()) {
+
+            for (OntologyTerm term : termSearchResult.get(termSource)) {
+
+                if (termsInBranch.contains(term.getOntologySource()  + ":" + term.getOntologySourceAccession())) {
+
+                    if(!filteredResult.containsKey(termSource)) {
+                        filteredResult.put(termSource, new ArrayList<OntologyTerm>());
+                    }
+
+                    filteredResult.get(termSource).add(term);
+                }
             }
         }
 
         return filteredResult;
+    }
+
+    private Map<OntologySourceRefObject, List<OntologyTerm>> processOntologyResult(Map<String, String> ontologyAccessionToTerm) {
+        Map<OntologySourceRefObject, List<OntologyTerm>> processedResult = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+
+        for (String accession : ontologyAccessionToTerm.keySet()) {
+
+            String source = "";
+
+            if(accession.contains(":")) {
+                source = accession.substring(0, accession.lastIndexOf(":"));
+            } else {
+                source = "NEWT";
+            }
+
+            OntologySourceRefObject ontologySource = getOntologySourceReferenceForOntology(source);
+
+            if (!processedResult.containsKey(ontologySource)) {
+                processedResult.put(ontologySource, new ArrayList<OntologyTerm>());
+            }
+
+            String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
+
+            processedResult.get(ontologySource).add(createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
+
+        }
+
+        return processedResult;
+    }
+
+    private Map<String, OntologyTerm> processOntologyHierarchyResult(Map<String, String> ontologyAccessionToTerm) {
+        Map<String, OntologyTerm> processedResult = new HashMap<String, OntologyTerm>();
+
+        for (String accession : ontologyAccessionToTerm.keySet()) {
+            System.out.println("Processing accession - " + accession);
+            String source = accession.substring(0, accession.lastIndexOf(":"));
+
+            String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
+
+            processedResult.put(accession, createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
+        }
+
+        return processedResult;
+    }
+
+    private OntologyTerm createOntologyTerm(String source, String accession, String name) {
+        OntologyTerm term = new OntologyTerm();
+        term.setOntologyTermName(name);
+        term.setOntologySourceAccession(accession);
+
+        term.setOntologySourceInformation(getOntologySourceReferenceForOntology(source));
+        return term;
+    }
+
+    private OntologySourceRefObject getOntologySourceReferenceForOntology(String source) {
+        Map<String, OntologySourceRefObject> ontologySources = getOntologies();
+
+        return ontologySources.get(source);
     }
 
     /**
@@ -355,7 +399,7 @@ public class OLSClient implements OntologyService {
         // need to retrieve and add all terms below the branch
         Set<String> result = new HashSet<String>();
 
-        Map<String, String> branchChildren = getTermChildren(branchTerm, ontologyAbbreviation);
+        Map<String, OntologyTerm> branchChildren = getTermChildren(branchTerm, ontologyAbbreviation);
 
         if (branchChildren.size() > 0) {
             for (String childTermAccession : branchChildren.keySet()) {
@@ -376,13 +420,13 @@ public class OLSClient implements OntologyService {
      * @param ontologyAbbreviation - Abbreviation for the Ontology e.g. ENVO
      * @return Map<String, String> representing the parents of the Term
      */
-    public Map<String, String> getAllTermParents(String termAccession, String ontologyAbbreviation) {
+    public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontologyAbbreviation) {
         // we use a ListOrderedSet so that order is maintained! This is important since order will dictate the way
         // we search within the tree whilst navigating from parent A -> B -> C to get to term ENVO:00001234. If the parents were in
         // an incorrect order, we'd end up with something like B -> A -> C.
-        Map<String, String> result = new ListOrderedMap<String, String>();
+        Map<String, OntologyTerm> result = new ListOrderedMap<String, OntologyTerm>();
 
-        Map<String, String> termParents = getTermParent(termAccession, ontologyAbbreviation);
+        Map<String, OntologyTerm> termParents = getTermParent(termAccession, ontologyAbbreviation);
         if (termParents.size() > 0) {
             for (String parentTermAccession : termParents.keySet()) {
                 result.putAll(getAllTermParents(parentTermAccession, ontologyAbbreviation));
@@ -394,4 +438,7 @@ public class OLSClient implements OntologyService {
         return result;
     }
 
+    public String getOntologyURL() {
+        return DIRECT_ONTOLOGY_URL;
+    }
 }

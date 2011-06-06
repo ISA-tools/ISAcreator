@@ -1,8 +1,13 @@
 package org.isatools.isacreator.ontologymanager.utils;
 
 import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.configuration.OntologyBranch;
+import org.isatools.isacreator.ontologymanager.BioPortalClient;
+import org.isatools.isacreator.ontologymanager.OLSClient;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.utils.StringProcessing;
 
 /**
@@ -23,7 +28,7 @@ public class OntologyUtils {
         return version.length() > 5 ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
     }
 
-     public static String getModifiedBranchIdentifier(String branchIdentifier, String splitOn) {
+    public static String getModifiedBranchIdentifier(String branchIdentifier, String splitOn) {
         if (StringProcessing.isURL(branchIdentifier)) {
             if (branchIdentifier.contains(splitOn)) {
                 return branchIdentifier.substring(branchIdentifier.indexOf(splitOn) + 1);
@@ -34,13 +39,37 @@ public class OntologyUtils {
 
     public static OntologyPortal getSourcePortalByAbbreviation(String abbreviation) {
         boolean isBioPortal = false;
-        for(AcceptedOntologies bioPortalOntologies : AcceptedOntologies.values()) {
-            if(bioPortalOntologies.getOntologyAbbreviation().equalsIgnoreCase(abbreviation)) {
+        for (AcceptedOntologies bioPortalOntologies : AcceptedOntologies.values()) {
+            if (bioPortalOntologies.getOntologyAbbreviation().equalsIgnoreCase(abbreviation)) {
                 isBioPortal = true;
                 break;
             }
         }
 
         return isBioPortal ? OntologyPortal.BIOPORTAL : OntologyPortal.OLS;
+    }
+
+    public static OntologySourceRefObject convertOntologyToOntologySourceReferenceObject(Ontology ontology) {
+
+        OntologySourceRefObject converted = new OntologySourceRefObject(
+                ontology.getOntologyAbbreviation(), "", ontology.getOntologyVersion(), ontology.getOntologyDisplayLabel());
+
+        converted.setSourceFile(
+                OntologyUtils.getSourceOntologyPortal(converted.getSourceVersion()) == OntologyPortal.BIOPORTAL
+                        ? BioPortalClient.DIRECT_ONTOLOGY_URL + converted.getSourceVersion()
+                        : OLSClient.DIRECT_ONTOLOGY_URL + converted.getSourceName());
+
+
+        return converted;
+    }
+
+    public static OntologyTerm convertOntologyBranchToOntologyTerm(OntologyBranch branch, OntologySourceRefObject ontologySource) {
+        OntologyTerm historyObject = new OntologyTerm();
+        historyObject.setOntologySourceAccession(branch.getBranchIdentifier());
+        historyObject.setOntologyTermName(branch.getBranchName());
+
+        historyObject.setOntologySourceInformation(ontologySource);
+
+        return historyObject;
     }
 }

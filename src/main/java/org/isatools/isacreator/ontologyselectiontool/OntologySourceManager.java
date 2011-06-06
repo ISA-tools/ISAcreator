@@ -41,6 +41,7 @@ import com.sun.tools.corba.se.idl.toJavaPortable.StringGen;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.util.*;
 
@@ -58,13 +59,13 @@ public class OntologySourceManager {
 
     private static Map<String, OntologySourceRefObject> completeOntologySourceDictionary = new HashMap<String, OntologySourceRefObject>();
 
-    private static Map<String, OntologyObject> ontologySelectionHistory = new HashMap<String, OntologyObject>();
+    private static Map<String, OntologyTerm> ontologySelectionHistory = new HashMap<String, OntologyTerm>();
 
-    public static Map<String, OntologyObject> getUserOntologyHistory() {
+    public static Map<String, OntologyTerm> getUserOntologyHistory() {
         return ontologySelectionHistory;
     }
 
-    public static void setOntologySelectionHistory(Map<String, OntologyObject> ontologySelectionHistory) {
+    public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
         OntologySourceManager.ontologySelectionHistory = ontologySelectionHistory;
     }
 
@@ -207,9 +208,18 @@ public class OntologySourceManager {
         usedOntologySources.get(investigationAccession).add(new OntologySourceRefObject("OBI", "", "", "Ontology for Biomedical Investigations"));
     }
 
-    public static void addToUserHistory(OntologyObject oo) {
+    public static void addToUserHistory(OntologyTerm oo) {
         if (!ontologySelectionHistory.containsKey(oo.getUniqueId())) {
             ontologySelectionHistory.put(oo.getUniqueId(), oo);
         }
+    }
+
+    public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {
+        for(OntologySourceRefObject ontologySourceRefObject : getAllOntologiesUsed()) {
+            if(source.equalsIgnoreCase(ontologySourceRefObject.getSourceName())) {
+                return ontologySourceRefObject;
+            }
+        }
+        return null;
     }
 }

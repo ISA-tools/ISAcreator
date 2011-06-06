@@ -41,11 +41,14 @@ package org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers;
 import bioontology.bioportal.searchBean.schema.SearchBeanDocument;
 import bioontology.bioportal.searchBean.schema.SearchResultListDocument;
 import bioontology.bioportal.searchBean.schema.SuccessDocument;
-import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
+import org.isatools.isacreator.ontologymanager.BioPortalClient;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalSearchResult;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,7 +75,7 @@ public class BioPortalSearchBeanResultHandler {
         return resultDocument;
     }
 
-    public Map<String, BioPortalOntology> getSearchResults(String fileLocation) {
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getSearchResults(String fileLocation) {
         SuccessDocument resultDocument = getDocument(fileLocation);
 
         BioPortalSearchResult result = new BioPortalSearchResult();
@@ -84,48 +87,48 @@ public class BioPortalSearchBeanResultHandler {
 
                 for (SearchResultListDocument.SearchResultList searchResult : searchResults) {
                     for (SearchBeanDocument.SearchBean searchBean : searchResult.getSearchBeanArray()) {
-                        BioPortalOntology ontology = createBioPortalOntologyFromSearchResult(searchBean);
-                        if (ontology != null) {
-                            result.addToResult(ontology, false);
+                        OntologyTerm ontologyTerm = createBioPortalOntologyFromSearchResult(searchBean);
+                        OntologySourceRefObject sourceRefObject = createOntologySourceReferenceFromSearchResult(searchBean);
+
+                        if (ontologyTerm != null) {
+                            ontologyTerm.setOntologySourceInformation(sourceRefObject);
+                            result.addToResult(sourceRefObject, ontologyTerm);
                         }
                     }
                 }
             }
         }
 
-        return result.getResult() == null ? new HashMap<String, BioPortalOntology>() : result.getResult();
+        return result.getResult() == null ? new HashMap<OntologySourceRefObject, List<OntologyTerm>>() : result.getResult();
     }
 
-    private BioPortalOntology createBioPortalOntologyFromSearchResult(SearchBeanDocument.SearchBean searchResult) {
-        BioPortalOntology ontology = new BioPortalOntology();
+    private OntologyTerm createBioPortalOntologyFromSearchResult(SearchBeanDocument.SearchBean searchResult) {
+        OntologyTerm ontology = new OntologyTerm();
 
         if (AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()) != null) {
-            ontology.setOntologyVersionId(searchResult.getOntologyVersionId());
             ontology.setOntologyTermName(searchResult.getPreferredName());
-            ontology.setOntologySource(AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()));
-            ontology.setOntologySourceAccession(processSourceAccession(searchResult.getConceptIdShort(), ontology.getOntologySource()));
+            ontology.setOntologySourceAccession(searchResult.getConceptIdShort());
             ontology.setOntologyPurl(searchResult.getConceptId());
+
             return ontology;
         }
 
         return null;
     }
 
-    /**
-     * Removes some elements from the conceptIds on some terms so they function properly.
-     *
-     * @param sourceAccession something like UO#UO:0000129
-     * @return cleaned version e.g. UO:0000129
-     */
-    private String processSourceAccession(String sourceAccession, String source) {
-        if (sourceAccession.contains("#")) {
-            sourceAccession = sourceAccession.substring(sourceAccession.lastIndexOf("#") + 1);
+    private OntologySourceRefObject createOntologySourceReferenceFromSearchResult(SearchBeanDocument.SearchBean searchResult) {
+        OntologySourceRefObject refObject = new OntologySourceRefObject();
+
+        if (AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()) != null) {
+            refObject.setSourceName(AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()));
+            refObject.setSourceDescription(searchResult.getOntologyDisplayLabel());
+            refObject.setSourceVersion(searchResult.getOntologyVersionId());
+            refObject.setSourceFile(BioPortalClient.DIRECT_ONTOLOGY_URL + searchResult.getOntologyVersionId());
+
+            return refObject;
         }
 
-        if (!sourceAccession.toLowerCase().contains(":")) {
-            sourceAccession = source + ":" + sourceAccession;
-        }
-        return sourceAccession;
+        return null;
     }
 
 }

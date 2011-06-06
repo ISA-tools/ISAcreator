@@ -57,7 +57,7 @@ import org.isatools.isacreator.io.UserProfileIO;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.qrcode.ui.QRCodeGeneratorUI;
 import org.isatools.isacreator.settings.SettingsUtil;
@@ -734,7 +734,7 @@ public class ISAcreator extends AniSheetableJFrame {
         glass.repaint();
     }
 
-    public static void setUserOntologyHistory(Map<String, OntologyObject> userOntologyHistory) {
+    public static void setUserOntologyHistory(Map<String, OntologyTerm> userOntologyHistory) {
         OntologySourceManager.setOntologySelectionHistory(userOntologyHistory);
     }
 

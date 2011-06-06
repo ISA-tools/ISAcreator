@@ -46,7 +46,7 @@ import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.io.OntologyLibrary;
 import org.isatools.isacreator.io.UserProfileIO;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -71,7 +71,7 @@ public class OntologySettings extends SettingsScreen {
 
     private JFileChooser jfc;
 
-    private Map<String, OntologyObject> userOntologyHistory;
+    private Map<String, OntologyTerm> userOntologyHistory;
 
     public OntologySettings(ISAcreatorMenu menu) {
         this.menu = menu;
@@ -198,7 +198,7 @@ public class OntologySettings extends SettingsScreen {
 
     private void updateListContents() {
         historyList.getItems().clear();
-        for (OntologyObject h : userOntologyHistory.values()) {
+        for (OntologyTerm h : userOntologyHistory.values()) {
             historyList.addItem(h.getUniqueId());
         }
     }
@@ -218,17 +218,17 @@ public class OntologySettings extends SettingsScreen {
     }
 
 
-    private void updateOntologyTermInfo(OntologyObject ot) {
+    private void updateOntologyTermInfo(OntologyTerm ot) {
         String labelContent = "<html> " +
                 "<head>" + getCSS() + "</head>" +
                 "<body>" +
                 "<span class=\"title\">select term information</span>" + "<br/>" +
                 "<span class=\"info\">term name: </span>" +
-                "<span class=\"info_text\">" + ot.getTerm() + "</span>" + "<br/>" +
+                "<span class=\"info_text\">" + ot.getOntologyTermName() + "</span>" + "<br/>" +
                 "<span class=\"info\">source ref: </span> " +
-                "<span class=\"info_text\">" + ot.getTermSourceRef() + "</span><br/>" +
+                "<span class=\"info_text\">" + ot.getOntologySource() + "</span><br/>" +
                 "<span class=\"info\">accession no: </div>" +
-                "<span class=\"info_text\">" + ot.getTermAccession() + "</span>" +
+                "<span class=\"info_text\">" + ot.getOntologySourceAccession() + "</span>" +
                 "</body>" +
                 "</html>";
 

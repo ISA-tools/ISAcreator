@@ -41,8 +41,8 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -226,7 +226,7 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyObject> history = OntologySourceManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologySourceManager.getUserOntologyHistory();
 
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
@@ -276,10 +276,10 @@ public class SpreadsheetFunctions {
                             String termAccession = "";
 
                             if (!GeneralUtils.isValueURL(val)) {
-                                OntologyObject oo = history.get(val);
+                                OntologyTerm oo = history.get(val);
 
                                 if (oo != null) {
-                                    termAccession = oo.getTermAccession();
+                                    termAccession = oo.getOntologySourceAccession();
                                 }
 
                                 if (val.contains(":")) {

@@ -37,7 +37,12 @@
 
 package org.isatools.isacreator.ontologymanager.bioportal.model;
 
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,29 +73,31 @@ import java.util.Map;
 
 
 public class BioPortalSearchResult {
-    private Map<String, BioPortalOntology> result;
+    private Map<OntologySourceRefObject, List<OntologyTerm>> result;
+
+    private Map<String, OntologySourceRefObject> sourceReferences;
 
     public BioPortalSearchResult() {
-        result = new HashMap<String, BioPortalOntology>();
+        result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+        sourceReferences = new HashMap<String, OntologySourceRefObject>();
     }
 
-    public Map<String, BioPortalOntology> getResult() {
-        return result == null ? new HashMap<String, BioPortalOntology>() : result;
+    public Map<OntologySourceRefObject, List<OntologyTerm>> getResult() {
+        return result == null ? new HashMap<OntologySourceRefObject, List<OntologyTerm>>() : result;
     }
 
-    public void addToResult(BioPortalOntology ontology, boolean useFilter) {
-        // Filter out bad ontologies
-        // todo may want to filter out non foundry ontologies from those served by ISAcreator
+    public void addToResult(OntologySourceRefObject referenceObject, OntologyTerm ontology) {
+
+        if (!sourceReferences.containsKey(referenceObject.getSourceName())) {
+            sourceReferences.put(referenceObject.getSourceName(), referenceObject);
+            result.put(referenceObject, new ArrayList<OntologyTerm>());
+        }
+
         if (ontology != null) {
             if (ontology.getOntologyTermName() != null) {
-                if (useFilter) {
-                    if (ontology.getOntologySource().equals("Ontology for Biomedical Investigations")) {
-                        result.put(ontology.getOntologySourceAccession(), ontology);
-                    }
-                } else {
-                    result.put(ontology.getOntologySourceAccession(), ontology);
-                }
+                result.get(sourceReferences.get(referenceObject.getSourceName())).add(ontology);
             }
         }
+
     }
 }

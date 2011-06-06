@@ -36,18 +36,19 @@
  */
 
 
-package org.isatools.isacreator.ontologymanager.bioportal.model;
+package org.isatools.isacreator.ontologymanager.common;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class BioPortalOntology {
+public class OntologyTerm {
 
-    private String ontologyVersionId;
-    private String ontologySource;
+    private OntologySourceRefObject ontologySourceInformation;
+
     private String ontologySourceAccession;
     private String ontologyTermName;
     private String purl;
@@ -55,27 +56,33 @@ public class BioPortalOntology {
     // extra terms for metadata processing
     private Map<String, String> comments;
 
-    public BioPortalOntology() {
+    public OntologyTerm() {
+    }
+
+    public OntologyTerm(String termName, String accession, OntologySourceRefObject ontologySourceRefObject) {
+        ontologyTermName = termName;
+        ontologySourceAccession = accession;
+        ontologySourceInformation = ontologySourceRefObject;
     }
 
     public String getOntologyVersionId() {
-        return ontologyVersionId;
-    }
-
-    public void setOntologyVersionId(String ontologyVersionId) {
-        this.ontologyVersionId = ontologyVersionId;
+        return ontologySourceInformation.getSourceVersion();
     }
 
     public String getOntologySource() {
-        return ontologySource;
-    }
-
-    public void setOntologySource(String ontologySource) {
-        this.ontologySource = ontologySource;
+        return ontologySourceInformation.getSourceName();
     }
 
     public String getOntologySourceAccession() {
         return ontologySourceAccession;
+    }
+
+    public void setOntologySourceInformation(OntologySourceRefObject ontologySourceInformation) {
+        this.ontologySourceInformation = ontologySourceInformation;
+    }
+
+    public OntologySourceRefObject getOntologySourceInformation() {
+        return ontologySourceInformation;
     }
 
     public void setOntologySourceAccession(String conceptIdShort) {
@@ -96,7 +103,6 @@ public class BioPortalOntology {
         if (ontologyTermName == null) {
             return null;
         } else {
-
             return ontologyTermName.contains(":")
                     ? ontologyTermName.substring(ontologyTermName.indexOf(":") + 1)
                     : ontologyTermName;
@@ -117,7 +123,7 @@ public class BioPortalOntology {
 
     @Override
     public String toString() {
-        return ontologyTermName.substring(ontologyTermName.indexOf(":") + 1) + " (" + ontologySourceAccession + ")";
+        return getOntologyTermName() + "(" + getOntologySource() + ":" + getOntologySourceAccession() + ")";
     }
 
     public void addToComments(String key, String value) {
@@ -130,6 +136,10 @@ public class BioPortalOntology {
 
     public Map<String, String> getComments() {
         return comments == null ? new HashMap<String, String>() : comments;
+    }
+
+    public String getUniqueId() {
+        return getOntologySource() + ":" + getOntologyTermName();
     }
 
 

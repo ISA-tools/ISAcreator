@@ -17,7 +17,7 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.ISAPair;
@@ -337,10 +337,10 @@ public class ISAtabImporter {
         }
     }
 
-    private void assignOntologiesToSession(List<OntologyObject> ontologiesUsed) {
+    private void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
 
-        for (OntologyObject oo : ontologiesUsed) {
-            if (!oo.getTerm().trim().equals("")) {
+        for (OntologyTerm oo : ontologiesUsed) {
+            if (!oo.getOntologyTermName().trim().equals("")) {
                 OntologySourceManager.addToUserHistory(oo);
             }
         }

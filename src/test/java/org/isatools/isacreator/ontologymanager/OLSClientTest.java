@@ -40,6 +40,7 @@ package org.isatools.isacreator.ontologymanager;
 
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -74,26 +75,24 @@ public class OLSClientTest {
         System.out.println("Found " + ontologyNames.size() + " ontology names\n");
     }
 
-    @Test
-    public void getTermByAccessionId() {
-        System.out.println("Testing ____getTermByAccessionId()____");
-
-        Map<String, String> matchingTerms = client.getTermByAccessionId(testOntologyAccession);
-
-        assertTrue("No matches found for " + testOntologyAccession, matchingTerms.size() > 0);
-
-        System.out.println("Found " + matchingTerms.values().size() + " matching terms in " + matchingTerms.keySet().size() + " ontologies \n");
-    }
 
     @Test
     public void getPartialNameFromSource() {
         System.out.println("Testing ____getPartialNameFromSource()____");
 
-        Map<String, String> matchingTerms = client.getTermsByPartialNameFromSource(testOntologyTerm, "ENVO", false);
+        Map<OntologySourceRefObject, List<OntologyTerm>> matchingTerms = client.getTermsByPartialNameFromSource(testOntologyTerm, "ENVO", false);
 
         assertTrue("No matches found for " + testOntologyTerm, matchingTerms.size() > 0);
 
         System.out.println("Found " + matchingTerms.values().size() + " matching terms in " + matchingTerms.keySet().size() + " ontologies \n");
+
+        for (OntologySourceRefObject source : matchingTerms.keySet()) {
+            System.out.println(source.getSourceName()  + " (" + source.getSourceVersion() + ")");
+
+            for(OntologyTerm term : matchingTerms.get(source)) {
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
+            }
+        }
     }
 
     @Test
@@ -104,10 +103,19 @@ public class OLSClientTest {
         RecommendedOntology ro1 = new RecommendedOntology(new Ontology("", "", "ENVO", "Environment Ontology"));
         ros.add(ro1);
 
-        Map<String, String> matchingTerms = client.getTermsByPartialNameFromSource(testOntologyTerm, ros);
+        Map<OntologySourceRefObject, List<OntologyTerm>> matchingTerms = client.getTermsByPartialNameFromSource(testOntologyTerm, ros);
+
+        System.out.println("Found " + matchingTerms.values().size() + " matching terms in " + matchingTerms.keySet().size() + " ontologies \n");
+
+        for (OntologySourceRefObject source : matchingTerms.keySet()) {
+            System.out.println(source.getSourceName()  + " (" + source.getSourceVersion() + ")");
+
+            for(OntologyTerm term : matchingTerms.get(source)) {
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
+            }
+        }
 
         assertTrue("No matches found for " + testOntologyTerm, matchingTerms.size() > 0);
 
-        System.out.println("Found " + matchingTerms.values().size() + " matching terms in " + matchingTerms.keySet().size() + " ontologies \n");
     }
 }

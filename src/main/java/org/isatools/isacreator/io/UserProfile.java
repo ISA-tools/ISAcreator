@@ -43,7 +43,7 @@ import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ import java.util.Map;
  * @author Eamonn Maguire
  */
 public class UserProfile implements Serializable {
-    private Map<String, OntologyObject> userHistory;
+    private Map<String, OntologyTerm> userHistory;
     private Map<String, OntologySourceRefObject> usedOntologySources;
     private List<StudySubData> previouslyUsedFactors;
     private List<StudySubData> previouslyUsedProtocols;
@@ -89,7 +89,7 @@ public class UserProfile implements Serializable {
         this.surname = surname;
         this.institution = institution;
         this.email = email;
-        userHistory = new HashMap<String, OntologyObject>();
+        userHistory = new HashMap<String, OntologyTerm>();
         previouslyUsedContacts = new ArrayList<StudySubData>();
         previouslyUsedFactors = new ArrayList<StudySubData>();
         previouslyUsedProtocols = new ArrayList<StudySubData>();
@@ -197,7 +197,7 @@ public class UserProfile implements Serializable {
         return usedOntologySources;
     }
 
-    public Map<String, OntologyObject> getUserHistory() {
+    public Map<String, OntologyTerm> getUserHistory() {
         return userHistory;
     }
 
@@ -230,7 +230,7 @@ public class UserProfile implements Serializable {
         this.usedOntologySources = usedOntologySources;
     }
 
-    public void setUserHistory(Map<String, OntologyObject> userHistory) {
+    public void setUserHistory(Map<String, OntologyTerm> userHistory) {
         this.userHistory = userHistory;
     }
 

@@ -75,6 +75,9 @@ public class OntologySourceRefObject extends ISASection implements Serializable 
         fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
     }
 
+
+
+
     public String getSourceDescription() {
         return fieldValues.get(SOURCE_DESCRIPTION);
     }
@@ -91,6 +94,10 @@ public class OntologySourceRefObject extends ISASection implements Serializable 
         return fieldValues.get(SOURCE_VERSION);
     }
 
+    public void setSourceName(String sourceName) {
+        fieldValues.put(SOURCE_NAME, sourceName);
+    }
+
     public void setSourceDescription(String sourceDescription) {
         fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
     }
@@ -105,18 +112,7 @@ public class OntologySourceRefObject extends ISASection implements Serializable 
 
     public String toString() {
 
-        StringBuffer stringRepresentation = new StringBuffer();
-
-        int count = 0;
-        for (String key : fieldValues.keySet()) {
-            stringRepresentation.append(key).append(": ").append(fieldValues.get(key));
-            if (count < fieldValues.size() - 1) {
-                stringRepresentation.append("\n");
-            }
-            count++;
-        }
-
-        return stringRepresentation.toString();
+        return getSourceName() + " - " + getSourceDescription();
 
     }
 }

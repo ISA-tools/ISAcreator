@@ -38,7 +38,7 @@
 package org.isatools.isacreator.io;
 
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -49,17 +49,17 @@ import java.util.Map;
  */
 
 public class OntologyLibrary implements Serializable {
-    private Map<String, OntologyObject> ontologies;
+    private Map<String, OntologyTerm> ontologies;
     private Map<String, OntologySourceRefObject> ontologySources;
 
-    public OntologyLibrary(Map<String, OntologyObject> ontologies,
+    public OntologyLibrary(Map<String, OntologyTerm> ontologies,
                            Map<String, OntologySourceRefObject> ontologySources) {
 
         this.ontologies = ontologies;
         this.ontologySources = ontologySources;
     }
 
-    public Map<String, OntologyObject> getOntologies() {
+    public Map<String, OntologyTerm> getOntologies() {
         return ontologies;
     }
 

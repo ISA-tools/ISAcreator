@@ -102,7 +102,6 @@ public class OntologiserAnnotationPane extends JPanel {
                         suggestedTermsList.clearSelection();
                         useAnnotationButton.setIcon(useTerm);
                         doNotUseAnnotationButton.setIcon(doNotUseTermOver);
-//                        checkAndDisplayAppropriateQuestion(currentlySelectedField.getMgRastTermMappedTo());
                     } else {
                         suggestedTermsList.setSelectedValue(currentlySelectedOntologyTerm.getAssignedOntology(), true);
                         useAnnotationButton.setIcon(useTermOver);
@@ -229,7 +228,9 @@ public class OntologiserAnnotationPane extends JPanel {
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                doNotUseAnnotationButton.setIcon(currentlySelectedOntologyTerm.getAssignedOntology() == null ? doNotUseTermOver : doNotUseTerm);
+
+                doNotUseAnnotationButton.setIcon((currentlySelectedOntologyTerm  == null
+                        || currentlySelectedOntologyTerm.getAssignedOntology() == null) ? doNotUseTermOver : doNotUseTerm);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {

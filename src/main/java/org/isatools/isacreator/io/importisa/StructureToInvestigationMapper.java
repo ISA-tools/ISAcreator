@@ -46,7 +46,7 @@ import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOn
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.GeneralUtils;
 import org.isatools.isacreator.utils.datastructures.ISAPair;
@@ -64,18 +64,20 @@ public class StructureToInvestigationMapper {
     private static Logger log = Logger.getLogger(StructureToInvestigationMapper.class.getName());
 
 
-    private List<OntologyObject> ontologyTermsDefined;
+    private List<OntologyTerm> ontologyTermsDefined;
     private Set<String> messages;
 
+    private Investigation investigation;
+
     public StructureToInvestigationMapper() {
-        ontologyTermsDefined = new ArrayList<OntologyObject>();
+        ontologyTermsDefined = new ArrayList<OntologyTerm>();
         messages = new HashSet<String>();
     }
 
     public ISAPair<Boolean, Investigation> createInvestigationFromDataStructure(
             OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> investigationStructure) {
 
-        Investigation investigation = null;
+        investigation = null;
 
         List<Study> studies = new ArrayList<Study>();
 
@@ -108,7 +110,7 @@ public class StructureToInvestigationMapper {
         List<Contact> contacts = new ArrayList<Contact>();
         List<Publication> publications = new ArrayList<Publication>();
 
-        Investigation investigation = null;
+        Investigation tmpInvestigation = null;
 
         OrderedMap<InvestigationFileSection, Set<String>> sectionFields = new ListOrderedMap<InvestigationFileSection, Set<String>>();
 
@@ -117,7 +119,7 @@ public class StructureToInvestigationMapper {
 
                 ISAPair<Set<String>, Investigation> processedInvestigationSection = processInvestigationSection(investigationSections.get(investigationSection));
                 sectionFields.put(investigationSection, processedInvestigationSection.fst);
-                investigation = processedInvestigationSection.snd;
+                tmpInvestigation = processedInvestigationSection.snd;
 
             } else if (investigationSection == InvestigationFileSection.ONTOLOGY_SECTION) {
 
@@ -139,15 +141,15 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        if (investigation != null) {
-            OntologySourceManager.setOntologiesUsed(investigation.getInvestigationId(), ontologySources);
-            investigation.addToPublications(publications);
-            investigation.addToContacts(contacts);
+        if (tmpInvestigation != null) {
+            OntologySourceManager.setOntologiesUsed(tmpInvestigation.getInvestigationId(), ontologySources);
+            tmpInvestigation.addToPublications(publications);
+            tmpInvestigation.addToContacts(contacts);
 
-            investigation.setReferenceObject(new DataEntryReferenceObject(sectionFields));
+            tmpInvestigation.setReferenceObject(new DataEntryReferenceObject(sectionFields));
         }
 
-        return investigation;
+        return tmpInvestigation;
     }
 
     private ISAPair<Set<String>, Investigation> processInvestigationSection(OrderedMap<String, List<String>> investigationSection) {
@@ -578,8 +580,8 @@ public class StructureToInvestigationMapper {
                             accToAdd = splitAccession[i];
                         }
 
-                        ontologyTermsDefined.add(new OntologyObject(
-                                splitTerms[i], accToAdd, splitSourceRefs[i]));
+                        ontologyTermsDefined.add(new OntologyTerm(
+                                splitTerms[i], accToAdd, getOntologySource(splitSourceRefs[i])));
 
                     }
 
@@ -601,14 +603,18 @@ public class StructureToInvestigationMapper {
 
                 if (!term.trim().equals("") &&
                         !sourceRef.trim().equals("")) {
-                    ontologyTermsDefined.add(new OntologyObject(
-                            term, accession, sourceRef));
+                    ontologyTermsDefined.add(new OntologyTerm(
+                            term, accession, getOntologySource(sourceRef)));
                 }
 
             }
         }
 
         return toReturn;
+    }
+
+    private OntologySourceRefObject getOntologySource(String source) {
+        return OntologySourceManager.getOntologySourceReferenceObjectByAbbreviation(source);
     }
 
 
@@ -651,12 +657,12 @@ public class StructureToInvestigationMapper {
         // now search through added ontology objects to determine which ontologies haven't been defined
         Set<String> missingOntologyObjects = new HashSet<String>();
 
-        for (OntologyObject oo : ontologyTermsDefined) {
-            if (!definedOntologySources.contains(oo.getTermSourceRef()) &&
-                    !oo.getTermSourceRef().equals("")) {
+        for (OntologyTerm oo : ontologyTermsDefined) {
+            if (!definedOntologySources.contains(oo.getOntologySource()) &&
+                    !oo.getOntologySource().equals("")) {
                 System.out.println(oo.getUniqueId());
                 if (!GeneralUtils.isValueURL(oo.getUniqueId())) {
-                    missingOntologyObjects.add(oo.getTermSourceRef());
+                    missingOntologyObjects.add(oo.getOntologySource());
                 }
             }
         }
@@ -680,7 +686,7 @@ public class StructureToInvestigationMapper {
         return messages;
     }
 
-    public List<OntologyObject> getOntologyTermsDefined() {
+    public List<OntologyTerm> getOntologyTermsDefined() {
         return ontologyTermsDefined;
     }
 }

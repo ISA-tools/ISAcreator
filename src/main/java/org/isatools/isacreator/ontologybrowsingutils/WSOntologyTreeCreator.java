@@ -9,6 +9,7 @@ import org.isatools.isacreator.ontologymanager.OLSClient;
 import org.isatools.isacreator.ontologymanager.OntologyQueryAdapter;
 import org.isatools.isacreator.ontologymanager.OntologyService;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.utils.StringProcessing;
 
@@ -86,7 +87,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
             System.out.println("Ontology version is: " + recommendedOntology.getOntology().getOntologyVersion());
             // if ontology has no branch specified, query the whole ontology.
-            Map<String, String> rootTerms;
+            Map<String, OntologyTerm> rootTerms;
 
             String nodeLabel = recommendedOntology.getOntology().getOntologyDisplayLabel();
 
@@ -126,9 +127,9 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
             // not root terms found
             if (rootTerms.size() == 0) {
                 if (recommendedOntology.getOntology().getOntologyAbbreviation().equalsIgnoreCase("newt")) {
-                    addTermToTree(ontologyNode, "NEWT cannot be loaded from the Ontology lookup service", "", recommendedOntology.getOntology());
+                    addTermToTree(ontologyNode, "NEWT cannot be loaded from the Ontology lookup service", new OntologyTerm(), recommendedOntology.getOntology());
                 } else {
-                    addTermToTree(ontologyNode, "Problem loading ontology from the ontology resource!", "", recommendedOntology.getOntology());
+                    addTermToTree(ontologyNode, "Problem loading ontology from the ontology resource!", new OntologyTerm(), recommendedOntology.getOntology());
                 }
             }
 
@@ -169,7 +170,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
         OntologyService service = getCorrectOntologyService(ontology);
 
-        Map<String, String> termChildren = service.getTermChildren(termAccession, getCorrectQueryString(service, ontology));
+        Map<String, OntologyTerm> termChildren = service.getTermChildren(termAccession, getCorrectQueryString(service, ontology));
 
         // add the level of non visible nodes
 
@@ -190,14 +191,14 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         return null;
     }
 
-    private void addTermToTree(String termId, String termName, Ontology ontology) {
+    private void addTermToTree(String termId, OntologyTerm termName, Ontology ontology) {
         addTermToTree(null, termId, termName, ontology);
     }
 
 
-    private void addTermToTree(DefaultMutableTreeNode parent, String termId, String termName, Ontology ontology) {
+    private void addTermToTree(DefaultMutableTreeNode parent, String termId, OntologyTerm termName, Ontology ontology) {
         DefaultMutableTreeNode childNode =
-                new DefaultMutableTreeNode(new OntologyTreeItem(new OntologyBranch(termId, termName), ontology));
+                new DefaultMutableTreeNode(new OntologyTreeItem(new OntologyBranch(termName.getOntologySourceAccession(), termName.getOntologyTermName()), ontology));
 
         if (parent == null) {
             parent = rootNode;
@@ -250,7 +251,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
                 if (node.isLeaf() && node.getAllowsChildren()) {
                     OntologyService service = getCorrectOntologyService(ontologyTerm.getOntology());
                     // load children. if no children, set allowsChildren to false
-                    Map<String, String> termChildren = service.getTermChildren(ontologyTerm.getBranch().getBranchIdentifier(),
+                    Map<String, OntologyTerm> termChildren = service.getTermChildren(ontologyTerm.getBranch().getBranchIdentifier(),
                             getCorrectQueryString(service, ontologyTerm.getOntology()));
 
                     if (termChildren.size() > 0) {

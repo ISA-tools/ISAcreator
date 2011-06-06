@@ -39,7 +39,7 @@
 package org.isatools.isacreator.ontologymanager.bioportal.utils;
 
 import org.isatools.isacreator.ontologymanager.BioPortalClient;
-import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -55,7 +55,7 @@ public class OntologyTermHarvestingPool implements Runnable {
 
     private BioPortalClient client;
     private String ontology;
-    private Map<String, BioPortalOntology> toProcess;
+    private Map<String, OntologyTerm> toProcess;
     private ExecutorService threadPool;
 
     private Thread executor;
@@ -65,7 +65,7 @@ public class OntologyTermHarvestingPool implements Runnable {
         threadPool = Executors.newFixedThreadPool(3);
     }
 
-    public void executeRequests(String ontology, Map<String, BioPortalOntology> toProcess) {
+    public void executeRequests(String ontology, Map<String, OntologyTerm> toProcess) {
         this.ontology = ontology;
         this.toProcess = toProcess;
         executor = new Thread(this);
@@ -87,12 +87,12 @@ public class OntologyTermHarvestingPool implements Runnable {
         }
 
         public void run() {
-            BioPortalOntology term = client.getTermInformation(termAccession, ontology);
+            OntologyTerm term = client.getTermInformation(termAccession, ontology);
             addToResults(termAccession, term);
         }
     }
 
-    private synchronized void addToResults(String termAccession, BioPortalOntology ontologyTerm) {
+    private synchronized void addToResults(String termAccession, OntologyTerm ontologyTerm) {
         toProcess.put(termAccession, ontologyTerm);
     }
 }

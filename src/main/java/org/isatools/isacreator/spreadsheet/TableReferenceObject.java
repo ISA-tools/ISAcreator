@@ -44,7 +44,9 @@ import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.configuration.TableConfiguration;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+
 
 import java.io.Serializable;
 import java.util.*;
@@ -65,7 +67,7 @@ public class TableReferenceObject implements Serializable {
     private Map<Integer, String[]> tableStructure;
     private Map<Integer, FieldObject> preprocessedTableFields;
     private Vector<String> preDefinedHeaders;
-    private Map<String, OntologyObject> definedOntologies = null;
+    private Map<String, OntologyTerm> definedOntologies = null;
     private Map<String, FieldObject> missingFields = null;
 
     // create protocols list, and a general structure which defines how table is to be laid out when being created by wizard
@@ -79,7 +81,7 @@ public class TableReferenceObject implements Serializable {
             fieldLookup.put(fo.getFieldName(), fo);
         }
 
-        definedOntologies = new HashMap<String, OntologyObject>();
+        definedOntologies = new HashMap<String, OntologyTerm>();
     }
 
     public List<Protocol> constructProtocolObjects() {
@@ -245,7 +247,7 @@ public class TableReferenceObject implements Serializable {
 
     public TableReferenceObject(String tableName) {
         this.tableName = tableName;
-        definedOntologies = new HashMap<String, OntologyObject>();
+        definedOntologies = new HashMap<String, OntologyTerm>();
     }
 
     public boolean acceptsFileLocations(String colName) {
@@ -302,7 +304,7 @@ public class TableReferenceObject implements Serializable {
 
                             if (!definedOntologies.containsKey(prevVal)) {
                                 definedOntologies.put(prevVal,
-                                        new OntologyObject(term, accession, source));
+                                        new OntologyTerm(term, accession, OntologySourceManager.getOntologySourceReferenceObjectByAbbreviation(source)));
                             }
                         }
                     }
@@ -398,7 +400,7 @@ public class TableReferenceObject implements Serializable {
         return "";
     }
 
-    public Map<String, OntologyObject> getDefinedOntologies() {
+    public Map<String, OntologyTerm> getDefinedOntologies() {
         return definedOntologies;
     }
 

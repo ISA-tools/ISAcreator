@@ -8,8 +8,8 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalOntology;
-import org.isatools.isacreator.ontologyselectiontool.OntologyObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class InvestigationAdaptor implements ContentAdaptor {
 
     public void replaceTerms(Set<OntologisedResult> annotations) {
 
-        Map<String, OntologyObject> mappingsForReplacement = new HashMap<String, OntologyObject>();
+        Map<String, OntologyTerm> mappingsForReplacement = new HashMap<String, OntologyTerm>();
 
         // for each annotation, if it has an ontology selected, use that and replace the values in the spreadsheet.
 
@@ -51,15 +51,16 @@ public class InvestigationAdaptor implements ContentAdaptor {
 
                 Ontology sourceOntology = annotation.getAssignedOntology().getOntologySource();
 
+                OntologySourceRefObject ontologySourceRefObject = OntologyUtils.convertOntologyToOntologySourceReferenceObject(sourceOntology);
+
                 // adding ontology source in case it has not already been added
                 OntologySourceManager.addToUsedOntologySources(investigation.getInvestigationId(),
-                        new OntologySourceRefObject(sourceOntology.getOntologyAbbreviation(), "",
-                                sourceOntology.getOntologyVersion(), sourceOntology.getOntologyDisplayLabel()));
+                        ontologySourceRefObject);
 
-                BioPortalOntology ontology = annotation.getAssignedOntology().getOntologyTerm();
+                OntologyTerm ontology = annotation.getAssignedOntology().getOntologyTerm();
 
                 // add the term to the ontology history.
-                OntologyObject ontologyObject = new OntologyObject(ontology.getOntologyTermName(), ontology.getOntologySourceAccession(), ontology.getOntologySource());
+                OntologyTerm ontologyObject = new OntologyTerm(ontology.getOntologyTermName(), ontology.getOntologySourceAccession(), ontologySourceRefObject);
 
                 mappingsForReplacement.put(annotation.getFreeTextTerm(), ontologyObject);
 
