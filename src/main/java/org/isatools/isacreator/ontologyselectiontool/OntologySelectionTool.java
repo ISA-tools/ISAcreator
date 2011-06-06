@@ -127,34 +127,31 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private int mode = SEARCH_MODE;
 
-    private ExtendedJList historyList;
+    private Map<OntologySourceRefObject, List<OntologyTerm>> result = null;
+    private Map<String, RecommendedOntology> recommendedOntologies;
 
-    private JTextField searchField, selectedTerm;
+    private boolean multipleTermsAllowed;
 
-    private FilterableJTree<OntologySourceRefObject, OntologyTerm> ontologySearchResultsTree;
-    private JTree browseRecommendedOntologyTree;
+    private ViewTermDefinitionUI viewTermDefinition;
+    private WSOntologyTreeCreator wsOntologyTreeCreator;
 
     private JPanel ontologyViewContainer;
     private JPanel searchUIContainer;
     private JPanel browseUIContainer;
     private JPanel historyUIContainer;
 
-    private WSOntologyTreeCreator wsOntologyTreeCreator;
+    private ExtendedJList historyList;
+    private JTextField searchField, selectedTerm;
+    private FilterableJTree<OntologySourceRefObject, OntologyTerm> ontologySearchResultsTree;
+    private JTree browseRecommendedOntologyTree;
 
-    private Map<OntologySourceRefObject, List<OntologyTerm>> result = null;
-
-    // maps an ontology id e.g. 1123 for OBI to it's version e.g. 40832
-    private static Map<String, String> ontologyIdToVersion = new HashMap<String, String>();
-
-    private Map<String, RecommendedOntology> recommendedOntologies;
-    private boolean multipleTermsAllowed;
-    private ViewTermDefinitionUI viewTermDefinition;
+    private JLabel searchOntologies, browseRecommendedOntologies, viewHistory;
 
     private OptionGroup<String> searchSpan;
 
     private boolean treeCreated = false;
 
-    private JLabel searchOntologies, browseRecommendedOntologies, viewHistory;
+    private Set<OntologyTerm> selectedTerms;
 
     /**
      * OntologySelectionTool constructor.
@@ -163,19 +160,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      * @param recommendedOntologies - the recommended ontology source e.g. EFO, UO, NEWT, CHEBI.
      */
     public OntologySelectionTool(boolean multipleTermsAllowed, Map<String, RecommendedOntology> recommendedOntologies) {
-        this.addWindowListener(this);
-
-        this.recommendedOntologies = recommendedOntologies;
-
-        ontologyViewContainer = new JPanel(new BorderLayout());
-        ontologyViewContainer.setPreferredSize(new Dimension(400, 170));
-
-        this.multipleTermsAllowed = multipleTermsAllowed;
-
         ResourceInjector.get("ontologyselectiontool-package.style").inject(this);
 
-        progressIndicator = new InfiniteProgressPanel(
-                "searching for matching ontologies");
+        this.addWindowListener(this);
+        this.recommendedOntologies = recommendedOntologies;
+        this.multipleTermsAllowed = multipleTermsAllowed;
+
+        selectedTerms = new HashSet<OntologyTerm>();
     }
 
     /**
@@ -188,6 +179,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setUndecorated(true);
         setAlwaysOnTop(true);
+
+        ontologyViewContainer = new JPanel(new BorderLayout());
+        ontologyViewContainer.setPreferredSize(new Dimension(400, 170));
+
+         progressIndicator = new InfiniteProgressPanel("searching for matching ontologies");
+
         createPanels();
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
         pack();
@@ -692,6 +689,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     private void confirmSelection() {
+        // todo add selected terms to the history here.
+
+        for(OntologyTerm selectedTerm : selectedTerms) {
+            addTermToHistory(selectedTerm);
+        }
+
         firePropertyChange("selectedOntology", "OLD_VALUE",
                 selectedTerm.getText());
         if (historyList.getSelectedIndex() != -1) {
@@ -739,18 +742,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     /**
-     * Check history to determine whether or not the term already exists
-     *
-     * @param accession the accession to uniquely identify an Ontology term.
-     * @return Boolean value represented by true if the term exists, and false otherwise.
-     */
-    private boolean checkHistoryForValue(String accession) {
-
-        OntologyTerm oo = OntologySourceManager.getUserOntologyHistory().get(accession);
-        return oo != null && oo.getOntologySourceAccession().equals(accession);
-    }
-
-    /**
      * Add a value to the selected terms box when multiple term selection is enabled.
      *
      * @param valToEnter - additional term to add to the selection.
@@ -773,28 +764,24 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      *
      * @param term - the Ontology Term to be added.
      */
-    private void addTerm(OntologySourceRefObject osro, OntologyTerm term) {
+    private void addTerm(OntologyTerm term) {
 
         if (multipleTermsAllowed) {
+            selectedTerms.add(term);
             addToMultipleTerms(term.getUniqueId());
         } else {
+            selectedTerms.clear();
+            selectedTerms.add(term);
             selectedTerm.setText(term.getUniqueId());
         }
 
-        // todo only add these terms, when it is properly selected...
-        // add ontology source to the OntologySources list if it doesn't already exist
-        addSourceToUsedOntologies(osro);
-
-        addTermToHistory(term);
     }
 
     private void addTermToHistory(OntologyTerm termInformation) {
-
-        if (!checkHistoryForValue(termInformation.getUniqueId())) {
             // add the item to the history list
-            OntologySourceManager.getUserOntologyHistory().put(termInformation.getUniqueId(), termInformation);
+            addSourceToUsedOntologies(termInformation.getOntologySourceInformation());
+            OntologySourceManager.addToUserHistory(termInformation);
             historyList.addItem(termInformation);
-        }
     }
 
 
@@ -804,30 +791,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                 OntologySourceManager.addToUsedOntologies(ontologySourceRefObject);
             }
         }
-    }
-
-    /**
-     * Take accession from the term, and then return the accession. normally, a term from the tool with have the term appended with << accession >>.
-     * This accession needs to be extracted.
-     *
-     * @param termWithAccession - String to extract the accession from.
-     * @return String
-     */
-    private String extractAccession(String termWithAccession) {
-        Pattern pattern = Pattern.compile(getAccessionPattern());
-        Matcher m = pattern.matcher(termWithAccession);
-        String toReturn = "";
-
-        if (m.find()) {
-            toReturn = termWithAccession.substring(m.start(), m.end());
-            toReturn = toReturn.replaceAll("(<<|>>)", "");
-        }
-
-        return toReturn;
-    }
-
-    private String getAccessionPattern() {
-        return "<<[\\s]*([a-zA-Z]*[_|:]*)*[a-zA-z0-9]*[\\s]*>>";
     }
 
     private String getRecommendedOntologyCacheIdentifier() {
@@ -1176,7 +1139,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         OntologyTerm ontologyTerm = (OntologyTerm) selectedNode.getUserObject();
 
                         if (event.getClickCount() == 1) {
-                            addTerm(ontologySource, ontologyTerm);
+
+                            addTerm(ontologyTerm);
                         }
 
                         if (OntologyUtils.getSourceOntologyPortal(ontologySource.getSourceVersion()) == OntologyPortal.BIOPORTAL) {
@@ -1193,7 +1157,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         if (selectedNode.isLeaf()) {
                             if (event.getClickCount() == 1) {
                                 OntologySourceRefObject ontologySourceRefObject = OntologyUtils.convertOntologyToOntologySourceReferenceObject(termNode.getOntology());
-                                addTerm(ontologySourceRefObject, OntologyUtils.convertOntologyBranchToOntologyTerm(termNode.getBranch(), ontologySourceRefObject));
+                                addTerm(OntologyUtils.convertOntologyBranchToOntologyTerm(termNode.getBranch(), ontologySourceRefObject));
                             }
                         }
 
