@@ -101,6 +101,12 @@ public class ISAtabImporter {
         File investigationFile = new File(parentDir);
 
         this.parentDirectoryPath = parentDir;
+
+        if (!investigationFile.isDirectory()) {
+            investigationFile = investigationFile.getParentFile();
+            this.parentDirectoryPath = investigationFile.getAbsolutePath();
+        }
+
         log.info("Parent directory is -> " + parentDir);
 
         boolean investigationFileFound = false;
@@ -108,6 +114,7 @@ public class ISAtabImporter {
         Set<String> messages = new HashSet<String>();
 
         if (investigationFile.exists()) {
+
             File[] isaDirectorFiles = investigationFile.listFiles();
 
             for (File isaFile : isaDirectorFiles) {
@@ -239,7 +246,7 @@ public class ISAtabImporter {
                 Set<String> messages = new HashSet<String>();
 
                 try {
-                    TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath +
+                    TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath + File.separator +
                             study.getStudySampleFileIdentifier(), studySampleReference);
 
                     if (builtReference != null) {
@@ -276,7 +283,7 @@ public class ISAtabImporter {
                 if (assayTableReferenceObject != null) {
                     try {
 
-                        TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath +
+                        TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath + File.separator +
                                 assay.getAssayReference(), assayTableReferenceObject);
 
                         if (builtReference != null) {
