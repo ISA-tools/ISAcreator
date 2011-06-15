@@ -65,8 +65,7 @@ public class ViewErrorPane extends JPanel implements TreeSelectionListener {
     private boolean poppedOut = false;
 
     @InjectedResource
-    private ImageIcon locateButton, locateButtonOver, problemsIdentifiedImage, warning_TopRight,
-            warning_BottomLeft, warning_BottomRight, popout, popoutOver;
+    private ImageIcon locateButton, locateButtonOver, popout, popoutOver;
 
     public ViewErrorPane(ISAcreator main) {
         this.main = main;
@@ -83,21 +82,6 @@ public class ViewErrorPane extends JPanel implements TreeSelectionListener {
     public void createGUI() {
         setBackground(UIHelper.BG_COLOR);
         setLayout(new BorderLayout());
-
-        JLabel problemsIdentifiedLabel = new JLabel(problemsIdentifiedImage,
-                JLabel.LEFT);
-        problemsIdentifiedLabel.setOpaque(false);
-
-        JLabel warningIcon = new JLabel(warning_TopRight,
-                JLabel.RIGHT);
-        warningIcon.setOpaque(false);
-
-        JPanel headerCont = new JPanel(new GridLayout(1, 2));
-        headerCont.setBackground(UIHelper.BG_COLOR);
-        headerCont.add(problemsIdentifiedLabel);
-        headerCont.add(warningIcon);
-
-        add(headerCont, BorderLayout.NORTH);
 
         DefaultMutableTreeNode treeInfo = new DefaultMutableTreeNode("nothing to report");
         errors = new JTree(treeInfo);
@@ -152,22 +136,6 @@ public class ViewErrorPane extends JPanel implements TreeSelectionListener {
             }
         });
 
-        JLabel cornerImageLeft = new JLabel(warning_BottomLeft,
-                JLabel.LEFT);
-        cornerImageLeft.setOpaque(false);
-
-        JLabel cornerImageRight = new JLabel(warning_BottomRight,
-                JLabel.LEFT);
-        cornerImageRight.setOpaque(false);
-
-        JPanel bottomCont = new JPanel(new GridLayout(1, 2));
-        bottomCont.setBackground(UIHelper.BG_COLOR);
-        bottomCont.add(cornerImageLeft);
-
-        bottomCont.add(bottomRightCorner);
-
-        add(bottomCont, BorderLayout.SOUTH);
-
         setVisible(false);
 
     }
@@ -181,10 +149,6 @@ public class ViewErrorPane extends JPanel implements TreeSelectionListener {
         errors.revalidate();
     }
 
-    public void removePopoutIcon() {
-        bottomRightCorner.setIcon(warning_BottomRight);
-        bottomRightCorner.removeMouseListener(bottomRightCorner.getMouseListeners()[0]);
-    }
 
     public void setPoppedOut(boolean poppedOut) {
         this.poppedOut = poppedOut;
@@ -228,7 +192,6 @@ public class ViewErrorPane extends JPanel implements TreeSelectionListener {
 
             });
         } else {
-            bottomRightCorner.setIcon(warning_BottomRight);
             if (bottomRightCorner.getMouseListeners().length > 0) {
                 bottomRightCorner.removeMouseListener(bottomRightCorner.getMouseListeners()[0]);
             }

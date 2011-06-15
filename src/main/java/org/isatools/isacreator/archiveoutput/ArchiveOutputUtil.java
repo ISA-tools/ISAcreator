@@ -57,7 +57,6 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * OutputISArchive class provides GUI to output the ISATAB files/Archive to a location.
- * todo look into this classes behaviour...not working with a dataset!
  *
  * @author Eamonn Maguire
  */
@@ -279,7 +278,6 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 }
             }
         } catch (Exception e) {
-            //handle exception
             log.error(e.getMessage());
         }
     }
@@ -293,8 +291,6 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
         if (!addedFilePaths.contains(file.getAbsolutePath())) {
 
             FileInputStream fis = new FileInputStream(file);
-
-
             out.putNextEntry(new ZipEntry(file.getName()));
 
             int length;
@@ -303,8 +299,8 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             }
 
             out.closeEntry();
-
             fis.close();
+
             addedFilePaths.add(file.getAbsolutePath());
             log.info("Successfully added " + file.getAbsolutePath());
         }
@@ -317,14 +313,13 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                                         Map<String, List<String>> filesToZip, File[] isaFiles) {
 
         missingFiles = new HashMap<String, List<ArchiveOutputError>>();
-
-        byte[] buffer = new byte[18024];
+        byte[] buffer = new byte[1024];
         ZipOutputStream out = null;
 
         try {
-
             archiveLocation = new File(directory +
                     File.separator + archiveName + ".zip");
+
             log.info("Attempting output to " + archiveLocation.getAbsolutePath());
             out = new ZipOutputStream(new FileOutputStream(archiveLocation));
 
@@ -333,7 +328,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
             // zip up the rest of the ISAfiles
             updateArchiveOutputStatusLabel("zipping files");
-            log.info("zZipping files");
+            log.info("Zipping files");
 
             for (File isafile : isaFiles) {
                 log.info("Attempting to zip " + isafile.getName());
@@ -349,6 +344,9 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 for (String containingFile : filesToZip.get(parentISAFile)) {
                     File f = new File(containingFile);
 
+                    // this will test if the file being mentioned is in a relative location to the directory, just in case!
+                    f = testIfRelativeOrAbsolutePath(f, isaFiles[0].getParentFile());
+
                     if (f.exists()) {
 
                         if (f.isDirectory()) {
@@ -356,13 +354,14 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                             zipDir(f.getName(), f, out, buffer);
                         } else {
                             log.info("Zipping file: " + f.getAbsolutePath());
+
+
                             updateArchiveOutputStatusLabel(
                                     "<html><b>Compressing:</b> " + f.getName() + "</html>");
                             statistics.addToNumberOfFiles(1);
                             statistics.addToUncompressedSize(f.length());
 
                             zipFile(f, out, buffer);
-                            out.close();
                         }
 
                     } else {
@@ -373,7 +372,6 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                     }
                 }
             }
-
 
             statistics.setArchive(archiveLocation);
             statistics.setEndTime(System.currentTimeMillis());
@@ -401,7 +399,23 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            if(out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                }
+            }
         }
+    }
+
+    private File testIfRelativeOrAbsolutePath(File file, File isaDirectory) {
+        if (!file.exists()) {
+            return new File(isaDirectory.getAbsolutePath() + File.separator + file.getName());
+        }
+
+        return file;
     }
 
 

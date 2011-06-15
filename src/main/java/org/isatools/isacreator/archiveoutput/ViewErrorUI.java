@@ -53,9 +53,6 @@ import java.awt.*;
  */
 public class ViewErrorUI extends JFrame {
 
-    @InjectedResource
-    private Image errorNavigationHeader, errorNavigationHeaderInactive;
-
     private ViewErrorPane ebp;
 
     public ViewErrorUI(ViewErrorPane ebp) {
@@ -63,8 +60,6 @@ public class ViewErrorUI extends JFrame {
         this.ebp = ebp;
 
         ResourceInjector.get("archiveoutput-package.style").inject(this);
-
-        ebp.removePopoutIcon();
 
         setUndecorated(true);
         setBackground(UIHelper.BG_COLOR);
@@ -80,7 +75,7 @@ public class ViewErrorUI extends JFrame {
     }
 
     public void createGUI() {
-        HUDTitleBar titlePanel = new HUDTitleBar(errorNavigationHeader, errorNavigationHeaderInactive);
+        HUDTitleBar titlePanel = new HUDTitleBar(null, null);
         add(titlePanel, BorderLayout.NORTH);
         titlePanel.installListeners();
 
