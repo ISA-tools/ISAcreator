@@ -46,7 +46,6 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-import org.isatools.isacreator.ontologyselectiontool.ResultCache;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.CollectionUtils;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
@@ -541,17 +540,24 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     public void removeFromTree(String elementName) {
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
 
+        String altElementName = "a_" + elementName + ".txt";
+
         Enumeration enumerate = selectedNode.breadthFirstEnumeration();
 
         while (enumerate.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumerate.nextElement();
 
-            if (node.toString().equals(elementName)) {
+            if (node.toString().equals(elementName) || node.toString().equals(altElementName)) {
+
                 overviewTreeModel.removeNodeFromParent(node);
 
                 break;
             }
         }
+
+
+
+        overviewTree.repaint();
     }
 
     /**

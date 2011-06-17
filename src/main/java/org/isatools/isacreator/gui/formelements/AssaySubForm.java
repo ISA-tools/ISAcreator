@@ -122,11 +122,13 @@ public class AssaySubForm extends SubForm implements Serializable {
                     model.addColumn(fieldType);
                     model.fireTableStructureChanged();
 
+                    reformPreviousContent();
+
                     return true;
                 }
 
             } else {
-                // todo make a nicer dialog for this...and add more explanation
+
                 JOptionPane optionPane = new JOptionPane(
                         "Problem occurred when attempting to add an Assay... " +
                                 "\n All fields for the assay definition are not complete!",
@@ -144,6 +146,8 @@ public class AssaySubForm extends SubForm implements Serializable {
                         .showJDialogAsSheet(optionPane.createDialog(this,
                                 "All fields not completed"));
             }
+
+
         }
 
         return false;

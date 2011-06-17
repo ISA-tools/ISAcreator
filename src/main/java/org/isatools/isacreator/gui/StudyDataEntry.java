@@ -38,7 +38,6 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.apache.xmlbeans.impl.common.IOUtil;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
@@ -567,8 +566,10 @@ public class StudyDataEntry extends DataEntryForm {
     public void removeAssay(String assayRef) {
         // remove assay from the tree
         getDataEntryEnvironment().removeFromTree(assayRef);
+
         // remove assay from the study
         getStudy().removeAssay(assayRef);
+
         // remove assay from investigation assay list.
         getDataEntryEnvironment().getInvestigation().getAssays().remove(assayRef);
     }
