@@ -41,14 +41,12 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.isatools.isaconfigurator.schema.*;
-import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.configuration.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +64,7 @@ import java.util.Map;
 public class ConfigXMLParser {
     private static Logger log = Logger.getLogger(ConfigXMLParser.class.getName());
 
+    private ConfigurationLoadingSource loadingSource;
     private String configDir;
     private List<MappingObject> mappings;
     private List<TableReferenceObject> tables;
@@ -74,6 +73,11 @@ public class ConfigXMLParser {
     private boolean problemsEncountered = false;
 
     public ConfigXMLParser(String configDir) {
+        this(ConfigurationLoadingSource.ISACREATOR, configDir);
+    }
+
+    public ConfigXMLParser(ConfigurationLoadingSource loadingSource, String configDir) {
+        this.loadingSource = loadingSource;
         this.configDir = configDir;
         mappings = new ArrayList<MappingObject>();
         tables = new ArrayList<TableReferenceObject>();
@@ -101,14 +105,17 @@ public class ConfigXMLParser {
             }
         } catch (XmlException e) {
             log.error("Please ensure you have provided a directory containing only valid configuration xml produced by ISAcreator Configurator!");
+            e.printStackTrace();
             problemLog = "Please ensure you have provided a directory containing only valid configuration xml produced by ISAcreator Configurator!";
             problemsEncountered = true;
         } catch (IOException e) {
             log.error("Problem encountered when reading files. Please ensure you have specified a valid directory!");
+            e.printStackTrace();
             problemLog = "Problem encountered when reading files. Please ensure you have specified a valid directory!";
             problemsEncountered = true;
         } catch (Exception e) {
             log.error("Please make sure the directory contains valid configuration files.");
+            e.printStackTrace();
             problemLog += "Please make sure the directory contains valid configuration files.";
             problemsEncountered = true;
         }
@@ -248,8 +255,16 @@ public class ConfigXMLParser {
                 colNo++;
             } else if (obj instanceof ProtocolFieldType) {
                 ProtocolFieldType protocolField = (ProtocolFieldType) obj;
-                FieldObject newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(), "",
-                        protocolField.getIsRequired(), false, false, false);
+
+                FieldObject newField;
+                if (loadingSource == ConfigurationLoadingSource.ISACREATOR) {
+                    newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(), "",
+                            protocolField.getIsRequired(), false, false, false);
+                } else {
+                    newField = new FieldObject(colNo, "Protocol REF", "Protocol for " + protocolField.getProtocolType(), DataTypes.STRING, protocolField.getProtocolType(),
+                        protocolField.getIsRequired(), false, false);
+                }
+
                 newField.setWizardTemplate(newField.getWizardTemplate());
 
                 fields.add(newField);

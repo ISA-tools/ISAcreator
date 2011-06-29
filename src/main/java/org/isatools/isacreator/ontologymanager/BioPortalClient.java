@@ -447,24 +447,8 @@ public class BioPortalClient implements OntologyService {
         return handler.parseOntologyParentPathFile(fileWithNameSpace.getAbsolutePath());
     }
 
-    public Map<String, OntologyTerm> getSearchResults() {
-        return searchResults;
-    }
-
     private String correctTermForHTTPTransport(String term) {
         return term.replaceAll("[\\s]+", "%20");
-    }
-
-    private Map<String, String> processBioPortalOntology(Map<String, OntologyTerm> toConvert) {
-        Map<String, String> convertedMap = new HashMap<String, String>();
-        for (String ontologyAccession : toConvert.keySet()) {
-            OntologyTerm bpo = toConvert.get(ontologyAccession);
-
-            if (bpo != null) {
-                convertedMap.put(bpo.getOntologySourceAccession(), bpo.getOntologyTermName());
-            }
-        }
-        return convertedMap;
     }
 
     public String getOntologyURL() {

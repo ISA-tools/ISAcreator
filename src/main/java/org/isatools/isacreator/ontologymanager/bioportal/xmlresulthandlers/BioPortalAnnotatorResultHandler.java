@@ -5,8 +5,8 @@ import bioontology.bioportal.annotator.schema.ConceptDocument;
 import bioontology.bioportal.annotator.schema.OntologyUsedBeanDocument;
 import bioontology.bioportal.annotator.schema.SuccessDocument;
 import org.isatools.isacreator.configuration.Ontology;
-import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.io.File;
 import java.util.HashMap;
@@ -83,7 +83,9 @@ public class BioPortalAnnotatorResultHandler {
     }
 
     private String extractOriginalSearchText(SuccessDocument resultDocument) {
-
+        if (resultDocument.getSuccess() == null) {
+            return "";
+        }
         return resultDocument.getSuccess().getData().getAnnotatorResultBean().getParameters().getTextToAnnotate();
     }
 

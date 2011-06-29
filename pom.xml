@@ -18,6 +18,18 @@
         </developer>
     </developers>
 
+    <licenses>
+        <license>
+            <name>CPAL</name>
+            <distribution>Version 1.0</distribution>
+            <url>http://isa-tools.org/licenses/ISAcreator-license.html</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>http://www.github.com/ISA-tools/ISAcreator</url>
+    </scm>
+
     <repositories>
 
         <repository>
@@ -39,11 +51,6 @@
         <repository>
             <id>java-dev</id>
             <url>http://download.java.net/maven/2/</url>
-        </repository>
-
-        <repository>
-            <id>repo1</id>
-            <url>http://repo1.maven.org/maven2/</url>
         </repository>
 
         <repository>
@@ -112,23 +119,23 @@
 
 
             <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>osxappbundle-maven-plugin</artifactId>-->
-                <!--<version>1.0-alpha-1</version>-->
-                <!--<configuration>-->
-                    <!--<mainClass>org.isatools.isacreator.gui.modeselection.ModeSelector</mainClass>-->
-                    <!--<iconFile>target/classes/images/icon/isacreator_icon.icns</iconFile>-->
-                    <!--<dictionaryFile>target/classes/packaging/Info.plist</dictionaryFile>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>bundle</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-               <!--</executions>-->
-           <!--</plugin>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>osxappbundle-maven-plugin</artifactId>-->
+            <!--<version>1.0-alpha-1</version>-->
+            <!--<configuration>-->
+            <!--<mainClass>org.isatools.isacreator.gui.modeselection.ModeSelector</mainClass>-->
+            <!--<iconFile>target/classes/images/icon/isacreator_icon.icns</iconFile>-->
+            <!--<dictionaryFile>target/classes/packaging/Info.plist</dictionaryFile>-->
+            <!--</configuration>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+            <!--<goal>bundle</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -353,6 +360,15 @@
             </dependencies>
         </profile>
     </profiles>
+
+
+    <distributionManagement>
+        <repository>
+            <id>oerc-repo</id>
+            <name>OeRC Maven repository</name>
+            <url>http://frog.oerc.ox.ac.uk:8080/artifactory/libs-release-local/</url>
+        </repository>
+    </distributionManagement>
 
 
 </project>

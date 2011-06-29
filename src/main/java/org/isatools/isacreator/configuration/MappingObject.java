@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.common;
+package org.isatools.isacreator.configuration;
 
 import java.io.Serializable;
 
@@ -59,6 +59,9 @@ public class MappingObject implements Serializable {
 
     private String refName;
     private String tableType;
+
+    private String dispatchTarget;
+    private String assayType;
 
 
     public MappingObject(String tableType, String measurementType, String measurementSource, String measurementAccession,
@@ -116,8 +119,22 @@ public class MappingObject implements Serializable {
     }
 
     public String toString() {
-        return "Table type -> " + getTableType() + " Measurement/Endpoint -> " +
-                getMeasurementEndpointType() + " Tech type -> " + technologyType +
-                " name -> " + getAssayName();
+        return getAssayName();
+    }
+
+    public void setDispatchTarget(String dispatchTarget) {
+        this.dispatchTarget = dispatchTarget;
+    }
+
+    public String getDispatchTarget() {
+        return dispatchTarget == null ? measurementType.equals("[Sample]") ? "" : DispatchTargets.GENERIC.toString() : dispatchTarget;
+    }
+
+    public String getAssayType() {
+        return assayType == null ? measurementType.equals("[Sample]") ? "" : AssayTypes.GENERIC.toString() : assayType;
+    }
+
+    public void setAssayType(String assayType) {
+        this.assayType = assayType;
     }
 }

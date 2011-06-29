@@ -49,14 +49,14 @@ import java.awt.event.MouseListener;
 
 
 /**
- * AniSheetableJFrame
+ * AnimatableJFrame
  * Provides functionality to allow JDialogs to scroll in and out like those in the Safari browser
  * Majority of code minus a few small changes from Marinacci, J. & Adamson, C.
  * Swing Hacks, O'Reilly 2005.
  *
  * @author Marinacci, J, Adamson, C.
  */
-public class AniSheetableJFrame extends JFrame implements ActionListener, MouseListener {
+public class AnimatableJFrame extends JFrame implements ActionListener, MouseListener {
     public static final int INCOMING = 1;
     public static final int OUTGOING = -1;
     public static final float ANIMATION_DURATION = 200f;
@@ -71,7 +71,7 @@ public class AniSheetableJFrame extends JFrame implements ActionListener, MouseL
     private int animationDirection;
     private long animationStart;
 
-    public AniSheetableJFrame() {
+    public AnimatableJFrame() {
         super();
         setupPane();
     }

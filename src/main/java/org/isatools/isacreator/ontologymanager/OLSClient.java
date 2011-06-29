@@ -40,11 +40,9 @@ package org.isatools.isacreator.ontologymanager;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
-import org.isatools.isacreator.configuration.OntologyFormats;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-import org.omg.CORBA.PRIVATE_MEMBER;
 import uk.ac.ebi.ook.web.services.Query;
 import uk.ac.ebi.ook.web.services.QueryServiceLocator;
 
@@ -436,6 +434,15 @@ public class OLSClient implements OntologyService {
         result.putAll(termParents);
 
         return result;
+    }
+
+    public List<Ontology> getAllOntologies() {
+        List<Ontology> ontologies = new ArrayList<Ontology>();
+        for(OntologySourceRefObject ontologySource : getOntologies().values()) {
+            ontologies.add(new Ontology("", ontologySource.getSourceVersion(), ontologySource.getSourceName(), ontologySource.getSourceDescription()));
+        }
+
+        return ontologies;
     }
 
     public String getOntologyURL() {

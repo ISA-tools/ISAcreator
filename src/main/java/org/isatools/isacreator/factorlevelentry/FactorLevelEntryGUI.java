@@ -45,7 +45,6 @@ import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.ontologymanager.OntologyConsumer;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.SpreadsheetCellPoint;
 import org.isatools.isacreator.spreadsheet.SpreadsheetModel;
@@ -54,7 +53,6 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;

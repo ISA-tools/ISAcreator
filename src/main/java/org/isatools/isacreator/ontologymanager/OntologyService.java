@@ -41,7 +41,6 @@ package org.isatools.isacreator.ontologymanager;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import sun.rmi.log.LogInputStream;
 
 import java.util.List;
 import java.util.Map;
@@ -97,5 +96,7 @@ public interface OntologyService {
     public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology);
 
     public String getOntologyURL();
+
+    public List<Ontology> getAllOntologies();
 
 }

@@ -162,6 +162,10 @@ public class FieldObject implements Serializable {
         return colNo;
     }
 
+    public void setColNo(int colNo) {
+        this.colNo = colNo;
+    }
+
     public DataTypes getDatatype() {
         return datatype;
     }
@@ -256,5 +260,33 @@ public class FieldObject implements Serializable {
 
     public void setNumberValidation(NumericValidation<? extends Number> numberValidation) {
         this.numberValidation = numberValidation;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDefaultVal(String defaultVal) {
+        this.defaultVal = defaultVal;
+    }
+
+    public void setDatatype(DataTypes datatype) {
+        this.datatype = datatype;
+    }
+
+    public void setAcceptsFileLocations(boolean acceptsFileLocations) {
+        this.acceptsFileLocations = acceptsFileLocations;
+    }
+
+    public void setAcceptsMultipleValues(boolean acceptsMultipleValues) {
+        this.acceptsMultipleValues = acceptsMultipleValues;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 }

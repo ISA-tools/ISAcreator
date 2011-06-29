@@ -1,3 +1,39 @@
+/**
+ ISAcreator is a component of the ISA software suite (http://www.isa-tools.org)
+
+ License:
+ ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
+
+ EXHIBIT A. CPAL version 1.0
+ “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ you may not use this file except in compliance with the License. You may obtain a
+ copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
+ The License is based on the Mozilla Public License version 1.1 but Sections
+ 14 and 15 have been added to cover use of software over a computer network and
+ provide for limited attribution for the Original Developer. In addition, Exhibit
+ A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an “AS IS” basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ the specific language governing rights and limitations under the License.
+
+ The Original Code is ISAcreator.
+ The Original Developer is the Initial Developer. The Initial Developer of the
+ Original Code is the ISA Team (Eamonn Maguire, eamonnmag@gmail.com;
+ Philippe Rocca-Serra, proccaserra@gmail.com; Susanna-Assunta Sansone, sa.sanson@gmail.com;
+ http://www.isa-tools.org). All portions of the code written by the ISA Team are
+ Copyright (c) 2007-2011 ISA Team. All Rights Reserved.
+
+ EXHIBIT B. Attribution Information
+ Attribution Copyright Notice: Copyright (c) 2008-2011 ISA Team
+ Attribution Phrase: Developed by the ISA Team
+ Attribution URL: http://www.isa-tools.org
+ Graphic Image provided in the Covered Code as file: http://isa-tools.org/licenses/icons/poweredByISAtools.png
+ Display of Attribution Information is required in Larger Works which are defined in the CPAL as a work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+
+ Sponsors:
+ The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
+ */
 package org.isatools.isacreator.ontologybrowsingutils;
 
 import org.isatools.isacreator.common.UIHelper;
@@ -31,7 +67,7 @@ import java.util.List;
  *         Date: 16/05/2011
  *         Time: 15:46
  */
-public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelectionListener, TreeModelListener, TreeExpansionListener {
+public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelectionListener, TreeModelListener, TreeExpansionListener, TreeSubject {
 
     private List<TreeObserver> observers;
 
@@ -40,8 +76,8 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     private Map<String, RecommendedOntology> ontologies;
 
     private Container browser;
-    private OntologyService bioportalClient;
-    private OntologyService olsClient;
+    private static OntologyService bioportalClient;
+    private static OntologyService olsClient;
     private JTree tree;
 
     public WSOntologyTreeCreator(Container browser, JTree tree) {
@@ -49,8 +85,8 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         this.tree = tree;
         observers = new ArrayList<TreeObserver>();
 
-        this.bioportalClient = new BioPortalClient();
-        this.olsClient = new OLSClient();
+        bioportalClient = new BioPortalClient();
+        olsClient = new OLSClient();
     }
 
     public DefaultMutableTreeNode createTree(Map<String, RecommendedOntology> ontologies) throws FileNotFoundException {
@@ -64,11 +100,8 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         tree.addTreeExpansionListener(this);
         tree.addTreeSelectionListener(this);
 
-//        if (ontology.getOntologyAbbreviation().equals("NEWT")) {
-//            rootNode.add(new DefaultMutableTreeNode("NEWT is not browseable"));
-//        } else {
+
         initiateOntologyVisualization();
-//        }
         return rootNode;
     }
 
@@ -198,7 +231,10 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
     private void addTermToTree(DefaultMutableTreeNode parent, String termId, OntologyTerm termName, Ontology ontology) {
         DefaultMutableTreeNode childNode =
-                new DefaultMutableTreeNode(new OntologyTreeItem(new OntologyBranch(termName.getOntologySourceAccession(), termName.getOntologyTermName()), ontology));
+                new DefaultMutableTreeNode(new OntologyTreeItem(
+                        new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
+                                ? termName.getOntologySource() + ":" + termName.getOntologySourceAccession()
+                                : termName.getOntologySourceAccession(), termName.getOntologyTermName()), ontology));
 
         if (parent == null) {
             parent = rootNode;
@@ -226,6 +262,40 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
                     preloadNextOntologyLevel(currentTerm.getBranch().getBranchIdentifier(), treeNode);
                 }
             }
+        }
+    }
+
+    public void expandTreeToReachTerm(OntologyTerm term) {
+        Enumeration treeVisitor = rootNode.breadthFirstEnumeration();
+
+        Ontology ontology = new Ontology("", term.getOntologyVersionId(), term.getOntologySourceInformation().getSourceName(), term.getOntologySourceInformation().getSourceDescription());
+
+        OntologyService service = getCorrectOntologyService(ontology);
+
+        Map<String, OntologyTerm> nodeParentsFromRoot = service.getAllTermParents(term.getOntologySourceAccession(), new OntologyQueryAdapter(ontology).getOntologyQueryString(OntologyQueryAdapter.GET_ID));
+        TreePath lastPath = null;
+
+        for (OntologyTerm node : nodeParentsFromRoot.values()) {
+            while (treeVisitor.hasMoreElements()) {
+                DefaultMutableTreeNode visitingNode = (DefaultMutableTreeNode) treeVisitor.nextElement();
+                if (visitingNode.getUserObject() instanceof OntologyBranch) {
+                    OntologyBranch termNode = (OntologyBranch) visitingNode.getUserObject();
+
+                    if (termNode.getBranchName().toLowerCase().equalsIgnoreCase(node.getOntologyTermName()) || termNode.getBranchIdentifier().equalsIgnoreCase(node.getOntologySourceAccession())) {
+                        TreePath pathToNode = new TreePath(visitingNode.getPath());
+                        tree.expandPath(pathToNode);
+                        tree.setSelectionPath(pathToNode);
+                        lastPath = pathToNode;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (lastPath != null) {
+
+            tree.scrollPathToVisible(lastPath);
+            tree.repaint();
         }
     }
 
@@ -318,5 +388,25 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
             e.printStackTrace();
         }
 
+    }
+
+     public void notifyObservers() {
+        for (TreeObserver observer : observers) {
+            observer.notifyOfSelection();
+        }
+    }
+
+    public void registerObserver(TreeObserver observer) {
+        if (observer != null) {
+            observers.add(observer);
+        }
+    }
+
+    public void unregisterObserver(TreeObserver observer) {
+        if (observer != null) {
+            if (observers.contains(observer)) {
+                observers.remove(observer);
+            }
+        }
     }
 }

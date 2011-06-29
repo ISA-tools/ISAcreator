@@ -46,7 +46,7 @@ import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
-import org.isatools.isacreator.effects.AniSheetableJFrame;
+import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
@@ -1031,7 +1031,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @return MainGUI object.
      */
-    public AniSheetableJFrame getParentFrame
+    public AnimatableJFrame getParentFrame
     () {
         return studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
     }

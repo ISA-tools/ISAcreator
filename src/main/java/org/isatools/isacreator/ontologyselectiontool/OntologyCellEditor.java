@@ -38,7 +38,6 @@
 package org.isatools.isacreator.ontologyselectiontool;
 
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.ontologymanager.OntologyConsumer;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;

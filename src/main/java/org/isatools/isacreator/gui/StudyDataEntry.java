@@ -39,9 +39,9 @@ package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
-import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;

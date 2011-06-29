@@ -42,10 +42,10 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputUtil;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
-import org.isatools.isacreator.common.MappingObject;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.configuration.io.ConfigXMLParser;
-import org.isatools.isacreator.effects.AniSheetableJFrame;
+import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.filechooser.FTPManager;
@@ -92,7 +92,7 @@ import java.util.List;
  *
  * @author Eamonn Maguire
  */
-public class ISAcreator extends AniSheetableJFrame {
+public class ISAcreator extends AnimatableJFrame {
 
     private static Logger log = Logger.getLogger(ISAcreator.class.getName());
 
@@ -118,11 +118,11 @@ public class ISAcreator extends AniSheetableJFrame {
     private List<MappingObject> mappings;
 
     private DataEntryEnvironment curDataEntryEnvironment;
-    private GridBagConstraints c;
+    private GridBagConstraints gridbagConstraints;
     private JLayeredPane currentPage = null;
     private JPanel glass;
 
-    private ISAcreatorMenu lp = null;
+    private ISAcreatorMenu isacreatorMenu = null;
     private UserProfile currentUser = null;
     private JMenuBar menuBar;
 
@@ -195,13 +195,13 @@ public class ISAcreator extends AniSheetableJFrame {
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
 
-        c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 0.0;
-        c.gridwidth = 2;
-        c.gridheight = 2;
-        c.gridx = 1;
-        c.gridy = 3;
+        gridbagConstraints = new GridBagConstraints();
+        gridbagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridbagConstraints.weightx = 0.0;
+        gridbagConstraints.gridwidth = 2;
+        gridbagConstraints.gridheight = 2;
+        gridbagConstraints.gridx = 1;
+        gridbagConstraints.gridy = 3;
 
         // this is a way of loading the Configurations through the API.
         if (configDir != null) {
@@ -237,11 +237,11 @@ public class ISAcreator extends AniSheetableJFrame {
         setupAboutPanel();
         // check that java version is supported!
         if (!checkSystemRequirements()) {
-            lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
-            lp = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
         }
-        setCurrentPage(lp);
+        setCurrentPage(isacreatorMenu);
         pack();
         setVisible(true);
 
@@ -643,9 +643,9 @@ public class ISAcreator extends AniSheetableJFrame {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 
-                lp.showGUI(ISAcreatorMenu.SHOW_MAIN);
-                lp.startAnimation();
-                setCurrentPage(lp);
+                isacreatorMenu.showGUI(ISAcreatorMenu.SHOW_MAIN);
+                isacreatorMenu.startAnimation();
+                setCurrentPage(isacreatorMenu);
 
             }
         });
@@ -678,9 +678,9 @@ public class ISAcreator extends AniSheetableJFrame {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                lp.showGUI(ISAcreatorMenu.SHOW_LOGIN);
-                lp.startAnimation();
-                setCurrentPage(lp);
+                isacreatorMenu.showGUI(ISAcreatorMenu.SHOW_LOGIN);
+                isacreatorMenu.startAnimation();
+                setCurrentPage(isacreatorMenu);
             }
         });
     }
@@ -727,7 +727,7 @@ public class ISAcreator extends AniSheetableJFrame {
         }
         glass = (JPanel) getGlassPane();
         glass.setLayout(new GridBagLayout());
-        glass.add(panel, c);
+        glass.add(panel, gridbagConstraints);
         glass.setBackground(new Color(255, 255, 255, 10));
         glass.setVisible(true);
         glass.revalidate();

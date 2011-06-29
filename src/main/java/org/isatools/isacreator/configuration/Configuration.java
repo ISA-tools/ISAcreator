@@ -37,8 +37,6 @@
 
 package org.isatools.isacreator.configuration;
 
-import org.isatools.isacreator.common.MappingObject;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

@@ -41,7 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.net.ftp.FTPFile;
 import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.AniSheetableJFrame;
+import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
@@ -72,7 +72,7 @@ import java.util.Enumeration;
  * creating multiple selections of files for subsequent entry into a table or list, sorting of files by name,
  * reordering them for entry into the list, and so forth.
  */
-public class FileChooserUI extends AniSheetableJFrame implements WindowListener {
+public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
 
     public static final int WIDTH = 530;

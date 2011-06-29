@@ -4,7 +4,7 @@ import org.apache.commons.collections15.OrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.model.ISAFileType;
-import org.isatools.isacreator.common.MappingObject;
+import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
@@ -16,7 +16,6 @@ import org.isatools.isacreator.io.importisa.investigationproperties.Investigatio
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
