@@ -151,27 +151,31 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
             rootNode.add(ontologyNode);
 
-
+            boolean addedTerms = false;
             // update the tree
             for (String termId : rootTerms.keySet()) {
-                addTermToTree(ontologyNode, termId, rootTerms.get(termId), recommendedOntology.getOntology());
-            }
-
-            // not root terms found
-            if (rootTerms.size() == 0) {
-                if (recommendedOntology.getOntology().getOntologyAbbreviation().equalsIgnoreCase("newt")) {
-                    addTermToTree(ontologyNode, "NEWT cannot be loaded from the Ontology lookup service", new OntologyTerm(), recommendedOntology.getOntology());
-                } else {
-                    addTermToTree(ontologyNode, "Problem loading ontology from the ontology resource!", new OntologyTerm(), recommendedOntology.getOntology());
+                if (termId != null && !termId.equalsIgnoreCase("")) {
+                    addedTerms = true;
+                    addTermToTree(ontologyNode, rootTerms.get(termId), recommendedOntology.getOntology());
                 }
             }
 
+            if (recommendedOntology.getOntology().getOntologyAbbreviation().equalsIgnoreCase("newt")) {
+                addInformationToTree(ontologyNode, "NEWT cannot be loaded from the Ontology lookup service");
+            }
+
+            if (!addedTerms) {
+                if (service instanceof BioPortalClient) {
+                    addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " (version "
+                            + recommendedOntology.getOntology().getOntologyVersion() + ") from BioPortal!");
+                } else {
+                    addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " from OLS");
+                }
+            }
         }
 
         updateTree();
         browser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-
     }
 
     private OntologyService getCorrectOntologyService(Ontology ontology) {
@@ -206,11 +210,9 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         Map<String, OntologyTerm> termChildren = service.getTermChildren(termAccession, getCorrectQueryString(service, ontology));
 
         // add the level of non visible nodes
-
         for (String accession : termChildren.keySet()) {
-            addTermToTree(parentTerm, accession, termChildren.get(accession), ontology);
+            addTermToTree(parentTerm, termChildren.get(accession), ontology);
         }
-
 
         browser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
@@ -224,12 +226,17 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         return null;
     }
 
-    private void addTermToTree(String termId, OntologyTerm termName, Ontology ontology) {
-        addTermToTree(null, termId, termName, ontology);
+    private void addInformationToTree(DefaultMutableTreeNode parent, String information) {
+        DefaultMutableTreeNode childNode =
+                new DefaultMutableTreeNode(information);
+
+        if (parent == null) {
+            parent = rootNode;
+        }
+        treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
-
-    private void addTermToTree(DefaultMutableTreeNode parent, String termId, OntologyTerm termName, Ontology ontology) {
+    private void addTermToTree(DefaultMutableTreeNode parent, OntologyTerm termName, Ontology ontology) {
         DefaultMutableTreeNode childNode =
                 new DefaultMutableTreeNode(new OntologyTreeItem(
                         new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
@@ -313,7 +320,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
             OntologyTreeItem ontologyTerm = (OntologyTreeItem) node.getUserObject();
 
             // tell the observers that an item has been selected.
-
+            notifyObservers();
             // load the children and the meta data, unless the term is the 'no roots defined' dummy term
             if (ontologyTerm != null && !ontologyTerm.getBranch().getBranchIdentifier().equalsIgnoreCase("No Root Terms Defined!")) {
 
@@ -380,7 +387,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
             Map<String, RecommendedOntology> ontologies = new HashMap<String, RecommendedOntology>();
 
             ontologies.put("EFO", new RecommendedOntology(new Ontology("1136", "45659", "EFO", "Experimental Factor Ontology"), new OntologyBranch("span:ProcessualEntity", "process")));
-            ontologies.put("CHEBI", new RecommendedOntology(new Ontology("1007", "45734", "ChEBI", "Chemicals of Biological Interest")));
+            ontologies.put("CHEBI", new RecommendedOntology(new Ontology("1007", "45788", "ChEBI", "Chemicals of Biological Interest")));
             ontologies.put("FBsp", new RecommendedOntology(new Ontology("", "Jun 2010", "FBsp", "Fly Taxonomy"), new OntologyBranch("FBsp:10000001", "taxon")));
 
             wsOntologyTreeCreator.createTree(ontologies);
@@ -390,7 +397,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
     }
 
-     public void notifyObservers() {
+    public void notifyObservers() {
         for (TreeObserver observer : observers) {
             observer.notifyOfSelection();
         }

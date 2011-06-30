@@ -137,13 +137,14 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
     public void endElement(String namespaceURI, String localName,
                            String qName) throws SAXException {
         if (qName.equalsIgnoreCase("ontologyBean")) {
-            // ONLY ADD OBI TO THE ONTOLOGY LIST!
+
             for (AcceptedOntologies ontology : AcceptedOntologies.values()) {
                 if (ontology.toString().equals(currentOntologyEntry.getOntologyID())) {
                     result.add(currentOntologyEntry);
                     break;
                 }
             }
+
             currentReadStatus = IGNORE_READ;
         }
     }

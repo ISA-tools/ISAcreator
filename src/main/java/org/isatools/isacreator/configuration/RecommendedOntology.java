@@ -76,10 +76,7 @@ public class RecommendedOntology implements Serializable {
 
     @Override
     public String toString() {
-        return "RecommendedOntology{" +
-                "branchToSearchUnder=" + branchToSearchUnder +
-                ", ontology=" + ontology +
-                '}';
+        return ontology.getOntologyDisplayLabel();
     }
 
 
