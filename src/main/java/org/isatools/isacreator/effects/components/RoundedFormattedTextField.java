@@ -57,12 +57,14 @@ public class RoundedFormattedTextField extends JFormattedTextField {
     private Color backgroundColor;
 
     public RoundedFormattedTextField(NumberFormat format) {
-        this(format, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
+        this(format, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR, UIHelper.DARK_GREEN_COLOR);
     }
 
-    public RoundedFormattedTextField(NumberFormat format, Color backgroundColor) {
+    public RoundedFormattedTextField(NumberFormat format, Color backgroundColor, Color foregroundColor) {
         super(format);
         this.backgroundColor = backgroundColor;
+
+        setForeground(foregroundColor);
         setOpaque(false);
         setBorder(new EmptyBorder(3, 5, 3, 5));
     }

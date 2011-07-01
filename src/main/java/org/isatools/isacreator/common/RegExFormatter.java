@@ -39,6 +39,7 @@ package org.isatools.isacreator.common;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatter;
+import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -55,16 +56,35 @@ public class RegExFormatter extends DefaultFormatter {
     private Matcher matcher;
     private Pattern pattern;
 
-    public RegExFormatter() {
+    private Color foreground = UIHelper.BG_COLOR;
+    private Color warningForeground = UIHelper.BG_COLOR;
+    private Color backgound = UIHelper.DARK_GREEN_COLOR;
+    private Color warningBackground = UIHelper.RED_COLOR;
+
+    public RegExFormatter(String pattern) {
         super();
+        setPattern(Pattern.compile(pattern));
     }
 
     public RegExFormatter(String pattern, JFormattedTextField dce, boolean discardOnInvalid)
             throws PatternSyntaxException {
-        this();
+        this(pattern);
         this.dce = dce;
         this.discardOnInvalid = discardOnInvalid;
-        setPattern(Pattern.compile(pattern));
+
+    }
+
+    public RegExFormatter(String pattern, JFormattedTextField dce, boolean discardOnInvalid,
+                          Color foreground, Color warningForeground,  Color background, Color warningBackground)
+            throws PatternSyntaxException {
+        this(pattern);
+        this.dce = dce;
+        this.discardOnInvalid = discardOnInvalid;
+
+        this.foreground = foreground;
+        this.warningForeground = warningForeground;
+        this.backgound = background;
+        this.warningBackground = warningBackground;
     }
 
     protected Matcher getMatcher() {
@@ -91,14 +111,14 @@ public class RegExFormatter extends DefaultFormatter {
         if (matcher.matches()) {
             setMatcher(matcher);
             // set text to be green
-            dce.setForeground(UIHelper.BG_COLOR);
-            dce.setBackground(UIHelper.DARK_GREEN_COLOR);
+            dce.setForeground(foreground);
+            dce.setBackground(backgound);
 
             return text;
         } else {
             // set text to be red when it's not correct
-            dce.setForeground(UIHelper.BG_COLOR);
-            dce.setBackground(UIHelper.RED_COLOR);
+            dce.setForeground(warningForeground);
+            dce.setBackground(warningBackground);
 
             if (discardOnInvalid) {
                 return "";
