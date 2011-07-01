@@ -58,8 +58,8 @@ public class BioPortalClientTest {
 
     private static BioPortalClient client = new BioPortalClient();
     public static String testOntologyID = "1136";
-    public static String testTermAccession = "421563008";
-    public static String testOntologyVersion = "45155";
+    public static String testTermAccession = "efo:EFO_0000428";
+    public static String testOntologyVersion = "45781";
     public static String testSearchTerm = "dose";
 
     @Test
@@ -74,6 +74,18 @@ public class BioPortalClientTest {
         for (Ontology ontology : ontologies) {
             System.out.println(ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel() + " -> " + ontology.getOntologyVersion());
         }
+    }
+
+    @Test
+    public void getTermMetadata() {
+        System.out.println("_____Testing getTermMetadata()____");
+
+        OntologyTerm term = client.getTermInformation(testTermAccession, testOntologyVersion);
+
+        assertTrue("No metadata found for " + testOntologyID, term != null);
+
+        System.out.println("Found " + term.getComments().size() + " properties for " + term.getOntologyTermName());
+
     }
 
     @Test
@@ -107,9 +119,9 @@ public class BioPortalClientTest {
         assertTrue("No results found for " + testSearchTerm + " in " + testOntologyID, result.size() > 0);
 
         for (OntologySourceRefObject source : result.keySet()) {
-            System.out.println(source.getSourceName()  + " (" + source.getSourceVersion() + ")");
+            System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
 
-            for(OntologyTerm term : result.get(source)) {
+            for (OntologyTerm term : result.get(source)) {
                 System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
             }
         }
@@ -119,11 +131,27 @@ public class BioPortalClientTest {
 
     @Test
     public void getOntologyRoots() {
+        System.out.println("_____Testing getOntologyRoots()____");
         Map<String, OntologyTerm> ontologyRoots = client.getOntologyRoots(testOntologyVersion);
 
         assertTrue("No ontology roots found for " + testOntologyID, ontologyRoots.size() > 0);
 
         System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyID);
+    }
+
+    @Test
+    public void getTermParents() {
+        System.out.println("_____Testing getTermParents()____");
+
+        Map<String, OntologyTerm> parentTerms = client.getAllTermParents(testTermAccession, testOntologyVersion);
+
+        assertTrue("No parents roots found for " + testTermAccession, parentTerms.size() > 0);
+
+        for (OntologyTerm term : parentTerms.values()) {
+            System.out.println(term);
+        }
+
+        System.out.println("Found " + parentTerms.size() + " parents for 45781");
     }
 
 

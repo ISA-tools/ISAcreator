@@ -47,6 +47,8 @@ import java.util.Map;
 
 public class OntologyTerm {
 
+    public static final String THING = "Thing";
+
     private OntologySourceRefObject ontologySourceInformation;
 
     private String ontologySourceAccession;
@@ -66,10 +68,16 @@ public class OntologyTerm {
     }
 
     public String getOntologyVersionId() {
+        if (ontologySourceInformation == null) {
+            return "";
+        }
         return ontologySourceInformation.getSourceVersion();
     }
 
     public String getOntologySource() {
+        if (ontologySourceInformation == null) {
+            return "";
+        }
         return ontologySourceInformation.getSourceName();
     }
 
@@ -123,7 +131,7 @@ public class OntologyTerm {
 
     @Override
     public String toString() {
-        return getOntologyTermName() + "(" + getOntologySource() + ":" + getOntologySourceAccession() + ")";
+        return getOntologyTermName() + "(" + getOntologySourceAccession() + ")";
     }
 
     public void addToComments(String key, String value) {
@@ -139,7 +147,14 @@ public class OntologyTerm {
     }
 
     public String getUniqueId() {
-        return getOntologySource() + ":" + getOntologyTermName();
+
+        String ontologySource = getOntologySource();
+
+        if(!ontologySource.equals("")) {
+            return ontologySource + ":" + getOntologyTermName();
+        }
+
+        return getOntologyTermName();
     }
 
 

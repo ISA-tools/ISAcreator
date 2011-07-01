@@ -39,20 +39,11 @@
 package org.isatools.isacreator.ontologymanager;
 
 import org.isatools.isacreator.configuration.Ontology;
-import org.isatools.isacreator.configuration.OntologyFormats;
-
-/**
- * OntologyQueryAdapter
- *
- * @author eamonnmaguire
- * @date Feb 25, 2010
- */
-
+import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
+import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 
 public class OntologyQueryAdapter {
 
-
-    public static final int DEFAULT = 0;
     public static final int GET_ID = 1;
     public static final int GET_VERSION = 2;
 
@@ -64,12 +55,10 @@ public class OntologyQueryAdapter {
 
     public String getOntologyQueryString(int type) {
 
-
-        if (ontology.getFormat() == OntologyFormats.OBO) {
+        if(OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS) {
             return ontology.getOntologyAbbreviation();
         } else {
             switch (type) {
-
                 case GET_ID:
                     return ontology.getOntologyID();
 

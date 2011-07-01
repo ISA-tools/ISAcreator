@@ -42,7 +42,6 @@ import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.isatools.isacreator.ontologymanager.OLSClient;
-import org.isatools.isacreator.ontologymanager.OntologyQueryAdapter;
 import org.isatools.isacreator.ontologymanager.OntologyService;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -236,17 +235,19 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
-    private void addTermToTree(DefaultMutableTreeNode parent, OntologyTerm termName, Ontology ontology) {
-        DefaultMutableTreeNode childNode =
-                new DefaultMutableTreeNode(new OntologyTreeItem(
-                        new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
-                                ? termName.getOntologySource() + ":" + termName.getOntologySourceAccession()
-                                : termName.getOntologySourceAccession(), termName.getOntologyTermName()), ontology));
+    private void addTermToTree(DefaultMutableTreeNode parent, OntologyTerm ontologyTerm, Ontology ontology) {
+        if (ontologyTerm != null) {
+            DefaultMutableTreeNode childNode =
+                    new DefaultMutableTreeNode(new OntologyTreeItem(
+                            new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
+                                    ? ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession()
+                                    : ontologyTerm.getOntologySourceAccession(), ontologyTerm.getOntologyTermName()), ontology));
 
-        if (parent == null) {
-            parent = rootNode;
+            if (parent == null) {
+                parent = rootNode;
+            }
+            treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
         }
-        treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
     public void treeExpanded(TreeExpansionEvent treeExpansionEvent) {
@@ -279,16 +280,19 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
         OntologyService service = getCorrectOntologyService(ontology);
 
-        Map<String, OntologyTerm> nodeParentsFromRoot = service.getAllTermParents(term.getOntologySourceAccession(), new OntologyQueryAdapter(ontology).getOntologyQueryString(OntologyQueryAdapter.GET_ID));
+        Map<String, OntologyTerm> nodeParentsFromRoot = service.getAllTermParents((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
+                ? term.getOntologySource() + ":" + term.getOntologySourceAccession()
+                : term.getOntologySourceAccession(), service instanceof OLSClient ? term.getOntologySource() : term.getOntologySourceInformation().getSourceVersion());
         TreePath lastPath = null;
 
         for (OntologyTerm node : nodeParentsFromRoot.values()) {
             while (treeVisitor.hasMoreElements()) {
                 DefaultMutableTreeNode visitingNode = (DefaultMutableTreeNode) treeVisitor.nextElement();
-                if (visitingNode.getUserObject() instanceof OntologyBranch) {
-                    OntologyBranch termNode = (OntologyBranch) visitingNode.getUserObject();
+                if (visitingNode.getUserObject() instanceof OntologyTreeItem) {
+                    OntologyTreeItem termNode = (OntologyTreeItem) visitingNode.getUserObject();
 
-                    if (termNode.getBranchName().toLowerCase().equalsIgnoreCase(node.getOntologyTermName()) || termNode.getBranchIdentifier().equalsIgnoreCase(node.getOntologySourceAccession())) {
+                    if (termNode.getBranch().getBranchName().toLowerCase().equalsIgnoreCase(node.getOntologyTermName())
+                            || termNode.getBranch().getBranchIdentifier().equalsIgnoreCase(node.getOntologySourceAccession())) {
                         TreePath pathToNode = new TreePath(visitingNode.getPath());
                         tree.expandPath(pathToNode);
                         tree.setSelectionPath(pathToNode);

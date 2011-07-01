@@ -58,7 +58,6 @@ import java.util.Set;
 public class BioPortalClassBeanResultHandler {
 
 
-
     public SuccessDocument getDocument(String fileLocation) {
         SuccessDocument resultDocument = null;
         try {
@@ -123,13 +122,13 @@ public class BioPortalClassBeanResultHandler {
                                     OntologyTerm ontology = createOntologyFromClassBean(classBeanItem);
 
                                     result.put(classBeanItem.getIdArray(0), ontology);
-                                    for(RelationsDocument.Relations classBeanRelation :classBeanItem.getRelationsArray()) {
-                                        for(EntryDocument.Entry relationEntry : classBeanRelation.getEntryArray()) {
-                                            if(relationEntry.getStringArray(0).equals("ChildCount")) {
+                                    for (RelationsDocument.Relations classBeanRelation : classBeanItem.getRelationsArray()) {
+                                        for (EntryDocument.Entry relationEntry : classBeanRelation.getEntryArray()) {
+                                            if (relationEntry.getStringArray(0).equals("ChildCount")) {
 
 
                                                 // if there are no children, add the term accession to quicken up later queries
-                                                if(relationEntry.getInt().intValue() == 0) {
+                                                if (relationEntry.getInt().intValue() == 0) {
                                                     termHasNoChildren.add(ontology.getOntologySourceAccession());
                                                     break;
                                                 }
@@ -158,21 +157,32 @@ public class BioPortalClassBeanResultHandler {
             return result;
         }
 
-        ClassBeanDocument.ClassBean[] definedClasses = resultDocument.getSuccess().getData().getList().getClassBeanArray();
+        ClassBeanDocument.ClassBean upperLevelClass = resultDocument.getSuccess().getData().getClassBean();
 
-        for (ClassBeanDocument.ClassBean upperLevelClass : definedClasses) {
-            for (RelationsDocument.Relations relation : upperLevelClass.getRelationsArray()) {
-                for (EntryDocument.Entry entry : relation.getEntryArray()) {
-                    if (entry.getStringArray().length > 0) {
-                        String entryType = entry.getStringArray(0);
-                        if (entryType.equalsIgnoreCase("path")) {
-                            String path = entry.getStringArray(1);
+        result = getOntologyTermParents(result, upperLevelClass);
 
-                            String[] paths = path.split("\\.");
-                            for (String p : paths) {
-                                OntologyTerm ontology = new OntologyTerm();
-                                ontology.setOntologySourceAccession(p);
-                                result.put(p, ontology);
+        return result;
+    }
+
+    private Map<String, OntologyTerm> getOntologyTermParents(Map<String, OntologyTerm> terms, ClassBeanDocument.ClassBean upperLevelClass) {
+        for (RelationsDocument.Relations relation : upperLevelClass.getRelationsArray()) {
+            for (EntryDocument.Entry entry : relation.getEntryArray()) {
+                if (entry.getStringArray().length > 0) {
+                    String entryType = entry.getStringArray(0);
+                    if (entryType.equalsIgnoreCase("subclass")) {
+                        OntologyTerm ontology = createOntologyFromClassBean(upperLevelClass);
+
+                        if (!ontology.getOntologyTermName().equals(OntologyTerm.THING)) {
+                            terms.put(ontology.getOntologySourceAccession(), ontology);
+                        }
+
+                        if (entry.getListArray().length > 0) {
+                            ListDocument.List[] items = entry.getListArray();
+
+                            for (ListDocument.List listItem : items) {
+                                for (ClassBeanDocument.ClassBean bean : listItem.getClassBeanArray()) {
+                                    terms.putAll(getOntologyTermParents(terms, bean));
+                                }
                             }
                         }
                     }
@@ -180,7 +190,7 @@ public class BioPortalClassBeanResultHandler {
             }
         }
 
-        return result;
+        return terms;
     }
 
 
