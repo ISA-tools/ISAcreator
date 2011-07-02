@@ -134,9 +134,9 @@ public class BioPortalClientTest {
         System.out.println("_____Testing getOntologyRoots()____");
         Map<String, OntologyTerm> ontologyRoots = client.getOntologyRoots(testOntologyVersion);
 
-        assertTrue("No ontology roots found for " + testOntologyID, ontologyRoots.size() > 0);
+        assertTrue("No ontology roots found for " + testOntologyVersion, ontologyRoots.size() > 0);
 
-        System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyID);
+        System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyVersion);
     }
 
     @Test

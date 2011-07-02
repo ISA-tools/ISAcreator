@@ -63,7 +63,7 @@ public class BioPortalClient implements OntologyService {
     public static final int CHILDREN = 1;
 
     public static final String REST_URL = "http://rest.bioontology.org/bioportal/";
-    public static final String API_KEY = "&apikey=fd88ee35-6995-475d-b15a-85f1b9dd7a42";
+    public static final String API_KEY = "apikey=fd88ee35-6995-475d-b15a-85f1b9dd7a42";
 
     private Set<String> noChildren;
 
@@ -93,7 +93,7 @@ public class BioPortalClient implements OntologyService {
 
         if (ontologies == null || ontologies.size() == 0) {
 
-            String searchString = REST_URL + "ontologies" + API_KEY;
+            String searchString = REST_URL + "ontologies/?" + API_KEY;
 
             log.info("Getting all ontologies: query string is " + searchString);
 
@@ -113,7 +113,7 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Ontology getOntologyById(String ontologyId) {
-        String searchString = REST_URL + "virtual/ontology/" + ontologyId + API_KEY;
+        String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" +  API_KEY;
 
         log.info("Getting ontology by id : query string is " + searchString);
 
@@ -192,7 +192,7 @@ public class BioPortalClient implements OntologyService {
     }
 
     private OntologyTerm performMetadataQuery(String termAccession, String ontology) {
-        String searchString = REST_URL + "concepts/" + ontology + "/" + termAccession + API_KEY;
+        String searchString = REST_URL + "concepts/" + ontology + "/" + termAccession + "/?" + API_KEY;
 
         System.out.println(searchString);
 
@@ -243,7 +243,7 @@ public class BioPortalClient implements OntologyService {
                     searchString.append("&subtreerootconceptid=").append(branch);
                 }
 
-                searchString.append(API_KEY);
+                searchString.append("&").append(API_KEY);
 
                 System.out.println("sending query: " + searchString);
 
@@ -291,7 +291,7 @@ public class BioPortalClient implements OntologyService {
                 (((source == null) || source.trim().equalsIgnoreCase("") || source.trim().equalsIgnoreCase("all"))
                         ? constructSourceStringFromAllowedOntologies() : source);
 
-        searchString += API_KEY;
+        searchString += "&" + API_KEY;
 
         log.info("search string " + searchString);
 
@@ -340,7 +340,7 @@ public class BioPortalClient implements OntologyService {
 
         if (!cachedNodeChildrenQueries.containsKey(ontology)) {
 
-            String searchString = REST_URL + "concepts/" + ontology + "/root" + API_KEY;
+            String searchString = REST_URL + "concepts/" + ontology + "/root/?" + API_KEY;
 
 
             System.out.println("Search string is: " + searchString);
@@ -402,7 +402,7 @@ public class BioPortalClient implements OntologyService {
         if (!noChildren.contains(termAccession)) {
             if (!cachedNodeChildrenQueries.containsKey(ontology + "-" + termAccession)) {
 
-                String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession + API_KEY;
+                String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession + "&" +  API_KEY;
 
                 System.out.println("Searching for : " + searchString);
 
@@ -446,7 +446,7 @@ public class BioPortalClient implements OntologyService {
      * @return Map<String, String> representing the parents of the Term
      */
     public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology) {
-        String searchString = REST_URL + "path/" + ontology + "/?source=" + termAccession + "&target=root" + API_KEY;
+        String searchString = REST_URL + "path/" + ontology + "/?source=" + termAccession + "&target=root/?" + API_KEY;
 
         System.out.println("Searching for parent terms: " + searchString);
 
