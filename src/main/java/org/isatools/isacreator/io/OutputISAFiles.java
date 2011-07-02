@@ -55,8 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Eamonn Maguire
- * @date Jul 10, 2009
+ * Outputs the ISAtab files corresponding to their respective objects in the ISAcreator model.
  */
 
 
@@ -93,7 +92,7 @@ public class OutputISAFiles {
             PrintStream ps = new PrintStream(file);
 
             // print section defining the Ontologies Used
-            ps.println(getOntologiesUsedOutput(investigation));
+            ps.println(getOntologiesUsedOutput());
             // print the Investigation section.
             ps.println(investigation.getUserInterface().toString());
 
@@ -133,7 +132,7 @@ public class OutputISAFiles {
         }
     }
 
-    public String getOntologiesUsedOutput(Investigation investigation) {
+    public String getOntologiesUsedOutput() {
         String[] headerTerms = new String[]{
                 "Term Source Name", "Term Source File", "Term Source Version",
                 "Term Source Description"

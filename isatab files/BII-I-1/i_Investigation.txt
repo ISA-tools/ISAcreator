@@ -1,7 +1,7 @@
 ONTOLOGY SOURCE REFERENCE							
 Term Source Name	NEWT	UO	OBI	CHEBI	PATO		
 Term Source File							
-Term Source Version	v 1.26	v 1.26	beta	v 1.26	v 1.26		
+Term Source Version	"Jun 2010"	"Jun 2010"	"45788"	"Jun 2010"	"Jun 2010"
 Term Source Description	NEWT UniProt Taxonomy Database	Unit Ontology	Ontology of Biomedical Investigation	Chemical Entities of Biological Interest	Phenotypic qualities (properties)		
 INVESTIGATION							
 Investigation Identifier	BII-I-1						

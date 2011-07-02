@@ -37,7 +37,6 @@
 
 package org.isatools.isacreator.ontologyselectiontool;
 
-import com.sun.tools.corba.se.idl.toJavaPortable.StringGen;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
@@ -117,7 +116,7 @@ public class OntologySourceManager {
     }
 
     private static String getValidKey() {
-        if(usedOntologySources.isEmpty()) {
+        if (usedOntologySources.isEmpty()) {
             usedOntologySources.put("investigation", new ArrayList<OntologySourceRefObject>());
             return "investigation";
         } else {
@@ -127,16 +126,6 @@ public class OntologySourceManager {
         }
 
         return "investigation";
-    }
-
-    /**
-     * Add an OntologySourceRefObject to the list of defined Ontologies
-     *
-     * @param osro - OntologySourceReferenceObject to be added.
-     */
-    public static void addToUsedOntologies(String investigationAccession, OntologySourceRefObject osro) {
-        removeAnyPreexistingOntologySourceRefForUpdate(investigationAccession, osro);
-        getOntologiesUsed(investigationAccession).add(osro);
     }
 
     public static void clearUsedOntologies(String investigationAccession) {
@@ -155,8 +144,22 @@ public class OntologySourceManager {
 
     private static List<OntologySourceRefObject> getAllOntologiesUsed() {
         List<OntologySourceRefObject> sourceRefObjects = new ArrayList<OntologySourceRefObject>();
+
+        Set<String> addedOntologySourceRefs = new HashSet<String>();
+
         for (String investigationAcc : usedOntologySources.keySet()) {
-            sourceRefObjects.addAll(usedOntologySources.get(investigationAcc));
+
+            List<OntologySourceRefObject> refObjects = usedOntologySources.get(investigationAcc);
+
+            for (OntologySourceRefObject refObject : refObjects) {
+
+                if (!addedOntologySourceRefs.contains(refObject.getSourceName())) {
+                    sourceRefObjects.add(refObject);
+
+                    addedOntologySourceRefs.add(refObject.getSourceName());
+                }
+            }
+
         }
 
         return sourceRefObjects;
@@ -196,10 +199,7 @@ public class OntologySourceManager {
     public static void addToUsedOntologySources(String investigationAccession, OntologySourceRefObject ontologyToAdd) {
         removeAnyPreexistingOntologySourceRefForUpdate(investigationAccession, ontologyToAdd);
         usedOntologySources.get(investigationAccession).add(ontologyToAdd);
-
     }
-
-
 
 
     public static void newInvestigation(String investigationAccession) {
@@ -215,8 +215,8 @@ public class OntologySourceManager {
     }
 
     public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {
-        for(OntologySourceRefObject ontologySourceRefObject : getAllOntologiesUsed()) {
-            if(source.equalsIgnoreCase(ontologySourceRefObject.getSourceName())) {
+        for (OntologySourceRefObject ontologySourceRefObject : getAllOntologiesUsed()) {
+            if (source.equalsIgnoreCase(ontologySourceRefObject.getSourceName())) {
                 return ontologySourceRefObject;
             }
         }
