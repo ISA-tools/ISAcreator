@@ -898,13 +898,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             return;
         }
 
-        if (fieldType == FieldTypes.ASSAY && (parent != null) && !uneditableRecords.contains(curColDelete)) {
-            clearColumn(curColDelete);
-            return;
-        }
-
         if (dtm.getColumnCount() == 2
                 && curColDelete == (dtm.getColumnCount() - 1)) {
+            clearColumn(curColDelete);
+            return;
+        } else {
+            clearColumn(curColDelete);
+        }
+
+        if (fieldType == FieldTypes.ASSAY && (parent != null)
+                && !uneditableRecords.contains(curColDelete)) {
             clearColumn(curColDelete);
             return;
         }
@@ -936,10 +939,10 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         model.setDataVector(data, colIds);
 
         // decrease each column index after deleted column by 1 so that indexes can be kept intact.
-        Enumeration enumer = scrollTable.getColumnModel().getColumns();
+        Enumeration columnEnumeration = scrollTable.getColumnModel().getColumns();
 
-        while (enumer.hasMoreElements()) {
-            TableColumn c = (TableColumn) enumer.nextElement();
+        while (columnEnumeration.hasMoreElements()) {
+            TableColumn c = (TableColumn) columnEnumeration.nextElement();
 
             if (c.getModelIndex() >= columnModelIndex) {
                 c.setModelIndex(c.getModelIndex() - 1);

@@ -178,6 +178,8 @@ public class AssaySubForm extends SubForm implements Serializable {
                         contactFieldIndex++;
                     }
 
+                    uneditableRecords.add(colCount);
+
                     colCount++;
                 }
             }

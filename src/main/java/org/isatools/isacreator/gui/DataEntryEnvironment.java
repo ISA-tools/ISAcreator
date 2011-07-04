@@ -83,8 +83,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
     @InjectedResource
     private ImageIcon loading, visualizationIcon, visualizationIconOver, addStudyIcon, addStudyIconOver, removeStudyIcon,
-                      removeStudyIconOver, removeStudyIconInactive, navigationPanelHeader, informationPanelHeader,
-                      warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp;
+            removeStudyIconOver, removeStudyIconInactive, navigationPanelHeader, informationPanelHeader,
+            warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp;
 
 
     private DefaultMutableTreeNode overviewTreeRoot;
@@ -135,11 +135,13 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 if (assayName != null) {
                     Study s = (Study) selectedNode.getUserObject();
 
+                    DefaultMutableTreeNode entryPoint = locateStudySampleNode(selectedNode);
+
                     Assay newAssay = new Assay(assayName, measurementEndpoint,
                             techType, assayPlatform, s.getUserInterface(), tro);
                     DefaultMutableTreeNode newField = new DefaultMutableTreeNode(newAssay);
                     newField.setAllowsChildren(false);
-                    overviewTreeModel.insertNodeInto(newField, selectedNode,
+                    overviewTreeModel.insertNodeInto(newField, entryPoint == null ? selectedNode : entryPoint,
                             selectedNode.getChildCount());
 
                     ((Study) selectedNode.getUserObject()).addAssay(newAssay);
@@ -170,6 +172,25 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         }
 
         return false;
+    }
+
+    private DefaultMutableTreeNode locateStudySampleNode(DefaultMutableTreeNode studyNode) {
+
+        Enumeration enumeration = studyNode.children();
+
+        while (enumeration.hasMoreElements()) {
+            DefaultMutableTreeNode candidateNode = (DefaultMutableTreeNode) enumeration.nextElement();
+
+            if (candidateNode.getUserObject() instanceof Assay) {
+                Assay assay = (Assay) candidateNode.getUserObject();
+
+                if (assay.getTechnologyType().equals("") && assay.getMeasurementEndpoint().equals("")) {
+                    return candidateNode;
+                }
+            }
+        }
+
+        return null;
     }
 
     public void setInvestigation(Investigation investigation) {
@@ -393,17 +414,17 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         addStudyButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                ((JLabel)mouseEvent.getSource()).setIcon(addStudyIconOver);
+                ((JLabel) mouseEvent.getSource()).setIcon(addStudyIconOver);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                ((JLabel)mouseEvent.getSource()).setIcon(addStudyIcon);
+                ((JLabel) mouseEvent.getSource()).setIcon(addStudyIcon);
             }
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                ((JLabel)mouseEvent.getSource()).setIcon(addStudyIcon);
+                ((JLabel) mouseEvent.getSource()).setIcon(addStudyIcon);
                 addStudyToTree();
             }
         });
@@ -416,21 +437,21 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         removeStudyButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                if(removeStudyButton.getIcon() != removeStudyIconInactive) {
+                if (removeStudyButton.getIcon() != removeStudyIconInactive) {
                     removeStudyButton.setIcon(removeStudyIconOver);
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                if(removeStudyButton.getIcon() != removeStudyIconInactive) {
+                if (removeStudyButton.getIcon() != removeStudyIconInactive) {
                     removeStudyButton.setIcon(removeStudyIcon);
                 }
             }
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                if(removeStudyButton.getIcon() != removeStudyIconInactive) {
+                if (removeStudyButton.getIcon() != removeStudyIconInactive) {
                     removeStudyButton.setIcon(removeStudyIcon);
                     removeStudy();
                 }
@@ -496,12 +517,16 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         }
 
         DefaultMutableTreeNode studyNode = new DefaultMutableTreeNode(s);
-        studyNode.add(new DefaultMutableTreeNode(s.getStudySample()));
+
+        DefaultMutableTreeNode studySampleNode = new DefaultMutableTreeNode(s.getStudySample());
+
 
         for (Assay a : s.getAssays().values()) {
             inv.addToAssays(a.getAssayReference(), s.getStudyId());
-            studyNode.add(new DefaultMutableTreeNode(a));
+            studySampleNode.add(new DefaultMutableTreeNode(a));
         }
+
+        studyNode.add(studySampleNode);
 
         return studyNode;
     }
@@ -554,7 +579,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 break;
             }
         }
-
 
 
         overviewTree.repaint();

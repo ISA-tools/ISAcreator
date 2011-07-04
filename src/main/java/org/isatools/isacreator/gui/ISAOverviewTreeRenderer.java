@@ -118,7 +118,7 @@ public class ISAOverviewTreeRenderer implements TreeCellRenderer {
             } else if (assay.getMeasurementEndpoint().equalsIgnoreCase("histology")) {
                 icon.setIcon(histology);
             } else if (technology.equals("") && assay.getMeasurementEndpoint().equals("")) {
-                icon.setIcon(sampleNode);
+                icon.setIcon(expanded ? studyOpen : studyClosed);
             } else {
                 icon.setIcon(genericNode);
             }
