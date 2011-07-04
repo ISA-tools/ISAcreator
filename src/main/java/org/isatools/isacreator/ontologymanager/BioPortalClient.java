@@ -446,7 +446,7 @@ public class BioPortalClient implements OntologyService {
      * @return Map<String, String> representing the parents of the Term
      */
     public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology) {
-        String searchString = REST_URL + "path/" + ontology + "/?source=" + termAccession + "&target=root/?" + API_KEY;
+        String searchString = REST_URL + "path/" + ontology + "/?source=" + termAccession + "&target=root&" + API_KEY;
 
         System.out.println("Searching for parent terms: " + searchString);
 
