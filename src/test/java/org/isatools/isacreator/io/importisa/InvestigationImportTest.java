@@ -50,14 +50,6 @@ import java.util.List;
 
 import static junit.framework.Assert.assertTrue;
 
-/**
- * Created by the ISA team
- *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 07/03/2011
- *         Time: 11:53
- */
 public class InvestigationImportTest {
 
     @Test
