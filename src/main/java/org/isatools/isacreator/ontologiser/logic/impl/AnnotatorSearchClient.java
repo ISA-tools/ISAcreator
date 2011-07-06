@@ -44,6 +44,7 @@ public class AnnotatorSearchClient {
             method.addParameter("isVirtualOntologyId", "true");
             method.addParameter("withSynonyms", "true");
             method.addParameter("textToAnnotate", flattenSetToString(terms));
+            method.addParameter("apikey", "fd88ee35-6995-475d-b15a-85f1b9dd7a42");
             //method.addParameter("format", "asText");
 
             // Execute the POST method
