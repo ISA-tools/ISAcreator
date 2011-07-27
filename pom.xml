@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.Final</version>
+    <version>1.4.1</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
