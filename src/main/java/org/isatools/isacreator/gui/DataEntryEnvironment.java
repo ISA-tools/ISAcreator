@@ -141,12 +141,15 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             techType, assayPlatform, s.getUserInterface(), tro);
                     DefaultMutableTreeNode newField = new DefaultMutableTreeNode(newAssay);
                     newField.setAllowsChildren(false);
+
                     overviewTreeModel.insertNodeInto(newField, entryPoint == null ? selectedNode : entryPoint,
-                            selectedNode.getChildCount());
+                            entryPoint == null ? selectedNode.getChildCount() : entryPoint.getChildCount());
 
                     ((Study) selectedNode.getUserObject()).addAssay(newAssay);
                     investigation.addToAssays(newAssay.getAssayReference(),
                             s.getStudyId());
+
+                    overviewTree.expandPath(new TreePath(entryPoint == null ? selectedNode.getPath() :  entryPoint.getPath()));
 
                     return true;
                 }
