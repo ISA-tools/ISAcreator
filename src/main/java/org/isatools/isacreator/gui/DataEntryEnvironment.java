@@ -220,6 +220,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                     tro);
             studySampleRec.setUserInterface(ui);
 
+            newStudy.setSampleFileName(studySampleRec.getAssayReference());
             newStudy.setStudySamples(studySampleRec);
 
             investigation.addStudy(newStudy);
