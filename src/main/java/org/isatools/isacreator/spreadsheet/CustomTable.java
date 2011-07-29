@@ -46,6 +46,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
@@ -62,21 +63,47 @@ public class CustomTable extends JTable {
         super(dtm);
     }
 
-    public boolean editCellAt(int row, int col, EventObject e) {
-        TableCellEditor editor = getCellEditor(row, col);
+    public boolean editCellAt(int row, int col, EventObject eventObject) {
+        final TableCellEditor editor = getCellEditor(row, col);
 
         if (editor instanceof OntologyCellEditor ||
                 editor instanceof FileSelectCellEditor ||
                 editor instanceof DateCellEditor || editor instanceof FilterableListCellEditor) {
 
-            if (e instanceof MouseEvent && ((MouseEvent) e).getClickCount() == 2) {
-                super.editCellAt(row, col, e);
+            if (eventObject instanceof MouseEvent && ((MouseEvent) eventObject).getClickCount() == 2) {
+                super.editCellAt(row, col, eventObject);
             }
         } else {
-            super.editCellAt(row, col, e);
+            super.editCellAt(row, col, eventObject);
         }
 
-        return false;
+        boolean result = super.editCellAt(row, col, eventObject);
+
+        if (editor != null && editor instanceof JTextComponent) {
+            if (eventObject == null) {
+                ((JTextComponent) editor).selectAll();
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        ((JTextComponent) editor).selectAll();
+                    }
+                });
+            }
+        }
+
+        return result;
+    }
+
+
+    @Override
+    public Component prepareEditor
+            (TableCellEditor tableCellEditor, int row, int column) {
+
+        Component c = super.prepareEditor(tableCellEditor, row, column);
+        if (c instanceof JTextComponent) {
+            ((JTextField) c).selectAll();
+        }
+        return c;
     }
 
     public int columnViewIndextoModel(int vColIndex) {

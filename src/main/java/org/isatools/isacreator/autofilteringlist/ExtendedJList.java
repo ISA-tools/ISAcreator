@@ -54,7 +54,7 @@ import java.util.List;
  *
  * @author Majority of code and concepts from Marinacci, J, Adamson, C., Swing Hacks, O'Reilly 2005.
  */
-public class ExtendedJList extends JList implements ListSelectionListener {
+public class ExtendedJList extends JList implements ListSelectionListener, FilterObserver {
     private FilterField filterField;
     private String currentTerm;
     private boolean autoSelectFirstListItemOnFilter;
@@ -68,6 +68,10 @@ public class ExtendedJList extends JList implements ListSelectionListener {
     }
 
     public ExtendedJList(ListCellRenderer renderer, boolean autoSelectFirstListItemOnFilter) {
+        this(renderer, new FilterField(), autoSelectFirstListItemOnFilter);
+    }
+
+    public ExtendedJList(ListCellRenderer renderer, FilterField field, boolean autoSelectFirstListItemOnFilter) {
         super();
 
         this.autoSelectFirstListItemOnFilter = autoSelectFirstListItemOnFilter;
@@ -77,13 +81,8 @@ public class ExtendedJList extends JList implements ListSelectionListener {
         setCellRenderer(renderer);
         addListSelectionListener(this);
 
-        filterField = new FilterField();
-
-        filterField.addPropertyChangeListener("filterEvent", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                fireUpdateToListeners();
-            }
-        });
+        filterField = field;
+        filterField.registerObserver(this);
     }
 
     private void fireUpdateToListeners() {
@@ -166,33 +165,6 @@ public class ExtendedJList extends JList implements ListSelectionListener {
         if (getSelectedValue() != null) {
             currentTerm = getSelectedValue().toString();
             firePropertyChange("itemSelected", "", getSelectedValue());
-        }
-    }
-
-    /**
-     * The FilterFields which implements the DocumentListener class. Calls updates on the JList as and
-     * when modifications occur in the textfield as a result of user insertion, deletion, or update.
-     */
-    class FilterField extends JTextField implements DocumentListener {
-        public FilterField() {
-            super(20);
-            getDocument().addDocumentListener(this);
-        }
-
-        public void changedUpdate(DocumentEvent event) {
-            ((ListFilterModel) getModel()).refilter();
-            firePropertyChange("filterEvent", "", "uyt");
-        }
-
-        public void insertUpdate(DocumentEvent event) {
-            ((ListFilterModel) getModel()).refilterOnFilteredList();
-            firePropertyChange("filterEvent", "", "sdf");
-        }
-
-        public void removeUpdate(DocumentEvent event) {
-            ((ListFilterModel) getModel()).refilter();
-
-            firePropertyChange("filterEvent", "", "hgf");
         }
     }
 
@@ -345,6 +317,20 @@ public class ExtendedJList extends JList implements ListSelectionListener {
                     firePropertyChange("zeroTerms", 0, -1);
                 }
             }
+        }
+    }
+
+    public void notifyOfSelection(String observation) {
+        if (observation.equals(FilterSubject.UPDATE)) {
+            // if the size is greater than one, there were already contents, so it's
+            // better to refilter than to do a complete refilter on all contents
+            if (getFilterField().getText().length() > 1) {
+                ((ListFilterModel) getModel()).refilterOnFilteredList();
+            } else {
+                ((ListFilterModel) getModel()).refilter();
+            }
+        } else if (observation.equals(FilterSubject.REMOVE)) {
+            ((ListFilterModel) getModel()).refilter();
         }
     }
 }
