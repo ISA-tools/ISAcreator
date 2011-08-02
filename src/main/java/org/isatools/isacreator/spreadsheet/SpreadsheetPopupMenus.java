@@ -278,11 +278,7 @@ public class SpreadsheetPopupMenus {
 
         // todo add fields to the list which are allowed to appear multiple times. Code should be integrated with the above line...
 
-        // todo only show resolve files menu item in file columns
-
         // todo allow popup to be shown when clicking on column headers
-
-        // todo extract this code into another class in a bid to refactor this class.
 
         addColumn.add(new JSeparator());
 
@@ -501,9 +497,11 @@ public class SpreadsheetPopupMenus {
             public void actionPerformed(ActionEvent ae) {
                 if (spreadsheet.getTable().getValueAt(spreadsheet.startRow, spreadsheet.startCol) != null) {
                     int endRow = spreadsheet.getTable().rowAtPoint(new Point(x, y));
-                    if (!spreadsheet.getTable().getColumnModel().getColumn(spreadsheet.startCol)
-                            .getHeaderValue().toString()
-                            .contains(TableReferenceObject.ROW_NO_TEXT)) {
+
+                    String columnName = spreadsheet.getTable().getColumnModel().getColumn(spreadsheet.startCol)
+                            .getHeaderValue().toString();
+
+                    if (!columnName.contains(TableReferenceObject.ROW_NO_TEXT)) {
 
                         String startVal = spreadsheet.getTable().getValueAt(spreadsheet.startRow, spreadsheet.startCol).toString();
                         Pattern p = Pattern.compile("[[0-9]*.]*[0-9]+");
@@ -516,7 +514,8 @@ public class SpreadsheetPopupMenus {
                             finalStopIndex = m.end();
                         }
 
-                        if (finalStartIndex != -1) {
+                        if (finalStartIndex != -1 && !isOntologyTerm(startVal, columnName)) {
+
                             String startVal2 = "";
                             int finalStartIndex2 = -1;
                             int finalStopIndex2 = -1;
@@ -666,6 +665,24 @@ public class SpreadsheetPopupMenus {
         popup.add(close);
 
         popup.show(jc, x, y);
+    }
+
+    /**
+     * We only want to stop autocomplete if the column is of type ontology term AND the value currently
+     * inside the column is an ontology term, e.g. with the formation (OBI:Intervention Design)
+     *
+     * @param value      - Value of the field
+     * @param columnName - Name of the column being looked at
+     * @return - a boolean indicating whether or not the current field should be treated as an ontology term or not
+     */
+    private boolean isOntologyTerm(String value, String columnName) {
+        if (spreadsheet.getTableReferenceObject().getColumnType(columnName) != DataTypes.ONTOLOGY_TERM) {
+            if (value.contains(":")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
