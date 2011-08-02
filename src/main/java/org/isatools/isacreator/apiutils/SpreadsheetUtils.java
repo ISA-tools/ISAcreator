@@ -106,6 +106,44 @@ public class SpreadsheetUtils {
         return columnNames;
     }
 
+    /**
+     * Pulls out all values of a particular column and associates the other metadata with it as well
+     *
+     * @param primaryColumnName - e.g. Sample Name to pull out all the unique sample names available.
+     * @param targetSheet       - Spreadsheet to 'look at' for extraction of desired column names
+     * @return Map<String, Map<String, String>> -> primary Column values mapped to the key/value pairs describing the particular group
+     */
+    public static Map<String, Map<String, String>> getGroupInformation(String primaryColumnName, Spreadsheet targetSheet) {
+
+        Map<String, Map<String, String>> groupInformation = new HashMap<String, Map<String, String>>();
+
+        Map<Integer, String> columnIndicesToName = getColumns(targetSheet, new HashSet<String>());
+
+        for (int rowNo = 0; rowNo < targetSheet.getTable().getRowCount(); rowNo++) {
+            String primaryColumnValue = "";
+
+            if (!groupInformation.containsKey(primaryColumnName)) {
+
+                Map<String, String> keyValues = new ListOrderedMap<String, String>();
+
+                for (int column = 1; column < targetSheet.getColumnCount(); column++) {
+                    Object dataVal = targetSheet.getTable().getValueAt(rowNo, column);
+
+                    String columnName = columnIndicesToName.get(column);
+
+                    if (columnName.equalsIgnoreCase(primaryColumnName)) {
+                        primaryColumnValue = dataVal == null ? "" : dataVal.toString();
+                    } else {
+                        keyValues.put(columnName, dataVal == null ? "" : dataVal.toString());
+                    }
+                }
+                groupInformation.put(primaryColumnValue, keyValues);
+            }
+        }
+
+        return groupInformation;
+    }
+
     public static Set<String> getDataInColumn(Spreadsheet targetSheet, int tableViewIndex) {
         int rowCount = targetSheet.getTable().getRowCount();
 
@@ -198,7 +236,7 @@ public class SpreadsheetUtils {
                             : spreadsheet.getTable().getValueAt(row,
                             colIndex).toString();
 
-                    if(annotations.containsKey(columnValue)) {
+                    if (annotations.containsKey(columnValue)) {
                         System.out.println("Replacing " + columnValue + " with " + annotations.get(columnValue).getUniqueId());
                         spreadsheet.getTable().setValueAt(annotations.get(columnValue).getUniqueId(), row, colIndex);
                     }

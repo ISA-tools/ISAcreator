@@ -69,11 +69,11 @@ public class TestAutofilter extends JFrame {
             }
         };
 
-        table.getColumnModel().getColumn(0).setCellEditor(new SampleSelectorCellEditor(new SampleInformation[]{
-                new SampleInformation("sample 1", "homo sapiens"), new SampleInformation("sample 2", "homo sapiens"),
-                new SampleInformation("sample 3", "homo sapiens"),
-                new SampleInformation("sample 4", "homo sapiens"), new SampleInformation("sample 5", "homo sapiens"),
-                new SampleInformation("sample 6", "homo sapiens"), new SampleInformation("sample 7", "homo sapiens"), new SampleInformation("sample 8", "homo sapiens"), new SampleInformation("sample 9", "homo sapiens")}));
+//        table.getColumnModel().getColumn(0).setCellEditor(new SampleSelectorCellEditor(new SampleInformation[]{
+//                new SampleInformation("sample 1", "homo sapiens"), new SampleInformation("sample 2", "homo sapiens"),
+//                new SampleInformation("sample 3", "homo sapiens"),
+//                new SampleInformation("sample 4", "homo sapiens"), new SampleInformation("sample 5", "homo sapiens"),
+//                new SampleInformation("sample 6", "homo sapiens"), new SampleInformation("sample 7", "homo sapiens"), new SampleInformation("sample 8", "homo sapiens"), new SampleInformation("sample 9", "homo sapiens")}));
 
         table.getColumnModel().getColumn(1).setCellEditor(new OntologyCellEditor(false, null));
 

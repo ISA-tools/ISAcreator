@@ -64,6 +64,8 @@ public class RoundedJTextField extends JTextField {
         this.backgroundColor = backgroundColor;
 
         setOpaque(false);
+        setSelectedTextColor(UIHelper.BG_COLOR);
+        setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
 
         setBorder(new EmptyBorder(3, 5, 3, 5));
 

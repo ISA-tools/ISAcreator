@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Map;
 
 /**
  * The SampleSelector class provides the user interface to allow users to select study samples from an autocompleting list
@@ -36,16 +37,16 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
     private long animationStart;
 
     public static final int HEIGHT = 200;
-    public static final int WIDTH = 200;
+    public static final int WIDTH = 230;
 
     private FilterField filterField;
-    private Object[] filterableContent;
+    private Map<String, Map<String, String>> filterableContent;
 
     private ExtendedJList filterList;
 
 
     // todo replace String content with an object Implementation or generics
-    public SampleSelector(FilterField filterField, Object[] filterableContent) {
+    public SampleSelector(FilterField filterField, Map<String, Map<String, String>> filterableContent) {
         this.filterField = filterField;
         this.filterableContent = filterableContent;
     }
@@ -67,7 +68,7 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
 
     private void addList() {
         filterList = new ExtendedJList(new SampleSelectionListCellRenderer(), filterField, true);
-
+        filterList.setAutoscrolls(true);
         filterList.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
@@ -83,10 +84,7 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
                 super.mouseClicked(mouseEvent);    //To change body of overridden methods use File | Settings | File Templates.
             }
         });
-
-        for (Object content : filterableContent) {
-            filterList.addItem(content);
-        }
+        updateContent(filterableContent);
 
         JScrollPane listScroller = new JScrollPane(filterList,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -102,6 +100,7 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
             filterList.setSelectedIndex(0);
         } else if (filterList.getSelectedIndex() < filterList.getItems().size()) {
             filterList.setSelectedIndex(filterList.getSelectedIndex() + 1);
+            scrollToItem();
         }
     }
 
@@ -111,6 +110,7 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
             filterList.setSelectedIndex(0);
         } else if (filterList.getSelectedIndex() > 0) {
             filterList.setSelectedIndex(filterList.getSelectedIndex() - 1);
+            scrollToItem();
         }
     }
 
@@ -128,6 +128,11 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
         }
 
         return "";
+    }
+
+    private void scrollToItem() {
+        filterList.scrollRectToVisible(
+                filterList.getCellBounds(filterList.getSelectedIndex(), filterList.getSelectedIndex()));
     }
 
 
@@ -228,4 +233,11 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
 
     }
 
+    public void updateContent(Map<String, Map<String, String>> studySampleInformation) {
+        filterableContent = studySampleInformation;
+
+        for (String sampleName : filterableContent.keySet()) {
+            filterList.addItem(new SampleInformation(sampleName, filterableContent.get(sampleName)));
+        }
+    }
 }

@@ -41,6 +41,7 @@ import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
+import org.isatools.isacreator.spreadsheet.sampleselection.SampleSelectorCellEditor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -75,23 +76,36 @@ public class CustomTable extends JTable {
             }
         } else {
             super.editCellAt(row, col, eventObject);
-        }
 
-        boolean result = super.editCellAt(row, col, eventObject);
+            boolean result = super.editCellAt(row, col, eventObject);
 
-        if (editor != null && editor instanceof JTextComponent) {
-            if (eventObject == null) {
-                ((JTextComponent) editor).selectAll();
-            } else {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        ((JTextComponent) editor).selectAll();
-                    }
-                });
+            if (editor != null && editor instanceof JTextComponent) {
+                if (eventObject == null) {
+                    ((JTextComponent) editor).selectAll();
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            ((JTextComponent) editor).selectAll();
+                        }
+                    });
+                }
             }
+
+            return result;
         }
 
-        return result;
+
+        return false;
+    }
+
+    @Override
+    public void changeSelection(int row, int column, boolean toggle, boolean extend) {
+        super.changeSelection(row, column, toggle, extend);
+        TableCellEditor editor = getCellEditor(row, column);
+        if (editor instanceof SampleSelectorCellEditor) {
+            if (editCellAt(row, column))
+                getEditorComponent().requestFocusInWindow();
+        }
     }
 
 

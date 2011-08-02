@@ -40,10 +40,12 @@ package org.isatools.isacreator.spreadsheet;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.spreadsheet.sampleselection.SampleSelectorCellEditor;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;
@@ -849,6 +851,12 @@ public class SpreadsheetFunctions {
         if (vo != null && classType == DataTypes.STRING) {
             StringValidation sv = ((StringValidation) vo);
             col.setCellEditor(new StringEditor(sv));
+            return;
+        }
+
+        if (col.getHeaderValue().toString().equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")) {
+            System.out.println(">>>>>> Setting cell editor for " + col.getHeaderValue() + " as the sample selector cell editor");
+            col.setCellEditor(new SampleSelectorCellEditor(spreadsheet.getStudyDataEntryEnvironment().getStudy()));
             return;
         }
 

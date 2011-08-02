@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.help.Controller;
@@ -149,7 +150,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                     investigation.addToAssays(newAssay.getAssayReference(),
                             s.getStudyId());
 
-                    overviewTree.expandPath(new TreePath(entryPoint == null ? selectedNode.getPath() :  entryPoint.getPath()));
+                    overviewTree.expandPath(new TreePath(entryPoint == null ? selectedNode.getPath() : entryPoint.getPath()));
 
                     return true;
                 }
@@ -722,7 +723,16 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             setStatusPaneInfo(studyHelp);
             removeStudyButton.setIcon(removeStudyIcon);
         } else if (nodeInfo instanceof Assay) {
-            setCurrentPage(((Assay) nodeInfo).getSpreadsheetUI());
+            Assay assay = (Assay) nodeInfo;
+
+            if (currentPage instanceof AssaySpreadsheet) {
+                if (((AssaySpreadsheet) currentPage).getTable().getSpreadsheetTitle().contains("Sample Definition")) {
+                    System.out.println("Updating sample list...");
+                    StudyUtils.studySampleFileModified(getParentStudy(selectedNode).getStudyId());
+                }
+            }
+
+            setCurrentPage(assay.getSpreadsheetUI());
             setStatusPaneInfo("");
         } else {
             setStatusPaneInfo("");
@@ -783,8 +793,14 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 });
             }
         }
+    }
 
-
+    private Study getParentStudy(DefaultMutableTreeNode node) {
+        if (((DefaultMutableTreeNode) node.getParent()).getUserObject() instanceof Study) {
+            return (Study) ((DefaultMutableTreeNode) node.getParent()).getUserObject();
+        } else {
+            return getParentStudy((DefaultMutableTreeNode) node.getParent());
+        }
     }
 
     private boolean needToSubstitute(Map<String, String[]> terms) {

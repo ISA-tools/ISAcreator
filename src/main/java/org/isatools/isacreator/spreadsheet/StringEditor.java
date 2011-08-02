@@ -77,7 +77,10 @@ public class StringEditor extends SpreadsheetCellEditor {
         textField.setFormatterFactory(new DefaultFormatterFactory(
                 regExpFormatter));
 
-        textField.setCaretColor(Color.WHITE);
+        textField.setForeground(UIHelper.DARK_GREEN_COLOR);
+        textField.setSelectedTextColor(UIHelper.BG_COLOR);
+        textField.setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
+        textField.setCaretColor(UIHelper.LIGHT_GREEN_COLOR);
 
         textField.getInputMap()
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "validate");

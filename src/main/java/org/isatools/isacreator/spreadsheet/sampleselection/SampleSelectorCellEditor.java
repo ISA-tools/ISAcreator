@@ -1,6 +1,9 @@
 package org.isatools.isacreator.spreadsheet.sampleselection;
 
+import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.autofilteringlist.FilterField;
+import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 
 import javax.swing.*;
@@ -21,25 +24,25 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
     protected transient List<CellEditorListener> listeners;
 
     protected String originalValue;
-    private Object[] filterableContent;
     private SampleSelector selector;
 
     private JTable currentTable;
     private Object currentValue;
     private int currentRow;
     private int currentColumn;
+    private Study study;
 
 
-    public SampleSelectorCellEditor() {
-        this(new String[]{"No content provided"});
-    }
-
-    public SampleSelectorCellEditor(Object[] filterableContent) {
+    public SampleSelectorCellEditor(Study study) {
         super();
-        this.filterableContent = filterableContent;
+        this.study = study;
+
         listeners = new ArrayList<CellEditorListener>();
 
-        setCaretColor(Color.WHITE);
+        setForeground(UIHelper.DARK_GREEN_COLOR);
+        setCaretColor(UIHelper.LIGHT_GREEN_COLOR);
+        setSelectedTextColor(UIHelper.BG_COLOR);
+        setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
         setBorder(null);
         addKeyListener(this);
     }
@@ -75,6 +78,8 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
         for (int i = listeners.size() - 1; i >= 0; i--) {
             (listeners.get(i)).editingCanceled(ce);
         }
+
+
     }
 
     /**
@@ -110,6 +115,7 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
      */
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
+        currentTable = table;
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
 
@@ -121,7 +127,7 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
 
         setText(originalValue);
 
-        currentTable = table;
+
         currentValue = value;
         currentRow = row;
         currentColumn = column;
@@ -195,11 +201,6 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
     public void changedUpdate(DocumentEvent event) {
         super.changedUpdate(event);
 
-        if (!hasFocus()) {
-            requestFocusInWindow();
-
-        }
-
         showSelector();
     }
 
@@ -217,24 +218,25 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
     public void removeUpdate(DocumentEvent event) {
         super.removeUpdate(event);
 
-        if (selector.isShowing()) {
+        if (selector != null) {
+            if (selector.isShowing()) {
 
-            if (getText().length() > 0) {
-                showSelector();
-            } else {
-                hideSelector();
+                if (getText().length() > 0) {
+                    showSelector();
+                } else {
+                    hideSelector();
+                }
             }
         }
-
     }
 
     private void showSelector() {
+
         if (selector == null) {
             instantiateSelectorIfRequired();
 
             selector.fadeInWindow();
         } else {
-
             selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
 
             if (!selector.isShowing()) {
@@ -246,9 +248,14 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
 
     private void instantiateSelectorIfRequired() {
         if (selector == null) {
-            selector = new SampleSelector(this, filterableContent);
+            selector = new SampleSelector(this, StudyUtils.getStudySampleInformation(study));
             selector.createGUI();
             selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
+        }
+
+        if (StudyUtils.isModified(study.getStudyId())) {
+            System.out.println("Study samples for " + study.getStudyId() + " has been modified. Updating content");
+            selector.updateContent(StudyUtils.getStudySampleInformation(study));
         }
     }
 
@@ -263,11 +270,15 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
     }
 
     public void focusLost(FocusEvent focusEvent) {
-        selector.fadeOutWindow();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                selector.fadeOutWindow();
+            }
+        });
+
     }
 
     public void keyTyped(KeyEvent keyEvent) {
-        System.out.println("Key typed");
     }
 
     public void keyPressed(KeyEvent keyEvent) {

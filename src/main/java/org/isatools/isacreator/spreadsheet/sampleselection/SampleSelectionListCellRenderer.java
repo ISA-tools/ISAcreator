@@ -79,6 +79,8 @@ public class SampleSelectionListCellRenderer extends JComponent
         selectedIconContainer = new JLabel(selectedIcon);
         add(selectedIconContainer, BorderLayout.EAST);
 
+        setPreferredSize(new Dimension(205, 30));
+
         add(new SampleInformationPane(), BorderLayout.CENTER);
         setBorder(null);
     }
@@ -142,8 +144,9 @@ public class SampleSelectionListCellRenderer extends JComponent
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             setOpaque(false);
 
-            sampleName = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.LIGHT_GREEN_COLOR);
+            sampleName = UIHelper.createLabel("", UIHelper.VER_12_BOLD, UIHelper.LIGHT_GREEN_COLOR);
             additionalInfo = UIHelper.createLabel("", UIHelper.VER_8_PLAIN, UIHelper.DARK_GREEN_COLOR);
+            additionalInfo.setSize(new Dimension(160, 10));
 
             add(sampleName);
             add(additionalInfo);

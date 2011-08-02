@@ -1,5 +1,7 @@
 package org.isatools.isacreator.spreadsheet.sampleselection;
 
+import java.util.Map;
+
 /**
  * Created by the ISA team
  *
@@ -11,9 +13,9 @@ package org.isatools.isacreator.spreadsheet.sampleselection;
 public class SampleInformation {
 
     private String sampleName;
-    private String additionalInformation;
+    private Map<String, String> additionalInformation;
 
-    public SampleInformation(String sampleName, String additionalInformation) {
+    public SampleInformation(String sampleName, Map<String, String> additionalInformation) {
         this.sampleName = sampleName;
         this.additionalInformation = additionalInformation;
     }
@@ -23,7 +25,20 @@ public class SampleInformation {
     }
 
     public String getAdditionalInformation() {
-        return additionalInformation;
+        return extractSampleCharacteristics();
+    }
+
+    private String extractSampleCharacteristics() {
+        StringBuilder value = new StringBuilder();
+
+        for (String column : additionalInformation.keySet()) {
+            if (column.contains("organism")) {
+                value.append(additionalInformation.get(column));
+                break;
+            }
+        }
+
+        return value.toString().equals("") ? "No organism defined" : value.toString();
     }
 
     @Override

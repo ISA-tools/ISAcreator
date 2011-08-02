@@ -308,7 +308,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
                     String tmpFieldName = fieldName;
 
-                    if(realNamesToAliases.containsKey(fieldName)) {
+                    if (realNamesToAliases.containsKey(fieldName)) {
                         tmpFieldName = realNamesToAliases.get(fieldName);
                     }
 
@@ -321,6 +321,10 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         textComponent = new RoundedJTextField(10);
                     } else if (fieldDescriptor.getDatatype() == DataTypes.LONG_STRING) {
                         textComponent = new JTextArea();
+
+                        textComponent.setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
+                        textComponent.setSelectedTextColor(UIHelper.BG_COLOR);
+
                         ((JTextArea) textComponent).setWrapStyleWord(true);
                         ((JTextArea) textComponent).setLineWrap(true);
                         textComponent.setBackground(UIHelper.BG_COLOR);
