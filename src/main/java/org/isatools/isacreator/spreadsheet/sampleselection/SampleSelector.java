@@ -40,13 +40,13 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
     public static final int WIDTH = 230;
 
     private FilterField filterField;
-    private Map<String, Map<String, String>> filterableContent;
+    private Map<String, SampleInformation> filterableContent;
 
     private ExtendedJList filterList;
 
 
     // todo replace String content with an object Implementation or generics
-    public SampleSelector(FilterField filterField, Map<String, Map<String, String>> filterableContent) {
+    public SampleSelector(FilterField filterField, Map<String, SampleInformation> filterableContent) {
         this.filterField = filterField;
         this.filterableContent = filterableContent;
     }
@@ -233,11 +233,11 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
 
     }
 
-    public void updateContent(Map<String, Map<String, String>> studySampleInformation) {
+    public void updateContent(Map<String, SampleInformation> studySampleInformation) {
         filterableContent = studySampleInformation;
 
         for (String sampleName : filterableContent.keySet()) {
-            filterList.addItem(new SampleInformation(sampleName, filterableContent.get(sampleName)));
+            filterList.addItem(filterableContent.get(sampleName));
         }
     }
 }

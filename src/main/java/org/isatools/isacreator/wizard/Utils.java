@@ -53,16 +53,16 @@ import java.util.Map;
  */
 public class Utils {
 
-    protected static Map<Integer, String> getGroupFactors(List<TempFactors> factors) {
+    protected static Map<Integer, String> getGroupFactors(List<PropertyType> factors) {
 
         List<String> tempList1 = new ArrayList<String>();
         List<String> tempList2 = new ArrayList<String>();
         List<String> finalList = new ArrayList<String>();
 
-        for (TempFactors factor : factors) {
+        for (PropertyType factor : factors) {
             boolean isUnit = false;
 
-            for (TimeUnitPair tup : factor.getFactorLevels()) {
+            for (TimeUnitType tup : factor.getValuesAndUnits()) {
                 if (!tup.getUnit().equals("")) {
                     isUnit = true;
 
@@ -70,7 +70,7 @@ public class Utils {
                 }
             }
 
-            for (TimeUnitPair tup : factor.getFactorLevels()) {
+            for (TimeUnitType tup : factor.getValuesAndUnits()) {
                 if (isUnit) {
                     tempList1.add(tup.getTime() + "\t" + tup.getUnit());
                 } else {

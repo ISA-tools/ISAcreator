@@ -43,6 +43,7 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
+import org.isatools.isacreator.spreadsheet.sampleselection.SampleInformation;
 
 import javax.swing.table.TableColumn;
 import java.util.*;
@@ -113,18 +114,20 @@ public class SpreadsheetUtils {
      * @param targetSheet       - Spreadsheet to 'look at' for extraction of desired column names
      * @return Map<String, Map<String, String>> -> primary Column values mapped to the key/value pairs describing the particular group
      */
-    public static Map<String, Map<String, String>> getGroupInformation(String primaryColumnName, Spreadsheet targetSheet) {
+    public static Map<String, SampleInformation> getGroupInformation(String primaryColumnName, Spreadsheet targetSheet) {
 
-        Map<String, Map<String, String>> groupInformation = new HashMap<String, Map<String, String>>();
+        Map<String, SampleInformation> groupInformation = new HashMap<String, SampleInformation>();
 
         Map<Integer, String> columnIndicesToName = getColumns(targetSheet, new HashSet<String>());
 
         for (int rowNo = 0; rowNo < targetSheet.getTable().getRowCount(); rowNo++) {
+
             String primaryColumnValue = "";
 
             if (!groupInformation.containsKey(primaryColumnName)) {
 
                 Map<String, String> keyValues = new ListOrderedMap<String, String>();
+                Map<String, Integer> columnNameToIndex = new HashMap<String, Integer>();
 
                 for (int column = 1; column < targetSheet.getColumnCount(); column++) {
                     Object dataVal = targetSheet.getTable().getValueAt(rowNo, column);
@@ -135,9 +138,11 @@ public class SpreadsheetUtils {
                         primaryColumnValue = dataVal == null ? "" : dataVal.toString();
                     } else {
                         keyValues.put(columnName, dataVal == null ? "" : dataVal.toString());
+                        columnNameToIndex.put(columnName, column);
                     }
                 }
-                groupInformation.put(primaryColumnValue, keyValues);
+                groupInformation.put(primaryColumnValue,
+                        new SampleInformation(rowNo, primaryColumnValue, keyValues, columnNameToIndex));
             }
         }
 

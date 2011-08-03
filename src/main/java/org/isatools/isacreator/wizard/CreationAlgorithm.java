@@ -58,10 +58,10 @@ public abstract class CreationAlgorithm extends JPanel {
     protected Set<Integer> colsToUse;
     protected TableReferenceObject buildingModel;
     protected Study study;
-    protected List<TempFactors> factorsToAdd;
+    protected List<PropertyType> factorsToAdd;
     protected Map<Integer, String[]> tableStructure;
 
-    public CreationAlgorithm(TableReferenceObject buildingModel, Study study, List<TempFactors> factorsToAdd) {
+    public CreationAlgorithm(TableReferenceObject buildingModel, Study study, List<PropertyType> factorsToAdd) {
         this.buildingModel = buildingModel;
         this.study = study;
         this.factorsToAdd = factorsToAdd;
@@ -81,8 +81,8 @@ public abstract class CreationAlgorithm extends JPanel {
         for (int i = 0; i < tableStructure.size(); i++) {
             // modify this to only add those factors which appear in temp factors.
             if (tableStructure.get(i)[0].toLowerCase().equals("factors")) {
-                for (TempFactors factor : factorsToAdd) {
-                    String newFactor = "Factor Value[" + factor.getFactorName().trim() + "]";
+                for (PropertyType factor : factorsToAdd) {
+                    String newFactor = "Factor Value[" + factor.getPropertyName().trim() + "]";
                     addFactor(count, newFactor, factor, i);
                 }
             } else if (tableStructure.get(i)[0].toLowerCase().contains("factor value[")) {
@@ -103,14 +103,14 @@ public abstract class CreationAlgorithm extends JPanel {
         performAssayCentricTask();
     }
 
-    private int addFactor(int count, String newFactor, TempFactors factor, int nextIndex) {
+    private int addFactor(int count, String newFactor, PropertyType factor, int nextIndex) {
         headers.add(newFactor);
         colsToUse.add(nextIndex);
 
         FieldObject newFo;
         boolean unitAdded = false;
 
-        for (TimeUnitPair tup : factor.getFactorLevels()) {
+        for (TimeUnitType tup : factor.getValuesAndUnits()) {
             if (!tup.getUnit().trim().equals("")) {
                 headers.add("Unit");
                 unitAdded = true;
@@ -152,8 +152,8 @@ public abstract class CreationAlgorithm extends JPanel {
      */
     protected boolean checkForFactorExistence(String columnName) {
 
-        for (TempFactors tf : factorsToAdd) {
-            String fullFactorName = "Factor Value[" + tf.getFactorName() + "]";
+        for (PropertyType tf : factorsToAdd) {
+            String fullFactorName = "Factor Value[" + tf.getPropertyName() + "]";
             if (fullFactorName.equalsIgnoreCase(columnName)) {
                 return true;
             }

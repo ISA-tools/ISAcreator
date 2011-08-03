@@ -39,28 +39,27 @@ package org.isatools.isacreator.wizard;
 
 import java.util.List;
 
+public class PropertyType {
+    private String propertyName;
+    private String propertyType;
+    private List<TimeUnitType> valuesAndUnits;
 
-public class TempFactors {
-    private String factorName;
-    private String factorType;
-    private List<TimeUnitPair> factorLevels;
-
-    TempFactors(String factorName, String factorType,
-                List<TimeUnitPair> factorLevels) {
-        this.factorName = factorName;
-        this.factorType = factorType;
-        this.factorLevels = factorLevels;
+    PropertyType(String propertyName, String propertyType,
+                 List<TimeUnitType> valuesAndUnits) {
+        this.propertyName = propertyName;
+        this.propertyType = propertyType;
+        this.valuesAndUnits = valuesAndUnits;
     }
 
-    public List<TimeUnitPair> getFactorLevels() {
-        return factorLevels;
+    public List<TimeUnitType> getValuesAndUnits() {
+        return valuesAndUnits;
     }
 
-    public String getFactorName() {
-        return factorName;
+    public String getPropertyName() {
+        return propertyName;
     }
 
-    public String getFactorType() {
-        return factorType;
+    public String getPropertyType() {
+        return propertyType;
     }
 }

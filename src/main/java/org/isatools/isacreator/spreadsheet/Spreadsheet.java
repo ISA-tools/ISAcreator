@@ -956,10 +956,7 @@ public class Spreadsheet extends JComponent implements
      * @param unique    - if unique is true, then only unique columns are sent back. doens't make sense when needColNo is set to true.
      * @return A vector of strings containing headers - set to vector since the values will be instantly suitable for a ComboBox for example.
      */
-    public Vector<String> getHeaders
-    (
-            boolean needColNo,
-            boolean unique) {
+    public Vector<String> getHeaders(boolean needColNo, boolean unique) {
         Vector<String> headerList = new Vector<String>();
 
         for (int i = 0; i < spreadsheetModel.getColumnCount(); i++) {
@@ -986,53 +983,11 @@ public class Spreadsheet extends JComponent implements
     }
 
     /**
-     * Gets the ontology sources used within the table by searching each column defined to use ontologies and pulling out
-     * all Sources used. These sources can then be used in the import section to ensure that all ontologies used throughout
-     * the submission have been defined.
-     *
-     * @return Set<String> containing the Ontologies defined in the Spreadsheet.
-     */
-    public Set<String> getOntologiesDefinedInTable() {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        HashSet<String> ontologySources = new HashSet<String>();
-
-        while (columns.hasMoreElements()) {
-            TableColumn tc = columns.nextElement();
-
-            if (tableReferenceObject.getClassType(tc.getHeaderValue().toString().trim())
-                    == DataTypes.ONTOLOGY_TERM ||
-                    tc.getHeaderValue().toString().trim()
-                            .equalsIgnoreCase("unit")) {
-                int colIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
-
-                for (int row = 0; row < table.getRowCount(); row++) {
-                    String s = (table.getValueAt(row, colIndex) == null) ? ""
-                            : table.getValueAt(row,
-                            colIndex).toString();
-
-                    if (s.contains(":")) {
-                        // an ontology term should be in the field!
-                        String[] termParts = s.split(":");
-
-                        if (!termParts[0].trim().equals("") && !ontologySources.contains(termParts[0].trim())) {
-                            ontologySources.add(termParts[0].trim());
-                        }
-                    }
-                }
-            }
-        }
-
-        return ontologySources;
-    }
-
-    /**
      * Return the parent frame for the entire ISAcreator GUI.
      *
      * @return MainGUI object.
      */
-    public AnimatableJFrame getParentFrame
-    () {
+    public AnimatableJFrame getParentFrame() {
         return studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
     }
 
@@ -1041,8 +996,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @return the StudyDataEntry object for the current Spreadsheet
      */
-    public StudyDataEntry getStudyDataEntryEnvironment
-    () {
+    public StudyDataEntry getStudyDataEntryEnvironment() {
         return studyDataEntryEnvironment;
     }
 
@@ -1116,8 +1070,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @param data - data to be entered.
      */
-    public void populateTable
-    (List<List<String>> data) {
+    public void populateTable(List<List<String>> data) {
         spreadsheetFunctions.addRows(data.size(), false);
 
         int dataSize = data.size();
@@ -1288,8 +1241,7 @@ public class Spreadsheet extends JComponent implements
      * @param mappings - Mappings of parent column positions to the dependent column positions.
      */
     private void rebuildDependencies(Map<Integer, ListOrderedSet<Integer>> mappings) {
-        log.info("Rebuilding dependencies for: " + spreadsheetTitle);
-        log.info("Number of columns is " + table.getColumnCount());
+
         for (Integer parentColIndex : mappings.keySet()) {
             if (parentColIndex + 1 < table.getColumnCount()) {
                 TableColumn parentCol = table.getColumnModel()
@@ -1543,7 +1495,6 @@ public class Spreadsheet extends JComponent implements
      * Displays the Transposed Spreadsheet UI
      */
     protected void showTransposeSpreadsheetGUI() {
-        // todo migrate this to occur in the view so that a loading pane is shown whilst the spreadsheet is loaded.
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

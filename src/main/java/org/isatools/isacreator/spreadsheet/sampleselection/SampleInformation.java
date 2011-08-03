@@ -12,17 +12,30 @@ import java.util.Map;
  */
 public class SampleInformation {
 
+    private int rowNumber;
     private String sampleName;
     private Map<String, String> additionalInformation;
+    private Map<String, Integer> columnNamesToIndex;
 
-    public SampleInformation(String sampleName, Map<String, String> additionalInformation) {
+    public SampleInformation(int rowNumber, String sampleName, Map<String, String> additionalInformation, Map<String, Integer> columnNamesToIndex) {
+        this.rowNumber = rowNumber;
         this.sampleName = sampleName;
         this.additionalInformation = additionalInformation;
+        this.columnNamesToIndex = columnNamesToIndex;
+    }
+
+    public int getRowNumber() {
+        return rowNumber;
+    }
+
+    public Map<String, Integer> getColumnNamesToIndex() {
+        return columnNamesToIndex;
     }
 
     public String getSampleName() {
         return sampleName;
     }
+
 
     public String getAdditionalInformation() {
         return extractSampleCharacteristics();

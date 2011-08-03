@@ -62,9 +62,9 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
     private TableReferenceObject buildingModel;
     private String organism;
     private String rowFormat;
-    private List<TempFactors> factorsToAdd;
+    private List<PropertyType> factorsToAdd;
 
-    public StudySampleCreationAlgorithm(Study study, Assay studySample, List<TempFactors> factorsToAdd,
+    public StudySampleCreationAlgorithm(Study study, Assay studySample, List<PropertyType> factorsToAdd,
                                         Map<String, GeneratedSampleDetails> generatedSampleInfo, String organism,
                                         TableReferenceObject buildingModel) {
         super(buildingModel, study, factorsToAdd);
@@ -157,13 +157,13 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
                     rowFormat += " \t";
                 }
             } else if (fieldName.toLowerCase().equals("factors")) {
-                for (TempFactors tf : factorsToAdd) {
+                for (PropertyType tf : factorsToAdd) {
 
-                    headers.add("Factor Value[" + tf.getFactorName().trim() + "]");
+                    headers.add("Factor Value[" + tf.getPropertyName().trim() + "]");
 
                     boolean unitAdded = false;
 
-                    for (TimeUnitPair tup : tf.getFactorLevels()) {
+                    for (TimeUnitType tup : tf.getValuesAndUnits()) {
                         if (!tup.getUnit().trim().equals("")) {
                             headers.add("Unit");
                             unitAdded = true;
@@ -175,7 +175,7 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
                     if (unitAdded) {
                         // add factor column field first
                         newFo = new FieldObject(count,
-                                "Factor Value[" + tf.getFactorName().trim() +
+                                "Factor Value[" + tf.getPropertyName().trim() +
                                         "]", "Factor", DataTypes.STRING, "", false,
                                 false, false);
                         buildingModel.addField(newFo);
@@ -188,7 +188,7 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
                         count++;
                     } else {
                         newFo = new FieldObject(count,
-                                "Factor Value[" + tf.getFactorName().trim() +
+                                "Factor Value[" + tf.getPropertyName().trim() +
                                         "]", "Factor", DataTypes.ONTOLOGY_TERM, "",
                                 false, false, false);
                         buildingModel.addField(newFo);

@@ -3,8 +3,15 @@ package org.isatools.isacreator.spreadsheet.sampleselection;
 import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.autofilteringlist.FilterField;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
+import org.isatools.isacreator.spreadsheet.Spreadsheet;
+import org.isatools.isacreator.spreadsheet.SpreadsheetCellRange;
+import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.Utils;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
@@ -12,6 +19,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -27,15 +35,17 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
     private SampleSelector selector;
 
     private JTable currentTable;
-    private Object currentValue;
     private int currentRow;
     private int currentColumn;
     private Study study;
+    private Spreadsheet spreadsheet;
 
 
-    public SampleSelectorCellEditor(Study study) {
+    public SampleSelectorCellEditor(Spreadsheet spreadsheet) {
         super();
-        this.study = study;
+
+        this.spreadsheet = spreadsheet;
+        this.study = spreadsheet.getStudyDataEntryEnvironment().getStudy();
 
         listeners = new ArrayList<CellEditorListener>();
 
@@ -127,8 +137,6 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
 
         setText(originalValue);
 
-
-        currentValue = value;
         currentRow = row;
         currentColumn = column;
 
@@ -194,6 +202,7 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
         if (selector != null) {
             selector.setVisible(false);
         }
+
         return true;
     }
 
@@ -234,7 +243,6 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
 
         if (selector == null) {
             instantiateSelectorIfRequired();
-
             selector.fadeInWindow();
         } else {
             selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
@@ -259,6 +267,90 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
         }
     }
 
+    private void propagateFactorsToAssay(String selectedSampleName) {
+
+        System.out.println("PROPAGATING FACTORS!!");
+
+        TableReferenceObject tableReferenceObject = study.getStudySample().getTableReferenceObject();
+
+        List<FieldObject> recordedFactors = tableReferenceObject.getRecordedFactors();
+
+        Map<String, SampleInformation> allSampleInformation = StudyUtils.getStudySampleInformation(study);
+
+        Spreadsheet studySampleSheet = study.getStudySample().getSpreadsheetUI().getTable();
+
+        // add columns and/or values
+        for (FieldObject field : recordedFactors) {
+
+            int factorIndex = spreadsheet.getSpreadsheetFunctions().getModelIndexForColumn(field.getFieldName());
+            int unitIndex = -1;
+
+            System.out.println("Processing " + field.getFieldName() + " with index " + factorIndex);
+
+            if (factorIndex == -1) {
+
+                factorIndex = spreadsheet.getColumnCount();
+
+                FieldObject newFactor;
+                if ((newFactor = spreadsheet.getTableReferenceObject().getFieldByName(field.getFieldName())) != null) {
+                    newFactor = new FieldObject(factorIndex,
+                            field.getFieldName(), field.getDescription(), field.getDatatype(),
+                            field.getDefaultVal(), field.isRequired(), field.isAcceptsMultipleValues(), field.isAcceptsFileLocations());
+                }
+
+                spreadsheet.getSpreadsheetFunctions().addFieldToReferenceObject(newFactor);
+
+                TableColumn factorColumn = spreadsheet.getSpreadsheetFunctions().addColumn(newFactor.getFieldName());
+
+
+                if (field.getDatatype() == DataTypes.STRING) {
+
+                    unitIndex = spreadsheet.getColumnCount();
+
+                    FieldObject unitFo = new FieldObject(unitIndex,
+                            "Unit", "Unit for definition of value",
+                            DataTypes.ONTOLOGY_TERM, "", false, false,
+                            false);
+
+                    spreadsheet.getSpreadsheetFunctions().addFieldToReferenceObject(unitFo);
+                    TableColumn unitColumn = spreadsheet.getSpreadsheetFunctions().addColumn("Unit");
+
+
+                    spreadsheet.getSpreadsheetFunctions().addColumnToDependencies(factorColumn, unitColumn);
+                }
+
+            } else {
+                System.out.println("Column " + field.getFieldName() + " is already present");
+                factorIndex = spreadsheet.getTable().convertColumnIndexToView(factorIndex);
+            }
+
+            System.out.println("View index for " + field.getFieldName() + " in study sample file is " + studySampleSheet.getTable().columnModelIndextoView(field.getColNo()));
+
+            System.out.println("Getting value at position " + allSampleInformation.get(selectedSampleName).getRowNumber() +
+                    ", " + studySampleSheet.getTable().columnModelIndextoView(field.getColNo()));
+
+            int factorIndexInStudySample = studySampleSheet.getSpreadsheetFunctions().getModelIndexForColumn(field.getFieldName());
+            Object columnValue = studySampleSheet.getTable().getValueAt(
+                    allSampleInformation.get(selectedSampleName).getRowNumber(),
+                    studySampleSheet.getTable().columnModelIndextoView(factorIndexInStudySample));
+
+            System.out.println("Column value for field..." + columnValue);
+
+            System.out.println("Setting value at " + currentRow + ", " + factorIndex + " to " + columnValue);
+
+            spreadsheet.getTable().setValueAt(columnValue, currentRow, factorIndex);
+
+            // todo now set unit if there is one
+            if (unitIndex != -1) {
+
+            }
+
+        }
+
+        // todo now set value for selected sample
+
+    }
+
     private void hideSelector() {
         if (selector.isShowing()) {
             selector.fadeOutWindow();
@@ -275,7 +367,6 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
                 selector.fadeOutWindow();
             }
         });
-
     }
 
     public void keyTyped(KeyEvent keyEvent) {
@@ -313,6 +404,11 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
             } else {
                 setText(selector.getSelectedValue());
             }
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    propagateFactorsToAssay(getText());
+                }
+            });
         }
     }
 

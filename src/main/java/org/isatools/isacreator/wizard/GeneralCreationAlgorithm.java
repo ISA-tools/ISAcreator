@@ -80,7 +80,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
     private String institution;
 
 
-    public GeneralCreationAlgorithm(Study study, Assay assay, List<TempFactors> factorsToAdd,
+    public GeneralCreationAlgorithm(Study study, Assay assay, List<PropertyType> factorsToAdd,
                                     Map<Integer, TreatmentReplicate> treatmentGroups,
                                     TableReferenceObject buildingModel, String institution, String sourceNameFormat) {
         super(buildingModel, study, factorsToAdd);

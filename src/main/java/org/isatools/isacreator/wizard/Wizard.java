@@ -97,7 +97,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             completedHeader, completedInfo, breadcrumb1, breadcrumb2, breadcrumb3, breadcrumb5, breadcrumb6;
 
     // define subset of study fields to get some information about a study before creating it
-    private JTextField studyId,studyTitle;
+    private JTextField studyId, studyTitle;
     private JTextArea studyDescription;
 
     // define fields to describe an investigation
@@ -117,7 +117,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
     private Study studyBeingEdited = null;
     private Map<Integer, String> studyTreatmentGroups = null;
     private Set<String> tmpVals;
-    private List<TempFactors> factorsToAdd;
+    private List<PropertyType> factorsToAdd;
     private AddAssayPane addAssayUI;
     private Stack<HistoryComponent> previousPage;
     private Component initialPane;
@@ -1334,7 +1334,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
     }
 
     private boolean processFactorSubform() {
-        factorsToAdd = new ArrayList<TempFactors>();
+        factorsToAdd = new ArrayList<PropertyType>();
 
         String[][] factorInfo = factorSubForm.getDataAsArray();
 
@@ -1354,7 +1354,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                                 !factorValues.trim().equals(""))) {
                     String[] studyFactorLevels = factorValues.split(";");
 
-                    List<TimeUnitPair> factorLevels = new ArrayList<TimeUnitPair>();
+                    List<TimeUnitType> factorLevels = new ArrayList<TimeUnitType>();
 
                     if ((factorValueUnits != null) &&
                             !factorValueUnits.trim().equals("")) {
@@ -1364,12 +1364,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
                         if (studyFactorLevels.length == studyFactorLevelUnits.length) {
                             // equal number of levels and units
-                            factorLevels = new ArrayList<TimeUnitPair>();
+                            factorLevels = new ArrayList<TimeUnitType>();
 
                             for (int i = 0; i < studyFactorLevels.length;
                                  i++) {
                                 if (!studyFactorLevels[i].trim().equals("")) {
-                                    factorLevels.add(new TimeUnitPair(
+                                    factorLevels.add(new TimeUnitType(
                                             studyFactorLevels[i],
                                             studyFactorLevelUnits[i]));
                                 }
@@ -1386,12 +1386,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
                     } else {
                         for (String s : studyFactorLevels) {
                             if (!s.trim().equals("")) {
-                                factorLevels.add(new TimeUnitPair(s, ""));
+                                factorLevels.add(new TimeUnitType(s, ""));
                             }
                         }
                     }
 
-                    factorsToAdd.add(new TempFactors(factorName, factorType,
+                    factorsToAdd.add(new PropertyType(factorName, factorType,
                             factorLevels));
                 } else {
                     // check to see if all items are empty, if so, this is not an error.
@@ -1405,10 +1405,10 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             // add factors to study
-            for (TempFactors wsf : factorsToAdd) {
-                if (!wsf.getFactorName().trim().equals("")) {
-                    studyBeingEdited.addFactor(new Factor(wsf.getFactorName(),
-                            wsf.getFactorType()));
+            for (PropertyType wsf : factorsToAdd) {
+                if (!wsf.getPropertyName().trim().equals("")) {
+                    studyBeingEdited.addFactor(new Factor(wsf.getPropertyName(),
+                            wsf.getPropertyType()));
                 }
             }
 

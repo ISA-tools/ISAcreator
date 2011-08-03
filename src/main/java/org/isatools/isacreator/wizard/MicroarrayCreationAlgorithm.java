@@ -82,7 +82,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     private String institution;
 
     public MicroarrayCreationAlgorithm(Study study,
-                                       Assay assay, List<TempFactors> factorsToAdd,
+                                       Assay assay, List<PropertyType> factorsToAdd,
                                        Map<Integer, TreatmentReplicate> treatmentGroups,
                                        TableReferenceObject buildingModel, String institution,
                                        String sourceNameFormat, String[] arrayDesigns) {

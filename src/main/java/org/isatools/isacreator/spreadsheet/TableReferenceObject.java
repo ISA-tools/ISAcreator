@@ -61,6 +61,7 @@ public class TableReferenceObject implements Serializable {
 
     private String tableName;
     private TableConfiguration tableConfig;
+
     private List<List<String>> data = null;
     private Map<Integer, ListOrderedSet<Integer>> columnDependencies = new HashMap<Integer, ListOrderedSet<Integer>>();
     private Map<String, FieldObject> fieldLookup = new HashMap<String, FieldObject>();
@@ -156,6 +157,22 @@ public class TableReferenceObject implements Serializable {
         }
 
         return factors;
+    }
+
+    public List<FieldObject> getRecordedFactors() {
+        List<FieldObject> factors = new ArrayList<FieldObject>();
+
+        System.out.println("Building list of recorded factors...");
+
+        for (String columnName : fieldLookup.keySet()) {
+            System.out.println("looking at " + columnName);
+            if (columnName.contains("Factor Value")) {
+                factors.add(fieldLookup.get(columnName));
+            }
+        }
+
+        return factors;
+
     }
 
 
@@ -333,7 +350,6 @@ public class TableReferenceObject implements Serializable {
     }
 
     public Map<Integer, ListOrderedSet<Integer>> getColumnDependencies() {
-
         return columnDependencies;
     }
 
@@ -379,6 +395,7 @@ public class TableReferenceObject implements Serializable {
     }
 
     public String getDefaultValue(String colName) {
+        System.out.println("getting default value " + colName);
         return fieldLookup.get(colName).getDefaultVal();
     }
 

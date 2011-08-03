@@ -80,7 +80,7 @@ public class AddAssayPane extends JPanel {
     private Collection<Assay> assaysToDefine;
     private List<CreationAlgorithm> algorithmsToRun;
     private Study study;
-    private List<TempFactors> factorsToAdd;
+    private List<PropertyType> factorsToAdd;
     private Map<Integer, TreatmentReplicate> treatmentGroups;
     private DataEntryEnvironment dep;
     private ListOrderedMap<String, GeneratedSampleDetails> sampleNameValues;
@@ -88,7 +88,7 @@ public class AddAssayPane extends JPanel {
     private UserProfile up;
     private MouseListener[] listeners;
 
-    public AddAssayPane(AbstractDataEntryEnvironment dew, Study study, List<TempFactors> factorsToAdd,
+    public AddAssayPane(AbstractDataEntryEnvironment dew, Study study, List<PropertyType> factorsToAdd,
                         Map<Integer, TreatmentReplicate> treatmentGroups, DataEntryEnvironment dep, UserProfile up) {
         this.dew = dew;
         this.up = up;

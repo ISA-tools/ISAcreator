@@ -2,6 +2,7 @@ package org.isatools.isacreator.apiutils;
 
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
+import org.isatools.isacreator.spreadsheet.sampleselection.SampleInformation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,9 @@ import java.util.Map;
  */
 public class StudyUtils {
 
-    private static Map<String, Map<String, Map<String, String>>> studySampleInformation = new HashMap<String, Map<String, Map<String, String>>>();
-
     private static String currentStudyId;
+    private static Map<String, Map<String, SampleInformation>> studySampleInformation
+            = new HashMap<String, Map<String, SampleInformation>>();
 
     // todo add flag to manage changes to the study sample file
     private static Map<String, Boolean> studySampleFileModifiedFlag = new HashMap<String, Boolean>();
@@ -31,7 +32,7 @@ public class StudyUtils {
      * @param study - Study to be queried
      * @return - Map<String, Map<String, String>> -> Sample Name - other Key, Value pairs describing the sample
      */
-    public static Map<String, Map<String, String>> getStudySampleInformation(Study study) {
+    public static Map<String, SampleInformation> getStudySampleInformation(Study study) {
         Spreadsheet studySampleSpreadsheet = study.getStudySample().getSpreadsheetUI().getTable();
 
         if (studySampleInformation == null || studySampleFileModifiedFlag.get(study.getStudyId())) {

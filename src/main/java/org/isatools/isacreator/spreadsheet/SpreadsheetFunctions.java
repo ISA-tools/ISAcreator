@@ -470,7 +470,7 @@ public class SpreadsheetFunctions {
      * @param toUse - the SpreadsheetCellRange representing the values to be pasted into the spreadsheet
      */
 
-    protected void doCopy(boolean isCut, SpreadsheetCellRange toUse) {
+    public void doCopy(boolean isCut, SpreadsheetCellRange toUse) {
         CellEditor editor = spreadsheet.getTable().getCellEditor();
         if (editor != null) {
             editor.cancelCellEditing();
@@ -693,6 +693,32 @@ public class SpreadsheetFunctions {
         return false;
     }
 
+    /**
+     * Check to see if a column with a given name exists.
+     * Result is always false if the column allows multiple values.
+     *
+     * @param colName name of column to check for.
+     * @return true if it exists, false otherwise.
+     */
+    public int getModelIndexForColumn(String colName) {
+        Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+        // if the column can be referenced multiple times, then we should return false in this check.
+        System.out.println(colName);
+        if (colName != null) {
+            if (!spreadsheet.getTableReferenceObject().acceptsMultipleValues(colName)) {
+                while (columns.hasMoreElements()) {
+                    TableColumn col = columns.nextElement();
+
+                    if (col.getHeaderValue().toString().equals(colName)) {
+                        return col.getModelIndex();
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
     public void clearCells(int startRow, int startCol, int endRow, int endCol) {
         int[] rows = Utils.getArrayOfVals(startRow, endRow);
         int[] columns = Utils.getArrayOfVals(startCol, endCol);
@@ -711,7 +737,8 @@ public class SpreadsheetFunctions {
 
     public void copyColumnDownwards(int rowId, int colInd) {
         int convColIndex = convertViewIndexToModelIndex(colInd);
-        String val = spreadsheet.spreadsheetModel.getValueAt(rowId, convColIndex).toString();
+        Object columnValue = spreadsheet.spreadsheetModel.getValueAt(rowId, convColIndex);
+        String val = columnValue == null ? "" : columnValue.toString();
         fill(new SpreadsheetCellRange(rowId, spreadsheet.getTable().getRowCount(), convColIndex, convColIndex), val);
     }
 
@@ -744,22 +771,23 @@ public class SpreadsheetFunctions {
      *
      * @param headerLabel - name of column to be added
      */
-    public void addColumn(Object headerLabel) {
+    public TableColumn addColumn(Object headerLabel) {
         SpreadsheetModel model = (SpreadsheetModel) spreadsheet.getTable().getModel();
-        TableColumn col = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
-        col.setHeaderValue(headerLabel);
-        col.setPreferredWidth(calcColWidths(headerLabel.toString()));
+        TableColumn newColumn = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
+        newColumn.setHeaderValue(headerLabel);
+        newColumn.setPreferredWidth(calcColWidths(headerLabel.toString()));
+        newColumn.setHeaderRenderer(spreadsheet.renderer);
 
         // add a cell editor (if available to the column)
-        addCellEditor(col);
+        addCellEditor(newColumn);
 
-        spreadsheet.getTable().addColumn(col);
-
+        model.addToColumns(headerLabel.toString());
         model.addColumn(headerLabel.toString());
-        model.fireTableStructureChanged();
 
-        spreadsheet.getTable().getColumnModel().getColumn(spreadsheet.getTable().getColumnCount() - 1)
-                .setHeaderRenderer(spreadsheet.renderer);
+        spreadsheet.getTable().addColumn(newColumn);
+
+        model.fireTableStructureChanged();
+        model.fireTableDataChanged();
 
         if (spreadsheet.getTable().getRowCount() > 0) {
             spreadsheet.getTable().setValueAt(spreadsheet.getTableReferenceObject().getDefaultValue(headerLabel.toString()), 0,
@@ -767,6 +795,10 @@ public class SpreadsheetFunctions {
             copyColumnDownwards(0, spreadsheet.getTable().getColumnCount() - 1);
             spreadsheet.getTableReferenceObject().getDefaultValue(headerLabel.toString());
         }
+
+        spreadsheet.getTable().addNotify();
+
+        return newColumn;
     }
 
     /**
@@ -776,8 +808,8 @@ public class SpreadsheetFunctions {
      * @param fixedVal                - initial value to populate column with, if any.
      * @param currentlySelectedColumn - place in table to add the column after.
      */
-    public void addColumnAfterPosition(Object headerLabel, String fixedVal,
-                                       int currentlySelectedColumn) {
+    public TableColumn addColumnAfterPosition(Object headerLabel, String fixedVal,
+                                              int currentlySelectedColumn) {
 
         if (currentlySelectedColumn == -1) {
             currentlySelectedColumn = (spreadsheet.getTable().getSelectedColumn() == -1)
@@ -835,6 +867,8 @@ public class SpreadsheetFunctions {
         }
 
         spreadsheet.getTable().addNotify();
+
+        return col;
     }
 
     /**
@@ -856,7 +890,7 @@ public class SpreadsheetFunctions {
 
         if (col.getHeaderValue().toString().equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")) {
             System.out.println(">>>>>> Setting cell editor for " + col.getHeaderValue() + " as the sample selector cell editor");
-            col.setCellEditor(new SampleSelectorCellEditor(spreadsheet.getStudyDataEntryEnvironment().getStudy()));
+            col.setCellEditor(new SampleSelectorCellEditor(spreadsheet));
             return;
         }
 
