@@ -1354,7 +1354,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                                 !factorValues.trim().equals(""))) {
                     String[] studyFactorLevels = factorValues.split(";");
 
-                    List<TimeUnitType> factorLevels = new ArrayList<TimeUnitType>();
+                    List<PropertyValue> factorLevels = new ArrayList<PropertyValue>();
 
                     if ((factorValueUnits != null) &&
                             !factorValueUnits.trim().equals("")) {
@@ -1364,12 +1364,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
                         if (studyFactorLevels.length == studyFactorLevelUnits.length) {
                             // equal number of levels and units
-                            factorLevels = new ArrayList<TimeUnitType>();
+                            factorLevels = new ArrayList<PropertyValue>();
 
                             for (int i = 0; i < studyFactorLevels.length;
                                  i++) {
                                 if (!studyFactorLevels[i].trim().equals("")) {
-                                    factorLevels.add(new TimeUnitType(
+                                    factorLevels.add(new PropertyValue(
                                             studyFactorLevels[i],
                                             studyFactorLevelUnits[i]));
                                 }
@@ -1386,7 +1386,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                     } else {
                         for (String s : studyFactorLevels) {
                             if (!s.trim().equals("")) {
-                                factorLevels.add(new TimeUnitType(s, ""));
+                                factorLevels.add(new PropertyValue(s, ""));
                             }
                         }
                     }

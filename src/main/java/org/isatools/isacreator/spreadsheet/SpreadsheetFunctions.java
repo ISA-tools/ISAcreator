@@ -47,6 +47,8 @@ import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.sampleselection.SampleSelectorCellEditor;
 import org.isatools.isacreator.utils.GeneralUtils;
+import org.isatools.isacreator.wizard.PropertyType;
+import prefuse.data.Table;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -59,6 +61,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by the ISA team
@@ -507,8 +510,7 @@ public class SpreadsheetFunctions {
      * @param col - Column to be removed
      */
     public void removeColumnFromDependencies
-    (TableColumn
-             col) {
+    (TableColumn col) {
         boolean removingParent = false;
         TableColumn toRemove = null;
         TableColumn parentColumn = null;
@@ -542,6 +544,7 @@ public class SpreadsheetFunctions {
             System.out.println("Dependents on this column not found, so not removing any other columns!");
         }
     }
+
 
     /**
      * if a given column has dependent columns, e.g. does a factor column have an associated unit column. if it does,
@@ -577,6 +580,31 @@ public class SpreadsheetFunctions {
             removeColumnFromDependencies(col);
         }
     }
+
+    public Map<TableColumn, TableColumn> getFactors() {
+        Map<TableColumn, TableColumn> factors = new HashMap<TableColumn, TableColumn>();
+
+        Enumeration<TableColumn> tableColumns = spreadsheet.getTable().getColumnModel().getColumns();
+
+        while (tableColumns.hasMoreElements()) {
+            TableColumn column = tableColumns.nextElement();
+            if (column.getHeaderValue().toString().contains("Factor Value")) {
+
+                if (spreadsheet.columnDependencies.containsKey(column)) {
+                    for (TableColumn unitColumn : spreadsheet.columnDependencies.get(column)) {
+                        factors.put(column, unitColumn);
+                        break;
+                    }
+
+                } else {
+                    factors.put(column, null);
+                }
+            }
+        }
+
+        return factors;
+    }
+
 
     /**
      * Remove a column from the spreadsheet.getTable(), delete all the data associated with the column in the model, and keep indices

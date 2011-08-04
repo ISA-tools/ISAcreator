@@ -62,7 +62,7 @@ public class Utils {
         for (PropertyType factor : factors) {
             boolean isUnit = false;
 
-            for (TimeUnitType tup : factor.getValuesAndUnits()) {
+            for (PropertyValue tup : factor.getValuesAndUnits()) {
                 if (!tup.getUnit().equals("")) {
                     isUnit = true;
 
@@ -70,11 +70,11 @@ public class Utils {
                 }
             }
 
-            for (TimeUnitType tup : factor.getValuesAndUnits()) {
+            for (PropertyValue tup : factor.getValuesAndUnits()) {
                 if (isUnit) {
-                    tempList1.add(tup.getTime() + "\t" + tup.getUnit());
+                    tempList1.add(tup.getValue() + "\t" + tup.getUnit());
                 } else {
-                    tempList1.add(tup.getTime());
+                    tempList1.add(tup.getValue());
                 }
             }
 

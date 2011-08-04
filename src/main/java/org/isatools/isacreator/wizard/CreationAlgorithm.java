@@ -110,7 +110,7 @@ public abstract class CreationAlgorithm extends JPanel {
         FieldObject newFo;
         boolean unitAdded = false;
 
-        for (TimeUnitType tup : factor.getValuesAndUnits()) {
+        for (PropertyValue tup : factor.getValuesAndUnits()) {
             if (!tup.getUnit().trim().equals("")) {
                 headers.add("Unit");
                 unitAdded = true;

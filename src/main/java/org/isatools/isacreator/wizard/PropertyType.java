@@ -37,21 +37,26 @@
 
 package org.isatools.isacreator.wizard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PropertyType {
     private String propertyName;
     private String propertyType;
-    private List<TimeUnitType> valuesAndUnits;
+    private List<PropertyValue> valuesAndUnits;
 
-    PropertyType(String propertyName, String propertyType,
-                 List<TimeUnitType> valuesAndUnits) {
+    public PropertyType(String propertyName, String propertyType) {
+        this(propertyName, propertyType, new ArrayList<PropertyValue>());
+    }
+
+    public PropertyType(String propertyName, String propertyType,
+                        List<PropertyValue> valuesAndUnits) {
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.valuesAndUnits = valuesAndUnits;
     }
 
-    public List<TimeUnitType> getValuesAndUnits() {
+    public List<PropertyValue> getValuesAndUnits() {
         return valuesAndUnits;
     }
 

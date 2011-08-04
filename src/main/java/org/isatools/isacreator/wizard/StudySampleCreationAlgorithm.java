@@ -163,7 +163,7 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
 
                     boolean unitAdded = false;
 
-                    for (TimeUnitType tup : tf.getValuesAndUnits()) {
+                    for (PropertyValue tup : tf.getValuesAndUnits()) {
                         if (!tup.getUnit().trim().equals("")) {
                             headers.add("Unit");
                             unitAdded = true;

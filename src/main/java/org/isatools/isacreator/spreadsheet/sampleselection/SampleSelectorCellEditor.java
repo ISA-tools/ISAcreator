@@ -1,5 +1,6 @@
 package org.isatools.isacreator.spreadsheet.sampleselection;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.autofilteringlist.FilterField;
 import org.isatools.isacreator.common.UIHelper;
@@ -279,17 +280,26 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
 
         Spreadsheet studySampleSheet = study.getStudySample().getSpreadsheetUI().getTable();
 
+        Map<TableColumn, TableColumn> studySampleSheetFactors = studySampleSheet.getSpreadsheetFunctions().getFactors();
+
         // add columns and/or values
         for (FieldObject field : recordedFactors) {
 
-            int factorIndex = spreadsheet.getSpreadsheetFunctions().getModelIndexForColumn(field.getFieldName());
-            int unitIndex = -1;
+            TableColumn factorColumn = null;
+            TableColumn unitColumn = null;
 
-            System.out.println("Processing " + field.getFieldName() + " with index " + factorIndex);
+            Map<TableColumn, TableColumn> assaySheetFactors = spreadsheet.getSpreadsheetFunctions().getFactors();
 
-            if (factorIndex == -1) {
+            for (TableColumn column : assaySheetFactors.keySet()) {
+                if (column.getHeaderValue().equals(field.getFieldName())) {
+                    factorColumn = column;
+                    unitColumn = assaySheetFactors.get(column);
+                }
+            }
 
-                factorIndex = spreadsheet.getColumnCount();
+            if (factorColumn == null) {
+
+                int factorIndex = spreadsheet.getColumnCount();
 
                 FieldObject newFactor;
                 if ((newFactor = spreadsheet.getTableReferenceObject().getFieldByName(field.getFieldName())) != null) {
@@ -300,56 +310,71 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
 
                 spreadsheet.getSpreadsheetFunctions().addFieldToReferenceObject(newFactor);
 
-                TableColumn factorColumn = spreadsheet.getSpreadsheetFunctions().addColumn(newFactor.getFieldName());
+                factorColumn = spreadsheet.getSpreadsheetFunctions().addColumn(newFactor.getFieldName());
 
 
                 if (field.getDatatype() == DataTypes.STRING) {
 
-                    unitIndex = spreadsheet.getColumnCount();
-
-                    FieldObject unitFo = new FieldObject(unitIndex,
+                    FieldObject unitFo = new FieldObject(spreadsheet.getColumnCount(),
                             "Unit", "Unit for definition of value",
                             DataTypes.ONTOLOGY_TERM, "", false, false,
                             false);
 
                     spreadsheet.getSpreadsheetFunctions().addFieldToReferenceObject(unitFo);
-                    TableColumn unitColumn = spreadsheet.getSpreadsheetFunctions().addColumn("Unit");
 
+                    unitColumn = spreadsheet.getSpreadsheetFunctions().addColumn("Unit");
 
                     spreadsheet.getSpreadsheetFunctions().addColumnToDependencies(factorColumn, unitColumn);
+
                 }
-
-            } else {
-                System.out.println("Column " + field.getFieldName() + " is already present");
-                factorIndex = spreadsheet.getTable().convertColumnIndexToView(factorIndex);
             }
 
-            System.out.println("View index for " + field.getFieldName() + " in study sample file is " + studySampleSheet.getTable().columnModelIndextoView(field.getColNo()));
+            // Study sample file
+            //      1      2        3
+            // FV [Dose] Unit FV [Compound]
 
-            System.out.println("Getting value at position " + allSampleInformation.get(selectedSampleName).getRowNumber() +
-                    ", " + studySampleSheet.getTable().columnModelIndextoView(field.getColNo()));
+            // Assay file
+            //     3       4          5
+            // FV [Dose] Unit FV [Compound]
 
-            int factorIndexInStudySample = studySampleSheet.getSpreadsheetFunctions().getModelIndexForColumn(field.getFieldName());
-            Object columnValue = studySampleSheet.getTable().getValueAt(
-                    allSampleInformation.get(selectedSampleName).getRowNumber(),
-                    studySampleSheet.getTable().columnModelIndextoView(factorIndexInStudySample));
+            // Now we just need to map across since all the columns should be in place
+            // We have the TableColumns from the StudySample File
+            // We have the TableColumns from the Assay File.
 
-            System.out.println("Column value for field..." + columnValue);
+            // add Factor value
+            TableColumn associatedStudySampleFactor = null;
 
-            System.out.println("Setting value at " + currentRow + ", " + factorIndex + " to " + columnValue);
+            System.out.println("There are " + studySampleSheetFactors.size() + " factors recognised...");
 
-            spreadsheet.getTable().setValueAt(columnValue, currentRow, factorIndex);
+            for (TableColumn studySampleColumn : studySampleSheetFactors.keySet()) {
+                System.out.println("Study sample column is :" + studySampleColumn.getHeaderValue());
+                if (studySampleColumn.getHeaderValue().toString().equals(factorColumn.getHeaderValue().toString())) {
+                    System.out.println("Found match, now getting value :" + factorColumn.getHeaderValue().toString());
+                    // we have the first value
+                    Object value = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
+                            Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleColumn.getModelIndex()));
 
-            // todo now set unit if there is one
-            if (unitIndex != -1) {
+                    spreadsheet.getTable().setValueAt(value == null ? "" : value.toString(), currentRow,
+                            Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()));
 
+                    if (studySampleSheetFactors.get(studySampleColumn) != null) {
+
+                        Object unit = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
+                                Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleSheetFactors.get(studySampleColumn).getModelIndex()));
+
+                        spreadsheet.getTable().setValueAt(unit == null ? "" : unit.toString(), currentRow,
+                                Utils.convertModelIndexToView(spreadsheet.getTable(), unitColumn.getModelIndex()));
+                    }
+
+                    break;
+                }
             }
+
+            // add Unit
 
         }
-
-        // todo now set value for selected sample
-
     }
+
 
     private void hideSelector() {
         if (selector.isShowing()) {

@@ -38,24 +38,24 @@
 package org.isatools.isacreator.wizard;
 
 
-public class TimeUnitType {
-    private String time;
+public class PropertyValue {
+    private String value;
     private String unit;
 
     /**
      * ExtractionPoints constructor
      *
-     * @param time - e.g. 12 whose, actual unit of time is defined by the unit
-     * @param unit -  e.g. hours, so as to give the time unit some meaning e.g. 12 hours as opposed to 12
-     *             and an open interpretation of what it actually means
+     * @param value - e.g. 12 whose, actual unit of time is defined by the unit
+     * @param unit  -  e.g. hours, so as to give the time unit some meaning e.g. 12 hours as opposed to 12
+     *              and an open interpretation of what it actually means
      */
-    TimeUnitType(String time, String unit) {
-        this.time = time;
+    PropertyValue(String value, String unit) {
+        this.value = value;
         this.unit = unit;
     }
 
-    public String getTime() {
-        return time;
+    public String getValue() {
+        return value;
     }
 
     public String getUnit() {
