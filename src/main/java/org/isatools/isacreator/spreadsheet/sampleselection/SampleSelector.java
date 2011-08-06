@@ -62,6 +62,7 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
         setBackground(UIHelper.BG_COLOR);
 
         addList();
+        addCloseOption();
         ((JComponent) getContentPane()).setBorder(new EmptyBorder(4, 4, 3, 3));
         pack();
     }
@@ -92,6 +93,36 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
         IAppWidgetFactory.makeIAppScrollPane(listScroller);
 
         add(listScroller, BorderLayout.CENTER);
+    }
+
+    private void addCloseOption() {
+        final JLabel closeLabel = UIHelper.createLabel("close this window (esc)", UIHelper.VER_9_PLAIN, UIHelper.DARK_GREEN_COLOR);
+        closeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        closeLabel.setToolTipText("<html><strong>close</strong></html>");
+
+        closeLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                closeLabel.setFont(UIHelper.VER_9_PLAIN);
+                fadeOutWindow();
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                closeLabel.setFont(UIHelper.VER_9_BOLD);
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                closeLabel.setFont(UIHelper.VER_9_PLAIN);
+            }
+        });
+
+        JPanel bottomPanel = UIHelper.wrapComponentInPanel(closeLabel);
+        bottomPanel.setBackground(UIHelper.LIGHT_GREEN_COLOR);
+
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     public void selectNextItem() {
