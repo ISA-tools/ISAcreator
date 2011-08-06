@@ -432,6 +432,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 ((JLabel) mouseEvent.getSource()).setIcon(addStudyIcon);
+                closeEditors();
                 addStudyToTree();
             }
         });
@@ -458,6 +459,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                closeEditors();
                 if (removeStudyButton.getIcon() != removeStudyIconInactive) {
                     removeStudyButton.setIcon(removeStudyIcon);
                     removeStudy();
@@ -473,6 +475,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         visualization.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                closeEditors();
+
                 ExperimentVisualization expViz = new ExperimentVisualization(investigation);
                 expViz.createGUI();
 
