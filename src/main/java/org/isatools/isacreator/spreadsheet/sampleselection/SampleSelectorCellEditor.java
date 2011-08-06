@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.*;
 import java.util.List;
+import java.util.zip.CheckedOutputStream;
 
 public class SampleSelectorCellEditor extends FilterField implements TableCellEditor, DocumentListener, FocusListener, KeyListener {
     protected transient List<CellEditorListener> listeners;
@@ -342,41 +343,38 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
             // We have the TableColumns from the Assay File.
 
             // add Factor value
-            TableColumn associatedStudySampleFactor = null;
-
-            System.out.println("There are " + studySampleSheetFactors.size() + " factors recognised...");
 
             for (TableColumn studySampleColumn : studySampleSheetFactors.keySet()) {
-                System.out.println("Study sample column is :" + studySampleColumn.getHeaderValue());
                 if (studySampleColumn.getHeaderValue().toString().equals(factorColumn.getHeaderValue().toString())) {
-                    System.out.println("Found match, now getting value :" + factorColumn.getHeaderValue().toString());
                     // we have the first value
-                    Object value = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
-                            Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleColumn.getModelIndex()));
+                    if (allSampleInformation.get(selectedSampleName) != null) {
+                        Object value = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
+                                Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleColumn.getModelIndex()));
 
-                    spreadsheet.getTable().setValueAt(value == null ? "" : value.toString(), currentRow,
-                            Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()));
+                        System.out.println("Setting value at " + (currentRow) + ", " + Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()) + " to " + value);
 
-                    if (studySampleSheetFactors.get(studySampleColumn) != null) {
+                        spreadsheet.getTable().setValueAt(value == null ? "" : value.toString(), currentRow,
+                                Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()));
 
-                        Object unit = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
-                                Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleSheetFactors.get(studySampleColumn).getModelIndex()));
+                        if (studySampleSheetFactors.get(studySampleColumn) != null) {
 
-                        spreadsheet.getTable().setValueAt(unit == null ? "" : unit.toString(), currentRow,
-                                Utils.convertModelIndexToView(spreadsheet.getTable(), unitColumn.getModelIndex()));
+                            Object unit = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
+                                    Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleSheetFactors.get(studySampleColumn).getModelIndex()));
+
+                            spreadsheet.getTable().setValueAt(unit == null ? "" : unit.toString(), currentRow,
+                                    Utils.convertModelIndexToView(spreadsheet.getTable(), unitColumn.getModelIndex()));
+                        }
                     }
 
                     break;
                 }
             }
-
-            // add Unit
-
         }
     }
 
 
     private void hideSelector() {
+
         if (selector.isShowing()) {
             selector.fadeOutWindow();
         }
@@ -387,11 +385,8 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
     }
 
     public void focusLost(FocusEvent focusEvent) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                selector.fadeOutWindow();
-            }
-        });
+        cancelCellEditing();
+        hideSelector();
     }
 
     public void keyTyped(KeyEvent keyEvent) {
@@ -427,13 +422,11 @@ public class SampleSelectorCellEditor extends FilterField implements TableCellEd
             if (selector.getSelectedItem() != null) {
                 setText(selector.getSelectedItem().toString());
             } else {
-                setText(selector.getSelectedValue());
+                setText(getText());
             }
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    propagateFactorsToAssay(getText());
-                }
-            });
+
+            propagateFactorsToAssay(getText());
+
         }
     }
 

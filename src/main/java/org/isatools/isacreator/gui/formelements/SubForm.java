@@ -41,6 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
@@ -56,6 +57,7 @@ import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -816,9 +818,8 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         DefaultTableModel model = (DefaultTableModel) scrollTable.getModel();
         TableColumn col = new TableColumn(scrollTable.getModel().getColumnCount());
         col.setHeaderRenderer(scrollTableHeaderRenderer);
-        if (scrollTable.getEditingColumn() != -1) {
-            scrollTable.getCellEditor(scrollTable.getEditingRow(), scrollTable.getEditingColumn()).stopCellEditing();
-        }
+
+        SpreadsheetUtils.stopCellEditingInTable(scrollTable);
 
         return doAddColumn(model, col);
     }

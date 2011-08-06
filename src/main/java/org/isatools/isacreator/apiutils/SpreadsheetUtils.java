@@ -41,10 +41,12 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
 import org.isatools.isacreator.spreadsheet.sampleselection.SampleInformation;
 
+import javax.swing.*;
 import javax.swing.table.TableColumn;
 import java.util.*;
 
@@ -281,5 +283,14 @@ public class SpreadsheetUtils {
         }
 
         return files;
+    }
+
+    public static void stopCellEditingInTable(JTable table) {
+        if (table.getEditingColumn() != -1) {
+            // the ontology cell editor is a JFrame, so closing it is useless since it will close when it loses focus anyway.
+            if (!(table.getCellEditor() instanceof OntologyCellEditor)) {
+                table.getCellEditor(table.getEditingRow(), table.getEditingColumn()).stopCellEditing();
+            }
+        }
     }
 }

@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
@@ -47,6 +48,7 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.CollectionUtils;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
@@ -715,6 +717,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         removeStudyButton.setIcon(removeStudyIconInactive);
 
+        // close all cell editors that may be in view.
+        closeEditors();
+
         if (nodeInfo instanceof Investigation) {
             setCurrentPage(((Investigation) nodeInfo).getUserInterface());
             setStatusPaneInfo(investigationHelp);
@@ -726,8 +731,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             Assay assay = (Assay) nodeInfo;
 
             if (currentPage instanceof AssaySpreadsheet) {
-                if (((AssaySpreadsheet) currentPage).getTable().getSpreadsheetTitle().contains("Sample Definition")) {
-                    System.out.println("Updating sample list...");
+                Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
+                if (spreadsheet.getSpreadsheetTitle().contains("Sample Definition")) {
                     StudyUtils.studySampleFileModified(getParentStudy(selectedNode).getStudyId());
                 }
             }
@@ -814,6 +819,13 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         }
 
         return false;
+    }
+
+    public void closeEditors() {
+        if (currentPage instanceof AssaySpreadsheet) {
+            Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
+            SpreadsheetUtils.stopCellEditingInTable(spreadsheet.getTable());
+        }
     }
 
     public void removeReferences() {

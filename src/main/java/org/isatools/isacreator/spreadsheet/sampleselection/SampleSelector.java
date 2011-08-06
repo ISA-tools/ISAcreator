@@ -240,4 +240,5 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
             filterList.addItem(filterableContent.get(sampleName));
         }
     }
+
 }

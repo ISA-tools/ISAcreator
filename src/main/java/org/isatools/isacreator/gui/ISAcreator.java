@@ -66,6 +66,10 @@ import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
+import org.isatools.isatab.gui_invokers.GUIISATABValidator;
+import org.isatools.isatab.gui_invokers.GUIInvokerResult;
+import org.isatools.isatab.isaconfigurator.ISAConfigurationSet;
+import org.isatools.tablib.utils.logging.TabLoggingEventWrapper;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -92,7 +96,7 @@ import java.util.List;
  *
  * @author Eamonn Maguire
  */
-public class ISAcreator extends AnimatableJFrame {
+public class ISAcreator extends AnimatableJFrame implements WindowFocusListener {
 
     private static Logger log = Logger.getLogger(ISAcreator.class.getName());
 
@@ -222,6 +226,8 @@ public class ISAcreator extends AnimatableJFrame {
         setUndecorated(true);
         setResizable(true);
         setLayout(new BorderLayout());
+
+        addWindowFocusListener(this);
         // load user profiles into the system
         userProfileIO.loadUserProfiles();
         loadProgramSettings();
@@ -254,7 +260,6 @@ public class ISAcreator extends AnimatableJFrame {
     public void setAssayDefinitions(List<TableReferenceObject> assayDefinitions) {
         this.assayDefinitions = assayDefinitions;
     }
-
 
 
     private void checkMenuRequired() {
@@ -347,18 +352,26 @@ public class ISAcreator extends AnimatableJFrame {
         menuBar.setForeground(UIHelper.DARK_GREEN_COLOR);
         menuBar.setBorder(null);
 
+        MouseAdapter cleanUpDisplayedEditors = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                closeEditors();
+            }
+        };
+
         JMenu file = new JMenu("file");
+        file.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem save = new JMenuItem(new SaveAction(SaveAction.SAVE_ONLY,
                 "save", saveIcon, "save ISA files", KeyEvent.VK_S));
+
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 KeyEvent.CTRL_MASK));
-
         file.add(save);
-
         JMenuItem saveAs = new JMenuItem(new SaveAction(SaveAction.SAVE_AS,
                 "save as", saveIcon, "save as a different set of ISA files",
                 KeyEvent.VK_A));
+
 
         file.add(saveAs);
 
@@ -368,8 +381,8 @@ public class ISAcreator extends AnimatableJFrame {
                 "go to main menu",
                 menuIcon,
                 "go back to main menu without saving", null));
-        file.add(main);
 
+        file.add(main);
         file.add(new JSeparator());
 
         JMenuItem exportISArchive = new JMenuItem("create ISArchive",
@@ -398,9 +411,11 @@ public class ISAcreator extends AnimatableJFrame {
         // study section
 
         JMenu studyMenu = new JMenu("study");
+        studyMenu.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem addStudy = new JMenuItem("add study",
                 addStudyIcon);
+
         addStudy.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 getDataEntryEnvironment().addStudyToTree();
@@ -410,6 +425,7 @@ public class ISAcreator extends AnimatableJFrame {
 
         JMenuItem removeStudy = new JMenuItem("remove study",
                 removeStudyIcon);
+
         removeStudy.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 getDataEntryEnvironment().removeStudy();
@@ -422,11 +438,13 @@ public class ISAcreator extends AnimatableJFrame {
         // end study section
 
         JMenu view = new JMenu("view");
+        view.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem fullScreen = new JMenuItem(new ScreenResizeAction(
                 ScreenResizeAction.FULL_SCREEN, "full screen",
                 fullScreenIcon,
                 "Put application in full screen mode.", KeyEvent.VK_F));
+
         fullScreen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
                 KeyEvent.ALT_MASK));
 
@@ -434,6 +452,7 @@ public class ISAcreator extends AnimatableJFrame {
                 ScreenResizeAction.DEFAULT_SIZE, "default screen",
                 defaultScreenIcon,
                 "Put application in the default screen mode.", KeyEvent.VK_D));
+
         defaultScreen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
                 KeyEvent.ALT_MASK));
 
@@ -443,9 +462,10 @@ public class ISAcreator extends AnimatableJFrame {
         menuBar.add(view);
 
         JMenu plugins = new JMenu("utilities");
-
+        plugins.addMouseListener(cleanUpDisplayedEditors);
 
         JMenu sampleTracking = new JMenu("Sample Tracking");
+
         sampleTracking.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -469,12 +489,42 @@ public class ISAcreator extends AnimatableJFrame {
         menusRequiringStudyIds.put("qr", qrCodeExport);
         sampleTracking.add(qrCodeExport);
 
+        JMenuItem validate = new JMenuItem("Validate ISAtab properly ;D");
+        validate.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+
+                // todo call the validate module
+
+                ISAConfigurationSet.setConfigPath("/Users/eamonnmaguire/git/eamonnrepo/ISAcreator/Configurations/isaconfig-default");
+
+                GUIISATABValidator isatabValidator = new GUIISATABValidator();
+                GUIInvokerResult result = isatabValidator.validate("/Users/eamonnmaguire/git/eamonnrepo/ISAcreator/isatab files/BII-I-1");
+
+                if (result == GUIInvokerResult.SUCCESS) {
+                    System.out.println("Yay");
+                } else {
+                    System.out.println(":(");
+
+                    List<TabLoggingEventWrapper> logEvents = isatabValidator.getLog();
+
+                    System.out.println("Printing errors");
+                    for (TabLoggingEventWrapper event : logEvents) {
+                        System.out.println(event.getLogEvent().getLevel().toString());
+                        System.out.println(event.getFormattedMessage());
+                    }
+                }
+
+            }
+        });
+
         plugins.add(sampleTracking);
         plugins.add(tagInvestigation);
+        plugins.add(validate);
 
         menuBar.add(plugins);
 
         JMenu help = new JMenu("help");
+        help.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem about = new JMenuItem("about",
                 aboutIcon);
@@ -687,7 +737,7 @@ public class ISAcreator extends AnimatableJFrame {
 
 
     public void setCurDataEntryPanel(DataEntryEnvironment dataEntryEnvironment) {
-       curDataEntryEnvironment = dataEntryEnvironment;
+        curDataEntryEnvironment = dataEntryEnvironment;
         System.out.println("Data entry panel changed & initialised");
     }
 
@@ -1217,6 +1267,20 @@ public class ISAcreator extends AnimatableJFrame {
         }
     }
 
+    public void windowGainedFocus(WindowEvent windowEvent) {
+        // do nothing
+    }
+
+    public void windowLostFocus(WindowEvent windowEvent) {
+        closeEditors();
+    }
+
+    private void closeEditors() {
+        if (curDataEntryEnvironment != null) {
+            System.out.println("Closing editors...");
+            curDataEntryEnvironment.closeEditors();
+        }
+    }
 
     public static void main(String[] args) {
 

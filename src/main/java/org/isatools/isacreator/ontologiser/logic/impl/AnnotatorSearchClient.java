@@ -37,6 +37,7 @@ public class AnnotatorSearchClient {
             //method.addParameter("stopWords", "choubala");
             //method.addParameter("withDefaultStopWords", "true");
             method.addParameter("scored", "true");
+            // todo should probably use this parameter to send through allowed ontologies.
             //method.addParameter("ontologiesToExpand", "38802,13578,40644,40403");
             //method.addParameter("ontologiesToKeepInResult", "40403");
             //method.addParameter("semanticTypes", "T999");

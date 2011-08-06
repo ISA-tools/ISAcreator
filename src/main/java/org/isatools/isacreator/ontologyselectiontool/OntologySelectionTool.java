@@ -45,7 +45,9 @@ import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.filterableTree.FilterableJTree;
 import org.isatools.isacreator.common.filterableTree.TreeFilterModel;
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
+import org.isatools.isacreator.configuration.OntologyFormats;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
@@ -183,7 +185,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         ontologyViewContainer = new JPanel(new BorderLayout());
         ontologyViewContainer.setPreferredSize(new Dimension(400, 170));
 
-         progressIndicator = new InfiniteProgressPanel("searching for matching ontologies");
+        progressIndicator = new InfiniteProgressPanel("searching for matching ontologies");
 
         createPanels();
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
@@ -691,7 +693,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private void confirmSelection() {
         // todo add selected terms to the history here.
 
-        for(OntologyTerm selectedTerm : selectedTerms) {
+        for (OntologyTerm selectedTerm : selectedTerms) {
             addTermToHistory(selectedTerm);
         }
 
@@ -778,10 +780,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     private void addTermToHistory(OntologyTerm termInformation) {
-            // add the item to the history list
-            addSourceToUsedOntologies(termInformation.getOntologySourceInformation());
-            OntologySourceManager.addToUserHistory(termInformation);
-            historyList.addItem(termInformation);
+        // add the item to the history list
+        addSourceToUsedOntologies(termInformation.getOntologySourceInformation());
+        OntologySourceManager.addToUserHistory(termInformation);
+        historyList.addItem(termInformation);
     }
 
 

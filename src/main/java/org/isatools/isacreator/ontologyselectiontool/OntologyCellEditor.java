@@ -160,7 +160,6 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
 
-
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
 
