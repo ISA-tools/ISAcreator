@@ -22,7 +22,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
     @Override
     protected void updateContent() {
-        if (StudyUtils.isModified(study.getStudyId())) {
+        if (StudyUtils.shouldRunUpdate(study.getStudyId())) {
             System.out.println("Updating content...");
             selector.updateContent(StudyUtils.getStudySampleInformation(study).values());
         } else {
@@ -37,8 +37,6 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
     }
 
     private void propagateFactorsToAssay(String selectedSampleName) {
-
-        System.out.println("PROPAGATING FACTORS!!");
 
         TableReferenceObject tableReferenceObject = study.getStudySample().getTableReferenceObject();
 

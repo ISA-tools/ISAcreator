@@ -743,7 +743,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             if (currentPage instanceof AssaySpreadsheet) {
                 Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
                 if (spreadsheet.getSpreadsheetTitle().contains("Sample Definition")) {
-                    StudyUtils.studySampleFileModified(getParentStudy(selectedNode).getStudyId());
+//                    StudyUtils.studySampleFileModified(getParentStudy(selectedNode).getStudyId());
+                    StudyUtils.studySampleFileModified(getParentStudy(selectedNode), true);
                 }
             }
             setCurrentPage(assay.getSpreadsheetUI());
