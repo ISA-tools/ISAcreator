@@ -195,4 +195,9 @@ public class Protocol extends ISASection implements StudySubData, Serializable {
     public String getProtocolComponentTypeSource() {
         return getValue(PROTOCOL_COMPONENT_TYPE_TERM_SOURCE_REF);
     }
+
+    @Override
+    public String toString() {
+        return getProtocolName();
+    }
 }

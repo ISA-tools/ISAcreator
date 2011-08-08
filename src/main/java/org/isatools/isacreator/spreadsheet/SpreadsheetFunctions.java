@@ -40,15 +40,13 @@ package org.isatools.isacreator.spreadsheet;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
-import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-import org.isatools.isacreator.spreadsheet.sampleselection.SampleSelectorCellEditor;
+import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
+import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
 import org.isatools.isacreator.utils.GeneralUtils;
-import org.isatools.isacreator.wizard.PropertyType;
-import prefuse.data.Table;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -61,7 +59,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.List;
 
 /**
  * Created by the ISA team
@@ -923,7 +920,8 @@ public class SpreadsheetFunctions {
         }
 
         if (col.getHeaderValue().toString().equals("Protocol REF")) {
-            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getStudyDataEntryEnvironment().getStudy()));
+            col.setCellEditor(new ProtocolSelectorCellEditor(spreadsheet));
+//            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getStudyDataEntryEnvironment().getStudy()));
             return;
         }
 

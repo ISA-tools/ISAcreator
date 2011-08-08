@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.spreadsheet.sampleselection;
+package org.isatools.isacreator.sampleselection;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.jdesktop.fuse.InjectedResource;
@@ -63,7 +63,7 @@ public class SampleSelectionListCellRenderer extends JComponent
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
         ResourceInjector.get("sample-selection-package.style").load(
-                SampleSelectionListCellRenderer.class.getResource("/dependency-injections/sample-selection-package.properties"));
+                SampleSelectionListCellRenderer.class.getResource("/dependency-injections/autofilterfield-package.properties"));
     }
 
 

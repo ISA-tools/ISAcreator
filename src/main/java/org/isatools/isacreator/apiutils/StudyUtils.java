@@ -2,7 +2,7 @@ package org.isatools.isacreator.apiutils;
 
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.sampleselection.SampleInformation;
+import org.isatools.isacreator.sampleselection.SampleInformation;
 
 import java.util.HashMap;
 import java.util.Map;

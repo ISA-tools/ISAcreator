@@ -44,7 +44,7 @@ import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
-import org.isatools.isacreator.spreadsheet.sampleselection.SampleInformation;
+import org.isatools.isacreator.sampleselection.SampleInformation;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;

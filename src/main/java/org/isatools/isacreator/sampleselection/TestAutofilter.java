@@ -1,4 +1,4 @@
-package org.isatools.isacreator.spreadsheet.sampleselection;
+package org.isatools.isacreator.sampleselection;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;

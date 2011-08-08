@@ -1,4 +1,4 @@
-package org.isatools.isacreator.spreadsheet.sampleselection;
+package org.isatools.isacreator.autofilterfield;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import com.sun.awt.AWTUtilities;
@@ -14,13 +14,15 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * The SampleSelector class provides the user interface to allow users to select study samples from an autocompleting list
+ * The AutoCompleteUI class provides the user interface to allow users to select study samples from an autocompleting list
  * of Study sample ids. It also allows the user to propagate metadata from the study sample file directly into the Assay file.
  */
-public class SampleSelector extends JWindow implements ActionListener, KeyListener {
+public class AutoCompleteUI<T> extends JWindow implements ActionListener, KeyListener {
 
     public static final int INCOMING = 1;
     public static final int OUTGOING = -1;
@@ -40,15 +42,20 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
     public static final int WIDTH = 230;
 
     private FilterField filterField;
-    private Map<String, SampleInformation> filterableContent;
+    private Collection<T> filterableContent;
+    private ListCellRenderer cellRenderer;
 
     private ExtendedJList filterList;
 
 
-    // todo replace String content with an object Implementation or generics
-    public SampleSelector(FilterField filterField, Map<String, SampleInformation> filterableContent) {
+    public AutoCompleteUI(FilterField filterField, Collection<T> filterableContent) {
+        this(filterField, filterableContent, new FilterableListCellRenderer());
+    }
+
+    public AutoCompleteUI(FilterField filterField, Collection<T> filterableContent, ListCellRenderer cellRenderer) {
         this.filterField = filterField;
         this.filterableContent = filterableContent;
+        this.cellRenderer = cellRenderer;
     }
 
     public void createGUI() {
@@ -63,12 +70,12 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
 
         addList();
         addCloseOption();
-        ((JComponent) getContentPane()).setBorder(new EmptyBorder(4, 4, 3, 3));
+        ((JComponent) getContentPane()).setBorder(new EmptyBorder(2, 2, 2, 2));
         pack();
     }
 
     private void addList() {
-        filterList = new ExtendedJList(new SampleSelectionListCellRenderer(), filterField, true);
+        filterList = new ExtendedJList(cellRenderer, filterField, true);
         filterList.setAutoscrolls(true);
         filterList.addMouseListener(new MouseAdapter() {
             @Override
@@ -96,7 +103,7 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
     }
 
     private void addCloseOption() {
-        final JLabel closeLabel = UIHelper.createLabel("close this window (esc)", UIHelper.VER_9_PLAIN, UIHelper.DARK_GREEN_COLOR);
+        final JLabel closeLabel = UIHelper.createLabel("close this window (esc)", UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR);
         closeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         closeLabel.setToolTipText("<html><strong>close</strong></html>");
 
@@ -261,15 +268,15 @@ public class SampleSelector extends JWindow implements ActionListener, KeyListen
     }
 
     public void keyReleased(KeyEvent keyEvent) {
-
     }
 
-    public void updateContent(Map<String, SampleInformation> studySampleInformation) {
+    public void updateContent(Collection<T> studySampleInformation) {
         filterableContent = studySampleInformation;
 
-        for (String sampleName : filterableContent.keySet()) {
-            filterList.addItem(filterableContent.get(sampleName));
+        filterList.clearItems();
+
+        for (T item : filterableContent) {
+            filterList.addItem(item);
         }
     }
-
 }

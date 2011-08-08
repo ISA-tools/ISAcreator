@@ -724,6 +724,12 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         // close all cell editors that may be in view.
         closeEditors();
 
+        // if we are coming away from the Study form or study sample file, we want to set a flag noting that the info
+        // may have changed.
+        if (currentPage instanceof StudyDataEntry) {
+            StudyUtils.studySampleFileModified(((StudyDataEntry) currentPage).getStudy().getStudyId());
+        }
+
         if (nodeInfo instanceof Investigation) {
             setCurrentPage(((Investigation) nodeInfo).getUserInterface());
             setStatusPaneInfo(investigationHelp);
@@ -740,7 +746,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                     StudyUtils.studySampleFileModified(getParentStudy(selectedNode).getStudyId());
                 }
             }
-
             setCurrentPage(assay.getSpreadsheetUI());
             setStatusPaneInfo("");
         } else {
@@ -805,6 +810,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     private Study getParentStudy(DefaultMutableTreeNode node) {
+        System.out.println("Node parent is " + node.getParent());
         if (((DefaultMutableTreeNode) node.getParent()).getUserObject() instanceof Study) {
             return (Study) ((DefaultMutableTreeNode) node.getParent()).getUserObject();
         } else {

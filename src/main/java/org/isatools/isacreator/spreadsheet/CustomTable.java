@@ -37,11 +37,12 @@
 
 package org.isatools.isacreator.spreadsheet;
 
+import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
-import org.isatools.isacreator.spreadsheet.sampleselection.SampleSelectorCellEditor;
+import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -102,7 +103,7 @@ public class CustomTable extends JTable {
     public void changeSelection(int row, int column, boolean toggle, boolean extend) {
         super.changeSelection(row, column, toggle, extend);
         TableCellEditor editor = getCellEditor(row, column);
-        if (editor instanceof SampleSelectorCellEditor) {
+        if (editor instanceof DefaultAutoFilterCellEditor) {
             if (editCellAt(row, column))
                 getEditorComponent().requestFocusInWindow();
         }
