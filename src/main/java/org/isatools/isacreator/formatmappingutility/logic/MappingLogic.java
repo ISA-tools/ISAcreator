@@ -43,6 +43,8 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.assayselection.AssaySelection;
+import org.isatools.isacreator.assayselection.AssaySelectionUI;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.MappingObject;

@@ -40,6 +40,8 @@ package org.isatools.isacreator.formatmappingutility.ui;
 import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
+import org.isatools.isacreator.assayselection.AssaySelection;
+import org.isatools.isacreator.assayselection.AssaySelectionUI;
 import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.UIHelper;

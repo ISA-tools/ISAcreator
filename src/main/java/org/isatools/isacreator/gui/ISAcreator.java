@@ -175,12 +175,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 ISAcreator.class.getResource("/dependency-injections/wizard-package.properties"));
         ResourceInjector.get("formatmappingutility-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
-        ResourceInjector.get("arraydesignbrowser-package.style").load(ISAcreator.class.getResource
-                ("/dependency-injections/arraydesignbrowser-package.properties"));
-
-        ResourceInjector.get("effects-package.style").load(ISAcreator.class.getResource
-                ("/dependency-injections/effects-package.properties"));
-
+        ResourceInjector.get("arraydesignbrowser-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/arraydesignbrowser-package.properties"));
+        ResourceInjector.get("effects-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/effects-package.properties"));
+        ResourceInjector.get("assayselection-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/assayselection-package.properties"));
         ResourceInjector.get("calendar-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
     }

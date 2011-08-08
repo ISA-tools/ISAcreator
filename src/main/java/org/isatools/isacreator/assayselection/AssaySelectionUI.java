@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.formatmappingutility.ui;
+package org.isatools.isacreator.assayselection;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
@@ -85,7 +85,7 @@ public class AssaySelectionUI extends JPanel {
     public AssaySelectionUI(Map<String, java.util.List<String>> measToAllowedTechnologies) {
         this.measToAllowedTechnologies = measToAllowedTechnologies;
 
-        ResourceInjector.get("formatmappingutility-package.style").inject(this);
+        ResourceInjector.get("assayselection-package.style").inject(this);
 
     }
 
