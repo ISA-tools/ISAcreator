@@ -39,6 +39,7 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
+import org.isatools.helpbrowser.ui.WebBrowser;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputUtil;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
@@ -539,8 +540,14 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         JMenuItem manual = new JMenuItem("user manual",
                 helpIcon);
         manual.setForeground(UIHelper.DARK_GREEN_COLOR);
+        manual.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // todo position a bit better on screen. Like in the middle of the current ISAcreator window.
+                new WebBrowser("http://isatab.sourceforge.net/ch04.html").createGUI();
+            }
+        });
         help.add(manual);
-        manual.setEnabled(false);
+        manual.setEnabled(true);
 
         JMenuItem contact = new JMenuItem("contact support team",
                 supportIcon);
@@ -560,7 +567,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     private void updateExportList() {
-
 
         Investigation i = curDataEntryEnvironment.getInvestigation();
 
