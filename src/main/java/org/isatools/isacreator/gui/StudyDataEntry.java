@@ -50,6 +50,7 @@ import org.isatools.isacreator.io.importisa.investigationproperties.Investigatio
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
+import org.isatools.isatab.configurator.schema.FieldType;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -201,29 +202,10 @@ public class StudyDataEntry extends DataEntryForm {
 
             if (!fieldsToIgnore.contains(assayField)) {
 
-                FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(assayField);
+                SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, assayField);
 
-                int fieldType = SubFormField.STRING;
-
-                if (assayField.equals(Assay.MEASUREMENT_ENDPOINT)) {
-                    assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempMeasurements.toArray(new String[tempMeasurements.size()])));
-                } else if (assayField.equals(Assay.TECHNOLOGY_TYPE)) {
-                    assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempTechnologies.toArray(new String[tempTechnologies.size()])));
-                } else if (ontologyFields.contains(assayField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    assayFields.add(new SubFormField(assayField, fieldType));
-                } else {
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-                    assayFields.add(new SubFormField(assayField, fieldType));
+                if (generatedField != null) {
+                    assayFields.add(generatedField);
                 }
             }
         }
@@ -255,31 +237,10 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String contactField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_CONTACTS)) {
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, contactField);
 
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(contactField);
-
-            if (!fieldsToIgnore.contains(contactField)) {
-
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(contactField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    contactFields.add(new SubFormField(contactField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    contactFields.add(new SubFormField(contactField, fieldType));
-                }
+            if (generatedField != null) {
+                contactFields.add(generatedField);
             }
         }
 
@@ -334,33 +295,11 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String factorField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_FACTORS)) {
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(factorField);
 
-            if (!fieldDescriptor.isHidden()) {
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, factorField);
 
-                if (!fieldsToIgnore.contains(factorField)) {
-
-                    int fieldType = SubFormField.STRING;
-
-                    if (ontologyFields.contains(factorField)) {
-
-                        fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                        if (fieldDescriptor != null)
-                            if (fieldDescriptor.isAcceptsMultipleValues())
-                                fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                        factorFields.add(new SubFormField(factorField, fieldType));
-                    } else {
-
-                        if (fieldDescriptor != null) {
-                            fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                    fieldDescriptor.isAcceptsMultipleValues());
-                        }
-
-                        factorFields.add(new SubFormField(factorField, fieldType));
-                    }
-                }
+            if (generatedField != null) {
+                factorFields.add(generatedField);
             }
         }
 
@@ -388,30 +327,11 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String protocolField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PROTOCOLS)) {
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(protocolField);
 
-            if (!fieldsToIgnore.contains(protocolField)) {
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, protocolField);
 
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(protocolField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    protocolFields.add(new SubFormField(protocolField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    protocolFields.add(new SubFormField(protocolField, fieldType));
-                }
+            if (generatedField != null) {
+                protocolFields.add(generatedField);
             }
         }
 
@@ -436,30 +356,10 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PUBLICATIONS)) {
 
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(publicationField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, publicationField);
 
-            if (!fieldsToIgnore.contains(publicationField)) {
-
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(publicationField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    publicationFields.add(new SubFormField(publicationField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    publicationFields.add(new SubFormField(publicationField, fieldType));
-                }
+            if (generatedField != null) {
+                publicationFields.add(generatedField);
             }
         }
 
@@ -488,32 +388,11 @@ public class StudyDataEntry extends DataEntryForm {
 
         for (String studyDesignField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_DESIGN_SECTION)) {
 
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(studyDesignField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, studyDesignField);
 
-            if (!fieldsToIgnore.contains(studyDesignField)) {
-
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(studyDesignField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    studyDesignFields.add(new SubFormField(studyDesignField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    studyDesignFields.add(new SubFormField(studyDesignField, fieldType));
-                }
+            if (generatedField != null) {
+                studyDesignFields.add(generatedField);
             }
-
         }
 
         int numColsToAdd = (study.getStudyDesigns().size() == 0) ? 2

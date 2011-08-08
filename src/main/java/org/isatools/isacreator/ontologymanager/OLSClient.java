@@ -313,9 +313,9 @@ public class OLSClient implements OntologyService {
 
             for (OntologyTerm term : termSearchResult.get(termSource)) {
 
-                if (termsInBranch.contains(term.getOntologySource()  + ":" + term.getOntologySourceAccession())) {
+                if (termsInBranch.contains(term.getOntologySource() + ":" + term.getOntologySourceAccession())) {
 
-                    if(!filteredResult.containsKey(termSource)) {
+                    if (!filteredResult.containsKey(termSource)) {
                         filteredResult.put(termSource, new ArrayList<OntologyTerm>());
                     }
 
@@ -334,7 +334,7 @@ public class OLSClient implements OntologyService {
 
             String source = "";
 
-            if(accession.contains(":")) {
+            if (accession.contains(":")) {
                 source = accession.substring(0, accession.lastIndexOf(":"));
             } else {
                 source = "NEWT";
@@ -360,11 +360,13 @@ public class OLSClient implements OntologyService {
 
         for (String accession : ontologyAccessionToTerm.keySet()) {
             System.out.println("Processing accession - " + accession);
-            String source = accession.substring(0, accession.lastIndexOf(":"));
+            if (accession.contains(":")) {
+                String source = accession.substring(0, accession.lastIndexOf(":"));
 
-            String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
+                String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
 
-            processedResult.put(accession, createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
+                processedResult.put(accession, createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
+            }
         }
 
         return processedResult;
@@ -438,7 +440,7 @@ public class OLSClient implements OntologyService {
 
     public List<Ontology> getAllOntologies() {
         List<Ontology> ontologies = new ArrayList<Ontology>();
-        for(OntologySourceRefObject ontologySource : getOntologies().values()) {
+        for (OntologySourceRefObject ontologySource : getOntologies().values()) {
             ontologies.add(new Ontology("", ontologySource.getSourceVersion(), ontologySource.getSourceName(), ontologySource.getSourceDescription()));
         }
 

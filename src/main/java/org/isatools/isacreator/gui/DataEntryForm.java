@@ -375,4 +375,39 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     }
 
 
+    protected SubFormField generateSubFormField(Set<String> fieldsToIgnore, Set<String> ontologyFields, Study study, String studyDesignField) {
+        FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(studyDesignField);
+
+        if (!fieldsToIgnore.contains(studyDesignField)) {
+
+            int fieldType = SubFormField.STRING;
+
+            if (ontologyFields.contains(studyDesignField)) {
+
+                fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                if (fieldDescriptor != null)
+                    if (fieldDescriptor.isAcceptsMultipleValues())
+                        fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                return new SubFormField(studyDesignField, fieldType);
+            } else {
+
+                if (fieldDescriptor != null) {
+                    fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                            fieldDescriptor.isAcceptsMultipleValues());
+                }
+
+                if (fieldType == SubFormField.COMBOLIST) {
+                    return new SubFormField(studyDesignField, fieldType, fieldDescriptor.getFieldList());
+                } else {
+                    return new SubFormField(studyDesignField, fieldType);
+                }
+
+            }
+        }
+
+        return null;
+    }
+
 }
