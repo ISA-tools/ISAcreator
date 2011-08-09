@@ -70,11 +70,11 @@ public class AssaySelectionUI extends JPanel {
     public final static String NO_TECHNOLOGY_TEXT = "no technology required";
 
     @InjectedResource
-    private ImageIcon removeIcon, removeIconOver, confirmIcon, confirmIconOver,
-            cancelIcon, cancelIconOver, selectIcon, selectIconOver;
+    private ImageIcon removeIcon, removeIconOver, removeIconInactive, selectIcon, selectIconOver, selectIconInactive, leftFieldIcon, rightFieldIcon;
 
     private ExtendedJList assayMeasurementList;
     private ExtendedJList assayTechnologyList;
+    private ExtendedJList assayPlatformList;
     private ExtendedJList selectedAssaysList;
 
     private JLabel removeAssay;
@@ -91,22 +91,25 @@ public class AssaySelectionUI extends JPanel {
 
     public void createGUI() {
         setLayout(new BorderLayout());
-        setSize(new Dimension(400, 400));
+        setSize(new Dimension(400, 500));
 
         // need to create a gui with two panels on the left hand side for selection of the
         // measurement and technology and one panel on the right hand side showing which ontologies
         // have been selected!
-        add(createAssaySelectionUtil(), BorderLayout.WEST);
-        add(createSelectAssaysDisplay(), BorderLayout.CENTER);
+        add(createAssaySelectionUtil(), BorderLayout.CENTER);
+        add(createSelectedAssaysDisplay(), BorderLayout.SOUTH);
     }
 
-    private JPanel createAssaySelectionUtil() {
-        JPanel assaySelectionPanel = new JPanel();
-        assaySelectionPanel.setLayout(new BoxLayout(assaySelectionPanel, BoxLayout.PAGE_AXIS));
+    private Container createAssaySelectionUtil() {
+
+
+        Box assaySelectionPanel = Box.createHorizontalBox();
         assaySelectionPanel.setOpaque(false);
 
         assayMeasurementList = new ExtendedJList(new ColumnFilterRenderer());
         assayTechnologyList = new ExtendedJList(new ColumnFilterRenderer());
+        assayPlatformList = new ExtendedJList(new ColumnFilterRenderer());
+
         populateMeasurements();
         updateTechnologies(assayMeasurementList.getSelectedTerm());
 
@@ -122,6 +125,27 @@ public class AssaySelectionUI extends JPanel {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                 // allow to add assay type if it is not already in the list of assays to define.
                 // need to add a little button below this list to add the assay
+
+                //todo update platforms
+                updatePlatforms(assayTechnologyList.getSelectedTerm());
+                if (assayTechnologyList.getItems().size() == 1 && assayTechnologyList.getItems().get(0).equals(NO_TECHNOLOGY_TEXT)) {
+                    selectAssay.setVisible(true);
+                } else if (!assayTechnologyList.isSelectionEmpty()) {
+                    selectAssay.setVisible(true);
+                } else {
+                    selectAssay.setVisible(false);
+                }
+
+                // todo check if all lists have an item selected. If so, make the add assay button active
+            }
+        });
+
+        assayPlatformList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                // allow to add assay type if it is not already in the list of assays to define.
+                // need to add a little button below this list to add the assay
+                // todo Check if other is selected...there will always be an 'other' since the list is never going to be
+                // exhaustive
                 if (assayTechnologyList.getItems().size() == 1 && assayTechnologyList.getItems().get(0).equals(NO_TECHNOLOGY_TEXT)) {
                     selectAssay.setVisible(true);
                 } else if (!assayTechnologyList.isSelectionEmpty()) {
@@ -132,53 +156,14 @@ public class AssaySelectionUI extends JPanel {
             }
         });
 
-        JScrollPane measurementScroller = new JScrollPane(assayMeasurementList,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        measurementScroller.setBorder(new EmptyBorder(0, 0, 0, 0));
+        assaySelectionPanel.add(packAndStyleFilterList(assayMeasurementList, "select measurement"));
 
-        IAppWidgetFactory.makeIAppScrollPane(measurementScroller);
+        assaySelectionPanel.add(packAndStyleFilterList(assayTechnologyList, "select technology"));
 
-        UIHelper.renderComponent(assayMeasurementList.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
-
-        JScrollPane technologyScroller = new JScrollPane(assayTechnologyList,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        technologyScroller.setBorder(new EmptyBorder(0, 0, 0, 0));
-
-        IAppWidgetFactory.makeIAppScrollPane(technologyScroller);
-
-        UIHelper.renderComponent(assayTechnologyList.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
-
-        JPanel measurementContainer = new JPanel(new BorderLayout());
-        measurementContainer.setOpaque(false);
-
-        measurementContainer.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
-                "select measurement", TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
-                UIHelper.GREY_COLOR));
-
-        measurementContainer.add(assayMeasurementList.getFilterField(), BorderLayout.NORTH);
-        measurementContainer.add(measurementScroller, BorderLayout.CENTER);
-
-        assaySelectionPanel.add(measurementContainer);
-
-        JPanel technologyContainer = new JPanel(new BorderLayout());
-        technologyContainer.setOpaque(false);
-
-        technologyContainer.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
-                "select technology", TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
-                UIHelper.GREY_COLOR));
-
-        technologyContainer.add(assayTechnologyList.getFilterField(), BorderLayout.NORTH);
-        technologyContainer.add(technologyScroller, BorderLayout.CENTER);
-
-        assaySelectionPanel.add(technologyContainer);
+        assaySelectionPanel.add(packAndStyleFilterList(assayPlatformList, "select platform"));
 
         selectAssay = new JLabel(selectIcon);
+        selectAssay.setHorizontalAlignment(SwingConstants.CENTER);
         selectAssay.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -199,18 +184,23 @@ public class AssaySelectionUI extends JPanel {
             }
         });
 
-        JPanel selectAssayButtonCont = new JPanel(new BorderLayout());
-        selectAssayButtonCont.setOpaque(false);
-        selectAssayButtonCont.add(selectAssay, BorderLayout.EAST);
-        assaySelectionPanel.add(selectAssayButtonCont);
-
-        return assaySelectionPanel;
-    }
-
-    private JPanel createSelectAssaysDisplay() {
 
         JPanel container = new JPanel(new BorderLayout());
         container.setOpaque(false);
+
+        container.add(assaySelectionPanel, BorderLayout.CENTER);
+        container.add(UIHelper.wrapComponentInPanel(selectAssay), BorderLayout.SOUTH);
+
+        return container;
+    }
+
+
+    private Container createSelectedAssaysDisplay() {
+
+        JPanel container = new JPanel(new BorderLayout());
+        container.setOpaque(false);
+
+        container.setPreferredSize(new Dimension(400, 170));
 
         JPanel selectedAssayPanel = new JPanel(new BorderLayout());
         selectedAssayPanel.setOpaque(false);
@@ -219,7 +209,7 @@ public class AssaySelectionUI extends JPanel {
 
         selectedAssaysList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                removeAssay.setVisible(true);
+                removeAssay.setIcon(removeIcon);
             }
         });
 
@@ -234,39 +224,25 @@ public class AssaySelectionUI extends JPanel {
 
         selectedAssayPanel.add(measurementScroller);
 
-        JPanel removePanel = new JPanel();
-        removePanel.setLayout(new BoxLayout(removePanel, BoxLayout.LINE_AXIS));
-        removePanel.setOpaque(false);
-
-        final JPanel confirmDeletionContainer = createConfirmRemovalPanel();
-
-        JPanel removeButtonPanel = new JPanel(new BorderLayout());
-        removeButtonPanel.setOpaque(false);
-
-        removeAssay = new JLabel(removeIcon);
+        removeAssay = new JLabel(removeIconInactive);
         removeAssay.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
-                removeAssay.setIcon(removeIconOver);
+                removeAssay.setIcon(removeAssay.getIcon() == removeIconInactive ? removeIconInactive : removeIconOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                removeAssay.setIcon(removeIcon);
+                removeAssay.setIcon(removeAssay.getIcon() == removeIconInactive ? removeIconInactive : removeIcon);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-                removeAssay.setIcon(removeIcon);
-                confirmDeletionContainer.setVisible(true);
+                if (removeAssay.getIcon() != removeIconInactive) {
+                    removeAssay.setIcon(removeIcon);
+                    removeAssay.setIcon(removeIconInactive);
+                    deleteItem(selectedAssaysList.getSelectedIndex());
+                }
             }
-
         });
-
-        removeAssay.setVisible(false);
-
-        removeButtonPanel.add(removeAssay, BorderLayout.WEST);
-
-        removePanel.add(removeButtonPanel);
-        removePanel.add(confirmDeletionContainer);
 
         selectedAssayPanel.setBorder(new TitledBorder(
                 new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
@@ -275,7 +251,7 @@ public class AssaySelectionUI extends JPanel {
                 UIHelper.GREY_COLOR));
 
         container.add(selectedAssayPanel, BorderLayout.CENTER);
-        container.add(removePanel, BorderLayout.SOUTH);
+        container.add(UIHelper.wrapComponentInPanel(removeAssay), BorderLayout.SOUTH);
 
         return container;
     }
@@ -306,57 +282,45 @@ public class AssaySelectionUI extends JPanel {
         assayTechnologyList.setSelectedIndex(0);
     }
 
-    private JPanel createConfirmRemovalPanel() {
-        final JPanel confirmDeletionContainer = new JPanel();
-        confirmDeletionContainer.setLayout(new BoxLayout(confirmDeletionContainer, BoxLayout.LINE_AXIS));
-        confirmDeletionContainer.setOpaque(false);
-        confirmDeletionContainer.setVisible(false);
+    private void updatePlatforms(String selectedTerm) {
+        assayPlatformList.clearItems();
 
-        final JLabel confirmRemovalButton = new JLabel(confirmIcon);
+        String[] testPlatforms = new String[]{
+                "TSQ Quantum Ultra",
+                "TSQ Quantum Access",
+                "TSQ Quantum Access MAX",
+                "TSQ Quantum Discovery MAX",
+                "TSQ Vantage",
+                "MSQ Plus",
+                "LCQ Deca XP MAX",
+                "LCQ Fleet",
+                "LXQ",
+                "LTQ Classic",
+                "LTQ XL",
+                "LTQ Velos",
+                "LTQ Orbitrap Classic",
+                "LTQ Orbitrap XL",
+                "LTQ Orbitrap Discovery",
+                "LTQ Orbitrap Velos",
+                "Exactive",
+                "DFS",
+                "ITQ 700",
+                "ITQ 900",
+                "ITQ 1100",
+                "TSQ Quantum GC",
+                "TSQ Quantum XLS",
+                "TSQ Quantum GC",
+                "TSQ Quantum XLS",
+                "API 2000",
+                "API 3200",
+                "API 3200 QTRAP",
+                "API 4000"};
 
-        confirmRemovalButton.addMouseListener(new MouseAdapter() {
+        for (String platform : testPlatforms) {
+            assayPlatformList.addItem(platform);
+        }
 
-            public void mouseEntered(MouseEvent mouseEvent) {
-                confirmRemovalButton.setIcon(confirmIconOver);
-            }
-
-            public void mouseExited(MouseEvent mouseEvent) {
-                confirmRemovalButton.setIcon(confirmIcon);
-            }
-
-            public void mousePressed(MouseEvent mouseEvent) {
-                confirmRemovalButton.setIcon(confirmIcon);
-                confirmDeletionContainer.setVisible(false);
-                removeAssay.setVisible(false);
-                deleteItem(selectedAssaysList.getSelectedIndex());
-            }
-
-        });
-
-        final JLabel cancelRemovalButton = new JLabel(cancelIcon);
-
-        cancelRemovalButton.addMouseListener(new MouseAdapter() {
-
-            public void mouseEntered(MouseEvent mouseEvent) {
-                cancelRemovalButton.setIcon(cancelIconOver);
-            }
-
-            public void mouseExited(MouseEvent mouseEvent) {
-                cancelRemovalButton.setIcon(cancelIcon);
-            }
-
-            public void mousePressed(MouseEvent mouseEvent) {
-                cancelRemovalButton.setIcon(cancelIcon);
-                confirmDeletionContainer.setVisible(false);
-                removeAssay.setVisible(false);
-            }
-
-        });
-
-        confirmDeletionContainer.add(confirmRemovalButton);
-        confirmDeletionContainer.add(cancelRemovalButton);
-
-        return confirmDeletionContainer;
+        assayPlatformList.setSelectedIndex(0);
     }
 
     private void deleteItem(int index) {
@@ -390,6 +354,34 @@ public class AssaySelectionUI extends JPanel {
             result.add(aso);
         }
         return result;
+    }
+
+    public Container packAndStyleFilterList(ExtendedJList list, String listTitle) {
+
+        JScrollPane scroller = new JScrollPane(list,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scroller.setBorder(new EmptyBorder(0, 0, 0, 0));
+
+        IAppWidgetFactory.makeIAppScrollPane(scroller);
+
+        UIHelper.renderComponent(list.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.LIGHT_GREEN_COLOR, false);
+
+
+        JPanel container = new JPanel(new BorderLayout());
+        container.setPreferredSize(new Dimension(160, 200));
+        container.setOpaque(false);
+
+        container.setBorder(new TitledBorder(
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
+                listTitle, TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
+                UIHelper.GREY_COLOR));
+
+        container.add(UIHelper.createStyledFilterField(list.getFilterField(), leftFieldIcon, rightFieldIcon), BorderLayout.NORTH);
+        container.add(scroller, BorderLayout.CENTER);
+
+        return container;
     }
 
 
