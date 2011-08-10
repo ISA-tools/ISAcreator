@@ -38,9 +38,12 @@
 package org.isatools.isacreator.assayselection;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.assayselection.platform.Platform;
+import org.isatools.isacreator.assayselection.platform.PlatformParser;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -82,6 +85,13 @@ public class AssaySelectionUI extends JPanel {
 
     private Map<String, List<String>> measToAllowedTechnologies;
 
+    private static Map<AssayType, List<Platform>> platforms;
+
+    static {
+        PlatformParser platformParser = new PlatformParser();
+        platforms = platformParser.loadPlatformFile();
+    }
+
     public AssaySelectionUI(Map<String, java.util.List<String>> measToAllowedTechnologies) {
         this.measToAllowedTechnologies = measToAllowedTechnologies;
 
@@ -106,9 +116,9 @@ public class AssaySelectionUI extends JPanel {
         Box assaySelectionPanel = Box.createHorizontalBox();
         assaySelectionPanel.setOpaque(false);
 
-        assayMeasurementList = new ExtendedJList(new ColumnFilterRenderer());
-        assayTechnologyList = new ExtendedJList(new ColumnFilterRenderer());
-        assayPlatformList = new ExtendedJList(new ColumnFilterRenderer());
+        assayMeasurementList = new ExtendedJList(new SingleSelectionListCellRenderer());
+        assayTechnologyList = new ExtendedJList(new TechnologyListCellRenderer());
+        assayPlatformList = new ExtendedJList(new SingleSelectionListCellRenderer());
 
         populateMeasurements();
         updateTechnologies(assayMeasurementList.getSelectedTerm());
@@ -205,7 +215,7 @@ public class AssaySelectionUI extends JPanel {
         JPanel selectedAssayPanel = new JPanel(new BorderLayout());
         selectedAssayPanel.setOpaque(false);
 
-        selectedAssaysList = new ExtendedJList(new ColumnFilterRenderer());
+        selectedAssaysList = new ExtendedJList(new TechnologyListCellRenderer());
 
         selectedAssaysList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
@@ -285,40 +295,17 @@ public class AssaySelectionUI extends JPanel {
     private void updatePlatforms(String selectedTerm) {
         assayPlatformList.clearItems();
 
-        String[] testPlatforms = new String[]{
-                "TSQ Quantum Ultra",
-                "TSQ Quantum Access",
-                "TSQ Quantum Access MAX",
-                "TSQ Quantum Discovery MAX",
-                "TSQ Vantage",
-                "MSQ Plus",
-                "LCQ Deca XP MAX",
-                "LCQ Fleet",
-                "LXQ",
-                "LTQ Classic",
-                "LTQ XL",
-                "LTQ Velos",
-                "LTQ Orbitrap Classic",
-                "LTQ Orbitrap XL",
-                "LTQ Orbitrap Discovery",
-                "LTQ Orbitrap Velos",
-                "Exactive",
-                "DFS",
-                "ITQ 700",
-                "ITQ 900",
-                "ITQ 1100",
-                "TSQ Quantum GC",
-                "TSQ Quantum XLS",
-                "TSQ Quantum GC",
-                "TSQ Quantum XLS",
-                "API 2000",
-                "API 3200",
-                "API 3200 QTRAP",
-                "API 4000"};
+        AssayType assayType = AssayType.extractRelevantType(selectedTerm);
 
-        for (String platform : testPlatforms) {
-            assayPlatformList.addItem(platform);
+        if (assayType != null) {
+            if (platforms.containsKey(assayType)) {
+                for (Platform platform : platforms.get(assayType)) {
+                    assayPlatformList.addItem(platform);
+                }
+            }
         }
+
+        assayPlatformList.addItem("other");
 
         assayPlatformList.setSelectedIndex(0);
     }
