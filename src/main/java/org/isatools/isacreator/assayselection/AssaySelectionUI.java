@@ -63,14 +63,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * AssaySelectionUtil
- *
- * @author Eamonn Maguire
- * @date Oct 2, 2009
- */
-
-
 public class AssaySelectionUI extends JPanel {
 
     public final static String NO_TECHNOLOGY_TEXT = "no technology required";
@@ -281,7 +273,7 @@ public class AssaySelectionUI extends JPanel {
                 new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
                 "selected assays", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
-                UIHelper.GREY_COLOR));
+                UIHelper.DARK_GREEN_COLOR));
 
         container.add(selectedAssayPanel, BorderLayout.CENTER);
         container.add(UIHelper.wrapComponentInPanel(removeAssay), BorderLayout.SOUTH);

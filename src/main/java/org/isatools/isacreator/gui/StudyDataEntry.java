@@ -38,15 +38,18 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.assayselection.AssaySelectionUI;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
+import org.isatools.isacreator.gui.formelements.assay.AssayInformationPanel;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -57,6 +60,8 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -69,15 +74,17 @@ import java.util.List;
 public class StudyDataEntry extends DataEntryForm {
 
     @InjectedResource
-    private ImageIcon panelHeader;
+    private ImageIcon panelHeader, addRecordIcon, addRecordIconOver;
 
     private Study study;
     private SubForm studyDesignSubform;
     private SubForm studyPublicationsSubForm;
-    private SubForm assaySubForm;
+    private JPanel assayContainer;
     private SubForm contactSubForm;
     private SubForm factorSubForm;
     private SubForm protocolSubForm;
+
+    private AssaySelectionUI assaySelectionUI;
 
 
     /**
@@ -129,6 +136,9 @@ public class StudyDataEntry extends DataEntryForm {
         Box subPanel = Box.createVerticalBox();
         subPanel.add(Box.createVerticalStrut(20));
 
+        subPanel.add(createStudyAssaysSubForm());
+        subPanel.add(Box.createVerticalStrut(20));
+
         subPanel.add(createStudyDesignSubForm());
         subPanel.add(Box.createVerticalStrut(20));
 
@@ -136,9 +146,6 @@ public class StudyDataEntry extends DataEntryForm {
         subPanel.add(Box.createVerticalStrut(20));
 
         subPanel.add(createStudyFactorsSubForm());
-        subPanel.add(Box.createVerticalStrut(20));
-
-        subPanel.add(createStudyAssaysSubForm());
         subPanel.add(Box.createVerticalStrut(20));
 
         subPanel.add(createStudyProtocolsSubForm());
@@ -164,60 +171,60 @@ public class StudyDataEntry extends DataEntryForm {
      *
      * @return - JPanel containing the subform required for definition of the Assay.
      */
-    private JPanel createStudyAssaysSubForm() {
-        List<SubFormField> assayFields = new ArrayList<SubFormField>();
+    private Container createStudyAssaysSubForm() {
 
-        List<MappingObject> assayToTypeMapping = getDataEntryEnvironment().getParentFrame()
-                .getMappings();
 
-        Set<String> measurementEndPointSet = new HashSet<String>();
-        Set<String> techTypeSet = new HashSet<String>();
+        Map<String, List<String>> measToAllowedTechnologies = getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
 
-        for (MappingObject mo : assayToTypeMapping) {
-            if (!mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]") && !mo.getMeasurementEndpointType().equalsIgnoreCase("[investigation]")) {
-                measurementEndPointSet.add(mo.getMeasurementEndpointType());
-                if (!mo.getTechnologyType().trim().equals("")) {
-                    techTypeSet.add(mo.getTechnologyType());
-                }
-            }
+
+        assayContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        assayContainer.setBackground(UIHelper.BG_COLOR);
+
+        for (Assay assay : study.getAssays().values()) {
+            assayContainer.add(new AssayInformationPanel(assay));
         }
 
-        List<String> tempMeasurements = new ArrayList<String>();
-        List<String> tempTechnologies = new ArrayList<String>();
+        JScrollPane assayScroller = new JScrollPane(assayContainer,
+                JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        // add everything for the sets to a list.
-        tempMeasurements.addAll(measurementEndPointSet);
-        tempTechnologies.addAll(techTypeSet);
+        IAppWidgetFactory.makeIAppScrollPane(assayScroller);
 
-        tempTechnologies.add(0, AutoFilterComboCellEditor.BLANK_VALUE);
+        JPanel container = new JPanel(new BorderLayout());
+        container.setPreferredSize(new Dimension(300, 170));
+        container.setBorder(new TitledBorder(
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), InvestigationFileSection.STUDY_ASSAYS.toString(),
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.CENTER,
+                UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
-        // sort lists
-        Collections.sort(tempMeasurements);
-        Collections.sort(tempTechnologies);
+        final JLabel addRecord = new JLabel("add new assay(s)", addRecordIcon, JLabel.LEFT);
+        UIHelper.renderComponent(addRecord, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_ASSAYS);
-        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
-
-        for (String assayField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_ASSAYS)) {
-
-            if (!fieldsToIgnore.contains(assayField)) {
-
-                SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, assayField);
-
-                if (generatedField != null) {
-                    assayFields.add(generatedField);
+        addRecord.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                // todo display the add assay panel
+                if (assaySelectionUI == null) {
+                    // todo create a panel to display this in, or make it appear...
+                    // assaySelectionUI = new AssaySelectionUI(measToAllowedTechnologies);
+                    // assaySelectionUI.createGUI();
                 }
+                addRecord.setIcon(addRecordIcon);
             }
-        }
 
-        int numColsToAdd = (study.getAssays().size() == 0) ? 1
-                : (study.getAssays()
-                .size() + 1);
-        assaySubForm = new AssaySubForm(InvestigationFileSection.STUDY_ASSAYS.toString(), FieldTypes.ASSAY, assayFields,
-                numColsToAdd, 300, 110, this);
-        assaySubForm.createGUI();
+            public void mouseEntered(MouseEvent mouseEvent) {
+                addRecord.setIcon(addRecordIconOver);
+            }
 
-        return assaySubForm;
+            public void mouseExited(MouseEvent mouseEvent) {
+                addRecord.setIcon(addRecordIcon);
+            }
+        });
+
+        container.add(addRecord, BorderLayout.NORTH);
+
+        container.add(assayScroller, BorderLayout.CENTER);
+
+        return container;
     }
 
     @Override
@@ -483,7 +490,9 @@ public class StudyDataEntry extends DataEntryForm {
         output.append(studyDesignSubform.toString());
         output.append(studyPublicationsSubForm.toString());
         output.append(factorSubForm.toString());
-        output.append(assaySubForm.toString());
+
+        // todo output assay information...
+//        output.append(assaySubForm.toString());
         output.append(protocolSubForm.toString());
         output.append(contactSubForm.toString());
 
@@ -555,11 +564,6 @@ public class StudyDataEntry extends DataEntryForm {
         protocolSubForm.getRowEditor().removeAllListeners();
         protocolSubForm.setParent(null);
         protocolSubForm = null;
-
-        assaySubForm.setDataEntryEnvironment(null);
-        assaySubForm.getRowEditor().removeAllListeners();
-        assaySubForm.setParent(null);
-        assaySubForm = null;
 
         study.getStudySample().getSpreadsheetUI().setDataEntryEnvironment(null);
 
