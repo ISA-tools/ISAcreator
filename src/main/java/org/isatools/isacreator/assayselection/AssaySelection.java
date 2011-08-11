@@ -48,12 +48,18 @@ package org.isatools.isacreator.assayselection;
 public class AssaySelection implements Comparable {
     private String measurement;
     private String technology;
+    private String platform;
 
 
     AssaySelection(String measurement, String technology) {
+        this(measurement, technology, "");
+    }
+
+    AssaySelection(String measurement, String technology, String platform) {
 
         this.measurement = measurement;
         this.technology = technology;
+        this.platform = platform;
     }
 
     public String getMeasurement() {
@@ -62,6 +68,10 @@ public class AssaySelection implements Comparable {
 
     public String getTechnology() {
         return technology;
+    }
+
+    public String getPlatform() {
+        return platform;
     }
 
     @Override
@@ -74,6 +84,10 @@ public class AssaySelection implements Comparable {
         if (!getTechnology().equals(AssaySelectionUI.NO_TECHNOLOGY_TEXT)) {
             assayDesc.append(" using ");
             assayDesc.append("<strong>").append(getTechnology()).append("</strong>");
+        }
+
+        if (!platform.equals("")) {
+            assayDesc.append(" on ").append(platform);
         }
 
         assayDesc.append("</html>");

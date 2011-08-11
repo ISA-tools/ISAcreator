@@ -89,7 +89,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private static final Logger log = Logger.getLogger(MappingUtilView.class.getName());
 
     @InjectedResource
-    private ImageIcon logo, mappingInfo, selectFilesHeader, selectAssaysUsedHeader, performMappingHeader,
+    private ImageIcon logo, selectFilesHeader, selectAssaysUsedHeader, performMappingHeader,
             mappingVisualisationHelp, mappingOverviewHeader, saveMappingHelp, saveMappingsHeader, saveMappingsButtonIcon,
             saveMappingsButtonIconOver, breadcrumb1, breadcrumb2, breadcrumb3, breadcrumb4, breadcrumb5, breadcrumb6, breadcrumb7;
 
@@ -147,9 +147,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
         menuPanels.getMain().hideGlassPane();
 
-
-        createWestPanel(logo, mappingInfo);
-
+        createWestPanel(logo, null);
         createSouthPanel();
 
         workingProgressScreen = new WorkingScreen();
@@ -194,8 +192,8 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         selectFilesContainer.setLayout(new BoxLayout(selectFilesContainer, BoxLayout.PAGE_AXIS));
 
         // create selector for mapping files
-        final FileSelectionPanel fileToMapFSP = new FileSelectionPanel("<html>please select file(s) to be mapped. Please ensure " +
-                "that this file has <b>no empty columns</b> and if possible, please remove any special characters e.g. mu.</html>", fileChooser);
+        final FileSelectionPanel fileToMapFSP = new FileSelectionPanel("<html>please select file(s) to be mapped (txt, csv or xls (Excel). Please ensure " +
+                "that this file has <b>no empty columns</b> and if possible, please remove any special characters, e.g. &mu;</html>", fileChooser);
         selectFilesContainer.add(fileToMapFSP);
 
         JPanel selectMappingPanel = new JPanel();

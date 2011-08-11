@@ -45,12 +45,15 @@ import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -79,6 +82,8 @@ public class AssaySelectionUI extends JPanel {
     private ExtendedJList assayTechnologyList;
     private ExtendedJList assayPlatformList;
     private ExtendedJList selectedAssaysList;
+
+    private RoundedJTextField otherInformationEntry;
 
     private JLabel removeAssay;
     private JLabel selectAssay;
@@ -113,7 +118,7 @@ public class AssaySelectionUI extends JPanel {
     private Container createAssaySelectionUtil() {
 
 
-        Box assaySelectionPanel = Box.createHorizontalBox();
+        final Box assaySelectionPanel = Box.createHorizontalBox();
         assaySelectionPanel.setOpaque(false);
 
         assayMeasurementList = new ExtendedJList(new SingleSelectionListCellRenderer());
@@ -122,21 +127,23 @@ public class AssaySelectionUI extends JPanel {
 
         populateMeasurements();
         updateTechnologies(assayMeasurementList.getSelectedTerm());
+        updatePlatforms(assayTechnologyList.getSelectedTerm());
 
         assayMeasurementList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                 String measurement = propertyChangeEvent.getNewValue().toString();
+                otherInformationEntry.setVisible(false);
+                assayPlatformList.setSelectedIndex(-1);
+
                 updateTechnologies(measurement);
-                // update technology list
             }
         });
 
         assayTechnologyList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                // allow to add assay type if it is not already in the list of assays to define.
-                // need to add a little button below this list to add the assay
+                otherInformationEntry.setVisible(false);
+                assayPlatformList.setSelectedIndex(-1);
 
-                //todo update platforms
                 updatePlatforms(assayTechnologyList.getSelectedTerm());
                 if (assayTechnologyList.getItems().size() == 1 && assayTechnologyList.getItems().get(0).equals(NO_TECHNOLOGY_TEXT)) {
                     selectAssay.setVisible(true);
@@ -146,31 +153,41 @@ public class AssaySelectionUI extends JPanel {
                     selectAssay.setVisible(false);
                 }
 
-                // todo check if all lists have an item selected. If so, make the add assay button active
             }
         });
 
-        assayPlatformList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                // allow to add assay type if it is not already in the list of assays to define.
-                // need to add a little button below this list to add the assay
-                // todo Check if other is selected...there will always be an 'other' since the list is never going to be
-                // exhaustive
-                if (assayTechnologyList.getItems().size() == 1 && assayTechnologyList.getItems().get(0).equals(NO_TECHNOLOGY_TEXT)) {
-                    selectAssay.setVisible(true);
-                } else if (!assayTechnologyList.isSelectionEmpty()) {
-                    selectAssay.setVisible(true);
-                } else {
-                    selectAssay.setVisible(false);
+        otherInformationEntry = new RoundedJTextField(20);
+        otherInformationEntry.setFont(UIHelper.VER_10_BOLD);
+        otherInformationEntry.setForeground(UIHelper.DARK_GREEN_COLOR);
+        otherInformationEntry.setVisible(false);
+
+        assayPlatformList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent listSelectionEvent) {
+
+                if (assayPlatformList.getSelectedTerm() != null) {
+                    otherInformationEntry.setVisible(assayPlatformList.getSelectedTerm().equals("other"));
+
+                    assaySelectionPanel.repaint();
+
+                    if (assayTechnologyList.getItems().size() == 1 && assayTechnologyList.getItems().get(0).equals(NO_TECHNOLOGY_TEXT)) {
+                        selectAssay.setVisible(true);
+                    } else if (!assayTechnologyList.isSelectionEmpty()) {
+                        selectAssay.setVisible(true);
+                    } else {
+                        selectAssay.setVisible(false);
+                    }
                 }
             }
         });
 
-        assaySelectionPanel.add(packAndStyleFilterList(assayMeasurementList, "select measurement"));
+        assaySelectionPanel.add(packAndStyleFilterList(assayMeasurementList, "select measurement", null));
 
-        assaySelectionPanel.add(packAndStyleFilterList(assayTechnologyList, "select technology"));
+        assaySelectionPanel.add(packAndStyleFilterList(assayTechnologyList, "select technology", null));
 
-        assaySelectionPanel.add(packAndStyleFilterList(assayPlatformList, "select platform"));
+        Container assayPlatformListContainer = packAndStyleFilterList(assayPlatformList, "select platform",
+                UIHelper.wrapComponentInPanel(otherInformationEntry));
+
+        assaySelectionPanel.add(assayPlatformListContainer);
 
         selectAssay = new JLabel(selectIcon);
         selectAssay.setHorizontalAlignment(SwingConstants.CENTER);
@@ -190,7 +207,13 @@ public class AssaySelectionUI extends JPanel {
                 String measurement = assayMeasurementList.getSelectedValue().toString();
                 String technology = assayTechnologyList.getSelectedValue().toString();
 
-                addToSelectedAssays(new AssaySelection(measurement, technology));
+                String platform = assayPlatformList.getSelectedValue().toString();
+
+                if (platform.equals("other")) {
+                    platform = otherInformationEntry.getText();
+                }
+
+                addToSelectedAssays(new AssaySelection(measurement, technology, platform));
             }
         });
 
@@ -306,8 +329,6 @@ public class AssaySelectionUI extends JPanel {
         }
 
         assayPlatformList.addItem("other");
-
-        assayPlatformList.setSelectedIndex(0);
     }
 
     private void deleteItem(int index) {
@@ -343,7 +364,7 @@ public class AssaySelectionUI extends JPanel {
         return result;
     }
 
-    public Container packAndStyleFilterList(ExtendedJList list, String listTitle) {
+    public Container packAndStyleFilterList(ExtendedJList list, String listTitle, Container extraFieldContainer) {
 
         JScrollPane scroller = new JScrollPane(list,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -363,7 +384,11 @@ public class AssaySelectionUI extends JPanel {
                 new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
                 listTitle, TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
-                UIHelper.GREY_COLOR));
+                UIHelper.DARK_GREEN_COLOR));
+
+        if (extraFieldContainer != null) {
+            container.add(extraFieldContainer, BorderLayout.SOUTH);
+        }
 
         container.add(UIHelper.createStyledFilterField(list.getFilterField(), leftFieldIcon, rightFieldIcon), BorderLayout.NORTH);
         container.add(scroller, BorderLayout.CENTER);
