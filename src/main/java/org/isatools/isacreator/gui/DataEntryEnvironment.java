@@ -125,8 +125,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
      * @param assayName           - Name of the node to be entered.
      * @return true if added, false otherwise
      */
-    public boolean addAssay(String measurementEndpoint, String techType,
-                            String assayPlatform, String assayName) {
+    public Assay addAssay(String measurementEndpoint, String techType,
+                          String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
         TableReferenceObject tro = mGUI.selectTROForUserSelection(measurementEndpoint,
@@ -154,7 +154,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
                     overviewTree.expandPath(new TreePath(entryPoint == null ? selectedNode.getPath() : entryPoint.getPath()));
 
-                    return true;
+                    return newAssay;
                 }
             } else {
                 JOptionPane optionPane = new JOptionPane(
@@ -177,7 +177,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             "Assay definition does not exist"));
         }
 
-        return false;
+        return null;
     }
 
     private DefaultMutableTreeNode locateStudySampleNode(DefaultMutableTreeNode studyNode) {

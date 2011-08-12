@@ -22,12 +22,10 @@ import java.util.List;
  */
 public class AssaySelectionDialog extends JDialog {
 
-    // todo add buttons to select the assays or cancel.
-
     @InjectedResource
     private ImageIcon closeWindowIcon, closeWindowIconOver, doneIcon, doneIconOver, buttonPanelFiller;
 
-    private static AssaySelectionUI assaySelectionUI;
+    private AssaySelectionUI assaySelectionUI;
     private Map<String, List<String>> measurementsToTechnologies;
     private ISAcreator isacreatorEnvironment;
 
@@ -56,6 +54,10 @@ public class AssaySelectionDialog extends JDialog {
         add(createSouthPanel(), BorderLayout.SOUTH);
 
         pack();
+    }
+
+    public void clearSelectedAssays() {
+        assaySelectionUI.clearSelectedAssays();
     }
 
     private Container createSouthPanel() {
@@ -94,6 +96,7 @@ public class AssaySelectionDialog extends JDialog {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                firePropertyChange("assaysChosen", false, true);
                 closeWindow();
             }
         });
@@ -111,6 +114,10 @@ public class AssaySelectionDialog extends JDialog {
                 isacreatorEnvironment.hideSheet();
             }
         });
+    }
+
+    public List<AssaySelection> getSelectedAssays() {
+        return assaySelectionUI.getAssaysToDefine();
     }
 
 }

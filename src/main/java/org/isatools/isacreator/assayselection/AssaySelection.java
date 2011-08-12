@@ -70,6 +70,10 @@ public class AssaySelection implements Comparable {
         return technology;
     }
 
+    public void setTechnology(String technology) {
+        this.technology = technology;
+    }
+
     public String getPlatform() {
         return platform;
     }

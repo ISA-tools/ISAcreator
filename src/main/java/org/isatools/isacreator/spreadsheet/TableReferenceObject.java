@@ -282,6 +282,7 @@ public class TableReferenceObject implements Serializable {
     }
 
     public void addField(FieldObject fo) {
+
         fieldLookup.put(fo.getFieldName(), fo);
     }
 

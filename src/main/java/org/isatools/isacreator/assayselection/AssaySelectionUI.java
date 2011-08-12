@@ -93,7 +93,6 @@ public class AssaySelectionUI extends JPanel {
         this.measToAllowedTechnologies = measToAllowedTechnologies;
 
         ResourceInjector.get("assayselection-package.style").inject(this);
-
     }
 
     public void createGUI() {
@@ -108,7 +107,6 @@ public class AssaySelectionUI extends JPanel {
     }
 
     private Container createAssaySelectionUtil() {
-
 
         final Box assaySelectionPanel = Box.createHorizontalBox();
         assaySelectionPanel.setOpaque(false);
@@ -355,8 +353,15 @@ public class AssaySelectionUI extends JPanel {
 
     public List<AssaySelection> getAssaysToDefine() {
         List<AssaySelection> result = new ArrayList<AssaySelection>();
+        System.out.println("There are " + selectedAssaysList.getItems().size() + " assays selected");
         for (Object o : selectedAssaysList.getItems()) {
             AssaySelection aso = (AssaySelection) o;
+
+            if (aso.getTechnology().equals(NO_TECHNOLOGY_TEXT)) {
+                aso.setTechnology("");
+            }
+
+            System.out.println("Selected " + aso.toString());
             result.add(aso);
         }
         return result;
@@ -396,6 +401,11 @@ public class AssaySelectionUI extends JPanel {
         container.add(scroller, BorderLayout.CENTER);
 
         return container;
+    }
+
+    public void clearSelectedAssays() {
+        selectedAssaysList.clearItems();
+        selectedAssaysList.repaint();
     }
 
 

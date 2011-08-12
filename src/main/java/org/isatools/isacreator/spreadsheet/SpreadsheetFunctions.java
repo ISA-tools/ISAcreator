@@ -1006,14 +1006,6 @@ public class SpreadsheetFunctions {
         spreadsheet.getTableReferenceObject().addField(fo);
     }
 
-    public void addRow() {
-        Vector r;
-        r = createBlankElement(false);
-        spreadsheet.rows.addElement(r);
-        spreadsheet.getTable().addNotify();
-    }
-
-
     /**
      * Add rows to the table
      *

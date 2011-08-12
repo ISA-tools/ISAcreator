@@ -31,6 +31,6 @@ public class Platform {
     @Override
     public String toString() {
 
-        return machine.equals("") ? vendor : machine + "(" + vendor + ")";
+        return machine.equals("") ? vendor : machine + " (" + vendor + ")";
     }
 }

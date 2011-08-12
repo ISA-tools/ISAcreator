@@ -3,6 +3,7 @@ package org.isatools.isacreator.gui.formelements.assay;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.assayselection.AssayType;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Assay;
 import org.jdesktop.fuse.InjectedResource;
@@ -39,7 +40,6 @@ public class AssayInformationPanel extends JPanel {
         this.assay = assay;
         setLayout(new BorderLayout());
 
-
         setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 5));
 
         addMouseListener(new MouseAdapter() {
@@ -75,8 +75,11 @@ public class AssayInformationPanel extends JPanel {
         final JLabel closeButton = new JLabel(deleteIcon);
         closeButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
-                // todo delete assay... prompt first. Probably fire event back here
+
                 closeButton.setIcon(deleteIcon);
+
+                firePropertyChange("removeAssay", null, AssayInformationPanel.this);
+
                 setBackground(hoverColor);
             }
 

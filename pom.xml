@@ -54,11 +54,6 @@
         </repository>
 
         <repository>
-            <id>Jarvana</id>
-            <url>http://www.jarvana.com/jarvana/browse/</url>
-        </repository>
-
-        <repository>
             <id>oerc</id>
             <url>http://frog.oerc.ox.ac.uk:8080/artifactory/repo/</url>
         </repository>
@@ -118,24 +113,24 @@
             </plugin>
 
 
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>osxappbundle-maven-plugin</artifactId>-->
-                <!--<version>1.0-alpha-1</version>-->
-                <!--<configuration>-->
-                    <!--<mainClass>org.isatools.isacreator.gui.modeselection.ModeSelector</mainClass>-->
-                    <!--<iconFile>target/classes/images/icon/isacreator_icon.icns</iconFile>-->
-                    <!--<dictionaryFile>target/classes/packaging/Info.plist</dictionaryFile>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>bundle</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>osxappbundle-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <configuration>
+                    <mainClass>org.isatools.isacreator.gui.modeselection.ModeSelector</mainClass>
+                    <iconFile>target/classes/images/icon/isacreator_icon.icns</iconFile>
+                    <dictionaryFile>target/classes/packaging/Info.plist</dictionaryFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -273,7 +268,7 @@
         <dependency>
             <groupId>uk.ac.ebi</groupId>
             <artifactId>ols</artifactId>
-            <version>1.14.1</version>
+            <version>1.18</version>
         </dependency>
 
         <dependency>
@@ -336,6 +331,18 @@
             <groupId>com.explodingpixels</groupId>
             <artifactId>scroller</artifactId>
             <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.isatools</groupId>
+            <artifactId>import_layer</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.isatools</groupId>
+            <artifactId>HelpWebUtility</artifactId>
+            <version>1.0</version>
         </dependency>
 
     </dependencies>

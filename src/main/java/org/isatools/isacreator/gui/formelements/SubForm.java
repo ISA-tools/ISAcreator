@@ -455,98 +455,77 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
                     } else {
 
+                        // change val to not have the ontology source ref anymore, and add the ref to
+                        // the term source!
+                        tmpTerm = val;
 
-                        // code to print out assay accessions and sources from table mapping definitions...
-                        if (fieldType == FieldTypes.ASSAY) {
-                            if (row == 0 || row == 1) {
-                                String termSourceAcc = getSourceAndAccessionForMapping(tmpTerm);
-                                if (termSourceAcc != null) {
+                        if (!tmpTerm.equals("")) {
+                            if (tmpTerm.contains(";")) {
+                                // then we have multiple values
+                                String[] ontologies = tmpTerm.split(";");
 
-                                    String[] parts = termSourceAcc.split(":");
+                                int numberAdded = 0;
+                                for (String ontologyTerm : ontologies) {
 
-                                    if (parts.length > 1) {
-                                        tmpTermSource = parts[0];
-                                        tmpTermAcc = parts[1];
-                                    } else if (parts.length > 0) {
-                                        tmpTermSource = parts[0];
-                                    }
-                                }
-                            }
-
-                        } else {
-                            // change val to not have the ontology source ref anymore, and add the ref to
-                            // the term source!
-                            tmpTerm = val;
-
-                            if (!tmpTerm.equals("")) {
-                                if (tmpTerm.contains(";")) {
-                                    // then we have multiple values
-                                    String[] ontologies = tmpTerm.split(";");
-
-                                    int numberAdded = 0;
-                                    for (String ontologyTerm : ontologies) {
-
-                                        OntologyTerm oo = history.get(ontologyTerm);
+                                    OntologyTerm oo = history.get(ontologyTerm);
 
 
-                                        if (oo != null) {
-                                            tmpTerm += oo.getOntologyTermName();
-                                            tmpTermAcc += oo.getOntologySourceAccession();
-                                            tmpTermSource += oo.getOntologySource();
-                                        } else {
-                                            if (ontologyTerm.contains(":")) {
-
-                                                String[] termAndSource = ontologyTerm.split(":");
-
-                                                if (termAndSource.length > 1) {
-                                                    tmpTermSource += termAndSource[0];
-                                                    tmpTerm += termAndSource[1];
-                                                } else {
-                                                    tmpTerm = termAndSource[0];
-                                                }
-                                            }
-                                        }
-
-
-                                        if (numberAdded < ontologies.length - 1) {
-                                            tmpTerm += ";";
-                                            tmpTermAcc += ";";
-                                            tmpTermSource += ";";
-                                        }
-                                        numberAdded++;
-                                    }
-
-                                } else {
-                                    if (tmpTerm.contains(":")) {
-                                        OntologyTerm oo = history.get(tmpTerm);
-
-                                        if (oo != null) {
-                                            tmpTerm = oo.getOntologyTermName();
-                                            tmpTermAcc = oo.getOntologySourceAccession();
-                                            tmpTermSource = oo.getOntologySource();
-                                        } else {
-                                            if (tmpTerm.contains(":")) {
-                                                String[] termAndSource = tmpTerm.split(":");
-
-                                                if (termAndSource.length > 1) {
-                                                    tmpTermSource += termAndSource[0];
-                                                    tmpTerm += termAndSource[1];
-                                                } else {
-                                                    tmpTerm = termAndSource[0];
-                                                }
-                                            } else {
-
-                                                tmpTermAcc = "";
-                                                tmpTermSource = "";
-                                            }
-                                        }
+                                    if (oo != null) {
+                                        tmpTerm += oo.getOntologyTermName();
+                                        tmpTermAcc += oo.getOntologySourceAccession();
+                                        tmpTermSource += oo.getOntologySource();
                                     } else {
-                                        tmpTermAcc = "";
-                                        tmpTermSource = "";
+                                        if (ontologyTerm.contains(":")) {
+
+                                            String[] termAndSource = ontologyTerm.split(":");
+
+                                            if (termAndSource.length > 1) {
+                                                tmpTermSource += termAndSource[0];
+                                                tmpTerm += termAndSource[1];
+                                            } else {
+                                                tmpTerm = termAndSource[0];
+                                            }
+                                        }
                                     }
+
+
+                                    if (numberAdded < ontologies.length - 1) {
+                                        tmpTerm += ";";
+                                        tmpTermAcc += ";";
+                                        tmpTermSource += ";";
+                                    }
+                                    numberAdded++;
+                                }
+
+                            } else {
+                                if (tmpTerm.contains(":")) {
+                                    OntologyTerm oo = history.get(tmpTerm);
+
+                                    if (oo != null) {
+                                        tmpTerm = oo.getOntologyTermName();
+                                        tmpTermAcc = oo.getOntologySourceAccession();
+                                        tmpTermSource = oo.getOntologySource();
+                                    } else {
+                                        if (tmpTerm.contains(":")) {
+                                            String[] termAndSource = tmpTerm.split(":");
+
+                                            if (termAndSource.length > 1) {
+                                                tmpTermSource += termAndSource[0];
+                                                tmpTerm += termAndSource[1];
+                                            } else {
+                                                tmpTerm = termAndSource[0];
+                                            }
+                                        } else {
+
+                                            tmpTermAcc = "";
+                                            tmpTermSource = "";
+                                        }
+                                    }
+                                } else {
+                                    tmpTermAcc = "";
+                                    tmpTermSource = "";
                                 }
                             }
-
                         }
                     }
 
@@ -597,18 +576,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         return data;
     }
 
-    private String getSourceAndAccessionForMapping(String val) {
-        for (MappingObject mo : parent.getDataEntryEnvironment().getParentFrame().getMappings()) {
-            if (mo.getMeasurementEndpointType().equals(val)) {
-                return mo.getMeasurementSource() + ":" + mo.getMeasurementAccession();
-            }
-
-            if (mo.getTechnologyType().equals(val)) {
-                return mo.getTechnologySource() + ":" + mo.getTechnologyAccession();
-            }
-        }
-        return null;
-    }
 
     private int calculateNoRows() {
         int noOntologyRows = 0;

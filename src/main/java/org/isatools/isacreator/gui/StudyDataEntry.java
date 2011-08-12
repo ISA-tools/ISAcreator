@@ -38,23 +38,20 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.assayselection.AssaySelectionDialog;
-import org.isatools.isacreator.assayselection.AssaySelectionUI;
-import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.formelements.assay.AssayInformationPanel;
+import org.isatools.isacreator.gui.formelements.assay.AssayInformationWriter;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
-import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
-import org.isatools.isatab.configurator.schema.FieldType;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -63,6 +60,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 
@@ -85,8 +84,6 @@ public class StudyDataEntry extends DataEntryForm {
     private SubForm factorSubForm;
     private SubForm protocolSubForm;
 
-    private AssaySelectionDialog assaySelectionUI;
-
 
     /**
      * StudyDataEntry constructor
@@ -108,10 +105,10 @@ public class StudyDataEntry extends DataEntryForm {
         Map<String, List<String>> measToAllowedTechnologies =
                 getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
 
-        if (assaySelectionUI == null) {
-            assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
-            assaySelectionUI.createGUI();
-        }
+//        if (assaySelectionUI == null) {
+//            assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
+//            assaySelectionUI.createGUI();
+//        }
 
         generateAliases(study.getFieldValues().keySet());
 
@@ -191,8 +188,48 @@ public class StudyDataEntry extends DataEntryForm {
         assayContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         assayContainer.setBackground(UIHelper.BG_COLOR);
 
+        final PropertyChangeListener removeAssayListener = new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
+                    final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
+
+                    String removalText = "<html>" + "<b>Confirm deletion of assay</b>" + "<p>Deleting this will result " +
+                            "in it's complete removal from this experiment annotation!</p>" +
+                            "<p>Do you wish to continue?</p>" + "</html>";
+
+                    JOptionPane optionPane = new JOptionPane(removalText,
+                            JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
+                    optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent event) {
+                            if (event.getPropertyName()
+                                    .equals(JOptionPane.VALUE_PROPERTY)) {
+                                int lastOptionAnswer = Integer.valueOf(event.getNewValue()
+                                        .toString());
+
+                                if (lastOptionAnswer == JOptionPane.YES_OPTION) {
+                                    removeAssay(panel.getAssay().getAssayReference());
+                                    assayContainer.remove(panel);
+                                    assayContainer.repaint();
+                                    getDataEntryEnvironment().getParentFrame().hideSheet();
+                                } else {
+                                    // just hide the sheet and cancel further actions!
+                                    getDataEntryEnvironment().getParentFrame().hideSheet();
+                                }
+                            }
+                        }
+                    });
+
+                    UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
+                    getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(optionPane.createDialog(StudyDataEntry.this, "Confirm Delete"));
+                }
+
+            }
+        };
+
         for (Assay assay : study.getAssays().values()) {
-            assayContainer.add(new AssayInformationPanel(assay));
+            AssayInformationPanel informationPanel = new AssayInformationPanel(assay);
+            informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
+            assayContainer.add(informationPanel);
         }
 
         JScrollPane assayScroller = new JScrollPane(assayContainer,
@@ -216,9 +253,32 @@ public class StudyDataEntry extends DataEntryForm {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
 
+                        Map<String, List<String>> measToAllowedTechnologies =
+                                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
+
+                        final AssaySelectionDialog assaySelectionUI = new AssaySelectionDialog(getISAcreatorEnvironment(), measToAllowedTechnologies);
+                        assaySelectionUI.createGUI();
 
                         getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(assaySelectionUI);
                         addRecord.setIcon(addRecordIcon);
+
+                        assaySelectionUI.addPropertyChangeListener("assaysChosen", new PropertyChangeListener() {
+                            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                                List<AssaySelection> selectedAssays = assaySelectionUI.getSelectedAssays();
+
+                                for (AssaySelection assay : selectedAssays) {
+
+                                    Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), "blah" + assay.getMeasurement() + ".txt");
+
+                                    AssayInformationPanel informationPanel = new AssayInformationPanel(addedAssay);
+
+                                    informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
+
+                                    assayContainer.add(informationPanel);
+                                    assayContainer.repaint();
+                                }
+                            }
+                        });
                     }
                 });
             }
@@ -502,9 +562,8 @@ public class StudyDataEntry extends DataEntryForm {
         output.append(studyDesignSubform.toString());
         output.append(studyPublicationsSubForm.toString());
         output.append(factorSubForm.toString());
-
-        // todo output assay information...
-//        output.append(assaySubForm.toString());
+        output.append(new AssayInformationWriter().printAssays(study.getAssays().values(),
+                getDataEntryEnvironment().getParentFrame().getMappings()));
         output.append(protocolSubForm.toString());
         output.append(contactSubForm.toString());
 
