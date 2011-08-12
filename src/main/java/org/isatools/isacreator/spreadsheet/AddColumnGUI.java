@@ -218,7 +218,7 @@ public class AddColumnGUI extends JDialog {
                 setBackground(UIHelper.BG_COLOR);
 
                 instantiatePanel();
-                pack();
+
             }
         });
     }
@@ -566,5 +566,6 @@ public class AddColumnGUI extends JDialog {
         southPanel.add(Box.createGlue());
 
         add(southPanel, BorderLayout.SOUTH);
+        pack();
     }
 }

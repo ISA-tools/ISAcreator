@@ -121,11 +121,9 @@ public class OntologiserUI extends JDialog {
         ResourceInjector.get("ontologiser-generator-package.style").inject(this);
 
         setBackground(UIHelper.BG_COLOR);
-        setUndecorated(true);
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(650, 500));
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
-
 
         add(createTopPanel(), BorderLayout.NORTH);
 
@@ -220,7 +218,7 @@ public class OntologiserUI extends JDialog {
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                clearAllButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading)? clearAllIcon : clearAllInactiveIcon);
+                clearAllButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading) ? clearAllIcon : clearAllInactiveIcon);
             }
 
             @Override
@@ -403,7 +401,7 @@ public class OntologiserUI extends JDialog {
         Thread performer = new Thread(new Runnable() {
             public void run() {
 
-                if(terms == null) {
+                if (terms == null) {
                     terms = getTerms();
                 }
 
@@ -446,7 +444,7 @@ public class OntologiserUI extends JDialog {
         performer.start();
     }
 
-     public Map<String, Map<String, AnnotatorResult>> getTerms() {
+    public Map<String, Map<String, AnnotatorResult>> getTerms() {
 
         AnnotatorSearchClient sc = new AnnotatorSearchClient();
 

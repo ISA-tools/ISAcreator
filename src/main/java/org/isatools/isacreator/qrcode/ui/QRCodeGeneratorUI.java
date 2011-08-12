@@ -142,7 +142,6 @@ public class QRCodeGeneratorUI extends JDialog {
         add(createSouthPanel(), BorderLayout.SOUTH);
 
         pack();
-
     }
 
     private Container createTopPanel() {

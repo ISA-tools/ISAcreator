@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.assayselection.AssaySelectionDialog;
 import org.isatools.isacreator.assayselection.AssaySelectionUI;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
@@ -84,7 +85,7 @@ public class StudyDataEntry extends DataEntryForm {
     private SubForm factorSubForm;
     private SubForm protocolSubForm;
 
-    private AssaySelectionUI assaySelectionUI;
+    private AssaySelectionDialog assaySelectionUI;
 
 
     /**
@@ -99,7 +100,21 @@ public class StudyDataEntry extends DataEntryForm {
         ResourceInjector.get("gui-package.style").inject(this);
 
         this.study = study;
+
+        createGUI();
+    }
+
+    public void createGUI() {
+        Map<String, List<String>> measToAllowedTechnologies =
+                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
+
+        if (assaySelectionUI == null) {
+            assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
+            assaySelectionUI.createGUI();
+        }
+
         generateAliases(study.getFieldValues().keySet());
+
         instantiatePane();
         createFields();
         finalisePane();
@@ -173,10 +188,6 @@ public class StudyDataEntry extends DataEntryForm {
      */
     private Container createStudyAssaysSubForm() {
 
-
-        Map<String, List<String>> measToAllowedTechnologies = getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
-
-
         assayContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         assayContainer.setBackground(UIHelper.BG_COLOR);
 
@@ -202,13 +213,14 @@ public class StudyDataEntry extends DataEntryForm {
 
         addRecord.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
-                // todo display the add assay panel
-                if (assaySelectionUI == null) {
-                    // todo create a panel to display this in, or make it appear...
-                    // assaySelectionUI = new AssaySelectionUI(measToAllowedTechnologies);
-                    // assaySelectionUI.createGUI();
-                }
-                addRecord.setIcon(addRecordIcon);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+
+
+                        getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(assaySelectionUI);
+                        addRecord.setIcon(addRecordIcon);
+                    }
+                });
             }
 
             public void mouseEntered(MouseEvent mouseEvent) {

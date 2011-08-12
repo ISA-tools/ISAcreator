@@ -15,9 +15,6 @@ public class TechnologyListCellRenderer implements ListCellRenderer {
     private ImageIcon microarray, microarrayUnselected, ms, msUnselected, nmr, nmrUnselected, uhts, uhtsUnselected,
             generic, genericUnselected, gelElec, gelElecUnselected, flowCyt, flowCytUnselected;
 
-    public static final Color SELECTED_COLOR = UIHelper.LIGHT_GREEN_COLOR;
-    public static final Color UNSELECTED_COLOR = UIHelper.BG_COLOR;
-
     private JPanel contents;
     private JLabel icon;
     private JLabel text;
@@ -29,7 +26,7 @@ public class TechnologyListCellRenderer implements ListCellRenderer {
         contents.setOpaque(true);
 
         icon = new JLabel();
-        text = UIHelper.createLabel("", UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
+        text = UIHelper.createLabel("", UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR);
 
         contents.add(icon, BorderLayout.WEST);
         contents.add(text, BorderLayout.CENTER);
@@ -59,14 +56,8 @@ public class TechnologyListCellRenderer implements ListCellRenderer {
 
         text.setText(value.toString());
 
-        // change text colour depending on selection
-        if (selected) {
-            text.setForeground(UIHelper.BG_COLOR);
-            contents.setBackground(UIHelper.LIGHT_GREEN_COLOR);
-        } else {
-            text.setForeground(UIHelper.DARK_GREEN_COLOR);
-            contents.setBackground(UIHelper.BG_COLOR);
-        }
+        text.setFont(selected ? UIHelper.VER_11_BOLD : UIHelper.VER_11_PLAIN);
+
 
         return contents;
     }

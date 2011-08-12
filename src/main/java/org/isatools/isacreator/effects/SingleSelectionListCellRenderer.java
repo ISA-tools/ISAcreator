@@ -69,7 +69,7 @@ public class SingleSelectionListCellRenderer implements ListCellRenderer {
         contents = new JPanel(new BorderLayout());
         contents.setOpaque(true);
 
-        text = UIHelper.createLabel("", UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
+        text = UIHelper.createLabel("", UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR);
         icon = new JLabel(unselectedIcon);
 
         contents.add(icon, BorderLayout.WEST);
@@ -83,16 +83,8 @@ public class SingleSelectionListCellRenderer implements ListCellRenderer {
 
         text.setText(value.toString());
 
-        // change text colour depending on selection
-        if (selected) {
-            icon.setIcon(selectedIcon);
-            text.setForeground(UIHelper.BG_COLOR);
-            contents.setBackground(UIHelper.LIGHT_GREEN_COLOR);
-        } else {
-            icon.setIcon(unselectedIcon);
-            text.setForeground(UIHelper.DARK_GREEN_COLOR);
-            contents.setBackground(UIHelper.BG_COLOR);
-        }
+        icon.setIcon(selected ? selectedIcon : unselectedIcon);
+        text.setFont(selected ? UIHelper.VER_11_BOLD : UIHelper.VER_11_PLAIN);
 
         return contents;
     }
