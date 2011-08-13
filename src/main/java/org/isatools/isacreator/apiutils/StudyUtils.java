@@ -18,11 +18,9 @@ import java.util.Map;
  */
 public class StudyUtils {
 
-    private static String currentStudyId;
     private static Map<String, Map<String, SampleInformation>> studySampleInformation
             = new HashMap<String, Map<String, SampleInformation>>();
 
-    // todo add flag to manage changes to the study sample file
     private static Map<String, Boolean> studySampleFileModifiedFlag = new HashMap<String, Boolean>();
     private static Map<String, Boolean> shouldRunUpdate = new HashMap<String, Boolean>();
 
@@ -37,7 +35,7 @@ public class StudyUtils {
     public static Map<String, SampleInformation> getStudySampleInformation(final Study study) {
         final Spreadsheet studySampleSpreadsheet = study.getStudySample().getSpreadsheetUI().getTable();
 
-        if (studySampleInformation == null || studySampleFileModifiedFlag.get(study.getStudyId())) {
+        if (studySampleInformation.get(study.getStudyId()) == null || studySampleFileModifiedFlag.get(study.getStudyId())) {
 
 
             Thread sampleHarvestingThread = new Thread(new Runnable() {

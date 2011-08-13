@@ -321,5 +321,4 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
 
     public abstract void performAdditionalTasks();
 
-
 }

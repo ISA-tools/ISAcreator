@@ -33,7 +33,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
     @Override
     public void performAdditionalTasks() {
-        propagateFactorsToAssay(getSelectedText());
+        propagateFactorsToAssay(getText());
     }
 
     private void propagateFactorsToAssay(String selectedSampleName) {
@@ -78,7 +78,6 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
                 factorColumn = spreadsheet.getSpreadsheetFunctions().addColumn(newFactor.getFieldName());
 
-
                 if (field.getDatatype() == DataTypes.STRING) {
 
                     FieldObject unitFo = new FieldObject(spreadsheet.getColumnCount(),
@@ -107,16 +106,14 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
             // We have the TableColumns from the StudySample File
             // We have the TableColumns from the Assay File.
 
-            // add Factor value
-
             for (TableColumn studySampleColumn : studySampleSheetFactors.keySet()) {
+
                 if (studySampleColumn.getHeaderValue().toString().equals(factorColumn.getHeaderValue().toString())) {
                     // we have the first value
+
                     if (allSampleInformation.get(selectedSampleName) != null) {
                         Object value = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
                                 Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleColumn.getModelIndex()));
-
-                        System.out.println("Setting value at " + (currentRow) + ", " + Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()) + " to " + value);
 
                         spreadsheet.getTable().setValueAt(value == null ? "" : value.toString(), currentRow,
                                 Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()));
