@@ -103,9 +103,11 @@ public class BioPortalClient implements OntologyService {
 
             ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
-            for (Ontology ontology : ontologies) {
-                ontologyVersions.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
-                ontologySources.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
+            if (ontologies != null) {
+                for (Ontology ontology : ontologies) {
+                    ontologyVersions.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
+                    ontologySources.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
+                }
             }
         }
 
@@ -113,7 +115,7 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Ontology getOntologyById(String ontologyId) {
-        String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" +  API_KEY;
+        String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
 
         log.info("Getting ontology by id : query string is " + searchString);
 
@@ -402,7 +404,7 @@ public class BioPortalClient implements OntologyService {
         if (!noChildren.contains(termAccession)) {
             if (!cachedNodeChildrenQueries.containsKey(ontology + "-" + termAccession)) {
 
-                String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession + "&" +  API_KEY;
+                String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession + "&" + API_KEY;
 
                 System.out.println("Searching for : " + searchString);
 

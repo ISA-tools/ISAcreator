@@ -567,9 +567,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                         addSourceToUsedOntologies(historyTerm.getOntologySourceInformation());
                         if (multipleTermsAllowed) {
-                            addToMultipleTerms(historyTerm.toString());
+                            addToMultipleTerms(historyTerm.getUniqueId());
                         } else {
-                            selectedTerm.setText(historyTerm.toString());
+                            selectedTerm.setText(historyTerm.getUniqueId());
                         }
                     }
                 }
