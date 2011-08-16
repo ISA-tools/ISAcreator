@@ -181,10 +181,15 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public void selectAssayInTree(Assay assay) {
+
+        if (currentPage instanceof StudyDataEntry) {
+            System.out.println("Current page is instance of StudyDataEntry...");
+            StudyUtils.studySampleFileModified(((StudyDataEntry) currentPage).getStudy(), true);
+        }
+
         setCurrentPage(assay.getSpreadsheetUI());
         DefaultMutableTreeNode node = locateNodeWithName((DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent(), assay.getAssayReference());
         overviewTree.setSelectionPath(new TreePath(node.getPath()));
-
     }
 
     private DefaultMutableTreeNode locateStudySampleNode(DefaultMutableTreeNode studyNode) {

@@ -1283,7 +1283,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private void closeEditors() {
         if (curDataEntryEnvironment != null) {
-            System.out.println("Closing editors...");
             curDataEntryEnvironment.closeEditors();
         }
     }

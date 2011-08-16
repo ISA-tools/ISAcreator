@@ -162,10 +162,7 @@ public class TableReferenceObject implements Serializable {
     public List<FieldObject> getRecordedFactors() {
         List<FieldObject> factors = new ArrayList<FieldObject>();
 
-        System.out.println("Building list of recorded factors...");
-
         for (String columnName : fieldLookup.keySet()) {
-            System.out.println("looking at " + columnName);
             if (columnName.contains("Factor Value")) {
                 factors.add(fieldLookup.get(columnName));
             }
@@ -282,7 +279,6 @@ public class TableReferenceObject implements Serializable {
     }
 
     public void addField(FieldObject fo) {
-        // todo check...
         fieldLookup.put(fo.getFieldName(), fo);
     }
 

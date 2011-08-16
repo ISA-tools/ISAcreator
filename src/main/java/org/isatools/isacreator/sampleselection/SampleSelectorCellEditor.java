@@ -23,10 +23,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
     @Override
     protected void updateContent() {
         if (StudyUtils.shouldRunUpdate(study.getStudyId())) {
-            System.out.println("Updating content...");
             selector.updateContent(StudyUtils.getStudySampleInformation(study).values());
-        } else {
-            System.out.println("Nothing modified...");
         }
 
     }
@@ -68,7 +65,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
                 int factorIndex = spreadsheet.getColumnCount();
 
                 FieldObject newFactor;
-                if ((newFactor = spreadsheet.getTableReferenceObject().getFieldByName(field.getFieldName())) != null) {
+                if ((newFactor = spreadsheet.getTableReferenceObject().getFieldByName(field.getFieldName())) == null) {
                     newFactor = new FieldObject(factorIndex,
                             field.getFieldName(), field.getDescription(), field.getDatatype(),
                             field.getDefaultVal(), field.isRequired(), field.isAcceptsMultipleValues(), field.isAcceptsFileLocations());
@@ -92,6 +89,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
                     spreadsheet.getSpreadsheetFunctions().addColumnToDependencies(factorColumn, unitColumn);
 
                 }
+
             }
 
             // Study sample file
@@ -106,29 +104,31 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
             // We have the TableColumns from the StudySample File
             // We have the TableColumns from the Assay File.
 
-            for (TableColumn studySampleColumn : studySampleSheetFactors.keySet()) {
+            if (factorColumn != null) {
+                for (TableColumn studySampleColumn : studySampleSheetFactors.keySet()) {
 
-                if (studySampleColumn.getHeaderValue().toString().equals(factorColumn.getHeaderValue().toString())) {
-                    // we have the first value
+                    if (studySampleColumn.getHeaderValue().toString().equals(factorColumn.getHeaderValue().toString())) {
+                        // we have the first value
 
-                    if (allSampleInformation.get(selectedSampleName) != null) {
-                        Object value = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
-                                Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleColumn.getModelIndex()));
+                        if (allSampleInformation.get(selectedSampleName) != null) {
+                            Object value = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
+                                    Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleColumn.getModelIndex()));
 
-                        spreadsheet.getTable().setValueAt(value == null ? "" : value.toString(), currentRow,
-                                Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()));
+                            spreadsheet.getTable().setValueAt(value == null ? "" : value.toString(), currentRow,
+                                    Utils.convertModelIndexToView(spreadsheet.getTable(), factorColumn.getModelIndex()));
 
-                        if (studySampleSheetFactors.get(studySampleColumn) != null) {
+                            if (studySampleSheetFactors.get(studySampleColumn) != null) {
 
-                            Object unit = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
-                                    Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleSheetFactors.get(studySampleColumn).getModelIndex()));
+                                Object unit = studySampleSheet.getTable().getValueAt(allSampleInformation.get(selectedSampleName).getRowNumber(),
+                                        Utils.convertModelIndexToView(studySampleSheet.getTable(), studySampleSheetFactors.get(studySampleColumn).getModelIndex()));
 
-                            spreadsheet.getTable().setValueAt(unit == null ? "" : unit.toString(), currentRow,
-                                    Utils.convertModelIndexToView(spreadsheet.getTable(), unitColumn.getModelIndex()));
+                                spreadsheet.getTable().setValueAt(unit == null ? "" : unit.toString(), currentRow,
+                                        Utils.convertModelIndexToView(spreadsheet.getTable(), unitColumn.getModelIndex()));
+                            }
                         }
-                    }
 
-                    break;
+                        break;
+                    }
                 }
             }
         }
