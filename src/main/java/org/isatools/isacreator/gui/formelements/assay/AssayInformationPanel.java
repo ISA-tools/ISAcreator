@@ -21,8 +21,8 @@ public class AssayInformationPanel extends JPanel {
     private Color hoverColor = new Color(249, 249, 249);
 
     @InjectedResource
-    private ImageIcon deleteIcon, deleteIconOver, microarray, massNMR, sequencing, flowCytometry,
-            gelElectrophoresis, histology, hematology, clinicalChemistry, generic;
+    private ImageIcon deleteIcon, deleteIconOver, viewAssayIcon, viewAssayIconOver, microarray, massNMR, sequencing,
+            flowCytometry, gelElectrophoresis, histology, hematology, clinicalChemistry, generic;
 
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
@@ -73,6 +73,7 @@ public class AssayInformationPanel extends JPanel {
         topSection.add(new JLabel(determineIcon()), BorderLayout.WEST);
 
         final JLabel closeButton = new JLabel(deleteIcon);
+        closeButton.setToolTipText("<html>Delete this assay</html>");
         closeButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
 
@@ -94,7 +95,29 @@ public class AssayInformationPanel extends JPanel {
             }
         });
 
-        topSection.add(Box.createHorizontalStrut(87));
+        final JLabel viewButton = new JLabel(viewAssayIcon);
+        viewButton.setToolTipText("<html>View this assay</html>");
+        viewButton.addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent mouseEvent) {
+                viewButton.setIcon(viewAssayIcon);
+
+                firePropertyChange("viewAssay", null, AssayInformationPanel.this);
+
+                setBackground(hoverColor);
+            }
+
+            public void mouseEntered(MouseEvent mouseEvent) {
+                viewButton.setIcon(viewAssayIconOver);
+            }
+
+            public void mouseExited(MouseEvent mouseEvent) {
+                viewButton.setIcon(viewAssayIcon);
+            }
+        });
+
+        topSection.add(Box.createHorizontalStrut(58));
+        topSection.add(viewButton);
         topSection.add(closeButton);
 
         return topSection;
@@ -102,16 +125,27 @@ public class AssayInformationPanel extends JPanel {
 
     private Container createAssayInfoSection() {
         Box infoPane = Box.createVerticalBox();
-        infoPane.setPreferredSize(new Dimension(140, 50));
+        infoPane.setPreferredSize(new Dimension(140, 60));
         infoPane.add(UIHelper.createLabel(assay.getMeasurementEndpoint(), UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, SwingConstants.LEFT));
 
-        if (!assay.getTechnologyType().equals("")) {
+        if (assay.getTechnologyType().equals("")) {
+            infoPane.add(infoPane.add(Box.createVerticalStrut(15)));
+        } else {
             infoPane.add(UIHelper.createLabel(assay.getTechnologyType(), UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, SwingConstants.LEFT));
         }
 
-        if (!assay.getAssayPlatform().equals("")) {
-            infoPane.add(UIHelper.createLabel(assay.getAssayPlatform(), UIHelper.VER_10_BOLD, UIHelper.LIGHT_GREEN_COLOR, SwingConstants.LEFT));
+        if (assay.getAssayPlatform().equals("")) {
+            infoPane.add(Box.createVerticalStrut(15));
+        } else {
+            infoPane.add(
+                    UIHelper.createLabel(assay.getAssayPlatform(), UIHelper.VER_10_PLAIN, UIHelper.LIGHT_GREEN_COLOR, SwingConstants.LEFT));
         }
+
+
+        JLabel assayReference = UIHelper.createLabel(assay.getAssayReference(), UIHelper.VER_8_BOLD, UIHelper.DARK_GREEN_COLOR, SwingConstants.LEFT);
+        assayReference.setVerticalTextPosition(SwingConstants.BOTTOM);
+
+        infoPane.add(assayReference);
 
         infoPane.setBorder(new EmptyBorder(2, 1, 2, 1));
 

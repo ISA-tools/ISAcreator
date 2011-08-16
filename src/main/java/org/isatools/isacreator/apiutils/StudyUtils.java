@@ -1,5 +1,6 @@
 package org.isatools.isacreator.apiutils;
 
+import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.sampleselection.SampleInformation;
@@ -85,6 +86,31 @@ public class StudyUtils {
 
     public static void clearModifiedFlag(String studyId) {
         studySampleFileModifiedFlag.put(studyId, false);
+    }
+
+    public static String generateAssayReference(Study study, String measurement, String technology) {
+
+        StringBuilder candidateAssayName = new StringBuilder("a_");
+        candidateAssayName.append(study.getStudyId().toLowerCase()).append("_");
+        candidateAssayName.append(measurement);
+
+        if (!technology.equals("")) {
+            candidateAssayName.append("_").append(technology);
+        }
+
+        return generateUniqueAssayReference(study, candidateAssayName.toString(), 0);
+    }
+
+    private static String generateUniqueAssayReference(Study study, String assayReference, int cycleCount) {
+
+        String candidateRef = cycleCount == 0 ? assayReference + ".txt" : assayReference + "-" + cycleCount + ".txt";
+
+        if (study.getAssays().containsKey(candidateRef)) {
+            // generate the id using a recursive method
+            return generateUniqueAssayReference(study, assayReference, cycleCount + 1);
+        }
+
+        return candidateRef;
     }
 
 }

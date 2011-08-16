@@ -180,6 +180,13 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return null;
     }
 
+    public void selectAssayInTree(Assay assay) {
+        setCurrentPage(assay.getSpreadsheetUI());
+        DefaultMutableTreeNode node = locateNodeWithName((DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent(), assay.getAssayReference());
+        overviewTree.setSelectionPath(new TreePath(node.getPath()));
+
+    }
+
     private DefaultMutableTreeNode locateStudySampleNode(DefaultMutableTreeNode studyNode) {
 
         Enumeration enumeration = studyNode.children();
@@ -196,6 +203,24 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             }
         }
 
+        return null;
+    }
+
+    private DefaultMutableTreeNode locateNodeWithName(DefaultMutableTreeNode node, String nodeName) {
+
+        Enumeration enumeration = node.children();
+        while (enumeration.hasMoreElements()) {
+            DefaultMutableTreeNode candidateNode = (DefaultMutableTreeNode) enumeration.nextElement();
+
+            if (candidateNode.isLeaf()) {
+                if (candidateNode.toString().equals(nodeName)) {
+                    return candidateNode;
+                }
+            } else {
+                return locateNodeWithName(candidateNode, nodeName);
+            }
+
+        }
         return null;
     }
 
@@ -743,7 +768,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             if (currentPage instanceof AssaySpreadsheet) {
                 Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
                 if (spreadsheet.getSpreadsheetTitle().contains("Sample Definition")) {
-//                    StudyUtils.studySampleFileModified(getParentStudy(selectedNode).getStudyId());
                     StudyUtils.studySampleFileModified(getParentStudy(selectedNode), true);
                 }
             }

@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.assayselection.AssaySelectionDialog;
 import org.isatools.isacreator.common.UIHelper;
@@ -84,6 +85,8 @@ public class StudyDataEntry extends DataEntryForm {
     private SubForm factorSubForm;
     private SubForm protocolSubForm;
 
+    private AssaySelectionDialog assaySelectionUI;
+
 
     /**
      * StudyDataEntry constructor
@@ -105,10 +108,8 @@ public class StudyDataEntry extends DataEntryForm {
         Map<String, List<String>> measToAllowedTechnologies =
                 getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
 
-//        if (assaySelectionUI == null) {
-//            assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
-//            assaySelectionUI.createGUI();
-//        }
+        assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
+
 
         generateAliases(study.getFieldValues().keySet());
 
@@ -226,9 +227,21 @@ public class StudyDataEntry extends DataEntryForm {
             }
         };
 
+        final PropertyChangeListener viewAssayListener = new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
+                    final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
+
+                    getDataEntryEnvironment().selectAssayInTree(panel.getAssay());
+                }
+
+            }
+        };
+
         for (Assay assay : study.getAssays().values()) {
             AssayInformationPanel informationPanel = new AssayInformationPanel(assay);
             informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
+            informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
             assayContainer.add(informationPanel);
         }
 
@@ -238,7 +251,7 @@ public class StudyDataEntry extends DataEntryForm {
         IAppWidgetFactory.makeIAppScrollPane(assayScroller);
 
         JPanel container = new JPanel(new BorderLayout());
-        container.setPreferredSize(new Dimension(300, 170));
+        container.setPreferredSize(new Dimension(300, 180));
         container.setBorder(new TitledBorder(
                 new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), InvestigationFileSection.STUDY_ASSAYS.toString(),
                 TitledBorder.DEFAULT_JUSTIFICATION,
@@ -256,7 +269,7 @@ public class StudyDataEntry extends DataEntryForm {
                         Map<String, List<String>> measToAllowedTechnologies =
                                 getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
 
-                        final AssaySelectionDialog assaySelectionUI = new AssaySelectionDialog(getISAcreatorEnvironment(), measToAllowedTechnologies);
+                        assaySelectionUI = new AssaySelectionDialog(getISAcreatorEnvironment(), measToAllowedTechnologies);
                         assaySelectionUI.createGUI();
 
                         getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(assaySelectionUI);
@@ -268,17 +281,19 @@ public class StudyDataEntry extends DataEntryForm {
 
                                 for (AssaySelection assay : selectedAssays) {
 
-                                    Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), "blah" + assay.getMeasurement() + ".txt");
+                                    String assayRef = StudyUtils.generateAssayReference(study, assay.getMeasurement(), assay.getTechnology());
+
+                                    Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), assayRef);
 
                                     AssayInformationPanel informationPanel = new AssayInformationPanel(addedAssay);
-
-                                    informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
 
                                     assayContainer.add(informationPanel);
                                     assayContainer.repaint();
                                 }
                             }
                         });
+
+
                     }
                 });
             }
@@ -303,6 +318,7 @@ public class StudyDataEntry extends DataEntryForm {
     public List<StudyDesign> getDesigns() {
         return study.getStudyDesigns();
     }
+
 
     /**
      * Create the Contacts subform for the definition of contacts in the Study form.

@@ -281,7 +281,6 @@ public class AssaySelectionUI extends JPanel {
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
                 UIHelper.DARK_GREEN_COLOR));
 
-
         return selectedAssayPanel;
     }
 
@@ -353,15 +352,12 @@ public class AssaySelectionUI extends JPanel {
 
     public List<AssaySelection> getAssaysToDefine() {
         List<AssaySelection> result = new ArrayList<AssaySelection>();
-        System.out.println("There are " + selectedAssaysList.getItems().size() + " assays selected");
+
         for (Object o : selectedAssaysList.getItems()) {
             AssaySelection aso = (AssaySelection) o;
-
             if (aso.getTechnology().equals(NO_TECHNOLOGY_TEXT)) {
                 aso.setTechnology("");
             }
-
-            System.out.println("Selected " + aso.toString());
             result.add(aso);
         }
         return result;

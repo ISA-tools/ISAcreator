@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<technology-platforms>
+    <technology type="Section[Microarray]">
+        <platforms>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Affymetrix</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Nimblegen</vendor>
+                <machine></machine>
+            </platform>
+        </platforms>
+    </technology>
+    <technology type="Section[Sequencing]">
+        <platforms>
+            <platform>
+                <vendor>Applied Biosystems Group (ABI)</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>AQI Biosciences</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Base4innovation</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>BioNanomatrix</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Complete Genomics</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Danaher</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Genome Corp.</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>GenoVoxx</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>GnuBio</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Helicos BioSciences</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Illumina</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Intelligent Bio-Systems</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>LaserGen</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Li-Cor</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Life Tech</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>LightSpeed Genomics</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>NABsys</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Nanophotonics Biosciences</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Network Biosystems</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Oxford Nanopore Technologies</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Pacific Biosciences</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Population Genetics Technologies</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Reveo</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Roche</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Seirad</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>VisiGen Biotechnologies</vendor>
+                <machine></machine>
+            </platform>
+        </platforms>
+    </technology>
+    <technology type="Section[NMR Spectroscopy]">
+        <platforms>
+            <platform>
+                <vendor>Joel</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine></machine>
+            </platform>
+        </platforms>
+    </technology>
+    <technology type="Section[Gel Electrophoresis]">
+        <platforms>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine></machine>
+            </platform>
+            <platform>
+                <vendor>GENEQ</vendor>
+                <machine></machine>
+            </platform>
+        </platforms>
+    </technology>
+    <technology type="Section[RT PCR]">
+        <platforms></platforms>
+    </technology>
+    <technology type="Section[Mass Spectrometry]">
+        <platforms>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum Ultra</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum Access</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum Access MAX</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum Discovery MAX</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Vantage</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>MSQ Plus</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LCQ Deca XP MAX</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LCQ Fleet</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LXQ</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LTQ Classic</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LTQ XL</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LTQ Velos</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LTQ Orbitrap Classic</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LTQ Orbitrap XL</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LTQ Orbitrap Discovery</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>LTQ Orbitrap Velos</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>Exactive</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>DFS</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>ITQ 700</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>ITQ 900</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>ITQ 1100</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum GC</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum XLS</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum GC</machine>
+            </platform>
+            <platform>
+                <vendor>Thermo Scientific</vendor>
+                <machine>TSQ Quantum XLS</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 2000</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 3200</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 3200 QTRAP</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 4000</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 4000 QTRAP</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 5000</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 5500</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>API 5500 QTRAP</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>QSTAR</machine>
+            </platform>
+            <platform>
+                <vendor>AB Sciex</vendor>
+                <machine>TripleTOF� 5600</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>LCT Premier XE</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>ACQUITY SQD</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>3100 Mass Detector</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>SYNAPT G2 HDMS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>SYNAPT G2 MS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>SYNAPT HDMS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>SYNAPT MS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Xevo QTof MS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Xevo TQ MS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>ACQUITY TQD</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Quattro micro API</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Quattro Premier XE</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>MALDI SYNAPT G2 HDMS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>MALDI SYNAPT G2 MS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>MALDI SYNAPT HDMS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>MALDI SYNAPT MS</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>MALDI micro MX</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>GCT Premier</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Atmospheric Pressure GC</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Quattro micro GC</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>AutoSpec Premier</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Xevo G2 QTOF</machine>
+            </platform>
+            <platform>
+                <vendor>Waters</vendor>
+                <machine>Xevo TQ-S</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6110 Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6120 Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6130 Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6140 Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6310 Ion Trap LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6320 Ion Trap LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6330 Ion Trap LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6340 Ion Trap LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6410 Triple Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6430 Triple Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6460 Triple Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6490 Triple Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6530 Q-TOF LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6540 Q-TOF LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6210 TOF LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6220 TOF LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6230 TOF LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>Agilent 5975E GC/MSD</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>Agilent 5975T LTM GC/MSD</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>5975C Series GC/MSD</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>7000B Triple Quadrupole GC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Agilent</vendor>
+                <machine>6490 Triple Quadrupole LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>microflex LT MALDI-TOF MS</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>microflex LRF MALDI-TOF MS</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>autoflex III MALDI-TOF MS</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>ultrafleXtreme MALDI-TOF MS</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>amaZon ETD ESI Ion Trap</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>amaZon X ESI Ion Trap</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>micrOTOF II ESI TOF</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>micrOTOF-Q II ESI-Qq-TOF</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>maXis</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>maXis G4</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>apex-ultra hybrid Qq-FTMS</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>solariX hybrid Qq-FTMS</machine>
+            </platform>
+            <platform>
+                <vendor>Bruker</vendor>
+                <machine>autoflex� speed</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>910-MS TQ-FT</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>920-MS TQ-FT</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>320-MS GC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>240-MS GC Ion Trap</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>225-MS GC Ion Trap</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>220-MS GC Ion Trap</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>210-MS GC Ion Trap</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>300-MS quadrupole GC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>320-MS LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>325-MS LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Varian</vendor>
+                <machine>500-MS LC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Shimadzu</vendor>
+                <machine>AXIMA Performance � MALDI TOF/TOF</machine>
+            </platform>
+            <platform>
+                <vendor>Shimadzu</vendor>
+                <machine>GCMS-QP2010 Plus</machine>
+            </platform>
+            <platform>
+                <vendor>Shimadzu</vendor>
+                <machine>GCMS-QP2010S</machine>
+            </platform>
+            <platform>
+                <vendor>Shimadzu</vendor>
+                <machine>LCMS-2020</machine>
+            </platform>
+            <platform>
+                <vendor>Shimadzu</vendor>
+                <machine>LCMS-2010EV</machine>
+            </platform>
+            <platform>
+                <vendor>Shimadzu</vendor>
+                <machine>LCMS-IT-TOF</machine>
+            </platform>
+            <platform>
+                <vendor>Shimadzu</vendor>
+                <machine>AXIMA Mega TOF</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>AccuTO DART</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>AccuTOF GC</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>AccuTOF LC</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>GCmate II GC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>Mstation</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>800D</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>Q1000GC UltraQuad</machine>
+            </platform>
+            <platform>
+                <vendor>Jeol</vendor>
+                <machine>JMS-S3000 SpiralTOF</machine>
+            </platform>
+            <platform>
+                <vendor>PerkinElmer</vendor>
+                <machine>Clarus 600 GC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>PerkinElmer</vendor>
+                <machine>Clarus 560 S GC/MS</machine>
+            </platform>
+            <platform>
+                <vendor>PerkinElmer</vendor>
+                <machine>Clarus 560 D GC/MS</machine>
+            </platform>
+        </platforms>
+    </technology>
+    <technology type="Section[Flow cytometry]">
+        <platforms>
+            <platform>
+                <vendor>Apogee</vendor>
+                <machine>A10-Analyzer</machine>
+            </platform>
+            <platform>
+                <vendor>Apogee</vendor>
+                <machine>A40-MiniFCM</machine>
+            </platform>
+            <platform>
+                <vendor>Chemunex SA</vendor>
+                <machine>Bactiflow</machine>
+            </platform>
+            <platform>
+                <vendor>Becman Coulter</vendor>
+                <machine>Cell Lab Quanta SC</machine>
+            </platform>
+            <platform>
+                <vendor>Dako Cytomation</vendor>
+                <machine>Cyan</machine>
+            </platform>
+            <platform>
+                <vendor>Partec</vendor>
+                <machine>CYFlow ML</machine>
+            </platform>
+            <platform>
+                <vendor>Partec</vendor>
+                <machine>CyFlow SL</machine>
+            </platform>
+            <platform>
+                <vendor>Partec</vendor>
+                <machine>CyFlow SL3</machine>
+            </platform>
+            <platform>
+                <vendor>Cyto Buoy Inc</vendor>
+                <machine>CytoBuoy</machine>
+            </platform>
+            <platform>
+                <vendor>Cyto Buoy Inc</vendor>
+                <machine>CytoSence</machine>
+            </platform>
+            <platform>
+                <vendor>Cyto Buoy Inc</vendor>
+                <machine>CytoSub</machine>
+            </platform>
+            <platform>
+                <vendor>Becton Dickinson</vendor>
+                <machine>FACS Canto</machine>
+            </platform>
+            <platform>
+                <vendor>Becton Dickinson</vendor>
+                <machine>FACS Canto2</machine>
+            </platform>
+            <platform>
+                <vendor>Becton Dickinson</vendor>
+                <machine>FACS Scan</machine>
+            </platform>
+            <platform>
+                <vendor>Becman Coulter</vendor>
+                <machine>FC 500</machine>
+            </platform>
+            <platform>
+                <vendor>Millipore</vendor>
+                <machine>Guava EasyCyte Mini</machine>
+            </platform>
+            <platform>
+                <vendor>Millipore</vendor>
+                <machine>Guava EasyCyte Plus</machine>
+            </platform>
+            <platform>
+                <vendor>Millipore</vendor>
+                <machine>Guava Personal Cell Analysis</machine>
+            </platform>
+            <platform>
+                <vendor>Millipore</vendor>
+                <machine>Guava Personal Cell Analysis-96</machine>
+            </platform>
+            <platform>
+                <vendor>Cytopeia</vendor>
+                <machine>inFlux Analyzer</machine>
+            </platform>
+            <platform>
+                <vendor>Luminex</vendor>
+                <machine>Luminex 100</machine>
+            </platform>
+            <platform>
+                <vendor>Luminex</vendor>
+                <machine>Luminex 200</machine>
+            </platform>
+            <platform>
+                <vendor>Miltenyi</vendor>
+                <machine>MACS Quant</machine>
+            </platform>
+            <platform>
+                <vendor>Bently Instruments</vendor>
+                <machine>Somacount</machine>
+            </platform>
+            <platform>
+                <vendor>Bently Instruments</vendor>
+                <machine>SomaScope</machine>
+            </platform>
+        </platforms>
+    </technology>
+</technology-platforms>
