@@ -65,7 +65,7 @@ public class ISAOverviewTreeRenderer implements TreeCellRenderer {
 
     @InjectedResource
     private ImageIcon investigationOpen, investigationClosed, studyOpen, studyClosed, sampleNode, microarrayNode,
-            msNode, nmrNode, uhtsNode, genericNode, gelElec, flowCyt, histology;
+            msNode, nmrNode, uhtsNode, genericNode, gelElec, flowCyt, histology, clinicalChemistry, hematology;
 
 
     public ISAOverviewTreeRenderer() {
@@ -120,6 +120,10 @@ public class ISAOverviewTreeRenderer implements TreeCellRenderer {
                 icon.setIcon(histology);
             } else if (technology.equals("") && assay.getMeasurementEndpoint().equals("")) {
                 icon.setIcon(expanded ? studyOpen : studyClosed);
+            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(AssayType.CLINICAL_CHEMISTRY.getType())) {
+                icon.setIcon(clinicalChemistry);
+            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(AssayType.HEMATOLOGY.getType())) {
+                icon.setIcon(hematology);
             } else {
                 icon.setIcon(genericNode);
             }

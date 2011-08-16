@@ -286,6 +286,8 @@ public class StudyDataEntry extends DataEntryForm {
                                     Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), assayRef);
 
                                     AssayInformationPanel informationPanel = new AssayInformationPanel(addedAssay);
+                                    informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
+                                    informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
 
                                     assayContainer.add(informationPanel);
                                     assayContainer.repaint();
