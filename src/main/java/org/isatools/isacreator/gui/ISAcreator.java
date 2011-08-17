@@ -62,14 +62,15 @@ import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.qrcode.ui.QRCodeGeneratorUI;
 import org.isatools.isacreator.settings.SettingsUtil;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
+import org.isatools.isacreator.validate.ui.ValidateUI;
 import org.isatools.isatab.gui_invokers.GUIISATABValidator;
 import org.isatools.isatab.gui_invokers.GUIInvokerResult;
-import org.isatools.isatab.isaconfigurator.ISAConfigurationSet;
 import org.isatools.tablib.utils.logging.TabLoggingEventWrapper;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -133,12 +134,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private Map<String, JMenu> menusRequiringStudyIds;
 
-    private String lastExport = "";
-
     private OutputISAFiles outputISATAB;
     private IncorrectColumnOrderGUI incorrectGUI;
     private UserProfileIO userProfileIO;
-    private String loadedConfiguration;
     private Mode mode;
 
     static {
@@ -490,30 +488,17 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         menusRequiringStudyIds.put("qr", qrCodeExport);
         sampleTracking.add(qrCodeExport);
 
-        JMenuItem validate = new JMenuItem("Validate ISAtab properly ;D");
+        JMenuItem validate = new JMenuItem("Validate ISAtab (presubmission)");
         validate.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
-
-                // todo call the validate module
-
-                ISAConfigurationSet.setConfigPath("/Users/eamonnmaguire/git/eamonnrepo/ISAcreator/Configurations/isaconfig-default");
-
-                GUIISATABValidator isatabValidator = new GUIISATABValidator();
-                GUIInvokerResult result = isatabValidator.validate("/Users/eamonnmaguire/git/eamonnrepo/ISAcreator/isatab files/BII-I-1");
-
-                if (result == GUIInvokerResult.SUCCESS) {
-                    System.out.println("Yay");
-                } else {
-                    System.out.println(":(");
-
-                    List<TabLoggingEventWrapper> logEvents = isatabValidator.getLog();
-
-                    System.out.println("Printing errors");
-                    for (TabLoggingEventWrapper event : logEvents) {
-                        System.out.println(event.getLogEvent().getLevel().toString());
-                        System.out.println(event.getFormattedMessage());
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        ValidateUI validateUI = new ValidateUI(ISAcreator.this);
+                        validateUI.createGUI();
+                        validateUI.fadeInWindow();
+                        validateUI.validateISAtab();
                     }
-                }
+                });
 
             }
         });
@@ -578,9 +563,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             id += s;
         }
         // we only want to update when something changes!
+        String lastExport = ISAcreatorProperties.getProperty("last_export");
         if (lastExport.isEmpty() || !lastExport.equals(id)) {
 
-            lastExport = id;
+            ISAcreatorProperties.setProperty("last_export", id);
 
             for (String menuType : menusRequiringStudyIds.keySet()) {
                 Component[] menuComponents = menusRequiringStudyIds.get(menuType).getMenuComponents();
@@ -802,12 +788,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         return programSettings;
     }
 
-    public void setLoadedConfiguration(String name) {
-        this.loadedConfiguration = name;
-    }
-
     public String getLoadedConfiguration() {
-        return loadedConfiguration;
+        return ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION);
     }
 
 

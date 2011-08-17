@@ -18,6 +18,7 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.ISAPair;
 
@@ -187,12 +188,16 @@ public class ISAtabImporter {
                     }
 
 
-                    String lastConfigurationUsed = investigation.getLastConfigurationUsed().trim();
-                    System.out.println("last configuration use");
+                    String lastConfigurationUsed = ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION);
+
+                    if (lastConfigurationUsed.contains(File.separator)) {
+                        lastConfigurationUsed = lastConfigurationUsed.substring(lastConfigurationUsed.lastIndexOf(File.separator) + 1);
+                    }
+
                     if (!lastConfigurationUsed.equals("")) {
-                        if (!lastConfigurationUsed.equals(isacreator.getLoadedConfiguration())) {
-                            messages.add("The last configuration used to load this ISAtab file was " + lastConfigurationUsed + ". The currently loaded configuration is " + isacreator.getLoadedConfiguration() + ". You can continue to load, but " +
-                                    "the settings from " + lastConfigurationUsed + " may be important.");
+                        if (!lastConfigurationUsed.equals(investigation.getLastConfigurationUsed())) {
+                            messages.add("The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
+                                    "the settings from " + investigation.getLastConfigurationUsed() + " may be important.");
 
                             ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
                             errors.add(investigationErrorReport);

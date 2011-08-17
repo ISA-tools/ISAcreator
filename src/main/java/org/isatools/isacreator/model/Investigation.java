@@ -257,6 +257,11 @@ public class Investigation extends ISASection {
     }
 
     public void setLastConfigurationUsed(String configurationName) {
+        if (configurationName.contains("/")) {
+            configurationName = configurationName.substring(configurationName.lastIndexOf("/") + 1);
+        }
+
+        System.out.println("Setting last configuration used to " + configurationName);
         fieldValues.put(CONFIGURATION_LAST_OPENED_WITH, configurationName);
     }
 

@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.1.Final</version>
+    <version>1.5.beta</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -269,6 +269,19 @@
             <groupId>uk.ac.ebi</groupId>
             <artifactId>ols</artifactId>
             <version>1.18</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
         </dependency>
 
         <dependency>

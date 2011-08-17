@@ -40,7 +40,7 @@ package org.isatools.isacreator.configuration.io;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.isatools.isaconfigurator.schema.*;
+import org.isatools.isatab.configurator.schema.*;
 import org.isatools.isacreator.configuration.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -262,7 +262,7 @@ public class ConfigXMLParser {
                             protocolField.getIsRequired(), false, false, false);
                 } else {
                     newField = new FieldObject(colNo, "Protocol REF", "Protocol for " + protocolField.getProtocolType(), DataTypes.STRING, protocolField.getProtocolType(),
-                        protocolField.getIsRequired(), false, false);
+                            protocolField.getIsRequired(), false, false);
                 }
 
                 newField.setWizardTemplate(newField.getWizardTemplate());

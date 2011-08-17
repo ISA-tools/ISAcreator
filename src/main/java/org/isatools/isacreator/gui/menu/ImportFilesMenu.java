@@ -38,11 +38,13 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.SystemProperties;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.model.ISAFileType;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -163,6 +165,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         menu.hideGlassPane();
                         menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
 
+                        ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
+
                     } else if (successfulImport) {
                         log.error("The following problems were encountered when importing the ISAtab files in " + dir);
 
@@ -268,7 +272,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
         errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                System.out.println("going back");
                 menu.changeView(ImportFilesMenu.this);
                 revalidate();
             }
@@ -278,7 +281,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
 
-                    menu.getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(menu.getMain().getLoadedConfiguration());
+                    menu.getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(
+                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
                     menu.hideGlassPane();
                     menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
                 }

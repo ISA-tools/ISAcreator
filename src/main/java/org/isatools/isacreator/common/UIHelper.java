@@ -319,4 +319,22 @@ public class UIHelper {
 
         return horBox;
     }
+
+    public static Container padComponentInHorizontalBox(int leftPadding, Component componentToAdd) {
+        Box container = Box.createHorizontalBox();
+        container.add(Box.createHorizontalStrut(leftPadding));
+
+        container.add(componentToAdd);
+
+        return container;
+    }
+
+    public static Container padComponentVerticalBox(int topPadding, Component componentToAdd) {
+        Box container = Box.createVerticalBox();
+        container.add(Box.createVerticalStrut(topPadding));
+
+        container.add(componentToAdd);
+
+        return container;
+    }
 }
