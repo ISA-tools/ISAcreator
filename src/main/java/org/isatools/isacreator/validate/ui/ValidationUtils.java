@@ -1,11 +1,10 @@
 package org.isatools.isacreator.validate.ui;
 
 import org.apache.log4j.spi.LoggingEvent;
-import org.isatools.errorreporter.model.ISAFileType;
-import org.isatools.isacreator.assayselection.AssayType;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
-import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.utils.datastructures.ISAPair;
 
 /**
  * Created by the ISA team
@@ -24,39 +23,44 @@ public class ValidationUtils {
         if (ndc != null) {
             System.out.println(ndc);
 
-            return ndc.substring(ndc.indexOf("file:")).replaceAll("file:|]", "").trim();
+            ndc = ndc.substring(ndc.lastIndexOf("file:")).replaceAll("file:|]|\\[sect:ASSAYS", "").trim();
+
+
+            return ndc;
         }
 
         return null;
 
     }
 
-    public static ISAFileType resolveFileTypeFromFileName(String fileName, Investigation currentInvestigation) {
+    public static ISAPair<Assay, FileType> resolveFileTypeFromFileName(String fileName, Investigation currentInvestigation) {
 
         for (String studyId : currentInvestigation.getStudies().keySet()) {
             Assay assay;
             if ((assay = currentInvestigation.getStudies().get(studyId).getAssays().get(fileName)) != null) {
-                if (assay.getTechnologyType().contains(AssayType.MICROARRAY.getType())) {
-                    return ISAFileType.MICROARRAY;
-                } else if (assay.getTechnologyType().contains(AssayType.FLOW_CYTOMETRY.getType())) {
-                    return ISAFileType.FLOW_CYT;
-                } else if (assay.getTechnologyType().contains(AssayType.MASS_SPECTROMETRY.getType()) ||
-                        assay.getTechnologyType().contains(AssayType.NMR.getType())) {
-                    return ISAFileType.MASS_SPECTROMETRY;
-                } else if (assay.getTechnologyType().contains(AssayType.SEQUENCING.getType())) {
-                    return ISAFileType.SEQUENCING;
-                } else if (assay.getTechnologyType().contains(AssayType.GEL_ELECTROPHORESIS.getType())) {
-                    return ISAFileType.GEL_ELECTROPHORESIS;
-                } else if (assay.getTechnologyType().contains(AssayType.HEMATOLOGY.getType())
-                        || assay.getTechnologyType().contains(AssayType.HISTOLOGY.getType())
-                        || assay.getTechnologyType().contains(AssayType.CLINICAL_CHEMISTRY.getType())) {
-                    return ISAFileType.STUDY_SAMPLE;
+                if (assay.getTechnologyType().contains(FileType.MICROARRAY.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.MICROARRAY);
+                } else if (assay.getTechnologyType().contains(FileType.FLOW_CYTOMETRY.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.FLOW_CYTOMETRY);
+                } else if (assay.getTechnologyType().contains(FileType.MASS_SPECTROMETRY.getType()) ||
+                        assay.getTechnologyType().contains(FileType.NMR.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.MASS_SPECTROMETRY);
+                } else if (assay.getTechnologyType().contains(FileType.SEQUENCING.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.SEQUENCING);
+                } else if (assay.getTechnologyType().contains(FileType.GEL_ELECTROPHORESIS.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.GEL_ELECTROPHORESIS);
+                } else if (assay.getTechnologyType().contains(FileType.HEMATOLOGY.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.HEMATOLOGY);
+                } else if (assay.getTechnologyType().contains(FileType.CLINICAL_CHEMISTRY.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.CLINICAL_CHEMISTRY);
+                } else if (assay.getTechnologyType().contains(FileType.HISTOLOGY.getType())) {
+                    return new ISAPair<Assay, FileType>(assay, FileType.HISTOLOGY);
                 } else {
-                    return ISAFileType.INVESTIGATION;
+                    return new ISAPair<Assay, FileType>(assay, FileType.INVESTIGATION);
                 }
             }
         }
 
-        return ISAFileType.INVESTIGATION;
+        return new ISAPair<Assay, FileType>(null, FileType.INVESTIGATION);
     }
 }

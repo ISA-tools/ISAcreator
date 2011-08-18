@@ -37,6 +37,7 @@ package org.isatools.isacreator.assayselection;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.common.UIHelper;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -75,17 +76,17 @@ public class TechnologyListCellRenderer implements ListCellRenderer {
 
         String technology = value.toString().toLowerCase();
 
-        if (technology.contains(AssayType.MICROARRAY.getType())) {
+        if (technology.contains(FileType.MICROARRAY.getType())) {
             icon.setIcon(selected ? microarray : microarrayUnselected);
-        } else if (technology.contains(AssayType.MASS_SPECTROMETRY.getType())) {
+        } else if (technology.contains(FileType.MASS_SPECTROMETRY.getType())) {
             icon.setIcon(selected ? ms : msUnselected);
-        } else if (technology.contains(AssayType.NMR.getType())) {
+        } else if (technology.contains(FileType.NMR.getType())) {
             icon.setIcon(selected ? nmr : nmrUnselected);
-        } else if (technology.contains(AssayType.FLOW_CYTOMETRY.getType())) {
+        } else if (technology.contains(FileType.FLOW_CYTOMETRY.getType())) {
             icon.setIcon(selected ? flowCyt : flowCytUnselected);
-        } else if (technology.contains(AssayType.GEL_ELECTROPHORESIS.getType())) {
+        } else if (technology.contains(FileType.GEL_ELECTROPHORESIS.getType())) {
             icon.setIcon(selected ? gelElec : gelElecUnselected);
-        } else if (technology.contains(AssayType.SEQUENCING.getType())) {
+        } else if (technology.contains(FileType.SEQUENCING.getType())) {
             icon.setIcon(selected ? uhts : uhtsUnselected);
         } else {
             icon.setIcon(selected ? generic : genericUnselected);

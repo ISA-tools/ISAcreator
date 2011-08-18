@@ -3,17 +3,20 @@ package org.isatools.isacreator.validate.ui;
 
 import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Level;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.errorreporter.model.ISAFileType;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ImportFilesMenu;
-import org.isatools.isacreator.ontologiser.ui.OntologiserAnnotationPane;
+import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.ontologiser.ui.OntologyHelpPane;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.utils.datastructures.ISAPair;
 import org.isatools.isatab.gui_invokers.GUIISATABValidator;
 import org.isatools.isatab.gui_invokers.GUIInvokerResult;
 import org.isatools.isatab.isaconfigurator.ISAConfigurationSet;
@@ -39,7 +42,7 @@ import java.util.List;
  *         Date: 17/08/2011
  *         Time: 13:38
  */
-public class ValidateUI extends JFrame implements ActionListener {
+public class ValidateUI extends JFrame {
 
 
     static {
@@ -52,6 +55,10 @@ public class ValidateUI extends JFrame implements ActionListener {
 
     @InjectedResource
     private Image validateIcon, validateIconInactive;
+
+    @InjectedResource
+    private ImageIcon validationSuccess;
+
     private ISAcreator isacreatorEnvironment;
 
     protected static ImageIcon validateISAAnimation = new ImageIcon(ImportFilesMenu.class.getResource("/images/validator/validating.gif"));
@@ -116,69 +123,62 @@ public class ValidateUI extends JFrame implements ActionListener {
         Thread performer = new Thread(new Runnable() {
             public void run() {
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
 
-                        System.out.println("Validating against: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+                ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
-                        System.out.println("With " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+                final GUIISATABValidator isatabValidator = new GUIISATABValidator();
+                GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
-                        ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+                if (result == GUIInvokerResult.SUCCESS) {
+                    Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
+                    swapContainers(successfulValidationContainer);
+                } else {
 
-                        final GUIISATABValidator isatabValidator = new GUIISATABValidator();
-                        GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
 
-                        if (result == GUIInvokerResult.SUCCESS) {
+                            List<TabLoggingEventWrapper> logEvents = isatabValidator.getLog();
 
-                            // show success icon
-                        } else {
+                            List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
 
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
+                            Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
 
-                                    List<TabLoggingEventWrapper> logEvents = isatabValidator.getLog();
+                            for (TabLoggingEventWrapper event : logEvents) {
 
-                                    List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
+                                String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
 
-                                    Map<String, Set<String>> fileToErrors = new HashMap<String, Set<String>>();
-
-                                    for (TabLoggingEventWrapper event : logEvents) {
-
-                                        String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
-
-                                        if (fileName != null) {
-                                            if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
-                                                if (!fileToErrors.containsKey(fileName)) {
-                                                    fileToErrors.put(fileName, new HashSet<String>());
-                                                }
-                                                fileToErrors.get(fileName).add(event.getLogEvent().getMessage().toString());
-                                            }
+                                if (fileName != null) {
+                                    if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
+                                        if (!fileToErrors.containsKey(fileName)) {
+                                            fileToErrors.put(fileName, new ArrayList<ErrorMessage>());
                                         }
+                                        fileToErrors.get(fileName).add(new ErrorMessage(event.getLogEvent().getLevel() == Level.WARN ? ErrorLevel.WARNING : ErrorLevel.ERROR, event.getLogEvent().getMessage().toString()));
                                     }
-
-
-                                    for (String fileName : fileToErrors.keySet()) {
-
-                                        errors.add(new ISAFileErrorReport(fileName,
-                                                ValidationUtils.resolveFileTypeFromFileName(fileName,
-                                                        isacreatorEnvironment.getDataEntryEnvironment().getInvestigation()),
-                                                fileToErrors.get(fileName)));
-                                    }
-
-                                    ErrorReporterView view = new ErrorReporterView(errors);
-                                    view.setPreferredSize(new Dimension(750, 440));
-                                    view.createGUI();
-
-                                    swapContainers(view);
                                 }
-                            });
+                            }
 
+
+                            for (String fileName : fileToErrors.keySet()) {
+
+                                ISAPair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
+                                        isacreatorEnvironment.getDataEntryEnvironment().getInvestigation());
+
+                                errors.add(new ISAFileErrorReport(fileName,
+                                        assayAndType.fst != null ? assayAndType.fst.getTechnologyType() : "",
+                                        assayAndType.fst != null ? assayAndType.fst.getMeasurementEndpoint() : "",
+                                        assayAndType.snd, fileToErrors.get(fileName)));
+                            }
+
+                            ErrorReporterView view = new ErrorReporterView(errors);
+                            view.setPreferredSize(new Dimension(750, 440));
+                            view.createGUI();
+
+                            swapContainers(view);
                         }
-                    }
-                });
+                    });
+                }
             }
         });
-
 
         performer.start();
     }
@@ -192,65 +192,6 @@ public class ValidateUI extends JFrame implements ActionListener {
         }
     }
 
-    public void fadeInWindow() {
-        animationDirection = INCOMING;
-        startAnimation();
-    }
-
-    private void startAnimation() {
-
-        // start animation timer
-        animationStart = System.currentTimeMillis();
-
-        if (animationTimer == null) {
-            animationTimer = new Timer(ANIMATION_SLEEP, this);
-        }
-
-        animating = true;
-
-        if (!isShowing()) {
-            AWTUtilities.setWindowOpacity(this, 0f);
-            repaint();
-            setVisible(true);
-        }
-
-        animationTimer.start();
-    }
-
-    public void actionPerformed(ActionEvent actionEvent) {
-        if (animating) {
-            // calculate height to show
-            float animationPercent = (System.currentTimeMillis() -
-                    animationStart) / ANIMATION_DURATION;
-            animationPercent = Math.min(DESIRED_OPACITY, animationPercent);
-
-            float opacity;
-
-            if (animationDirection == INCOMING) {
-                opacity = animationPercent;
-            } else {
-                opacity = DESIRED_OPACITY - animationPercent;
-            }
-
-            AWTUtilities.setWindowOpacity(this, opacity);
-            repaint();
-
-            if (animationPercent >= DESIRED_OPACITY) {
-                stopAnimation();
-
-                if (animationDirection == OUTGOING) {
-                    setVisible(false);
-                }
-            }
-        }
-    }
-
-    private void stopAnimation() {
-        animationTimer.stop();
-        animating = false;
-
-        repaint();
-    }
 
     public static void main(String[] args) {
 
@@ -258,8 +199,9 @@ public class ValidateUI extends JFrame implements ActionListener {
             public void run() {
                 ValidateUI validateUI = new ValidateUI(null);
                 validateUI.createGUI();
+                validateUI.setVisible(true);
                 validateUI.validateISAtab();
-                validateUI.fadeInWindow();
+
             }
         });
 

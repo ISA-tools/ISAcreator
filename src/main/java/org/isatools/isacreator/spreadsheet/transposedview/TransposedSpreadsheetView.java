@@ -329,6 +329,7 @@ public class TransposedSpreadsheetView extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         confirmChoice.createGUI();
+
                         confirmChoice.showDialog(TransposedSpreadsheetView.this);
                     }
                 });

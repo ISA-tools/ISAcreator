@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.gui;
 
-import org.isatools.isacreator.assayselection.AssayType;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
@@ -104,25 +104,25 @@ public class ISAOverviewTreeRenderer implements TreeCellRenderer {
             Assay assay = (Assay) userObject;
 
             String technology = assay.getTechnologyType().toLowerCase();
-            if (technology.contains(AssayType.MICROARRAY.getType())) {
+            if (technology.contains(FileType.MICROARRAY.getType())) {
                 icon.setIcon(microarrayNode);
-            } else if (technology.contains(AssayType.MASS_SPECTROMETRY.getType())) {
+            } else if (technology.contains(FileType.MASS_SPECTROMETRY.getType())) {
                 icon.setIcon(msNode);
-            } else if (technology.contains(AssayType.NMR.getType())) {
+            } else if (technology.contains(FileType.NMR.getType())) {
                 icon.setIcon(nmrNode);
-            } else if (technology.contains(AssayType.FLOW_CYTOMETRY.getType())) {
+            } else if (technology.contains(FileType.FLOW_CYTOMETRY.getType())) {
                 icon.setIcon(flowCyt);
-            } else if (technology.contains(AssayType.GEL_ELECTROPHORESIS.getType())) {
+            } else if (technology.contains(FileType.GEL_ELECTROPHORESIS.getType())) {
                 icon.setIcon(gelElec);
-            } else if (technology.contains(AssayType.SEQUENCING.getType())) {
+            } else if (technology.contains(FileType.SEQUENCING.getType())) {
                 icon.setIcon(uhtsNode);
-            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(AssayType.HISTOLOGY.getType())) {
+            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(FileType.HISTOLOGY.getType())) {
                 icon.setIcon(histology);
             } else if (technology.equals("") && assay.getMeasurementEndpoint().equals("")) {
                 icon.setIcon(expanded ? studyOpen : studyClosed);
-            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(AssayType.CLINICAL_CHEMISTRY.getType())) {
+            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(FileType.CLINICAL_CHEMISTRY.getType())) {
                 icon.setIcon(clinicalChemistry);
-            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(AssayType.HEMATOLOGY.getType())) {
+            } else if (assay.getMeasurementEndpoint().equalsIgnoreCase(FileType.HEMATOLOGY.getType())) {
                 icon.setIcon(hematology);
             } else {
                 icon.setIcon(genericNode);

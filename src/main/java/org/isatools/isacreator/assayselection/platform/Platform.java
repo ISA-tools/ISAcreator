@@ -36,8 +36,6 @@ package org.isatools.isacreator.assayselection.platform;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-import org.isatools.isacreator.assayselection.AssayType;
-
 /**
  * Created by the ISA team
  *

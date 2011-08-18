@@ -38,9 +38,8 @@ package org.isatools.isacreator.gui.formelements.assay;
  */
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.isatools.isacreator.assayselection.AssayType;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Assay;
 import org.jdesktop.fuse.InjectedResource;
@@ -192,23 +191,23 @@ public class AssayInformationPanel extends JPanel {
     private ImageIcon determineIcon() {
         String measurementAndTechnology = assay.getMeasurementEndpoint() + " " + assay.getTechnologyType();
 
-        if (measurementAndTechnology.contains(AssayType.MICROARRAY.getType())) {
+        if (measurementAndTechnology.contains(FileType.MICROARRAY.getType())) {
             return microarray;
-        } else if (measurementAndTechnology.contains(AssayType.MASS_SPECTROMETRY.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.MASS_SPECTROMETRY.getType())) {
             return massNMR;
-        } else if (measurementAndTechnology.contains(AssayType.NMR.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.NMR.getType())) {
             return massNMR;
-        } else if (measurementAndTechnology.contains(AssayType.FLOW_CYTOMETRY.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.FLOW_CYTOMETRY.getType())) {
             return flowCytometry;
-        } else if (measurementAndTechnology.contains(AssayType.GEL_ELECTROPHORESIS.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.GEL_ELECTROPHORESIS.getType())) {
             return gelElectrophoresis;
-        } else if (measurementAndTechnology.contains(AssayType.SEQUENCING.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.SEQUENCING.getType())) {
             return sequencing;
-        } else if (measurementAndTechnology.contains(AssayType.HISTOLOGY.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.HISTOLOGY.getType())) {
             return histology;
-        } else if (measurementAndTechnology.contains(AssayType.CLINICAL_CHEMISTRY.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.CLINICAL_CHEMISTRY.getType())) {
             return clinicalChemistry;
-        } else if (measurementAndTechnology.contains(AssayType.HEMATOLOGY.getType())) {
+        } else if (measurementAndTechnology.contains(FileType.HEMATOLOGY.getType())) {
             return hematology;
         }
 

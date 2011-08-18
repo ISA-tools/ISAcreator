@@ -39,8 +39,10 @@ package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.SystemProperties;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.errorreporter.model.ISAFileType;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
@@ -173,8 +175,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         for (ISAFileErrorReport report : iISA.getMessages()) {
                             if (report.getMessages().size() > 0) {
                                 log.info("For " + report.getFileName());
-                                for (String message : report.getMessages()) {
-                                    System.out.println("\t" + message);
+                                for (ErrorMessage message : report.getMessages()) {
+                                    log.error("\t" + message.getMessage());
                                 }
                             }
                         }
@@ -191,8 +193,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         for (ISAFileErrorReport report : iISA.getMessages()) {
                             if (report.getMessages().size() > 0) {
                                 log.info("For " + report.getFileName());
-                                for (String message : report.getMessages()) {
-                                    System.out.println("\t" + message);
+                                for (ErrorMessage message : report.getMessages()) {
+                                    log.error("\t" + message.getMessage());
                                 }
                             }
                         }
@@ -208,11 +210,11 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     menu.stopProgressIndicator();
                     menu.resetViewAfterProgress();
 
-                    Set<String> messages = new HashSet<String>();
-                    messages.add("ISAcreator ran out of memory whilst loading. We have attempted to clear the memory now and you can try again." +
-                            "Alternatively, if this fails you may want to increase the memory available to ISAcreator...");
+                    List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "ISAcreator ran out of memory whilst loading. We have attempted to clear the memory now and you can try again." +
+                            "Alternatively, if this fails you may want to increase the memory available to ISAcreator..."));
 
-                    ISAFileErrorReport report = new ISAFileErrorReport("memory issue", ISAFileType.INVESTIGATION, messages);
+                    ISAFileErrorReport report = new ISAFileErrorReport("memory issue", FileType.INVESTIGATION, messages);
 
                     List<ISAFileErrorReport> reports = new ArrayList<ISAFileErrorReport>();
                     reports.add(report);
@@ -225,10 +227,10 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     e.printStackTrace();
                     log.error(e.toString());
 
-                    Set<String> messages = new HashSet<String>();
-                    messages.add("Unexpected problem occurred." + e.getMessage());
+                    List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "Unexpected problem occurred." + e.getMessage()));
 
-                    ISAFileErrorReport report = new ISAFileErrorReport("Unexpected Problem", ISAFileType.INVESTIGATION, messages);
+                    ISAFileErrorReport report = new ISAFileErrorReport("Unexpected Problem", FileType.INVESTIGATION, messages);
 
                     List<ISAFileErrorReport> reports = new ArrayList<ISAFileErrorReport>();
                     reports.add(report);
@@ -263,7 +265,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     }
 
     private void createErrorView(List<ISAFileErrorReport> errors, boolean showContinue) {
-        ErrorReporterView view = new ErrorReporterView(errors);
+        ErrorReporterView view = new ErrorReporterView(errors, true);
         view.createGUI();
 
         ErrorReportWrapper errorReportWithControls = new ErrorReportWrapper(view, showContinue);

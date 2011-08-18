@@ -357,7 +357,8 @@ public class QRCodeGeneratorUI extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         confirmChoice.createGUI();
-                        confirmChoice.showDialog(QRCodeGeneratorUI.this);
+
+                        confirmChoice.showDialog(isacreatorEnvironment);
                     }
                 });
 

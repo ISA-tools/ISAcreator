@@ -323,7 +323,8 @@ public class OntologiserUI extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         confirmChoice.createGUI();
-                        confirmChoice.showDialog(OntologiserUI.this);
+
+                        confirmChoice.showDialog(isacreatorEnvironment);
                     }
                 });
 

@@ -40,6 +40,8 @@ package org.isatools.isacreator.io.importisa;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
@@ -65,13 +67,13 @@ public class StructureToInvestigationMapper {
 
 
     private List<OntologyTerm> ontologyTermsDefined;
-    private Set<String> messages;
+    private List<ErrorMessage> messages;
 
     private Investigation investigation;
 
     public StructureToInvestigationMapper() {
         ontologyTermsDefined = new ArrayList<OntologyTerm>();
-        messages = new HashSet<String>();
+        messages = new ArrayList<ErrorMessage>();
     }
 
     public ISAPair<Boolean, Investigation> createInvestigationFromDataStructure(
@@ -170,7 +172,7 @@ public class StructureToInvestigationMapper {
                 String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                 investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
-                messages.add(e.getMessage());
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
             }
         }
 
@@ -267,7 +269,7 @@ public class StructureToInvestigationMapper {
                 String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                 study.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
-                messages.add(e.getMessage());
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
             }
         }
 
@@ -322,7 +324,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -359,7 +361,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         design.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -399,7 +401,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         c.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -433,7 +435,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         f.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -468,7 +470,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -626,7 +628,7 @@ public class StructureToInvestigationMapper {
         for (Study study : investigation.getStudies().values()) {
             if (studyNames.contains(study.getStudyId())) {
                 String message = "Duplicate study names found in investigation! Study with with ID : " + study.getStudyId() + " already exists!";
-                messages.add(message);
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, message));
                 log.info(message);
                 return false;
             } else {
@@ -636,7 +638,7 @@ public class StructureToInvestigationMapper {
             for (Assay assay : study.getAssays().values()) {
                 if (assayNames.contains(assay.getAssayReference())) {
                     String message = "Duplicate assay found in investigation! Assay with with name : " + assay.getAssayReference() + " already exists!";
-                    messages.add(message);
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, message));
                     log.info(message);
                     return false;
                 } else {
@@ -674,7 +676,7 @@ public class StructureToInvestigationMapper {
                 missing += (m + " ");
             }
 
-            messages.add("Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing);
+            messages.add(new ErrorMessage(ErrorLevel.ERROR, "Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing));
             log.info("Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing);
             return false;
         }
@@ -682,7 +684,7 @@ public class StructureToInvestigationMapper {
         return true;
     }
 
-    public Set<String> getMessages() {
+    public List<ErrorMessage> getMessages() {
         return messages;
     }
 

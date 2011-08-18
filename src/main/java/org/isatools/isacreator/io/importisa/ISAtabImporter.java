@@ -2,8 +2,10 @@ package org.isatools.isacreator.io.importisa;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.errorreporter.model.ISAFileType;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
@@ -25,9 +27,7 @@ import org.isatools.isacreator.utils.datastructures.ISAPair;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by the ISA team
@@ -111,7 +111,7 @@ public class ISAtabImporter {
 
         boolean investigationFileFound = false;
 
-        Set<String> messages = new HashSet<String>();
+        List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
 
         if (investigationFile.exists()) {
 
@@ -127,10 +127,10 @@ public class ISAtabImporter {
 
 
             if (!investigationFileFound) {
-                messages.add("Investigation file does not exist in this folder. Please create an investigation file and name it " +
-                        "\"i_<investigation identifier>.txt\"");
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in this folder. Please create an investigation file and name it " +
+                        "\"i_<investigation identifier>.txt\""));
 
-                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                 errors.add(investigationErrorReport);
                 return false;
             }
@@ -153,7 +153,7 @@ public class ISAtabImporter {
                     messages.addAll(mapper.getMessages());
 
                     if (!mappingResult.fst) {
-                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                         errors.add(investigationErrorReport);
                         return false;
                     }
@@ -175,7 +175,7 @@ public class ISAtabImporter {
                     }
 
                     if (!processInvestigation()) {
-                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                         errors.add(investigationErrorReport);
 
                         return false;
@@ -196,10 +196,10 @@ public class ISAtabImporter {
 
                     if (!lastConfigurationUsed.equals("")) {
                         if (!lastConfigurationUsed.equals(investigation.getLastConfigurationUsed())) {
-                            messages.add("The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
-                                    "the settings from " + investigation.getLastConfigurationUsed() + " may be important.");
+                            messages.add(new ErrorMessage(ErrorLevel.WARNING, "The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
+                                    "the settings from " + investigation.getLastConfigurationUsed() + " may be important."));
 
-                            ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                            ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                             errors.add(investigationErrorReport);
                         }
                     } else {
@@ -209,16 +209,16 @@ public class ISAtabImporter {
                 } else {
                     messages.addAll(investigationFileImporter.getMessages());
 
-                    ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                    ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                     errors.add(investigationErrorReport);
 
                     return false;
                 }
             } catch (IOException e) {
 
-                messages.add(e.getMessage());
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
 
-                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), ISAFileType.INVESTIGATION, messages);
+                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                 errors.add(investigationErrorReport);
 
                 return false;
@@ -247,7 +247,7 @@ public class ISAtabImporter {
 
             if (studySampleReference != null) {
 
-                Set<String> messages = new HashSet<String>();
+                List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
 
                 try {
                     TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath + File.separator +
@@ -257,14 +257,15 @@ public class ISAtabImporter {
                         study.setStudySamples(new Assay(study.getStudySampleFileIdentifier(), builtReference));
                     }
                 } catch (MalformedInvestigationException mie) {
-                    messages.add(mie.getMessage());
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, mie.getMessage()));
 
                 } catch (Exception e) {
-                    messages.add(e.getMessage());
+
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
 
                 } finally {
                     if (messages.size() > 0) {
-                        ISAFileErrorReport studySampleReport = new ISAFileErrorReport(study.getStudySampleFileIdentifier(), ISAFileType.STUDY_SAMPLE, messages);
+                        ISAFileErrorReport studySampleReport = new ISAFileErrorReport(study.getStudySampleFileIdentifier(), FileType.STUDY_SAMPLE, messages);
                         errors.add(studySampleReport);
                         errorsFound = true;
                     }
@@ -277,7 +278,7 @@ public class ISAtabImporter {
 
             for (String assayReference : study.getAssays().keySet()) {
 
-                Set<String> messages = new HashSet<String>();
+                List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
 
                 Assay assay = study.getAssays().get(assayReference);
 
@@ -294,11 +295,12 @@ public class ISAtabImporter {
                             assay.setTableReferenceObject(builtReference);
                         }
                     } catch (IOException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
+
                     } catch (MalformedInvestigationException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     } catch (Exception e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     } finally {
                         if (messages.size() > 0) {
                             ISAFileErrorReport studySampleReport = new ISAFileErrorReport(assay.getAssayReference(), inferISAFileType(assay), messages);
@@ -307,19 +309,18 @@ public class ISAtabImporter {
                         }
                     }
                 } else {
-                    messages.add("Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
-                            " is not recognised. Please ensure you are using the correct configuration!");
+                    messages.add(new ErrorMessage(ErrorLevel.WARNING, "Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
+                            " is not recognised. Please ensure you are using the correct configuration!"));
                     log.info("Assay with measurement " + assay.getMeasurementEndpoint() + " & technology " + assay.getTechnologyType() +
                             " is not recognised. Please ensure you are using the correct configuration!");
                     noReferenceobjectFound.add(assay);
 
-                    ISAFileErrorReport studySampleReport = new ISAFileErrorReport(assay.getAssayReference(), inferISAFileType(assay), messages);
+                    ISAFileErrorReport studySampleReport = new ISAFileErrorReport(assay.getAssayReference(),
+                            assay.getTechnologyType(), assay.getMeasurementEndpoint(), inferISAFileType(assay), messages);
+
                     errors.add(studySampleReport);
                     errorsFound = false;
-
                 }
-
-
             }
 
             for (Assay toRemove : noReferenceobjectFound) {
@@ -362,24 +363,29 @@ public class ISAtabImporter {
         return errors;
     }
 
-    private ISAFileType inferISAFileType(Assay assay) {
+    private FileType inferISAFileType(Assay assay) {
 
 
-        String technology = assay.getTechnologyType().toLowerCase();
-        if (technology.contains("microarray")) {
-            return ISAFileType.MICROARRAY;
-        } else if (technology.contains("spectrometry")) {
-            return ISAFileType.MASS_SPECTROMETRY;
-        } else if (technology.contains("nmr")) {
-            return ISAFileType.NMR;
-        } else if (technology.contains("flow")) {
-            return ISAFileType.FLOW_CYT;
-        } else if (technology.contains("electrophoresis")) {
-            return ISAFileType.GEL_ELECTROPHORESIS;
-        } else if (technology.contains("sequencing")) {
-            return ISAFileType.SEQUENCING;
+        String assayDescription = assay.getTechnologyType().toLowerCase() + " " + assay.getMeasurementEndpoint().toLowerCase();
+
+        if (assayDescription.contains(FileType.MICROARRAY.getType())) {
+            return FileType.MICROARRAY;
+        } else if (assayDescription.contains(FileType.MASS_SPECTROMETRY.getType())) {
+            return FileType.MASS_SPECTROMETRY;
+        } else if (assayDescription.contains(FileType.NMR.getType())) {
+            return FileType.NMR;
+        } else if (assayDescription.contains(FileType.FLOW_CYTOMETRY.getType())) {
+            return FileType.FLOW_CYTOMETRY;
+        } else if (assayDescription.contains(FileType.GEL_ELECTROPHORESIS.getType())) {
+            return FileType.GEL_ELECTROPHORESIS;
+        } else if (assayDescription.contains(FileType.CLINICAL_CHEMISTRY.getType())) {
+            return FileType.CLINICAL_CHEMISTRY;
+        } else if (assayDescription.contains(FileType.HEMATOLOGY.getType())) {
+            return FileType.HEMATOLOGY;
+        } else if (assayDescription.contains(FileType.HISTOLOGY.getType())) {
+            return FileType.HISTOLOGY;
         } else {
-            return ISAFileType.STUDY_SAMPLE;
+            return FileType.STUDY_SAMPLE;
         }
     }
 }

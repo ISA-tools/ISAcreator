@@ -80,11 +80,7 @@ public abstract class ISADialog extends JFrame {
     // todo fix location to go to center of the screen...parentLoc.coords appear to be returning the wrong value.
 
     public void showDialog(Container parent) {
-        Point parentLoc = parent.getLocation();
-        Dimension parentDim = parent.getSize();
-        setLocation(new Point(parentLoc.x + (parentDim.width / 2),
-                parentLoc.y + (parentDim.height / 2)));
-
+        setLocationRelativeTo(parent);
         setUndecorated(true);
         setVisible(true);
     }

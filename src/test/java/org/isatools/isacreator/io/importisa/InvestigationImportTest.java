@@ -38,6 +38,7 @@
 package org.isatools.isacreator.io.importisa;
 
 import org.apache.commons.collections15.OrderedMap;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
@@ -93,8 +94,8 @@ public class InvestigationImportTest {
             } else {
                 System.out.println("The following problems were found:");
 
-                for (String message : mapper.getMessages()) {
-                    System.out.println("\t" + message);
+                for (ErrorMessage message : mapper.getMessages()) {
+                    System.out.println("\t" + message.getMessage());
                 }
             }
 
@@ -105,11 +106,11 @@ public class InvestigationImportTest {
 
     private String printMessages(InvestigationImport importer) {
 
-        StringBuffer toPrint = new StringBuffer();
+        StringBuilder toPrint = new StringBuilder();
         toPrint.append("\tProblems found in investigation: ");
 
-        for (String message : importer.getMessages()) {
-            toPrint.append("\t\t").append(message);
+        for (ErrorMessage message : importer.getMessages()) {
+            toPrint.append("\t\t").append(message.getMessage());
         }
 
         return toPrint.toString();

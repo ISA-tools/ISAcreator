@@ -38,6 +38,7 @@
 package org.isatools.isacreator.assayselection;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.assayselection.platform.Platform;
 import org.isatools.isacreator.assayselection.platform.PlatformParser;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
@@ -82,7 +83,7 @@ public class AssaySelectionUI extends JPanel {
 
     private Map<String, List<String>> measToAllowedTechnologies;
 
-    private static Map<AssayType, List<Platform>> platforms;
+    private static Map<FileType, List<Platform>> platforms;
 
     static {
         PlatformParser platformParser = new PlatformParser();
@@ -313,7 +314,7 @@ public class AssaySelectionUI extends JPanel {
     private void updatePlatforms(String selectedTerm) {
         assayPlatformList.clearItems();
 
-        AssayType assayType = AssayType.extractRelevantType(selectedTerm);
+        FileType assayType = FileType.extractRelevantType(selectedTerm);
 
         if (assayType != null) {
             if (platforms.containsKey(assayType)) {

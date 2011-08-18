@@ -488,15 +488,17 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         menusRequiringStudyIds.put("qr", qrCodeExport);
         sampleTracking.add(qrCodeExport);
 
-        JMenuItem validate = new JMenuItem("Validate ISAtab (presubmission)");
+        JMenuItem validate = new JMenuItem("Validate ISAtab");
         validate.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         ValidateUI validateUI = new ValidateUI(ISAcreator.this);
                         validateUI.createGUI();
-                        validateUI.fadeInWindow();
+                        validateUI.setLocationRelativeTo(ISAcreator.this);
+                        validateUI.setVisible(true);
                         validateUI.validateISAtab();
+
                     }
                 });
 
@@ -528,7 +530,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         manual.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // todo position a bit better on screen. Like in the middle of the current ISAcreator window.
-                new WebBrowser("http://isatab.sourceforge.net/ch04.html").createGUI();
+                WebBrowser browser = new WebBrowser("http://isatab.sourceforge.net/ch04.html");
+                browser.createGUI();
+                browser.setLocationRelativeTo(ISAcreator.this);
             }
         });
         help.add(manual);

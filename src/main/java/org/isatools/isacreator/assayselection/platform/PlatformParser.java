@@ -37,7 +37,7 @@ package org.isatools.isacreator.assayselection.platform;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-import org.isatools.isacreator.assayselection.AssayType;
+import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.io.xpath.XPathReader;
 import org.w3c.dom.NodeList;
 
@@ -52,19 +52,19 @@ public class PlatformParser {
     private static final String PLATFORM_FILE = "/required/platforms.xml";
 
 
-    public Map<AssayType, List<Platform>> loadPlatformFile() {
+    public Map<FileType, List<Platform>> loadPlatformFile() {
         XPathReader reader = new XPathReader(getClass().getResourceAsStream(PLATFORM_FILE));
 
         NodeList sections = (NodeList) reader.read("/technology-platforms/technology", XPathConstants.NODESET);
 
         if (sections.getLength() > 0) {
 
-            Map<AssayType, List<Platform>> platforms = new HashMap<AssayType, List<Platform>>();
+            Map<FileType, List<Platform>> platforms = new HashMap<FileType, List<Platform>>();
 
             for (int sectionIndex = 0; sectionIndex <= sections.getLength(); sectionIndex++) {
                 String technologyType = (String) reader.read("/technology-platforms/technology[" + sectionIndex + "]/@type", XPathConstants.STRING);
 
-                AssayType assayType = AssayType.extractRelevantType(technologyType);
+                FileType assayType = FileType.extractRelevantType(technologyType);
 
                 if (assayType != null) {
 
@@ -89,7 +89,7 @@ public class PlatformParser {
             return platforms;
         }
 
-        return new HashMap<AssayType, List<Platform>>();
+        return new HashMap<FileType, List<Platform>>();
     }
 
 }

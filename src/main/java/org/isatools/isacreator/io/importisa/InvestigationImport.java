@@ -41,6 +41,8 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationStructureLoader;
@@ -67,11 +69,11 @@ public class InvestigationImport {
 
     private static final Character TAB_DELIM = '\t';
 
-    private Set<String> messages;
+    private List<ErrorMessage> messages;
 
 
     public InvestigationImport() {
-        messages = new HashSet<String>();
+        messages = new ArrayList<ErrorMessage>();
     }
 
     /**
@@ -121,7 +123,6 @@ public class InvestigationImport {
                 String lineLabel = line[0].trim();
 
                 if (!org.apache.axis.utils.StringUtils.isEmpty(lineLabel)) {
-                    // todo this doesn't work! Since it converts the characters which aren't meant to be lower case, to lower case
                     String valueToTitleCase = StringProcessing.convertStringToTitleCase(lineLabel);
 
                     if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(valueToTitleCase)) {
@@ -176,7 +177,7 @@ public class InvestigationImport {
                 ISAPair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
                 if (!equalityResult.fst) {
                     for (String sectionValue : equalityResult.snd) {
-                        messages.add(fmt.format(new Object[]{sectionValue, section}));
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, fmt.format(new Object[]{sectionValue, section})));
                     }
                 }
                 // check minor section for salient information
@@ -193,10 +194,10 @@ public class InvestigationImport {
             if (!equalityResult.fst) {
                 if (equalityResult.snd != null) {
                     for (InvestigationFileSection section : equalityResult.snd) {
-                        messages.add(fmt.format(new Object[]{section, mainSection.substring(0, mainSection.lastIndexOf("-"))}));
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, fmt.format(new Object[]{section, mainSection.substring(0, mainSection.lastIndexOf("-"))})));
                     }
                 } else {
-                    messages.add("Incorrect number of sections defined for " + mainSection.substring(0, mainSection.lastIndexOf("-")));
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "Incorrect number of sections defined for " + mainSection.substring(0, mainSection.lastIndexOf("-"))));
                 }
             }
         }
@@ -215,7 +216,7 @@ public class InvestigationImport {
         }
     }
 
-    public Set<String> getMessages() {
+    public List<ErrorMessage> getMessages() {
         return messages;
     }
 }
