@@ -278,6 +278,11 @@ public class TableReferenceObject implements Serializable {
         return tfo != null && tfo.isAcceptsMultipleValues();
     }
 
+    public boolean forceOntology(String colName) {
+        FieldObject tfo = fieldLookup.get(colName);
+        return tfo != null && tfo.isForceOntologySelection();
+    }
+
     public void addField(FieldObject fo) {
         fieldLookup.put(fo.getFieldName(), fo);
     }

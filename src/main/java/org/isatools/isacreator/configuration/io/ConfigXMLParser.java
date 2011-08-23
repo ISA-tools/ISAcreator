@@ -213,7 +213,7 @@ public class ConfigXMLParser {
 
                 FieldObject newField = new FieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(), stdField.getSection(),
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
-                        stdField.getIsFileField(), stdField.getIsHidden());
+                        stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
 
                 newField.setWizardTemplate(stdField.getGeneratedValueTemplate());
 
@@ -259,7 +259,7 @@ public class ConfigXMLParser {
                 FieldObject newField;
                 if (loadingSource == ConfigurationLoadingSource.ISACREATOR) {
                     newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(), "",
-                            protocolField.getIsRequired(), false, false, false);
+                            protocolField.getIsRequired(), false, false, false, false);
                 } else {
                     newField = new FieldObject(colNo, "Protocol REF", "Protocol for " + protocolField.getProtocolType(), DataTypes.STRING, protocolField.getProtocolType(),
                             protocolField.getIsRequired(), false, false);
@@ -275,7 +275,7 @@ public class ConfigXMLParser {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
                 FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "", "",
-                        unitField.getIsRequired(), false, false, false);
+                        unitField.getIsRequired(), false, false, false, unitField.getIsForcedOntology());
 
                 if (unitField.getRecommendedOntologies() != null) {
                     processRecommendedOntologies(unitField, newField);

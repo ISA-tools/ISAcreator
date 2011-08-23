@@ -371,12 +371,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             if (fields.get(i).getDataType() == SubFormField.SINGLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(false, null));
+                        new OntologyCellEditor(false, false, null));
             }
 
             if (fields.get(i).getDataType() == SubFormField.MULTIPLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(true, null));
+                        new OntologyCellEditor(true, false, null));
             }
 
             if (fields.get(i).getDataType() == SubFormField.COMBOLIST) {

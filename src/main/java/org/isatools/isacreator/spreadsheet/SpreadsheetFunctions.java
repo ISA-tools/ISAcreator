@@ -921,12 +921,12 @@ public class SpreadsheetFunctions {
 
         if (col.getHeaderValue().toString().equals("Protocol REF")) {
             col.setCellEditor(new ProtocolSelectorCellEditor(spreadsheet));
-//            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getStudyDataEntryEnvironment().getStudy()));
             return;
         }
 
         if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.ONTOLOGY_TERM) {
             col.setCellEditor(new OntologyCellEditor(spreadsheet.getTableReferenceObject().acceptsMultipleValues(col.getHeaderValue().toString()),
+                    spreadsheet.getTableReferenceObject().forceOntology(col.getHeaderValue().toString()),
                     spreadsheet.getTableReferenceObject().getRecommendedSource(col.getHeaderValue().toString())));
             return;
         }

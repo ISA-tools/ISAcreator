@@ -529,7 +529,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         manual.setForeground(UIHelper.DARK_GREEN_COLOR);
         manual.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // todo position a bit better on screen. Like in the middle of the current ISAcreator window.
                 WebBrowser browser = new WebBrowser("http://isatab.sourceforge.net/ch04.html");
                 browser.createGUI();
                 browser.setLocationRelativeTo(ISAcreator.this);

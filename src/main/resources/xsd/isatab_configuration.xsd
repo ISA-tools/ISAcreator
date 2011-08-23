@@ -23,6 +23,7 @@
         <attribute name="is-file-field" type="boolean"/>
         <attribute name="is-multiple-value" type="boolean"/>
         <attribute name="is-required" type="boolean"/>
+        <attribute name="is-forced-ontology" type="boolean" use="optional"/>
     </complexType>
 
     <complexType name="RecommendedOntologiesType">
@@ -71,6 +72,7 @@
         <attribute name="data-type" type="string"/>
         <attribute name="is-multiple-value" type="boolean"/>
         <attribute name="is-required" type="boolean"/>
+        <attribute name="is-forced-ontology" type="boolean" use="optional"/>
     </complexType>
 
     <element name="recommended-ontologies" type="cfg:RecommendedOntologiesType"/>

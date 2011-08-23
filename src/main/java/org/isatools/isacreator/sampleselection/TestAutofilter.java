@@ -68,8 +68,6 @@ public class TestAutofilter extends JFrame {
             }
         };
 
-        table.getColumnModel().getColumn(1).setCellEditor(new OntologyCellEditor(false, null));
-
         JScrollPane scroller = new JScrollPane(table,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 

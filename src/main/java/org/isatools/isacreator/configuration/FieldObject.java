@@ -62,6 +62,7 @@ public class FieldObject implements Serializable {
     private boolean acceptsMultipleValues;
     private boolean isInputFormatted;
     private boolean required;
+    private boolean forceOntologySelection = false;
     private String wizardTemplate = "";
 
     // contains inputformat + checks on size if required.
@@ -106,7 +107,7 @@ public class FieldObject implements Serializable {
                        DataTypes datatype, String defaultVal, String section, boolean required,
                        boolean acceptsMultipleValues, boolean acceptsFileLocations, boolean hidden) {
 
-        this(-1, fieldName, description, datatype, defaultVal, section, required, acceptsMultipleValues, acceptsFileLocations, hidden);
+        this(-1, fieldName, description, datatype, defaultVal, section, required, acceptsMultipleValues, acceptsFileLocations, hidden, false);
     }
 
     /**
@@ -123,7 +124,7 @@ public class FieldObject implements Serializable {
                        DataTypes datatype, String defaultVal, boolean required,
                        boolean acceptsMultipleValues, boolean acceptsFileLocations) {
 
-        this(colNumber, fieldName, description, datatype, defaultVal, "", required, acceptsMultipleValues, acceptsFileLocations, false);
+        this(colNumber, fieldName, description, datatype, defaultVal, "", required, acceptsMultipleValues, acceptsFileLocations, false, false);
     }
 
 
@@ -141,7 +142,7 @@ public class FieldObject implements Serializable {
      */
     public FieldObject(int colNo, String fieldName, String description,
                        DataTypes datatype, String defaultVal, String section, boolean required,
-                       boolean acceptsMultipleValues, boolean acceptsFileLocations, boolean hidden) {
+                       boolean acceptsMultipleValues, boolean acceptsFileLocations, boolean hidden, boolean forceOntologySelection) {
         this.colNo = colNo;
         this.fieldName = fieldName;
         this.description = description;
@@ -152,6 +153,7 @@ public class FieldObject implements Serializable {
         this.acceptsMultipleValues = acceptsMultipleValues;
         this.acceptsFileLocations = acceptsFileLocations;
         this.hidden = hidden;
+        this.forceOntologySelection = forceOntologySelection;
 
 
         recommmendedOntologySource = new HashMap<String, RecommendedOntology>();
@@ -288,5 +290,13 @@ public class FieldObject implements Serializable {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public boolean isForceOntologySelection() {
+        return forceOntologySelection;
+    }
+
+    public void setForceOntologySelection(boolean forceOntologySelection) {
+        this.forceOntologySelection = forceOntologySelection;
     }
 }

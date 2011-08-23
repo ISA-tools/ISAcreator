@@ -154,6 +154,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private boolean treeCreated = false;
 
     private Set<OntologyTerm> selectedTerms;
+    private boolean forceOntologySelection;
 
     /**
      * OntologySelectionTool constructor.
@@ -161,12 +162,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      * @param multipleTermsAllowed  - Whether or not multiple terms are allowed to be selected.
      * @param recommendedOntologies - the recommended ontology source e.g. EFO, UO, NEWT, CHEBI.
      */
-    public OntologySelectionTool(boolean multipleTermsAllowed, Map<String, RecommendedOntology> recommendedOntologies) {
+    public OntologySelectionTool(boolean multipleTermsAllowed, boolean forceOntologySelection, Map<String, RecommendedOntology> recommendedOntologies) {
         ResourceInjector.get("ontologyselectiontool-package.style").inject(this);
 
         this.addWindowListener(this);
-        this.recommendedOntologies = recommendedOntologies;
         this.multipleTermsAllowed = multipleTermsAllowed;
+        this.forceOntologySelection = forceOntologySelection;
+        this.recommendedOntologies = recommendedOntologies;
 
         selectedTerms = new HashSet<OntologyTerm>();
     }
@@ -637,13 +639,14 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         Box termSelectionContainer = Box.createHorizontalBox();
 
-        JLabel selectTermLabel = UIHelper.createLabel("<html><strong>term not found?</strong> just enter freetext: </html>");
+        JLabel selectTermLabel = UIHelper.createLabel(forceOntologySelection ? "<html>Selected term (must be an ontology term): </html>" : "<html>Selected term. (If you can't find an ontology term, just enter freetext here): </html>");
 
         termSelectionContainer.add(UIHelper.wrapComponentInPanel(selectTermLabel));
         termSelectionContainer.add(Box.createVerticalStrut(5));
 
         termSelectionContainer.add(new JLabel(leftFieldIcon));
         selectedTerm = new JTextField();
+        selectedTerm.setEditable(!forceOntologySelection);
         selectedTerm.setBorder(null);
         UIHelper.renderComponent(selectedTerm, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
@@ -691,7 +694,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     private void confirmSelection() {
-        // todo add selected terms to the history here.
 
         for (OntologyTerm selectedTerm : selectedTerms) {
             addTermToHistory(selectedTerm);
