@@ -282,6 +282,9 @@ public class SpreadsheetFunctions {
 
                                 if (oo != null) {
                                     termAccession = oo.getOntologySourceAccession();
+                                    if (termAccession.contains(":")) {
+                                        termAccession = termAccession.substring(val.indexOf(":") + 1);
+                                    }
                                 }
 
                                 if (val.contains(":")) {
