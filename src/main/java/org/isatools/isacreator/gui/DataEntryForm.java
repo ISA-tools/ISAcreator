@@ -375,14 +375,23 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     }
 
 
-    protected SubFormField generateSubFormField(Set<String> fieldsToIgnore, Set<String> ontologyFields, Study study, String studyDesignField) {
-        FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(studyDesignField);
+    protected SubFormField generateSubFormField(Set<String> fieldsToIgnore, Set<String> ontologyFields, Study study, String fieldName) {
+        FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(fieldName);
+        return createField(fieldsToIgnore, ontologyFields, fieldDescriptor, fieldName);
+    }
 
-        if (!fieldsToIgnore.contains(studyDesignField)) {
+    protected SubFormField generateSubFormField(Set<String> fieldsToIgnore, Set<String> ontologyFields, Investigation investigation, String fieldName) {
+        FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(fieldName);
+        return createField(fieldsToIgnore, ontologyFields, fieldDescriptor, fieldName);
+
+    }
+
+    private SubFormField createField(Set<String> fieldsToIgnore, Set<String> ontologyFields, FieldObject fieldDescriptor, String fieldName) {
+        if (!fieldsToIgnore.contains(fieldName)) {
 
             int fieldType = SubFormField.STRING;
 
-            if (ontologyFields.contains(studyDesignField)) {
+            if (ontologyFields.contains(fieldName)) {
 
                 fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
 
@@ -390,18 +399,24 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                     if (fieldDescriptor.isAcceptsMultipleValues())
                         fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
 
-                return new SubFormField(studyDesignField, fieldType);
+                return new SubFormField(fieldName, fieldType, fieldDescriptor.getRecommmendedOntologySource());
             } else {
 
                 if (fieldDescriptor != null) {
                     fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
                             fieldDescriptor.isAcceptsMultipleValues());
+
+                    if (fieldType == SubFormField.STRING) {
+                        if (fieldDescriptor.isAcceptsFileLocations()) {
+                            fieldType = SubFormField.FILE;
+                        }
+                    }
                 }
 
                 if (fieldType == SubFormField.COMBOLIST) {
-                    return new SubFormField(studyDesignField, fieldType, fieldDescriptor.getFieldList());
+                    return new SubFormField(fieldName, fieldType, fieldDescriptor.getFieldList());
                 } else {
-                    return new SubFormField(studyDesignField, fieldType);
+                    return new SubFormField(fieldName, fieldType);
                 }
 
             }
@@ -409,5 +424,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
         return null;
     }
+
 
 }

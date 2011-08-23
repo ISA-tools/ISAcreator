@@ -639,7 +639,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         Box termSelectionContainer = Box.createHorizontalBox();
 
-        JLabel selectTermLabel = UIHelper.createLabel(forceOntologySelection ? "<html>Selected term (must be an ontology term): </html>" : "<html>Selected term. (If you can't find an ontology term, just enter freetext here): </html>");
+        JLabel selectTermLabel = UIHelper.createLabel(forceOntologySelection ? "<html>Selected term (must be an ontology term): </html>" : "<html>Selected term. (You can also enter freetext here): </html>");
 
         termSelectionContainer.add(UIHelper.wrapComponentInPanel(selectTermLabel));
         termSelectionContainer.add(Box.createVerticalStrut(5));

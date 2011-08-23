@@ -79,7 +79,6 @@ public class InvestigationDataEntry extends DataEntryForm {
     private SubForm contactsSubform;
 
 
-
     public InvestigationDataEntry(Investigation investigation, DataEntryEnvironment dep) {
         super(dep);
 
@@ -165,22 +164,10 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         for (String contactField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION)) {
 
-            FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(contactField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
 
-            if (!fieldsToIgnore.contains(contactField)) {
-                if (ontologyFields.contains(contactField)) {
-                    int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    contactFields.add(new SubFormField(contactField, fieldType));
-                } else {
-
-                    contactFields.add(new SubFormField(contactField,
-                            translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(), fieldDescriptor.isAcceptsMultipleValues())));
-                }
+            if (generatedField != null) {
+                contactFields.add(generatedField);
             }
         }
 
@@ -203,21 +190,10 @@ public class InvestigationDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
 
-            FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(publicationField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, publicationField);
 
-            if (!fieldsToIgnore.contains(publicationField)) {
-                if (ontologyFields.contains(publicationField)) {
-                    int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    publicationFields.add(new SubFormField(publicationField, fieldType));
-                } else {
-                    publicationFields.add(new SubFormField(publicationField,
-                            translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(), fieldDescriptor.isAcceptsMultipleValues())));
-                }
+            if (generatedField != null) {
+                publicationFields.add(generatedField);
             }
         }
 
@@ -225,7 +201,6 @@ public class InvestigationDataEntry extends DataEntryForm {
                 : investigation.getPublications()
                 .size();
 
-        // todo should calculate the height of the subform based on the number of fields.
         publicationsSubForm = new PublicationSubForm(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(),
                 FieldTypes.PUBLICATION, publicationFields, numColsToAdd, 300, 125, this);
         publicationsSubForm.createGUI();
@@ -267,7 +242,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
             String tmpFieldName = fieldName;
 
-            if(aliasesToRealNames.containsKey(fieldName)) {
+            if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
 
@@ -300,7 +275,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
             String tmpFieldName = fieldName;
 
-            if(aliasesToRealNames.containsKey(fieldName)) {
+            if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
 
