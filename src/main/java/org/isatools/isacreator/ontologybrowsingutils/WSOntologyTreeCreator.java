@@ -237,6 +237,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
     private void addTermToTree(DefaultMutableTreeNode parent, OntologyTerm ontologyTerm, Ontology ontology) {
         if (ontologyTerm != null) {
+
             DefaultMutableTreeNode childNode =
                     new DefaultMutableTreeNode(new OntologyTreeItem(
                             new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)

@@ -197,19 +197,4 @@ public class ValidateUI extends JFrame {
         }
     }
 
-
-    public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ValidateUI validateUI = new ValidateUI(null);
-                validateUI.createGUI();
-                validateUI.setVisible(true);
-                validateUI.validateISAtab();
-
-            }
-        });
-
-    }
-
 }
