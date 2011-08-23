@@ -169,11 +169,16 @@ public class ValidateUI extends JFrame {
                                         assayAndType.snd, fileToErrors.get(fileName)));
                             }
 
-                            ErrorReporterView view = new ErrorReporterView(errors);
-                            view.setPreferredSize(new Dimension(750, 440));
-                            view.createGUI();
+                            if (fileToErrors.size() > 0) {
+                                ErrorReporterView view = new ErrorReporterView(errors);
+                                view.setPreferredSize(new Dimension(750, 440));
+                                view.createGUI();
 
-                            swapContainers(view);
+                                swapContainers(view);
+                            } else {
+                                Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
+                                swapContainers(successfulValidationContainer);
+                            }
                         }
                     });
                 }
