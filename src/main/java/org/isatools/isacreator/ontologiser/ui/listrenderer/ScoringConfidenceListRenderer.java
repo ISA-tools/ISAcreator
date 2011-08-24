@@ -110,17 +110,9 @@ public class ScoringConfidenceListRenderer extends JComponent
                     }
                 }
             } else {
-
-                if (selected) {
-                    c.setForeground(UIHelper.DARK_GREEN_COLOR);
-                    c.setBackground(UIHelper.BG_COLOR);
-                    c.setFont(UIHelper.VER_11_BOLD);
-
-                } else {
-                    c.setForeground(UIHelper.LIGHT_GREEN_COLOR);
-                    c.setBackground(UIHelper.BG_COLOR);
-                    c.setFont(UIHelper.VER_11_BOLD);
-                }
+                c.setForeground(UIHelper.DARK_GREEN_COLOR);
+                c.setBackground(UIHelper.BG_COLOR);
+                c.setFont(selected ? UIHelper.VER_11_BOLD : UIHelper.VER_11_PLAIN);
             }
         }
 

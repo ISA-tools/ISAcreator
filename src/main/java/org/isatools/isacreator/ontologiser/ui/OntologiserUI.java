@@ -39,6 +39,7 @@ package org.isatools.isacreator.ontologiser.ui;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.menu.ImportFilesMenu;
 import org.isatools.isacreator.ontologiser.adaptors.ContentAdaptor;
 import org.isatools.isacreator.ontologiser.logic.impl.AnnotatorSearchClient;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
@@ -82,6 +83,9 @@ public class OntologiserUI extends JDialog {
                 OntologyHelpPane.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
 
     }
+
+    private ImageIcon loadingIndicator =
+            new ImageIcon(OntologiserUI.class.getResource("/images/ontologiser/working.gif"));
 
     private boolean isLoading = false;
 
@@ -131,12 +135,12 @@ public class OntologiserUI extends JDialog {
         swappableContainer.setBorder(new EmptyBorder(1, 1, 1, 1));
         swappableContainer.setPreferredSize(new Dimension(650, 350));
 
-        tagTerms();
-
         add(swappableContainer, BorderLayout.CENTER);
         add(createSouthPanel(), BorderLayout.SOUTH);
 
         pack();
+
+        tagTerms();
     }
 
     private Container createTopPanel() {
@@ -352,12 +356,13 @@ public class OntologiserUI extends JDialog {
                         if (annotationPane != null) {
                             content.replaceTerms(annotationPane.getAnnotations());
                         }
-                        // todo show summary page stating what has been replaced.
                         closeWindow();
                     }
 
                 });
-                swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
+
+
+                swapContainers(createLoadingPanel());
                 performer.start();
             }
         });
@@ -367,6 +372,15 @@ public class OntologiserUI extends JDialog {
         southPanel.add(export);
 
         return southPanel;
+    }
+
+    private JPanel createLoadingPanel() {
+        JPanel container = new JPanel(new BorderLayout());
+
+        container.add(new JLabel(loadingIndicator), BorderLayout.NORTH);
+        container.add(new JLabel(working), BorderLayout.CENTER);
+
+        return container;
     }
 
     private void closeWindow() {
@@ -432,7 +446,6 @@ public class OntologiserUI extends JDialog {
                         }
                     });
                 } else {
-                    // todo add info pane saying there are no terms to annotate
                     swapContainers(helpPane);
                 }
 
@@ -441,7 +454,7 @@ public class OntologiserUI extends JDialog {
 
         });
         isLoading = true;
-        swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
+        swapContainers(UIHelper.wrapComponentInPanel(createLoadingPanel()));
         performer.start();
     }
 

@@ -244,7 +244,6 @@ public class SpreadsheetUtils {
                             colIndex).toString();
 
                     if (annotations.containsKey(columnValue)) {
-                        System.out.println("Replacing " + columnValue + " with " + annotations.get(columnValue).getUniqueId());
                         spreadsheet.getTable().setValueAt(annotations.get(columnValue).getUniqueId(), row, colIndex);
                     }
                 }
