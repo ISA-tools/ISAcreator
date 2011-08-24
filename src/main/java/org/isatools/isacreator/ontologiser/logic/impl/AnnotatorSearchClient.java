@@ -4,12 +4,14 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
+import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalAnnotatorResultHandler;
 import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -32,16 +34,15 @@ public class AnnotatorSearchClient {
             PostMethod method = new PostMethod(BASE_QUERY_URL);
 
             // Configure the form parameters
-//            method.addParameter("longestOnly", "true");
             method.addParameter("wholeWordOnly", "true");
-            //method.addParameter("stopWords", "choubala");
-            //method.addParameter("withDefaultStopWords", "true");
             method.addParameter("scored", "true");
-            // todo should probably use this parameter to send through allowed ontologies.
-            //method.addParameter("ontologiesToExpand", "38802,13578,40644,40403");
-            //method.addParameter("ontologiesToKeepInResult", "40403");
-            //method.addParameter("semanticTypes", "T999");
-            //method.addParameter("levelMax", "50");
+
+            Set<AcceptedOntologies> toIgnoreInSearch = new HashSet<AcceptedOntologies>();
+            toIgnoreInSearch.add(AcceptedOntologies.PLANT_ONTOLOGY);
+            toIgnoreInSearch.add(AcceptedOntologies.BAO);
+
+            method.addParameter("ontologiesToKeepInResult", AcceptedOntologies.getAllowedOntologyIds(
+                    toIgnoreInSearch));
             method.addParameter("isVirtualOntologyId", "true");
             method.addParameter("withSynonyms", "true");
             method.addParameter("textToAnnotate", flattenSetToString(terms));
@@ -53,6 +54,7 @@ public class AnnotatorSearchClient {
 
             if (statusCode != -1) {
                 String contents = method.getResponseBodyAsString();
+
                 method.releaseConnection();
                 return processContent(contents, terms);
             }
