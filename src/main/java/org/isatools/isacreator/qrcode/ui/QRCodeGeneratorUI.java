@@ -79,8 +79,6 @@ public class QRCodeGeneratorUI extends JDialog {
                 QRCodeGeneratorUI.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
         ResourceInjector.get("common-package.style").load(
                 QRCodeViewerPane.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("exporters-package.style").load(
-                QRCodeViewerPane.class.getResource("/dependency-injections/exporters-package.properties"));
 
     }
 

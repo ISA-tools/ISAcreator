@@ -67,11 +67,8 @@ import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
+import org.isatools.isacreator.externalutils.convertvalidate.*;
 import org.isatools.isacreator.utils.PropertyFileIO;
-import org.isatools.isacreator.validate.ui.ValidateUI;
-import org.isatools.isatab.gui_invokers.GUIISATABValidator;
-import org.isatools.isatab.gui_invokers.GUIInvokerResult;
-import org.isatools.tablib.utils.logging.TabLoggingEventWrapper;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -112,9 +109,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     @InjectedResource
     private Image isacreatorIcon;
     @InjectedResource
-    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon,
+    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, convertIcon, validateIcon,
             logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon,
-            removeStudyIcon, fullScreenIcon, defaultScreenIcon, aboutIcon, helpIcon, mgRastIcon, qrCodeIcon,
+            removeStudyIcon, fullScreenIcon, defaultScreenIcon, aboutIcon, helpIcon,
             supportIcon, feedbackIcon, confirmLogout, confirmMenu, confirmExit;
 
     private AboutPanel aboutPanel;
@@ -404,6 +401,44 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         file.add(exportISArchive);
 
+        JMenuItem validate = new JMenuItem("Validate ISAtab", validateIcon);
+        validate.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.VALIDATE);
+                        validateUI.createGUI();
+                        validateUI.setLocationRelativeTo(ISAcreator.this);
+                        validateUI.setVisible(true);
+                        validateUI.validateISAtab();
+
+                    }
+                });
+
+            }
+        });
+
+        JMenuItem convert = new JMenuItem("Convert ISAtab", convertIcon);
+        convert.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.CONVERT);
+                        validateUI.createGUI();
+                        validateUI.setLocationRelativeTo(ISAcreator.this);
+                        validateUI.setVisible(true);
+                        validateUI.validateISAtab();
+
+                    }
+                });
+
+            }
+        });
+
+        file.add(new JSeparator());
+        file.add(validate);
+        file.add(convert);
+
         menuBar.add(file);
 
 
@@ -484,30 +519,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         });
 
         JMenu qrCodeExport = new JMenu("generate QR codes for Study samples");
-        qrCodeExport.setIcon(qrCodeIcon);
         menusRequiringStudyIds.put("qr", qrCodeExport);
         sampleTracking.add(qrCodeExport);
 
-        JMenuItem validate = new JMenuItem("Validate ISAtab");
-        validate.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        ValidateUI validateUI = new ValidateUI(ISAcreator.this);
-                        validateUI.createGUI();
-                        validateUI.setLocationRelativeTo(ISAcreator.this);
-                        validateUI.setVisible(true);
-                        validateUI.validateISAtab();
-
-                    }
-                });
-
-            }
-        });
 
         plugins.add(sampleTracking);
         plugins.add(tagInvestigation);
-        plugins.add(validate);
 
         menuBar.add(plugins);
 

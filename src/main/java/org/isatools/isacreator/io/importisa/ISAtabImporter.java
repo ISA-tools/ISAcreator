@@ -194,7 +194,7 @@ public class ISAtabImporter {
                         lastConfigurationUsed = lastConfigurationUsed.substring(lastConfigurationUsed.lastIndexOf(File.separator) + 1);
                     }
 
-                    if (!lastConfigurationUsed.equals("")) {
+                    if (!investigation.getLastConfigurationUsed().equals("")) {
                         if (!lastConfigurationUsed.equals(investigation.getLastConfigurationUsed())) {
                             messages.add(new ErrorMessage(ErrorLevel.WARNING, "The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
                                     "the settings from " + investigation.getLastConfigurationUsed() + " may be important."));

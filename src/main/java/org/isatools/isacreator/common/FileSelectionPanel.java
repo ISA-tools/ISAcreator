@@ -96,7 +96,7 @@ public class FileSelectionPanel extends JPanel {
         this.textColor = textColor;
 
         setLayout(new GridLayout(2, 1));
-        setSize(new Dimension(400, 60));
+        setSize(new Dimension(400, 70));
 
         ResourceInjector.get("common-package.style").inject(this);
 
