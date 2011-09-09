@@ -1,6 +1,8 @@
 #### ISAcreator is a Java desktop application which allows for creation and editing of ISATab files.
 
-
+<p align="center">
+<img src="http://isatools.files.wordpress.com/2011/09/isacreator.png" align="center" alt="ISAcreator"/>
+</p>
 - General info: <http://isa-tools.org>
 - Tools' overview in this short paper: <http://bioinformatics.oxfordjournals.org/content/26/18/2354.full.pdf+html>
 - Issue tracking and bug reporting: <https://github.com/ISA-tools/ISAcreator/issues>
@@ -8,8 +10,6 @@
 - Twitter: [@isatools](http://twitter.com/isatools)
 - IRC: [irc://irc.freenode.net/#isatab](irc://irc.freenode.net/#isatab)
 - Development blog: [http://isatools.wordpress.com]
-
-<img src="http://isatools.files.wordpress.com/2011/09/isacreator.png" align="center" alt="ISAcreator"/>
 
 ## Development
 
