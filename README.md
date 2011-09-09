@@ -9,7 +9,7 @@
 - IRC: [irc://irc.freenode.net/#isatab](irc://irc.freenode.net/#isatab)
 - Development blog: [http://isatools.wordpress.com]
 
-<img src="http://isatools.files.wordpress.com/2011/09/isacreator.png" alt="ISAcreator"/>
+<img src="http://isatools.files.wordpress.com/2011/09/isacreator.png" align="center" alt="ISAcreator"/>
 
 ## Development
 
