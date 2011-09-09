@@ -158,6 +158,14 @@ public class FileSelectionPanel extends JPanel {
         }
     }
 
+    public void setWarning(boolean warningOn) {
+        if (warningOn) {
+            ((RoundedJTextField) fileToUse).setWarningMode();
+        } else {
+            ((RoundedJTextField) fileToUse).unsetWarningMode();
+        }
+    }
+
     /**
      * Processes filename to ensure that it has the right extension
      */

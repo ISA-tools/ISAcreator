@@ -1,9 +1,11 @@
 package org.isatools.isacreator.externalutils.convertvalidate;
 
 
+import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.isatools.errorreporter.html.ErrorMessageWriter;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
@@ -230,18 +232,21 @@ public class ValidateUI extends JFrame {
             swapContainers(successContainer);
 
         } else {
-            String topMostError = "";
-            swapContainers(UIHelper.padComponentVerticalBox(100, UIHelper.createLabel("<html>Conversion failed. Here is why:</html>",
-                    UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR)));
 
-            // todo show error panel to say it didn't convert....
+            List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
 
             for (TabLoggingEventWrapper tlew : converter.getLog()) {
                 LoggingEvent le = tlew.getLogEvent();
-                System.out.println(le.getMessage());
+                if (le.getLevel() == Level.ERROR) {
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, le.getMessage().toString()));
+                }
             }
 
+            ConversionErrorUI errorContainer = new ConversionErrorUI();
+            errorContainer.constructErrorPane(messages);
+            errorContainer.setPreferredSize(new Dimension(750, 440));
 
+            swapContainers(errorContainer);
         }
     }
 

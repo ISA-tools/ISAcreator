@@ -72,6 +72,22 @@ public class RoundedJTextField extends JTextField {
 
     }
 
+    public void setWarningMode() {
+        backgroundColor = UIHelper.TRANSPARENT_RED_COLOR;
+        setForeground(UIHelper.RED_COLOR);
+        setSelectionColor(UIHelper.RED_COLOR);
+        setCaretColor(UIHelper.BG_COLOR);
+        setSelectedTextColor(UIHelper.BG_COLOR);
+    }
+
+    public void unsetWarningMode() {
+        backgroundColor = UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR;
+        setForeground(UIHelper.DARK_GREEN_COLOR);
+        setSelectedTextColor(UIHelper.BG_COLOR);
+        setCaretColor(UIHelper.DARK_GREEN_COLOR);
+        setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
+    }
+
 
     @Override
     protected void paintComponent(Graphics graphics) {

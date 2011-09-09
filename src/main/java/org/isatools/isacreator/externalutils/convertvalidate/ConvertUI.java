@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -145,7 +146,22 @@ public class ConvertUI extends JPanel {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 convertButton.setIcon(startConversion);
-                firePropertyChange("startConversion", false, true);
+
+                if (fileSelectionPanel.getSelectedFilePath().equals("") &&
+                        !fileSelectionPanel.getSelectedFilePath().equals("Please select a directory!") &&
+                        !fileSelectionPanel.getSelectedFilePath().equals("Please select a valid location!")) {
+
+                    if (!(new File(fileSelectionPanel.getSelectedFilePath()).exists())) {
+                        fileSelectionPanel.setText("Please select a valid location!");
+                    } else {
+                        fileSelectionPanel.setText("Please select a directory!");
+                    }
+
+                    fileSelectionPanel.setWarning(true);
+                } else {
+                    fileSelectionPanel.setWarning(false);
+                    firePropertyChange("startConversion", false, true);
+                }
             }
         });
 
