@@ -47,8 +47,8 @@ import org.isatools.isacreator.io.importisa.investigationproperties.Investigatio
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationStructureLoader;
 import org.isatools.isacreator.utils.StringProcessing;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
 import org.isatools.isacreator.utils.datastructures.SetUtils;
+import uk.ac.ebi.utils.collections.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -88,7 +88,7 @@ public class InvestigationImport {
      *         EFO
      *         etc
      */
-    public ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
+    public Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
 
         OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> importedInvestigationFile = new ListOrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>();
 
@@ -139,7 +139,7 @@ public class InvestigationImport {
             }
         }
 
-        return new ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>>(
+        return new Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>>(
                 isValidInvestigationSections(importedInvestigationFile), importedInvestigationFile);
     }
 
@@ -174,7 +174,7 @@ public class InvestigationImport {
 
                 Set<String> requiredValuesAsLowercase = setUtils.getLowerCaseSetContents(sections.get(section).getRequiredValues());
 
-                ISAPair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
+                Pair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
                 if (!equalityResult.fst) {
                     for (String sectionValue : equalityResult.snd) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, fmt.format(new Object[]{sectionValue, section})));
@@ -188,7 +188,7 @@ public class InvestigationImport {
             // the mainsection string is investigation-1 or study-2 - here we strip away from - onwards.
             Set<InvestigationFileSection> requiredSections = loader.getRequiredSections(mainSection.substring(0, mainSection.lastIndexOf("-")));
             SetUtils<InvestigationFileSection> setUtils = new SetUtils<InvestigationFileSection>();
-            ISAPair<Boolean, Set<InvestigationFileSection>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
+            Pair<Boolean, Set<InvestigationFileSection>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
 
             // if false,
             if (!equalityResult.fst) {

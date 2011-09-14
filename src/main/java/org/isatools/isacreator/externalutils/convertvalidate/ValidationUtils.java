@@ -4,7 +4,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
+import uk.ac.ebi.utils.collections.Pair;
 
 /**
  * Created by the ISA team
@@ -33,34 +33,34 @@ public class ValidationUtils {
 
     }
 
-    public static ISAPair<Assay, FileType> resolveFileTypeFromFileName(String fileName, Investigation currentInvestigation) {
+    public static Pair<Assay, FileType> resolveFileTypeFromFileName(String fileName, Investigation currentInvestigation) {
 
         for (String studyId : currentInvestigation.getStudies().keySet()) {
             Assay assay;
             if ((assay = currentInvestigation.getStudies().get(studyId).getAssays().get(fileName)) != null) {
                 if (assay.getTechnologyType().contains(FileType.MICROARRAY.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.MICROARRAY);
+                    return new Pair<Assay, FileType>(assay, FileType.MICROARRAY);
                 } else if (assay.getTechnologyType().contains(FileType.FLOW_CYTOMETRY.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.FLOW_CYTOMETRY);
+                    return new Pair<Assay, FileType>(assay, FileType.FLOW_CYTOMETRY);
                 } else if (assay.getTechnologyType().contains(FileType.MASS_SPECTROMETRY.getType()) ||
                         assay.getTechnologyType().contains(FileType.NMR.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.MASS_SPECTROMETRY);
+                    return new Pair<Assay, FileType>(assay, FileType.MASS_SPECTROMETRY);
                 } else if (assay.getTechnologyType().contains(FileType.SEQUENCING.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.SEQUENCING);
+                    return new Pair<Assay, FileType>(assay, FileType.SEQUENCING);
                 } else if (assay.getTechnologyType().contains(FileType.GEL_ELECTROPHORESIS.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.GEL_ELECTROPHORESIS);
+                    return new Pair<Assay, FileType>(assay, FileType.GEL_ELECTROPHORESIS);
                 } else if (assay.getTechnologyType().contains(FileType.HEMATOLOGY.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.HEMATOLOGY);
+                    return new Pair<Assay, FileType>(assay, FileType.HEMATOLOGY);
                 } else if (assay.getTechnologyType().contains(FileType.CLINICAL_CHEMISTRY.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.CLINICAL_CHEMISTRY);
+                    return new Pair<Assay, FileType>(assay, FileType.CLINICAL_CHEMISTRY);
                 } else if (assay.getTechnologyType().contains(FileType.HISTOLOGY.getType())) {
-                    return new ISAPair<Assay, FileType>(assay, FileType.HISTOLOGY);
+                    return new Pair<Assay, FileType>(assay, FileType.HISTOLOGY);
                 } else {
-                    return new ISAPair<Assay, FileType>(assay, FileType.INVESTIGATION);
+                    return new Pair<Assay, FileType>(assay, FileType.INVESTIGATION);
                 }
             }
         }
 
-        return new ISAPair<Assay, FileType>(null, FileType.INVESTIGATION);
+        return new Pair<Assay, FileType>(null, FileType.INVESTIGATION);
     }
 }

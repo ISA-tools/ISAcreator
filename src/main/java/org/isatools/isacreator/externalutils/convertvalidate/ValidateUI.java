@@ -19,7 +19,6 @@ import org.isatools.isacreator.gui.menu.ImportFilesMenu;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
 import org.isatools.isatab.gui_invokers.AllowedConversions;
 import org.isatools.isatab.gui_invokers.GUIISATABConverter;
 import org.isatools.isatab.gui_invokers.GUIISATABValidator;
@@ -29,6 +28,7 @@ import org.isatools.tablib.utils.BIIObjectStore;
 import org.isatools.tablib.utils.logging.TabLoggingEventWrapper;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import uk.ac.ebi.utils.collections.Pair;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -181,7 +181,7 @@ public class ValidateUI extends JFrame {
 
                             for (String fileName : fileToErrors.keySet()) {
 
-                                ISAPair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
+                                Pair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
                                         isacreatorEnvironment.getDataEntryEnvironment().getInvestigation());
 
                                 errors.add(new ISAFileErrorReport(fileName,

@@ -22,7 +22,8 @@ import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
+import uk.ac.ebi.utils.collections.Pair;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -138,7 +139,7 @@ public class ISAtabImporter {
             try {
 
                 InvestigationImport investigationFileImporter = new InvestigationImport();
-                ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
+                Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
 
                 messages.addAll(investigationFileImporter.getMessages());
 
@@ -148,7 +149,7 @@ public class ISAtabImporter {
 
                     StructureToInvestigationMapper mapper = new StructureToInvestigationMapper();
 
-                    ISAPair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
+                    Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
 
                     messages.addAll(mapper.getMessages());
 

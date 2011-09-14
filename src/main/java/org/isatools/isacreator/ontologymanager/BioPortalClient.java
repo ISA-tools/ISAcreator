@@ -48,8 +48,8 @@ import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPo
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalSearchBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.File;
 import java.util.*;

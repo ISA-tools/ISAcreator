@@ -6,7 +6,7 @@ import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalAnnotatorResultHandler;
-import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
+import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;

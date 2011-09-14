@@ -2,7 +2,8 @@ package org.isatools.isacreator.ontologiser.logic;
 
 import org.isatools.isacreator.ontologiser.model.SuggestedAnnotation;
 import org.isatools.isacreator.ontologymanager.bioportal.model.ScoringConfidence;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
+import uk.ac.ebi.utils.collections.Pair;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class ScoreAnalysisUtility {
      * @param annotations List<SuggestedAnnotation> annotations
      * @return ISAPair<Integer, SuggestedAnnotation> where the Integer is the highest score and SuggestedAnnotation is the corresponding SuggestedAnnotation instance
      */
-    public static ISAPair<Integer, SuggestedAnnotation> getMaxScore(List<SuggestedAnnotation> annotations) {
+    public static Pair<Integer, SuggestedAnnotation> getMaxScore(List<SuggestedAnnotation> annotations) {
 
         int maxScore = Integer.MIN_VALUE;
         SuggestedAnnotation value = null;
@@ -34,7 +35,7 @@ public class ScoreAnalysisUtility {
             }
         }
 
-        return new ISAPair<Integer, SuggestedAnnotation>(maxScore, value);
+        return new Pair<Integer, SuggestedAnnotation>(maxScore, value);
     }
 
     public static double getMedian(List<SuggestedAnnotation> annotations) {
@@ -72,7 +73,7 @@ public class ScoreAnalysisUtility {
     public static void assignConfidenceLevels(List<SuggestedAnnotation> annotations) {
 
         double medianScore = getMedian(annotations);
-        ISAPair<Integer, SuggestedAnnotation> maxValue = getMaxScore(annotations);
+        Pair<Integer, SuggestedAnnotation> maxValue = getMaxScore(annotations);
 
         for (SuggestedAnnotation annotation : annotations) {
             if (annotation.getAnnotatorResult().getScore() == maxValue.fst) {
