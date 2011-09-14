@@ -38,8 +38,9 @@ package org.isatools.isacreator.assayselection.platform;
  */
 
 import org.isatools.errorreporter.model.FileType;
-import org.isatools.isacreator.io.xpath.XPathReader;
+
 import org.w3c.dom.NodeList;
+import uk.ac.ebi.utils.xml.XPathReader;
 
 import javax.xml.xpath.XPathConstants;
 import java.util.ArrayList;
