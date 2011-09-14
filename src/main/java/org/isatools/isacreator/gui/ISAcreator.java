@@ -409,6 +409,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                         ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.VALIDATE);
                         validateUI.createGUI();
                         validateUI.setLocationRelativeTo(ISAcreator.this);
+                        validateUI.setAlwaysOnTop(true);
                         validateUI.setVisible(true);
                         validateUI.validateISAtab();
 
@@ -426,6 +427,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                         ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.CONVERT);
                         validateUI.createGUI();
                         validateUI.setLocationRelativeTo(ISAcreator.this);
+                        validateUI.setAlwaysOnTop(true);
                         validateUI.setVisible(true);
                         validateUI.validateISAtab();
 

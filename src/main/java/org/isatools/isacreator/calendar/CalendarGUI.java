@@ -74,7 +74,8 @@ public class CalendarGUI extends JFrame implements ActionListener {
     private Font stdFont = UIHelper.VER_10_BOLD;
     private JComboBox months;
     private JComboBox years;
-    private JTextField selectedDate;
+
+    private JTextField selectedDay;
     private JTextField today;
     private JTextField[][] dayArray;
     private int curMonth;
@@ -144,7 +145,7 @@ public class CalendarGUI extends JFrame implements ActionListener {
         confirm.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                firePropertyChange("selectedDate", "OLD_VALUE", getSelectedDate());
+                firePropertyChange("selectedDate", "OLD_VALUE", getSelectedDay());
                 setVisible(false);
             }
 
@@ -161,7 +162,8 @@ public class CalendarGUI extends JFrame implements ActionListener {
         discard.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                firePropertyChange("noneSelected", "", getSelectedDate());
+                firePropertyChange("noneSelected", "", getSelectedDay());
+                setVisible(false);
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -269,15 +271,14 @@ public class CalendarGUI extends JFrame implements ActionListener {
      *
      * @return a String representation of the date in the format dd-mm-yyyy
      */
-    public String getSelectedDate() {
+    public String getSelectedDay() {
 
         int dayAsInt = calendar.get(Calendar.DAY_OF_MONTH);
 
         String month = String.valueOf(months.getSelectedIndex() + 1);
 
-        if (selectedDate != null) {
-            dayAsInt = Integer.valueOf(selectedDate.getText());
-
+        if (selectedDay != null) {
+            dayAsInt = Integer.valueOf(selectedDay.getText());
         }
 
         String day = String.valueOf(dayAsInt);
@@ -378,28 +379,29 @@ public class CalendarGUI extends JFrame implements ActionListener {
      * @param active - The day object selected.
      */
     private void setSelectedDay(JTextField active) {
-        if (selectedDate != null) {
-            if ((selectedDate == today) && (selectedMonth == curMonth) && (curYear == selectedYear)) {
-                selectedDate.setBackground(Color.GRAY);
+        if (selectedDay != null) {
+            if ((selectedDay == today) && (selectedMonth == curMonth) && (curYear == selectedYear)) {
+                selectedDay.setBackground(Color.GRAY);
 
             } else {
-                selectedDate.setBackground(stdCol);
-                selectedDate.setForeground(UIHelper.LIGHT_GREEN_COLOR);
+                selectedDay.setBackground(stdCol);
+                selectedDay.setForeground(UIHelper.LIGHT_GREEN_COLOR);
 
             }
-            selectedDate.repaint();
+            selectedDay.repaint();
         }
 
-        selectedDate = active;
+        selectedDay = active;
 
         String s = active.getText();
 
         if (s.equalsIgnoreCase("")) {
-            selectedDate = null;
+            selectedDay = null;
         } else {
-            selectedDate.setBackground(UIHelper.LIGHT_GREEN_COLOR);
-            selectedDate.setForeground(UIHelper.DARK_GREEN_COLOR);
+            selectedDay.setBackground(UIHelper.LIGHT_GREEN_COLOR);
+            selectedDay.setForeground(UIHelper.DARK_GREEN_COLOR);
         }
+
 
     }
 

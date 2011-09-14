@@ -56,7 +56,10 @@ import java.util.List;
  */
 public class DateCellEditor extends JTextField implements TableCellEditor {
     protected transient List<CellEditorListener> listeners;
+    private JTable currentTable;
     private static CalendarGUI calendar;
+    private int currentRow, currentColumn;
+
 
     static {
         calendar = new CalendarGUI();
@@ -75,18 +78,22 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
         calendar.addPropertyChangeListener("selectedDate",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        setText(calendar.getSelectedDate());
+                        System.out.println("selected date: " + evt.getNewValue().toString());
+                        currentTable.setValueAt(evt.getNewValue().toString(), currentRow, currentColumn);
+                        setText(evt.getNewValue().toString());
                         stopCellEditing();
-                        calendar.setVisible(false);
                     }
-                });
+                }
+        );
 
         calendar.addPropertyChangeListener("noneSelected",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
+                        System.out.println("no date selected");
                         cancelCellEditing();
                     }
-                });
+                }
+        );
         setBorder(null);
         listeners = new ArrayList<CellEditorListener>();
     }
@@ -106,7 +113,6 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
      */
     public void cancelCellEditing() {
         fireEditingCanceled();
-        calendar.setVisible(false);
     }
 
     /**
@@ -115,12 +121,12 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
      * a ChangeEvent defined using the DateCellEditor as a reference.
      */
     protected void fireEditingCanceled() {
-        setText(originalValue);
+        System.out.println("editing cancelled: " + originalValue);
+//        setText(originalValue);
 
         ChangeEvent ce = new ChangeEvent(this);
-        int listenerSize = listeners.size() - 1;
 
-        for (int i = listenerSize; i >= 0; i--) {
+        for (int i = listeners.size() - 1; i >= 0; i--) {
             (listeners.get(i)).editingCanceled(ce);
         }
     }
@@ -131,9 +137,8 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
      */
     protected void fireEditingStopped() {
         ChangeEvent ce = new ChangeEvent(this);
-        int listenerSize = listeners.size() - 1;
 
-        for (int i = listenerSize; i >= 0; i--) {
+        for (int i = listeners.size() - 1; i >= 0; i--) {
             (listeners.get(i)).editingStopped(ce);
         }
     }
@@ -159,6 +164,10 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
      */
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
+        currentTable = table;
+        currentRow = row;
+        currentColumn = column;
+
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
 
@@ -226,7 +235,7 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
      */
     public boolean stopCellEditing() {
         fireEditingStopped();
-        setText(calendar.getSelectedDate());
+        setText(originalValue);
         return true;
     }
 }

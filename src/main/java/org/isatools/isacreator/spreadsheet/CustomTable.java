@@ -70,12 +70,14 @@ public class CustomTable extends JTable {
 
         if (editor instanceof OntologyCellEditor ||
                 editor instanceof FileSelectCellEditor ||
-                editor instanceof DateCellEditor || editor instanceof FilterableListCellEditor) {
+                editor instanceof DateCellEditor ||
+                editor instanceof FilterableListCellEditor) {
 
             if (eventObject instanceof MouseEvent && ((MouseEvent) eventObject).getClickCount() == 2) {
                 super.editCellAt(row, col, eventObject);
             }
         } else {
+
             super.editCellAt(row, col, eventObject);
 
             boolean result = super.editCellAt(row, col, eventObject);

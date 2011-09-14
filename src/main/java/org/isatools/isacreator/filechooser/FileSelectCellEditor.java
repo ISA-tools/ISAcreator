@@ -70,6 +70,7 @@ public class FileSelectCellEditor extends JTextField implements TableCellEditor 
         fileChooserUI.addPropertyChangeListener("selectedFiles",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
+                        System.out.println("Files selected");
                         setCellContents(fileChooserUI.getSelectedFiles());
                         stopCellEditing();
                     }
@@ -77,6 +78,7 @@ public class FileSelectCellEditor extends JTextField implements TableCellEditor 
         fileChooserUI.addPropertyChangeListener("noSelectedFiles",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
+                        System.out.println("No files selected");
                         cancelCellEditing();
                     }
                 });
@@ -99,8 +101,9 @@ public class FileSelectCellEditor extends JTextField implements TableCellEditor 
      * Cancels editing of the cell and hides the FileChooser frame.
      */
     public void cancelCellEditing() {
+        System.out.println("in cancelCellEditing()");
         fireEditingCanceled();
-        fileChooserUI.setVisible(false);
+
     }
 
     /**
@@ -109,6 +112,7 @@ public class FileSelectCellEditor extends JTextField implements TableCellEditor 
      * a ChangeEvent defined using the FileSelectCellEditor as a reference.
      */
     protected void fireEditingCanceled() {
+        System.out.println("in fireEditingCanceled()");
         setText(originalValue);
 
         ChangeEvent ce = new ChangeEvent(this);
@@ -124,6 +128,7 @@ public class FileSelectCellEditor extends JTextField implements TableCellEditor 
      * previous value entered.
      */
     protected void fireEditingStopped() {
+        System.out.println("in fireEditingStopped()");
         ChangeEvent ce = new ChangeEvent(this);
 
         int listenerSize = listeners.size() - 1;
@@ -191,7 +196,6 @@ public class FileSelectCellEditor extends JTextField implements TableCellEditor 
         fileChooserUI.setLocation(proposedX, proposedY);
         fileChooserUI.makeVisible();
 
-
         return this;
     }
 
@@ -243,8 +247,8 @@ public class FileSelectCellEditor extends JTextField implements TableCellEditor 
      * @return Boolean
      */
     public boolean stopCellEditing() {
+        System.out.println("in stopCellEditing()");
         fireEditingStopped();
-        fileChooserUI.setVisible(false);
         setCellContents(fileChooserUI.getSelectedFiles());
 
         return true;
