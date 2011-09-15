@@ -8,14 +8,6 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import javax.swing.*;
 
-/**
- * Created by the ISA team
- *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 15/09/2011
- *         Time: 16:57
- */
 public class PluginTracker extends ServiceTracker {
 
     private final static int ADDED = 1, REMOVED = 2, MODIFIED = 3;
@@ -80,9 +72,6 @@ public class PluginTracker extends ServiceTracker {
                 switch (action) {
                     case MODIFIED:
                         menu.removeMenu(isacreatorEnvironment.getPluginMenu());
-
-                        // Purposely let this fall through to the 'add' case to
-                        // reload the service.
 
                     case ADDED:
                         menu.addMenu(isacreatorEnvironment.getPluginMenu());
