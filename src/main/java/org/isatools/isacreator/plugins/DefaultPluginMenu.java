@@ -6,6 +6,11 @@ import org.osgi.framework.ServiceReference;
 
 import javax.swing.*;
 
+/**
+ * A default menu item
+ * Implementation help and sample provided from http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
+ * and http://karussell.wordpress.com/2009/09/16/plugable-swing-a-hello-world-osgi-example/
+ */
 public class DefaultPluginMenu implements PluginMenu {
 
     private BundleContext context;
