@@ -60,6 +60,7 @@ import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.plugins.PluginTracker;
 import org.isatools.isacreator.qrcode.ui.QRCodeGeneratorUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
@@ -71,6 +72,7 @@ import org.isatools.isacreator.externalutils.convertvalidate.*;
 import org.isatools.isacreator.utils.PropertyFileIO;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import org.osgi.framework.BundleContext;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -128,6 +130,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private ISAcreatorMenu isacreatorMenu = null;
     private UserProfile currentUser = null;
     private JMenuBar menuBar;
+    private JMenu pluginMenu;
 
     private Map<String, JMenu> menusRequiringStudyIds;
 
@@ -135,6 +138,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private IncorrectColumnOrderGUI incorrectGUI;
     private UserProfileIO userProfileIO;
     private Mode mode;
+
+    private PluginTracker pluginTracker;
 
     static {
         UIManager.put("Panel.background", UIHelper.BG_COLOR);
@@ -180,15 +185,20 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
     }
 
-    public ISAcreator(Mode mode) {
-        this(mode, null);
+    public ISAcreator(Mode mode, BundleContext context) {
+        this(mode, context, null);
     }
 
-    public ISAcreator(Mode mode, String configDir) {
+    public ISAcreator(Mode mode, BundleContext context, String configDir) {
 
         ResourceInjector.get("gui-package.style").inject(this);
 
         this.mode = mode;
+
+        if (context != null) {
+            pluginTracker = new PluginTracker(context, this);
+            pluginTracker.open();
+        }
 
         outputISATAB = new OutputISAFiles(this);
         userProfileIO = new UserProfileIO(this);
@@ -210,6 +220,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             mappings = cp.getMappings();
             assayDefinitions = cp.getTables();
         }
+
+        ApplicationManager.setCurrentApplicationInstance(this);
 
     }
 
@@ -497,8 +509,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         menuBar.add(view);
 
-        JMenu plugins = new JMenu("utilities");
-        plugins.addMouseListener(cleanUpDisplayedEditors);
+        JMenu utilities = new JMenu("utilities");
+        utilities.addMouseListener(cleanUpDisplayedEditors);
 
         JMenu sampleTracking = new JMenu("Sample Tracking");
 
@@ -525,10 +537,14 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         sampleTracking.add(qrCodeExport);
 
 
-        plugins.add(sampleTracking);
-        plugins.add(tagInvestigation);
+        utilities.add(sampleTracking);
+        utilities.add(tagInvestigation);
 
-        menuBar.add(plugins);
+        menuBar.add(utilities);
+
+        pluginMenu = new JMenu("Plugins");
+
+        menuBar.add(pluginMenu);
 
         JMenu help = new JMenu("help");
         help.addMouseListener(cleanUpDisplayedEditors);
@@ -1291,12 +1307,16 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         }
     }
 
+    public JMenu getPluginMenu() {
+        return pluginMenu;
+    }
+
     public static void main(String[] args) {
 
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE);
+                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE, null);
                 main.createGUI();
             }
         });

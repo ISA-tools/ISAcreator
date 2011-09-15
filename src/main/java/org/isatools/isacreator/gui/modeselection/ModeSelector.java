@@ -1,14 +1,25 @@
 package org.isatools.isacreator.gui.modeselection;
 
 import com.sun.awt.AWTUtilities;
+import org.apache.felix.framework.Felix;
+import org.apache.felix.framework.util.FelixConstants;
+import org.apache.felix.framework.util.StringMap;
+import org.apache.felix.main.AutoActivator;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.plugins.PluginTracker;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by the ISA team
@@ -18,7 +29,7 @@ import java.awt.event.MouseEvent;
  *         Date: 11/04/2011
  *         Time: 15:02
  */
-public class ModeSelector extends JFrame {
+public class ModeSelector extends JFrame implements BundleActivator {
 
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
@@ -26,6 +37,7 @@ public class ModeSelector extends JFrame {
         ResourceInjector.get("gui-package.style").load(
                 ModeSelector.class.getResource("/dependency-injections/gui-package.properties"));
     }
+
 
     private JLabel lightMode;
     private JLabel normalMode;
@@ -38,6 +50,9 @@ public class ModeSelector extends JFrame {
 
     public ModeSelector() {
         ResourceInjector.get("gui-package.style").inject(this);
+    }
+
+    private void createGUI(final BundleContext context) {
 
         setLayout(new BorderLayout());
         setAlwaysOnTop(true);
@@ -52,11 +67,6 @@ public class ModeSelector extends JFrame {
 
         this.setLocation(x, y);
 
-        createGUI();
-    }
-
-    private void createGUI() {
-
         Box container = Box.createVerticalBox();
         container.setOpaque(false);
 
@@ -68,7 +78,7 @@ public class ModeSelector extends JFrame {
         lightMode.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                loadISAcreator(Mode.LIGHT_MODE);
+                loadISAcreator(Mode.LIGHT_MODE, context);
             }
 
             @Override
@@ -87,7 +97,7 @@ public class ModeSelector extends JFrame {
         normalMode.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                loadISAcreator(Mode.NORMAL_MODE);
+                loadISAcreator(Mode.NORMAL_MODE, context);
             }
 
             @Override
@@ -106,7 +116,7 @@ public class ModeSelector extends JFrame {
 
         container.add(optionContainer);
 
-        loadingContainer = new JPanel(new GridLayout(1,1));
+        loadingContainer = new JPanel(new GridLayout(1, 1));
         loadingContainer.setOpaque(false);
         loadingContainer.setVisible(false);
         // create and add loading icon
@@ -123,7 +133,7 @@ public class ModeSelector extends JFrame {
         setVisible(true);
     }
 
-    private void loadISAcreator(final Mode mode) {
+    private void loadISAcreator(final Mode mode, final BundleContext context) {
 
         optionContainer.setVisible(false);
         loadingContainer.setVisible(true);
@@ -132,8 +142,9 @@ public class ModeSelector extends JFrame {
             public void run() {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        ISAcreator main = new ISAcreator(mode);
+                        ISAcreator main = new ISAcreator(mode, context);
                         main.createGUI();
+
                         dispose();
                     }
                 });
@@ -143,9 +154,98 @@ public class ModeSelector extends JFrame {
         loadISATask.start();
     }
 
+    /**
+     * Displays the applications window and starts service tracking;
+     * everything is done on the Swing event thread to avoid synchronization
+     * and repainting issues.
+     *
+     * @param context The context of the bundle.
+     */
+    public void start(final BundleContext context) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createGUI(context);
+            }
+        });
+    }
 
-    public static void main(String[] args) {
-        new ModeSelector();
+    /**
+     * Stops service tracking and disposes of the application window.
+     *
+     * @param context The context of the bundle.
+     */
+    public void stop(BundleContext context) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ModeSelector.this.dispose();
+            }
+        });
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+        ModeSelector isacreatorModeSelection = new ModeSelector();
+
+        // Create a temporary bundle cache directory and
+        // make sure to clean it up on exit.
+        final File cachedir = File.createTempFile("isacreator.servicebase", null);
+        System.out.println(cachedir.getAbsolutePath());
+        cachedir.delete();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+
+            @Override
+            public void run() {
+                cachedir.delete();
+            }
+        });
+
+        Map<String, Object> configMap = new HashMap<String, Object>();
+        configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
+                "org.isatools.isacreator.plugins.host.service, " +
+                        "org.isatools.isacreator.model, " +
+                        "org.isatools.isacreator.gui, org.apache.log4j");
+
+        File pluginDirectory = new File("Plugins");
+
+        if (!pluginDirectory.exists()) {
+            pluginDirectory.mkdir();
+        } else {
+            File[] plugins = pluginDirectory.listFiles();
+            int increment = 1;
+            for (File plugin : plugins) {
+                if (plugin.getName().contains(".jar")) {
+                    configMap.put(AutoActivator.AUTO_START_PROP + "." + increment,
+                            "file:" + plugin.getAbsolutePath());
+                    increment++;
+                }
+            }
+        }
+
+
+        configMap.put(FelixConstants.LOG_LEVEL_PROP, "4");
+        configMap.put(Constants.FRAMEWORK_STORAGE, cachedir.getAbsolutePath());
+
+        // Create list to hold custom framework activators.
+        List<BundleActivator> list = new ArrayList<BundleActivator>();
+        // Add activator to process auto-start/install properties.
+        list.add(new AutoActivator(configMap));
+        // Add our own activator.
+        list.add(isacreatorModeSelection);
+        // Add our custom framework activators to the configuration map.
+        configMap.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
+
+        try {
+            // Now create an instance of the framework.
+            Felix felix = new Felix(configMap);
+            felix.start();
+        } catch (Exception ex) {
+            System.err.println("Could not create framework: " + ex);
+            ex.printStackTrace();
+            System.exit(-1);
+        }
+
     }
 
 }

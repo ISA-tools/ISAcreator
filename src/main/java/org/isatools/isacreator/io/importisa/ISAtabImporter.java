@@ -58,7 +58,7 @@ public class ISAtabImporter {
      * @param configDir - the directory containing the configuration files you wish to use.
      */
     public ISAtabImporter(String configDir) {
-        this(new ISAcreator(Mode.LIGHT_MODE, configDir), false);
+        this(new ISAcreator(Mode.LIGHT_MODE, null, configDir), false);
     }
 
     /**
