@@ -88,7 +88,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.isatools.isacreator.gui.ModeSelector</Bundle-Activator>
+                        <Bundle-Activator>org.isatools.isacreator.gui.modeselection.ModeSelector</Bundle-Activator>
                         <Bundle-Vendor>ISA team, http://isa-tools.org</Bundle-Vendor>
                     </instructions>
                 </configuration>
@@ -203,20 +203,6 @@
                         </configuration>
                     </execution>
 
-                    <!--<execution>-->
-                    <!--<id>NCBI-Taxon</id>-->
-                    <!--<goals>-->
-                    <!--<goal>wsimport</goal>-->
-                    <!--</goals>-->
-                    <!--<configuration>-->
-                    <!--<packageName>gov.nih.nlm.ncbi.www.soap.eutils</packageName>-->
-                    <!--<wsdlUrls>-->
-                    <!--<wsdlUrl>http://eutils.ncbi.nlm.nih.gov/soap/v2.0/efetch_taxon.wsdl</wsdlUrl>-->
-                    <!--</wsdlUrls>-->
-                    <!--<sourceDestDir>target/generated/ncbitaxonomy</sourceDestDir>-->
-                    <!--<staleFile>${project.build.directory}/jaxws/stale/wsdl.ncbi.done</staleFile>-->
-                    <!--</configuration>-->
-                    <!--</execution>-->
                 </executions>
 
                 <dependencies>
@@ -282,7 +268,7 @@
         <dependency>
             <groupId>uk.ac.ebi</groupId>
             <artifactId>ols</artifactId>
-            <version>1.18</version>
+            <version>1.14.1</version>
 
             <exclusions>
                 <exclusion>
@@ -339,7 +325,6 @@
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
         </dependency>
-
 
         <dependency>
             <groupId>junit</groupId>

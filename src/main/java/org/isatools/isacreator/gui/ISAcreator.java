@@ -68,7 +68,6 @@ import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
-import org.isatools.isacreator.externalutils.convertvalidate.*;
 import org.isatools.isacreator.utils.PropertyFileIO;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -111,7 +110,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     @InjectedResource
     private Image isacreatorIcon;
     @InjectedResource
-    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, convertIcon, validateIcon,
+    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon,
             logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon,
             removeStudyIcon, fullScreenIcon, defaultScreenIcon, aboutIcon, helpIcon,
             supportIcon, feedbackIcon, confirmLogout, confirmMenu, confirmExit;
@@ -146,6 +145,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         UIManager.put("ToolTip.foreground", Color.white);
         UIManager.put("ToolTip.background", UIHelper.DARK_GREEN_COLOR);
         UIManager.put("Tree.background", UIHelper.BG_COLOR);
+        UIManager.put("Menu.selectionBackground", UIHelper.LIGHT_GREEN_COLOR);
+        UIManager.put("MenuItem.selectionBackground", UIHelper.LIGHT_GREEN_COLOR);
+
 
         UIManager.put("Container.background", UIHelper.BG_COLOR);
         UIManager.put("PopupMenuUI", "org.isatools.isacreator.common.CustomPopupMenuUI");
@@ -413,46 +415,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         file.add(exportISArchive);
 
-        JMenuItem validate = new JMenuItem("Validate ISAtab", validateIcon);
-        validate.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.VALIDATE);
-                        validateUI.createGUI();
-                        validateUI.setLocationRelativeTo(ISAcreator.this);
-                        validateUI.setAlwaysOnTop(true);
-                        validateUI.setVisible(true);
-                        validateUI.validateISAtab();
-
-                    }
-                });
-
-            }
-        });
-
-        JMenuItem convert = new JMenuItem("Convert ISAtab", convertIcon);
-        convert.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.CONVERT);
-                        validateUI.createGUI();
-                        validateUI.setLocationRelativeTo(ISAcreator.this);
-                        validateUI.setAlwaysOnTop(true);
-                        validateUI.setVisible(true);
-                        validateUI.validateISAtab();
-
-                    }
-                });
-
-            }
-        });
-
-        file.add(new JSeparator());
-        file.add(validate);
-        file.add(convert);
-
         menuBar.add(file);
 
 
@@ -542,7 +504,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         menuBar.add(utilities);
 
-        pluginMenu = new JMenu("Plugins");
+        pluginMenu = new JMenu("plugins");
 
         menuBar.add(pluginMenu);
 

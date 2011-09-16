@@ -41,6 +41,7 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
@@ -122,7 +123,7 @@ public class InvestigationImport {
 
                 String lineLabel = line[0].trim();
 
-                if (!org.apache.axis.utils.StringUtils.isEmpty(lineLabel)) {
+                if (!StringUtils.isEmpty(lineLabel)) {
                     String valueToTitleCase = StringProcessing.convertStringToTitleCase(lineLabel);
 
                     if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(valueToTitleCase)) {

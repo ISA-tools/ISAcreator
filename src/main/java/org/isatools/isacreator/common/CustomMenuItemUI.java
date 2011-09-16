@@ -43,19 +43,13 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicMenuItemUI;
 import java.awt.*;
 
-/**
- * @author Eamonn Maguire
- * @date Apr 15, 2009
- */
-
-
 public class CustomMenuItemUI extends BasicMenuItemUI {
     public static ComponentUI createUI(JComponent c) {
         return new CustomMenuItemUI();
     }
 
     public void paint(Graphics g, JComponent comp) {
-        // paint to the buffered image
+
         if (comp.isEnabled()) {
             comp.setForeground(UIHelper.DARK_GREEN_COLOR);
             comp.setBackground(UIHelper.BG_COLOR);

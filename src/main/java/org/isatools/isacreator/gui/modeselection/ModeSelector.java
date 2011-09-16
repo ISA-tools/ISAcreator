@@ -203,9 +203,10 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         Map<String, Object> configMap = new HashMap<String, Object>();
         configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "org.isatools.isacreator.plugins.host.service, " +
-                        "org.isatools.isacreator.model, " +
-                        "org.isatools.isacreator.gui, org.apache.log4j");
+                "org.isatools.isacreator.plugins.host.service, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, org.isatools.tablib.utils, org.isatools.isatab.gui_invokers, org.isatools.tablib.utils.logging, " +
+                        "org.isatools.errorreporter.ui, org.apache.log4j, org.apache.log4j.spi, org.isatools.errorreporter.html, org.isatools.errorreporter.model, org.isatools.isacreator.effects, org.isatools.isacreator.spreadsheet, org.isatools.isacreator.apiutils, " +
+                        "org.isatools.isacreator.configuration, org.isatools.errorreporter.ui.borders, com.sun.awt, org.isatools.errorreporter.ui.utils, org.isatools.isacreator.settings, uk.ac.ebi.utils.collections, org.jdesktop.fuse, org.isatools.isacreator.gui.menu, " +
+                        "org.isatools.isatab.isaconfigurator, com.explodingpixels.macwidgets");
 
         File pluginDirectory = new File("Plugins");
 
@@ -213,14 +214,16 @@ public class ModeSelector extends JFrame implements BundleActivator {
             pluginDirectory.mkdir();
         } else {
             File[] plugins = pluginDirectory.listFiles();
-            int increment = 1;
+            StringBuilder toLoad = new StringBuilder();
             for (File plugin : plugins) {
                 if (plugin.getName().contains(".jar")) {
-                    configMap.put(AutoActivator.AUTO_START_PROP + "." + increment,
-                            "file:" + plugin.getAbsolutePath());
-                    increment++;
+                    toLoad.append("file:").append(plugin.getAbsolutePath()).append(" ");
+
                 }
             }
+
+            configMap.put(AutoActivator.AUTO_START_PROP + ".1",
+                    toLoad.toString());
         }
 
 
