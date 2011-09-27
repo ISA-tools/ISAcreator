@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.5.0</version>
+    <version>1.5.0.beta2</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -346,12 +346,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.isatools</groupId>
-            <artifactId>import_layer</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>uk.ac.ebi</groupId>
             <artifactId>jutils</artifactId>
             <version>1.2</version>
@@ -367,6 +361,12 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
             <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.isatools</groupId>
+            <artifactId>import_layer</artifactId>
+            <version>1.3.2</version>
         </dependency>
 
     </dependencies>

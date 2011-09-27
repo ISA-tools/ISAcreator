@@ -69,6 +69,8 @@ import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
+import org.isatools.isacreator.validateconvert.ui.OperatingMode;
+import org.isatools.isacreator.validateconvert.ui.ValidateUI;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleContext;
@@ -110,10 +112,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     @InjectedResource
     private Image isacreatorIcon;
     @InjectedResource
-    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon,
-            logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon,
-            removeStudyIcon, fullScreenIcon, defaultScreenIcon, aboutIcon, helpIcon,
-            supportIcon, feedbackIcon, confirmLogout, confirmMenu, confirmExit;
+    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, validateIcon, convertIcon,
+            logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon, removeStudyIcon, fullScreenIcon,
+            defaultScreenIcon, aboutIcon, helpIcon, supportIcon, feedbackIcon, confirmLogout, confirmMenu, confirmExit;
 
     private AboutPanel aboutPanel;
     private Properties programSettings;
@@ -185,6 +186,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 ISAcreator.class.getResource("/dependency-injections/assayselection-package.properties"));
         ResourceInjector.get("calendar-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
+        ResourceInjector.get("validateconvert-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/validator-package.properties"));
     }
 
     public ISAcreator(Mode mode, BundleContext context) {
@@ -414,6 +417,38 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         });
 
         file.add(exportISArchive);
+
+
+        JMenuItem validateISA = new JMenuItem("Validate ISAtab", validateIcon);
+        validateISA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.VALIDATE);
+                validateUI.createGUI();
+                validateUI.setLocationRelativeTo(ISAcreator.this);
+                validateUI.setAlwaysOnTop(true);
+                validateUI.setVisible(true);
+                validateUI.validateISAtab();
+            }
+        });
+
+        file.add(new JSeparator());
+
+        file.add(validateISA);
+
+        JMenuItem convertISA = new JMenuItem("Convert ISAtab", convertIcon);
+
+        convertISA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.CONVERT);
+                validateUI.createGUI();
+                validateUI.setLocationRelativeTo(ISAcreator.this);
+                validateUI.setAlwaysOnTop(true);
+                validateUI.setVisible(true);
+                validateUI.validateISAtab();
+            }
+        });
+
+        file.add(convertISA);
 
         menuBar.add(file);
 
