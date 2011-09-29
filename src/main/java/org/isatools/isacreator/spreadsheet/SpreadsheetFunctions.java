@@ -44,11 +44,14 @@ import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
+import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
 import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -910,49 +913,64 @@ public class SpreadsheetFunctions {
                 .toString());
         DataTypes classType = spreadsheet.getTableReferenceObject().getColumnType(col.getHeaderValue().toString());
 
+        String columnName = col.getHeaderValue().toString();
+
+
+        if (SpreadsheetPluginRegistry.findPluginForColumn(columnName) != null) {
+
+            System.out.println("Found matching column in plugin registry. Will use this as the cell editor for " + columnName);
+
+            TableCellEditor editor = (TableCellEditor) SpreadsheetPluginRegistry.findPluginForColumn(columnName);
+            System.out.println("Now have editor...");
+            col.setCellEditor(editor);
+            System.out.println("Cell editor set...");
+
+            return;
+        }
+
         if (vo != null && classType == DataTypes.STRING) {
             StringValidation sv = ((StringValidation) vo);
             col.setCellEditor(new StringEditor(sv));
             return;
         }
 
-        if (col.getHeaderValue().toString().equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")) {
-            System.out.println(">>>>>> Setting cell editor for " + col.getHeaderValue() + " as the sample selector cell editor");
+        if (columnName.equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")) {
+            System.out.println(">>>>>> Setting cell editor for " + columnName + " as the sample selector cell editor");
             col.setCellEditor(new SampleSelectorCellEditor(spreadsheet));
             return;
         }
 
-        if (col.getHeaderValue().toString().equals("Protocol REF")) {
+        if (columnName.equals("Protocol REF")) {
             col.setCellEditor(new ProtocolSelectorCellEditor(spreadsheet));
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.ONTOLOGY_TERM) {
-            col.setCellEditor(new OntologyCellEditor(spreadsheet.getTableReferenceObject().acceptsMultipleValues(col.getHeaderValue().toString()),
-                    spreadsheet.getTableReferenceObject().forceOntology(col.getHeaderValue().toString()),
-                    spreadsheet.getTableReferenceObject().getRecommendedSource(col.getHeaderValue().toString())));
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.ONTOLOGY_TERM) {
+            col.setCellEditor(new OntologyCellEditor(spreadsheet.getTableReferenceObject().acceptsMultipleValues(columnName),
+                    spreadsheet.getTableReferenceObject().forceOntology(columnName),
+                    spreadsheet.getTableReferenceObject().getRecommendedSource(columnName)));
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.LIST) {
-            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getTableReferenceObject().getListItems(col.getHeaderValue().toString())));
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.LIST) {
+            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getTableReferenceObject().getListItems(columnName)));
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString())
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName)
                 == DataTypes.DATE) {
             col.setCellEditor(Spreadsheet.dateEditor);
 
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.BOOLEAN) {
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.BOOLEAN) {
             col.setCellEditor(new StringEditor(new StringValidation("true|yes|TRUE|YES|NO|FALSE|no|false", "not a valid boolean!"), true));
             return;
         }
 
         if ((classType == DataTypes.STRING) &&
-                spreadsheet.getTableReferenceObject().acceptsFileLocations(col.getHeaderValue().toString())) {
+                spreadsheet.getTableReferenceObject().acceptsFileLocations(columnName)) {
             col.setCellEditor(Spreadsheet.fileSelectEditor);
             return;
         }

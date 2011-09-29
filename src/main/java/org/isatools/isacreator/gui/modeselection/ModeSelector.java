@@ -3,10 +3,8 @@ package org.isatools.isacreator.gui.modeselection;
 import com.sun.awt.AWTUtilities;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
-import org.apache.felix.framework.util.StringMap;
 import org.apache.felix.main.AutoActivator;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.plugins.PluginTracker;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleActivator;
@@ -200,11 +198,11 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         Map<String, Object> configMap = new HashMap<String, Object>();
         configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "org.isatools.isacreator.plugins.host.service, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, " +
-                        "org.isatools.errorreporter.ui, org.apache.log4j, org.apache.log4j.spi, org.isatools.errorreporter.html, org.isatools.errorreporter.model, " +
+                "org.isatools.isacreator.plugins, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, " +
+                        "org.isatools.errorreporter.ui, org.apache.log4j, org.apache.log4j.spi, " +
                         "org.isatools.isacreator.effects, org.isatools.isacreator.spreadsheet, org.isatools.isacreator.apiutils, " +
-                        "org.isatools.isacreator.configuration, org.isatools.errorreporter.ui.borders, com.sun.awt, org.isatools.errorreporter.ui.utils, " +
-                        "org.isatools.isacreator.settings, uk.ac.ebi.utils.collections, org.jdesktop.fuse, org.isatools.isacreator.gui.menu, " +
+                        "org.isatools.isacreator.configuration, org.isatools.errorreporter.ui.borders, " +
+                        "com.sun.awt, uk.ac.ebi.utils.collections, org.jdesktop.fuse, org.isatools.isacreator.gui.menu, " +
                         "org.isatools.isatab.isaconfigurator, com.explodingpixels.macwidgets");
 
         File pluginDirectory = new File("Plugins");

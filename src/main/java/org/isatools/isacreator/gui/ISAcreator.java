@@ -60,7 +60,8 @@ import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-import org.isatools.isacreator.plugins.PluginTracker;
+import org.isatools.isacreator.plugins.MenuPluginTracker;
+import org.isatools.isacreator.plugins.SpreadsheetPluginTracker;
 import org.isatools.isacreator.qrcode.ui.QRCodeGeneratorUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
@@ -139,7 +140,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private UserProfileIO userProfileIO;
     private Mode mode;
 
-    private PluginTracker pluginTracker;
+    private MenuPluginTracker menuPluginTracker;
+    private SpreadsheetPluginTracker spreadsheetPluginTracker;
 
     static {
         UIManager.put("Panel.background", UIHelper.BG_COLOR);
@@ -201,8 +203,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         this.mode = mode;
 
         if (context != null) {
-            pluginTracker = new PluginTracker(context, this);
-            pluginTracker.open();
+            menuPluginTracker = new MenuPluginTracker(context, this);
+            spreadsheetPluginTracker = new SpreadsheetPluginTracker(context, this);
+            menuPluginTracker.open();
+            spreadsheetPluginTracker.open();
         }
 
         outputISATAB = new OutputISAFiles(this);
