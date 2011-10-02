@@ -39,8 +39,6 @@ public class SpreadsheetImport {
      */
     public TableReferenceObject loadInTables(String fileName,
                                              TableReferenceObject defaultTableRef) throws IOException, MalformedInvestigationException {
-        // process headers to build table reference object for table.
-        // create new sortable and then read in the data row by row :o)
         messages = new HashSet<String>();
 
         File f = new File(fileName);

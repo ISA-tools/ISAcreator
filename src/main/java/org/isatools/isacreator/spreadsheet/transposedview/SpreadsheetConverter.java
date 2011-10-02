@@ -109,8 +109,10 @@ public class SpreadsheetConverter {
 
             int fieldType = resolveDataTypeForSubform(dt, acceptsFiles);
 
-            if (colName.startsWith("Protocol")) {
-                list = sheet.getStudyDataEntryEnvironment().getProtocolNames();
+            if (sheet.getStudyDataEntryEnvironment() != null) {
+                if (colName.startsWith("Protocol")) {
+                    list = sheet.getStudyDataEntryEnvironment().getProtocolNames();
+                }
             }
 
             if (list != null) {
@@ -119,8 +121,6 @@ public class SpreadsheetConverter {
                 fields.add(new SubFormField(colName, fieldType));
             }
 
-//			Map<String, RecommendedOntology> recommendedOntologies =
-//					sheet.getTableReferenceObject().getRecommendedSource(colName);
         }
 
         return fields;

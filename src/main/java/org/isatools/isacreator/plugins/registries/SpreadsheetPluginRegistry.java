@@ -30,11 +30,8 @@ public class SpreadsheetPluginRegistry {
     }
 
     public static PluginSpreadsheetWidget findPluginForColumn(String columnName) {
-        System.out.println("Trying to find alternative widget for " + columnName);
-        for (PluginSpreadsheetWidget widget : spreadsheetPlugins) {
-            System.out.println("Looking at " + widget.getClass().toString());
 
-            System.out.println("Target columns");
+        for (PluginSpreadsheetWidget widget : spreadsheetPlugins) {
 
             for (String column : widget.targetColumns()) {
                 System.out.println(column);

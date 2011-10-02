@@ -94,8 +94,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     // We'll store recently searched terms in a cache so that multiple searches on the same term in a short period
     // of time do not result in identical queries to the OLS on each occasion. if the user searches all ontologies for
     // "mito", then the map will consist of all:mito -> result map.
-    private static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache
-            = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
+    private static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
 
     private static final int SEARCH_MODE = 0;
     private static final int BROWSE_MODE = 1;

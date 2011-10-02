@@ -20,6 +20,8 @@ public abstract class AbstractPluginSpreadsheetWidget extends JTextField impleme
     protected transient List<CellEditorListener> listeners;
     protected JTable currentTable;
     protected String originalValue;
+    protected int currentRow;
+    protected int currentColumn;
 
     protected AbstractPluginSpreadsheetWidget() {
 
@@ -82,7 +84,7 @@ public abstract class AbstractPluginSpreadsheetWidget extends JTextField impleme
      * a ChangeEvent defined using the OntologyCellEditor as a reference.
      */
     protected void fireEditingCanceled() {
-        setText(originalValue);
+        setText(getCellValue());
 
         ChangeEvent ce = new ChangeEvent(this);
 
@@ -128,8 +130,11 @@ public abstract class AbstractPluginSpreadsheetWidget extends JTextField impleme
     public boolean stopCellEditing() {
         fireEditingStopped();
         setText(getCellValue());
-
         return true;
+    }
+
+    protected void setCellValue(String value) {
+        currentTable.setValueAt(value, currentRow, currentColumn);
     }
 
     /**
@@ -144,8 +149,10 @@ public abstract class AbstractPluginSpreadsheetWidget extends JTextField impleme
      */
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
-
         currentTable = table;
+        currentRow = row;
+        currentColumn = column;
+
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
 

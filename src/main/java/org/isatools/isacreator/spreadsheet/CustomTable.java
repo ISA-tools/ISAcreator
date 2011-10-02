@@ -42,6 +42,7 @@ import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
+import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
 
 import javax.swing.*;
@@ -71,7 +72,7 @@ public class CustomTable extends JTable {
         if (editor instanceof OntologyCellEditor ||
                 editor instanceof FileSelectCellEditor ||
                 editor instanceof DateCellEditor ||
-                editor instanceof FilterableListCellEditor) {
+                editor instanceof FilterableListCellEditor || editor instanceof PluginSpreadsheetWidget) {
 
             if (eventObject instanceof MouseEvent && ((MouseEvent) eventObject).getClickCount() == 2) {
                 super.editCellAt(row, col, eventObject);

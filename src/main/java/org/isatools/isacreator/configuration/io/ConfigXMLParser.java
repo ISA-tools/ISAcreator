@@ -189,7 +189,7 @@ public class ConfigXMLParser {
         return newISAConfig.getIsatabConfigFile();
     }
 
-    private void processTable(IsaTabConfigurationType isaConf) {
+    public void processTable(IsaTabConfigurationType isaConf) {
         OntologyEntryType measurementInfo = isaConf.getMeasurement();
         OntologyEntryType technologyInfo = isaConf.getTechnology();
 

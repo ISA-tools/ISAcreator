@@ -135,6 +135,7 @@ public class Spreadsheet extends JComponent implements
     private TableGroupInfo tableGroupInformation;
     protected SpreadsheetColumnRenderer renderer = new SpreadsheetColumnRenderer();
     protected SpreadsheetModel spreadsheetModel;
+    private AnimatableJFrame parentFrame;
     private StudyDataEntry studyDataEntryEnvironment;
     private AssaySpreadsheet assayDataEntryEnvironment;
     private TableReferenceObject tableReferenceObject;
@@ -153,6 +154,7 @@ public class Spreadsheet extends JComponent implements
     private TableConsistencyChecker tableConsistencyChecker;
 
     private SpreadsheetPopupMenus spreadsheetPopups;
+    private JPanel spreadsheetFunctionPanel;
 
     protected SpreadsheetFunctions spreadsheetFunctions;
 
@@ -198,19 +200,41 @@ public class Spreadsheet extends JComponent implements
     /**
      * Spreadsheet Constructor.
      *
+     * @param parentFrame          - AnimatableJFrame object for display of the notification panels.
+     * @param tableReferenceObject - The @see TableReferenceObject representing the sheets format
+     * @param spreadsheetTitle     - Spreadsheet name
+     */
+    public Spreadsheet(AnimatableJFrame parentFrame, TableReferenceObject tableReferenceObject, String spreadsheetTitle) {
+        this.parentFrame = parentFrame;
+        this.tableReferenceObject = tableReferenceObject;
+        this.spreadsheetTitle = spreadsheetTitle;
+
+        instantiateSpreadsheet();
+    }
+
+    /**
+     * Spreadsheet Constructor.
+     *
      * @param tableReferenceObject      - Reference Object to build the table with.
      * @param studyDataEntryEnvironment - StudyDataEntry. Used to retrieve factors and protocols which have been entered.
      * @param spreadsheetTitle          - name to display on the spreadsheet...
      * @param assayDataEntryEnvironment - The assay data entry object :o)
      */
-    public Spreadsheet(final TableReferenceObject tableReferenceObject, StudyDataEntry studyDataEntryEnvironment, String spreadsheetTitle, AssaySpreadsheet assayDataEntryEnvironment) {
-        ResourceInjector.get("spreadsheet-package.style").inject(this);
+    public Spreadsheet(TableReferenceObject tableReferenceObject, StudyDataEntry studyDataEntryEnvironment, String spreadsheetTitle, AssaySpreadsheet assayDataEntryEnvironment) {
 
         this.studyDataEntryEnvironment = studyDataEntryEnvironment;
+        this.parentFrame = studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
         this.assayDataEntryEnvironment = assayDataEntryEnvironment;
 
         this.spreadsheetTitle = spreadsheetTitle;
         this.tableReferenceObject = tableReferenceObject;
+
+        instantiateSpreadsheet();
+    }
+
+    public void instantiateSpreadsheet() {
+
+        ResourceInjector.get("spreadsheet-package.style").inject(this);
 
         spreadsheetPopups = new SpreadsheetPopupMenus(this);
         spreadsheetFunctions = new SpreadsheetFunctions(this);
@@ -221,10 +245,6 @@ public class Spreadsheet extends JComponent implements
 
         setLayout(new BorderLayout());
 
-        instantiateSpreadsheet();
-    }
-
-    public void instantiateSpreadsheet() {
         // create a spreadsheet model which overrides two methods that allow the reference model for the spreadsheet to
         // control which columns can be deleted, and which cannot.
         spreadsheetModel = new SpreadsheetModel(tableReferenceObject) {
@@ -279,21 +299,24 @@ public class Spreadsheet extends JComponent implements
             // populate table with some empty fields.
             spreadsheetFunctions.addRows(INITIAL_ROWS, true);
 
-            List<Protocol> protocols = tableReferenceObject.constructProtocolObjects();
-            if (protocols.size() > 0) {
-                for (Protocol p : protocols) {
-                    studyDataEntryEnvironment.getStudy().addProtocol(p);
-                }
-                studyDataEntryEnvironment.reformProtocols();
-            }
+            if (studyDataEntryEnvironment != null) {
 
-            List<Factor> factors = tableReferenceObject.constructFactorObjects();
-
-            if (factors.size() > 0) {
-                for (Factor f : factors) {
-                    studyDataEntryEnvironment.getStudy().addFactor(f);
+                List<Protocol> protocols = tableReferenceObject.constructProtocolObjects();
+                if (protocols.size() > 0) {
+                    for (Protocol p : protocols) {
+                        studyDataEntryEnvironment.getStudy().addProtocol(p);
+                    }
+                    studyDataEntryEnvironment.reformProtocols();
                 }
-                studyDataEntryEnvironment.reformFactors();
+
+                List<Factor> factors = tableReferenceObject.constructFactorObjects();
+
+                if (factors.size() > 0) {
+                    for (Factor f : factors) {
+                        studyDataEntryEnvironment.getStudy().addFactor(f);
+                    }
+                    studyDataEntryEnvironment.reformFactors();
+                }
             }
         }
 
@@ -540,9 +563,9 @@ public class Spreadsheet extends JComponent implements
      */
     private void createButtonPanel() {
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
-        buttonPanel.setBackground(UIHelper.BG_COLOR);
+        spreadsheetFunctionPanel = new JPanel();
+        spreadsheetFunctionPanel.setLayout(new BoxLayout(spreadsheetFunctionPanel, BoxLayout.LINE_AXIS));
+        spreadsheetFunctionPanel.setBackground(UIHelper.BG_COLOR);
 
         addRow = new JLabel(addRowButton);
         addRow.setToolTipText("<html><b>add row</b>" +
@@ -657,19 +680,19 @@ public class Spreadsheet extends JComponent implements
                     copyColDownConfirmationPane.setIcon(copyColumnDownWarningIcon);
                     UIHelper.applyOptionPaneBackground(copyColDownConfirmationPane, UIHelper.BG_COLOR);
 
+
                     copyColDownConfirmationPane.addPropertyChangeListener(new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent event) {
                             if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
                                 int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-                                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
+                                parentFrame.hideSheet();
                                 if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                                     spreadsheetFunctions.copyColumnDownwards(row, col);
                                 }
                             }
                         }
                     });
-                    studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
-                            .showJDialogAsSheet(copyColDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Column?"));
+                    parentFrame.showJDialogAsSheet(copyColDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Column?"));
 
                 }
             }
@@ -702,19 +725,20 @@ public class Spreadsheet extends JComponent implements
 
                 UIHelper.applyOptionPaneBackground(copyRowDownConfirmationPane, UIHelper.BG_COLOR);
 
+
                 copyRowDownConfirmationPane.addPropertyChangeListener(new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
                             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-                            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
+                            parentFrame.hideSheet();
                             if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                                 spreadsheetFunctions.copyRowDownwards(row);
                             }
                         }
                     }
                 });
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
-                        .showJDialogAsSheet(copyRowDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Row Down?"));
+                parentFrame.showJDialogAsSheet(
+                        copyRowDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Row Down?"));
             }
         });
 
@@ -872,34 +896,37 @@ public class Spreadsheet extends JComponent implements
             }
         });
 
+        addSpecialButtons();
 
-        buttonPanel.add(addRow);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(deleteRow);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(deleteColumn);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(multipleSort);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(copyColDown);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(copyRowDown);
-        buttonPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(addRow);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(deleteRow);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(deleteColumn);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(multipleSort);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(copyColDown);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(copyRowDown);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
 
         //add factor, protocol, parameter and characteristic here!
-        buttonPanel.add(addFactor);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(addCharacteristic);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(addProtocol);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(addParameter);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(transpose);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(undo);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(redo);
+        if (studyDataEntryEnvironment != null) {
+            spreadsheetFunctionPanel.add(addFactor);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(addCharacteristic);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(addProtocol);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(addParameter);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(transpose);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        }
+        spreadsheetFunctionPanel.add(undo);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(redo);
 
 
         addProtocol.setEnabled(false);
@@ -916,10 +943,19 @@ public class Spreadsheet extends JComponent implements
 
         labelContainer.add(lab);
 
-        buttonPanel.add(labelContainer);
-        buttonPanel.add(Box.createHorizontalStrut(10));
-        //buttonPanel.add(exportAsCSV);
-        add(buttonPanel, BorderLayout.NORTH);
+        spreadsheetFunctionPanel.add(labelContainer);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(10));
+        add(spreadsheetFunctionPanel, BorderLayout.NORTH);
+    }
+
+    /**
+     * This method is meant to be overridden in the event that one wishes to add in custom functions to the spreadsheet UI
+     */
+    public void addSpecialButtons() {
+    }
+
+    public JPanel getSpreadsheetFunctionPanel() {
+        return spreadsheetFunctionPanel;
     }
 
     /**
@@ -988,7 +1024,7 @@ public class Spreadsheet extends JComponent implements
      * @return MainGUI object.
      */
     public AnimatableJFrame getParentFrame() {
-        return studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
+        return parentFrame;
     }
 
     /**
@@ -1211,7 +1247,7 @@ public class Spreadsheet extends JComponent implements
                      event) {
         if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
+            parentFrame.hideSheet();
 
             if ((currentState == DELETING_COLUMN) &&
                     (lastOptionAnswer == JOptionPane.YES_OPTION)) {
@@ -1450,7 +1486,7 @@ public class Spreadsheet extends JComponent implements
                 if (goingToDisplay != null) {
                     goingToDisplay.createGUI();
                     // do this to ensure that the gui is fully created before displaying it.
-                    studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(goingToDisplay);
+                    parentFrame.showJDialogAsSheet(goingToDisplay);
                 }
             }
         });
@@ -1468,8 +1504,7 @@ public class Spreadsheet extends JComponent implements
             optionPane.setIcon(selectOneColumnWarningIcon);
             UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
             optionPane.addPropertyChangeListener(this);
-            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
-                    .showJDialogAsSheet(optionPane.createDialog(this, "Delete Column"));
+            parentFrame.showJDialogAsSheet(optionPane.createDialog(this, "Delete Column"));
         }
     }
 
@@ -1485,7 +1520,7 @@ public class Spreadsheet extends JComponent implements
                 msGUI.createGUI();
                 msGUI.updateAllCombos();
 
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(msGUI);
+                parentFrame.showJDialogAsSheet(msGUI);
             }
         });
     }
@@ -1500,10 +1535,10 @@ public class Spreadsheet extends JComponent implements
             public void run() {
                 SpreadsheetConverter converter = new SpreadsheetConverter(Spreadsheet.this);
                 TransposedSpreadsheetModel transposedSpreadsheetModel = converter.doConversion();
-                TransposedSpreadsheetView transposedSpreadsheetView = new TransposedSpreadsheetView(transposedSpreadsheetModel, (int) (studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().getWidth() * 0.80), (int) (studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().getHeight() * 0.70));
+                TransposedSpreadsheetView transposedSpreadsheetView = new TransposedSpreadsheetView(transposedSpreadsheetModel, (int) (parentFrame.getWidth() * 0.80), (int) (parentFrame.getHeight() * 0.70));
                 transposedSpreadsheetView.createGUI();
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(transposedSpreadsheetView);
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().maskOutMouseEvents();
+                parentFrame.showJDialogAsSheet(transposedSpreadsheetView);
+                parentFrame.maskOutMouseEvents();
             }
         });
     }
@@ -1517,7 +1552,7 @@ public class Spreadsheet extends JComponent implements
                 AddMultipleRowsGUI amrGUI = new AddMultipleRowsGUI(Spreadsheet.this);
                 amrGUI.createGUI();
 
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(amrGUI);
+                parentFrame.showJDialogAsSheet(amrGUI);
             }
         });
     }

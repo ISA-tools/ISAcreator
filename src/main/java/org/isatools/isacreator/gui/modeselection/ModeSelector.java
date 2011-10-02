@@ -198,8 +198,9 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         Map<String, Object> configMap = new HashMap<String, Object>();
         configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "org.isatools.isacreator.plugins, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, " +
-                        "org.isatools.errorreporter.ui, org.apache.log4j, org.apache.log4j.spi, " +
+                "org.isatools.isacreator.plugins, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service," +
+                        "org.isatools.isacreator.configuration.io, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, " +
+                        "org.isatools.errorreporter.ui, org.apache.xmlbeans, org.apache.log4j, org.apache.log4j.spi, org.isatools.isatab.configurator.schema," +
                         "org.isatools.isacreator.effects, org.isatools.isacreator.spreadsheet, org.isatools.isacreator.apiutils, " +
                         "org.isatools.isacreator.configuration, org.isatools.errorreporter.ui.borders, " +
                         "com.sun.awt, uk.ac.ebi.utils.collections, org.jdesktop.fuse, org.isatools.isacreator.gui.menu, " +
@@ -234,9 +235,10 @@ public class ModeSelector extends JFrame implements BundleActivator {
         configMap.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
 
         try {
-            // Now create an instance of the framework.
+            System.out.println("Starting up OSGi framework....");
             Felix felix = new Felix(configMap);
             felix.start();
+            System.out.println("....Framework started successfully!");
         } catch (Exception ex) {
             System.err.println("Could not create framework: " + ex);
             ex.printStackTrace();

@@ -915,16 +915,11 @@ public class SpreadsheetFunctions {
 
         String columnName = col.getHeaderValue().toString();
 
+        PluginSpreadsheetWidget widget;
 
-        if (SpreadsheetPluginRegistry.findPluginForColumn(columnName) != null) {
-
-            System.out.println("Found matching column in plugin registry. Will use this as the cell editor for " + columnName);
-
-            TableCellEditor editor = (TableCellEditor) SpreadsheetPluginRegistry.findPluginForColumn(columnName);
-            System.out.println("Now have editor...");
+        if ((widget = SpreadsheetPluginRegistry.findPluginForColumn(columnName)) != null) {
+            TableCellEditor editor = (TableCellEditor) widget;
             col.setCellEditor(editor);
-            System.out.println("Cell editor set...");
-
             return;
         }
 
@@ -934,13 +929,13 @@ public class SpreadsheetFunctions {
             return;
         }
 
-        if (columnName.equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")) {
-            System.out.println(">>>>>> Setting cell editor for " + columnName + " as the sample selector cell editor");
+        if (columnName.equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")
+                && spreadsheet.getStudyDataEntryEnvironment() != null) {
             col.setCellEditor(new SampleSelectorCellEditor(spreadsheet));
             return;
         }
 
-        if (columnName.equals("Protocol REF")) {
+        if (columnName.equals("Protocol REF") && spreadsheet.getStudyDataEntryEnvironment() != null) {
             col.setCellEditor(new ProtocolSelectorCellEditor(spreadsheet));
             return;
         }
@@ -1074,7 +1069,6 @@ public class SpreadsheetFunctions {
 
     /**
      * Creates blank elements (or those including default data) into the rows being added
-     * todo check this again and make sure the proper values are being obtained for default values.
      *
      * @param creatingFromEmpty - whether or not the rows have been added at the very start.
      * @return Vector containing elements to be added to the row.
@@ -1124,13 +1118,12 @@ public class SpreadsheetFunctions {
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName()
                                 .equals(JOptionPane.VALUE_PROPERTY)) {
-                            spreadsheet.getDataEntryEnv().getParentFrame().hideSheet();
+                            spreadsheet.getParentFrame().hideSheet();
                         }
                     }
                 });
-                spreadsheet.getDataEntryEnv().getParentFrame()
-                        .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
-                                "Can not delete"));
+                spreadsheet.getParentFrame().showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
+                        "Can not delete"));
             } else {
                 spreadsheet.optionPane = new JOptionPane("<html>Are you sure you want to delete this column? <p>This Action can not be undone!</p></html>",
                         JOptionPane.INFORMATION_MESSAGE,
@@ -1138,9 +1131,8 @@ public class SpreadsheetFunctions {
                         spreadsheet.confirmRemoveColumnIcon);
                 UIHelper.applyOptionPaneBackground(spreadsheet.optionPane, UIHelper.BG_COLOR);
                 spreadsheet.optionPane.addPropertyChangeListener(spreadsheet);
-                spreadsheet.getDataEntryEnv().getParentFrame()
-                        .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
-                                "Confirm Delete Column"));
+                spreadsheet.getParentFrame().showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
+                        "Confirm Delete Column"));
             }
         }
     }
@@ -1177,7 +1169,7 @@ public class SpreadsheetFunctions {
                 spreadsheet.confirmRemoveRowIcon);
         spreadsheet.optionPane.addPropertyChangeListener(spreadsheet);
         UIHelper.applyOptionPaneBackground(spreadsheet.optionPane, UIHelper.BG_COLOR);
-        spreadsheet.getDataEntryEnv().getParentFrame()
+        spreadsheet.getParentFrame()
                 .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
                         "Confirm Delete Rows"));
     }
@@ -1196,7 +1188,7 @@ public class SpreadsheetFunctions {
                 spreadsheet.confirmRemoveRowIcon);
         spreadsheet.optionPane.addPropertyChangeListener(spreadsheet);
         UIHelper.applyOptionPaneBackground(spreadsheet.optionPane, UIHelper.BG_COLOR);
-        spreadsheet.getDataEntryEnv().getParentFrame()
+        spreadsheet.getParentFrame()
                 .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
                         "Confirm Delete Rows"));
     }
