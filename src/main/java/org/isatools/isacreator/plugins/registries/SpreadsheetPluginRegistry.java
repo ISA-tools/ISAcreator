@@ -7,11 +7,6 @@ import java.util.List;
 
 /**
  * Created by the ISA team
- *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 29/09/2011
- *         Time: 14:29
  */
 public class SpreadsheetPluginRegistry {
 
@@ -29,6 +24,9 @@ public class SpreadsheetPluginRegistry {
         }
     }
 
+    /*
+       Returns the column names this editor will be associated with
+    */
     public static PluginSpreadsheetWidget findPluginForColumn(String columnName) {
 
         for (PluginSpreadsheetWidget widget : spreadsheetPlugins) {

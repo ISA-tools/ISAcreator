@@ -1,11 +1,9 @@
 package org.isatools.isacreator.plugins;
 
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.plugins.host.service.Plugin;
 import org.isatools.isacreator.plugins.host.service.PluginMenu;
-import org.isatools.isacreator.plugins.host.service.PluginSearch;
+import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
-import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -38,15 +36,11 @@ public class MenuPluginTracker extends ServiceTracker {
      */
     @Override
     public Object addingService(ServiceReference ref) {
-        System.out.println("Adding service");
+        System.out.println("Adding menu plugin");
         if (context.getService(ref) instanceof PluginMenu) {
             PluginMenu menu = new DefaultPluginMenu(context, ref);
             processPlugin(ADDED, menu);
             return menu;
-        } else if (context.getService(ref) instanceof PluginSpreadsheetWidget) {
-            PluginSpreadsheetWidget widget = new DefaultSpreadsheetWidget(context, ref);
-            processPlugin(ADDED, widget);
-            return widget;
         }
 
         return null;
@@ -60,18 +54,11 @@ public class MenuPluginTracker extends ServiceTracker {
      */
     @Override
     public void modifiedService(ServiceReference ref, Object svc) {
-        System.out.println("Service modified");
+        System.out.println("Modifying menu plugin");
         if (svc instanceof PluginMenu) {
             PluginMenu plugin = (PluginMenu) svc;
             processPlugin(MODIFIED, plugin);
-        } else if (svc instanceof PluginSearch) {
-            // do something else
-        } else if (svc instanceof PluginSpreadsheetWidget) {
-            PluginSpreadsheetWidget plugin = (PluginSpreadsheetWidget) svc;
-            processPlugin(MODIFIED, plugin);
         }
-
-
     }
 
     /**
@@ -82,17 +69,11 @@ public class MenuPluginTracker extends ServiceTracker {
      */
     @Override
     public void removedService(final ServiceReference ref, final Object svc) {
-        System.out.println("Adding service");
+        System.out.println("Removing menu plugin");
         if (svc instanceof PluginMenu) {
             PluginMenu menu = new DefaultPluginMenu(context, ref);
             processPlugin(REMOVED, menu);
-
-        } else if (svc instanceof PluginSpreadsheetWidget) {
-            PluginSpreadsheetWidget widget = new DefaultSpreadsheetWidget(context, ref);
-            processPlugin(REMOVED, widget);
-
         }
-
     }
 
     /**
@@ -116,33 +97,6 @@ public class MenuPluginTracker extends ServiceTracker {
 
                     case REMOVED:
                         menu.removeMenu(isacreatorEnvironment.getPluginMenu());
-                        break;
-                }
-            }
-        });
-    }
-
-    /**
-     * Actually performs the processing of the service notification. Invokes
-     * the appropriate callback method on the application object depending on
-     * the action type of the notification.
-     *
-     * @param action The type of action associated with the notification.
-     */
-    private void processPlugin(final int action, final PluginSpreadsheetWidget widget) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                switch (action) {
-                    case MODIFIED:
-                        widget.registerCellEditor();
-
-                    case ADDED:
-                        widget.registerCellEditor();
-                        break;
-
-                    case REMOVED:
-                        widget.deregisterCellEditor();
                         break;
                 }
             }

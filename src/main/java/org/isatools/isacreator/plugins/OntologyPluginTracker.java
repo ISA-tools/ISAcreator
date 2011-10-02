@@ -3,7 +3,6 @@ package org.isatools.isacreator.plugins;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.plugins.host.service.PluginMenu;
 import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
-import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -17,12 +16,12 @@ import javax.swing.*;
  * and http://karussell.wordpress.com/2009/09/16/plugable-swing-a-hello-world-osgi-example/
  */
 
-public class SpreadsheetPluginTracker extends ServiceTracker {
+public class OntologyPluginTracker extends ServiceTracker {
 
     private final static int ADDED = 1, REMOVED = 2, MODIFIED = 3;
 
-    public SpreadsheetPluginTracker(BundleContext context) {
-        super(context, PluginSpreadsheetWidget.class.getName(), null);
+    public OntologyPluginTracker(BundleContext context) {
+        super(context, PluginMenu.class.getName(), null);
     }
 
     /**
@@ -33,12 +32,11 @@ public class SpreadsheetPluginTracker extends ServiceTracker {
      */
     @Override
     public Object addingService(ServiceReference ref) {
-        System.out.println("Adding spreadsheet plugin");
-
-        if (context.getService(ref) instanceof PluginSpreadsheetWidget) {
-            PluginSpreadsheetWidget widget = new DefaultSpreadsheetWidget(context, ref);
-            processPlugin(ADDED, widget);
-            return widget;
+        System.out.println("Adding ontology search plugin");
+        if (context.getService(ref) instanceof PluginOntologyCVSearch) {
+            PluginOntologyCVSearch menu = new DefaultOntologySearchWidget(context, ref);
+            processPlugin(ADDED, menu);
+            return menu;
         }
 
         return null;
@@ -52,13 +50,11 @@ public class SpreadsheetPluginTracker extends ServiceTracker {
      */
     @Override
     public void modifiedService(ServiceReference ref, Object svc) {
-        System.out.println("Modified spreadsheet plugin");
-        if (svc instanceof PluginSpreadsheetWidget) {
-            PluginSpreadsheetWidget plugin = (PluginSpreadsheetWidget) svc;
+        System.out.println("Modifying ontology search plugin");
+        if (svc instanceof PluginOntologyCVSearch) {
+            PluginOntologyCVSearch plugin = (PluginOntologyCVSearch) svc;
             processPlugin(MODIFIED, plugin);
         }
-
-
     }
 
     /**
@@ -69,13 +65,11 @@ public class SpreadsheetPluginTracker extends ServiceTracker {
      */
     @Override
     public void removedService(final ServiceReference ref, final Object svc) {
-        System.out.println("Removed spreadsheet plugin");
-        if (svc instanceof PluginSpreadsheetWidget) {
-            PluginSpreadsheetWidget widget = new DefaultSpreadsheetWidget(context, ref);
-            processPlugin(REMOVED, widget);
-
+        System.out.println("Removed ontology search plugin");
+        if (svc instanceof PluginOntologyCVSearch) {
+            PluginOntologyCVSearch menu = new DefaultOntologySearchWidget(context, ref);
+            processPlugin(REMOVED, menu);
         }
-
     }
 
     /**
@@ -85,20 +79,20 @@ public class SpreadsheetPluginTracker extends ServiceTracker {
      *
      * @param action The type of action associated with the notification.
      */
-    private void processPlugin(final int action, final PluginSpreadsheetWidget widget) {
+    private void processPlugin(final int action, final PluginOntologyCVSearch menu) {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
                 switch (action) {
                     case MODIFIED:
-                        widget.registerCellEditor();
+                        menu.registerCellEditor();
 
                     case ADDED:
-                        widget.registerCellEditor();
+                        menu.registerCellEditor();
                         break;
 
                     case REMOVED:
-                        widget.deregisterCellEditor();
+                        menu.deregisterCellEditor();
                         break;
                 }
             }
