@@ -198,7 +198,7 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         Map<String, Object> configMap = new HashMap<String, Object>();
         configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "org.isatools.isacreator.plugins, org.isatools.isacreator.io.importisa, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service," +
+                "org.isatools.isacreator.plugins, uk.ac.ebi.utils.xml, uk.ac.ebi.utils.io, uk.ac.ebi.utils.xml, org.isatools.isacreator.ontologymanager.common, org.isatools.isacreator.ontologymanager, org.isatools.isacreator.io.importisa, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service," +
                         "org.isatools.isacreator.configuration.io, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, " +
                         "org.isatools.errorreporter.ui, org.apache.xmlbeans, org.apache.log4j, org.apache.log4j.spi, org.isatools.isatab.configurator.schema," +
                         "org.isatools.isacreator.effects, org.isatools.isacreator.spreadsheet, org.isatools.isacreator.apiutils, " +

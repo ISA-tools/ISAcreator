@@ -28,13 +28,7 @@ public class SpreadsheetPluginRegistry {
        Returns the column names this editor will be associated with
     */
     public static PluginSpreadsheetWidget findPluginForColumn(String columnName) {
-
         for (PluginSpreadsheetWidget widget : spreadsheetPlugins) {
-
-            for (String column : widget.targetColumns()) {
-                System.out.println(column);
-            }
-
             if (widget.targetColumns().contains(columnName)) {
                 return widget;
             }

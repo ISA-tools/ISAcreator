@@ -1,6 +1,5 @@
 package org.isatools.isacreator.plugins;
 
-import org.isatools.isacreator.plugins.host.service.Plugin;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.osgi.framework.BundleContext;
@@ -17,7 +16,7 @@ import java.util.Set;
  *         Date: 29/09/2011
  *         Time: 15:00
  */
-public class DefaultSpreadsheetWidget implements Plugin, PluginSpreadsheetWidget {
+public class DefaultSpreadsheetWidget implements PluginSpreadsheetWidget {
 
     private BundleContext context;
     private boolean disposed = false;

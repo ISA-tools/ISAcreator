@@ -1,10 +1,14 @@
 package org.isatools.isacreator.plugins.registries;
 
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by the ISA team
@@ -28,6 +32,21 @@ public class OntologySearchPluginRegistry {
         if (ontologyCVSearchPlugins.contains(plugin)) {
             ontologyCVSearchPlugins.remove(plugin);
         }
+    }
+
+    public static Map<OntologySourceRefObject, List<OntologyTerm>> compositeSearch(String term) {
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+
+        for (PluginOntologyCVSearch searchResource : ontologyCVSearchPlugins) {
+            System.out.println("Executing CV/Ontology search on plugin resource");
+            result.putAll(searchResource.searchRepository(term));
+        }
+
+        return result;
+    }
+
+    public static boolean searchResourcesAvailable() {
+        return ontologyCVSearchPlugins.size() > 0;
     }
 
 }

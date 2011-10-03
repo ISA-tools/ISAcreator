@@ -1,6 +1,5 @@
 package org.isatools.isacreator.plugins;
 
-import org.isatools.isacreator.plugins.host.service.Plugin;
 import org.isatools.isacreator.plugins.host.service.PluginMenu;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -12,7 +11,7 @@ import javax.swing.*;
  * Implementation help and sample provided from http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
  * and http://karussell.wordpress.com/2009/09/16/plugable-swing-a-hello-world-osgi-example/
  */
-public class DefaultPluginMenu implements Plugin, PluginMenu {
+public class DefaultPluginMenu implements PluginMenu {
 
     private BundleContext context;
     private boolean disposed = false;

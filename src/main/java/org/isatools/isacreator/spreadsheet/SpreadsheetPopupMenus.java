@@ -276,10 +276,6 @@ public class SpreadsheetPopupMenus {
             }
         }
 
-        // todo add fields to the list which are allowed to appear multiple times. Code should be integrated with the above line...
-
-        // todo allow popup to be shown when clicking on column headers
-
         addColumn.add(new JSeparator());
 
         addColumn.add(addCharacteristic);

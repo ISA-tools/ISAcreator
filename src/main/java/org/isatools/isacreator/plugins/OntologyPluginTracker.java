@@ -1,6 +1,5 @@
 package org.isatools.isacreator.plugins;
 
-import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.plugins.host.service.PluginMenu;
 import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
 import org.osgi.framework.BundleContext;
@@ -21,7 +20,7 @@ public class OntologyPluginTracker extends ServiceTracker {
     private final static int ADDED = 1, REMOVED = 2, MODIFIED = 3;
 
     public OntologyPluginTracker(BundleContext context) {
-        super(context, PluginMenu.class.getName(), null);
+        super(context, PluginOntologyCVSearch.class.getName(), null);
     }
 
     /**
@@ -79,20 +78,20 @@ public class OntologyPluginTracker extends ServiceTracker {
      *
      * @param action The type of action associated with the notification.
      */
-    private void processPlugin(final int action, final PluginOntologyCVSearch menu) {
+    private void processPlugin(final int action, final PluginOntologyCVSearch ontologyCVSearch) {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
                 switch (action) {
                     case MODIFIED:
-                        menu.registerCellEditor();
+                        ontologyCVSearch.registerSearch();
 
                     case ADDED:
-                        menu.registerCellEditor();
+                        ontologyCVSearch.registerSearch();
                         break;
 
                     case REMOVED:
-                        menu.deregisterCellEditor();
+                        ontologyCVSearch.deregisterSearch();
                         break;
                 }
             }

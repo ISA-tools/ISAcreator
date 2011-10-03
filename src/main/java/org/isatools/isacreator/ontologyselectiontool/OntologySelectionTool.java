@@ -61,6 +61,7 @@ import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.optionselector.OptionGroup;
+import org.isatools.isacreator.plugins.registries.OntologySearchPluginRegistry;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -511,9 +512,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private void createOntologySearchSpanOptions(boolean recommendedOntologiesAvailable) {
         searchSpan = new OptionGroup<String>(OptionGroup.HORIZONTAL_ALIGNMENT, true);
 
+        // if we have search resources available via the plugin mechanism, then we should encourage searching on this resource.
+        if (OntologySearchPluginRegistry.searchResourcesAvailable()) {
+            recommendedOntologiesAvailable = true;
+        }
+
         searchSpan.addOptionItem("Recommended Ontologies", recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
         searchSpan.addOptionItem("All Ontologies", !recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
-
     }
 
     /**
@@ -867,10 +872,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                     result.putAll(bioportalResult);
                                 }
 
+                                result.putAll(OntologySearchPluginRegistry.compositeSearch(searchField.getText()));
+
                                 System.out.println("almalgamated result is " + result.size() + " terms");
 
-
                                 OntologySourceManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
+
+
                             } else {
 
                                 OntologySourceManager.placeRecommendedOntologyInformationInRecords(recommendedOntologies.values());
@@ -893,6 +901,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                     System.out.println("bioportal result size is : " + bioportalResult.size());
                                     result.putAll(bioportalResult);
                                 }
+
+                                // by default, for now we'll assume that reading from the recommended ontologies will also
+                                // encompass plugged in ontology resources.
+                                result.putAll(OntologySearchPluginRegistry.compositeSearch(searchField.getText()));
                             }
 
                             // only add to the cache if we got a result!

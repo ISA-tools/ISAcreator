@@ -1,6 +1,5 @@
 package org.isatools.isacreator.plugins;
 
-import org.isatools.isacreator.plugins.host.service.Plugin;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 
 import javax.swing.*;
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * Created by the ISA team
  */
-public abstract class AbstractPluginSpreadsheetWidget extends JTextField implements Plugin, PluginSpreadsheetWidget, TableCellEditor {
+public abstract class AbstractPluginSpreadsheetWidget extends JTextField implements PluginSpreadsheetWidget, TableCellEditor {
 
     protected transient List<CellEditorListener> listeners;
     protected JTable currentTable;
