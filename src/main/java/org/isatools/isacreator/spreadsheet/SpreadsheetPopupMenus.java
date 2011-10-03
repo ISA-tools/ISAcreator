@@ -441,7 +441,8 @@ public class SpreadsheetPopupMenus {
                 !columnLC.contains("performer") &&
                 !columnLC.contains("provider") &&
                 !columnLC.contains("comment") &&
-                !columnLC.contains("material type")) {
+                !columnLC.contains("material type")
+                && spreadsheet.getStudyDataEntryEnvironment() != null) {
             popup.add(addColumn);
         }
         if (spreadsheet.hiddenColumns.size() > 0) {

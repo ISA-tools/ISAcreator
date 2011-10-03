@@ -157,6 +157,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     /**
      * OntologySelectionTool constructor.
+     * <p/>
+     * todo if there are ontology search plugins available, allow the user to add them to the search results.
      *
      * @param multipleTermsAllowed  - Whether or not multiple terms are allowed to be selected.
      * @param recommendedOntologies - the recommended ontology source e.g. EFO, UO, NEWT, CHEBI.

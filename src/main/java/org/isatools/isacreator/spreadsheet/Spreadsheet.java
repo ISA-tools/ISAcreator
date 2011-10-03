@@ -896,8 +896,30 @@ public class Spreadsheet extends JComponent implements
             }
         });
 
-        addSpecialButtons();
+        addButtons();
 
+        if (studyDataEntryEnvironment != null) {
+            JPanel labelContainer = new JPanel(new GridLayout(1, 1));
+            labelContainer.setBackground(UIHelper.BG_COLOR);
+
+            JLabel lab = UIHelper.createLabel(spreadsheetTitle, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, JLabel.RIGHT);
+            lab.setBackground(UIHelper.BG_COLOR);
+            lab.setVerticalAlignment(JLabel.CENTER);
+            lab.setPreferredSize(new Dimension(200, 30));
+
+            labelContainer.add(lab);
+
+            spreadsheetFunctionPanel.add(labelContainer);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(10));
+        }
+
+        add(spreadsheetFunctionPanel, BorderLayout.NORTH);
+    }
+
+    /**
+     * This method is meant to be overridden in the event that one wishes to add in custom functions to the spreadsheet UI
+     */
+    public void addButtons() {
         spreadsheetFunctionPanel.add(addRow);
         spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
         spreadsheetFunctionPanel.add(deleteRow);
@@ -933,25 +955,6 @@ public class Spreadsheet extends JComponent implements
         addParameter.setEnabled(false);
         addCharacteristic.setEnabled(false);
 
-        JPanel labelContainer = new JPanel(new GridLayout(1, 1));
-        labelContainer.setBackground(UIHelper.BG_COLOR);
-
-        JLabel lab = UIHelper.createLabel(spreadsheetTitle, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, JLabel.RIGHT);
-        lab.setBackground(UIHelper.BG_COLOR);
-        lab.setVerticalAlignment(JLabel.CENTER);
-        lab.setPreferredSize(new Dimension(200, 30));
-
-        labelContainer.add(lab);
-
-        spreadsheetFunctionPanel.add(labelContainer);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(10));
-        add(spreadsheetFunctionPanel, BorderLayout.NORTH);
-    }
-
-    /**
-     * This method is meant to be overridden in the event that one wishes to add in custom functions to the spreadsheet UI
-     */
-    public void addSpecialButtons() {
     }
 
     public JPanel getSpreadsheetFunctionPanel() {
