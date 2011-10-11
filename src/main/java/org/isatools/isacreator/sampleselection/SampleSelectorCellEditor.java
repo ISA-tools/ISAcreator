@@ -23,7 +23,11 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
     @Override
     protected void updateContent() {
         if (StudyUtils.shouldRunUpdate(study.getStudyId())) {
-            selector.updateContent(StudyUtils.getStudySampleInformation(study).values());
+            try {
+                selector.updateContent(StudyUtils.getStudySampleInformation(study).values());
+            } catch (Exception e) {
+                System.out.println("Problem encountered when updating study sample list.");
+            }
         }
 
     }
@@ -136,9 +140,13 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
     public void instantiateSelectorIfRequired() {
         if (selector == null) {
-            selector = new AutoCompleteUI<SampleInformation>(this, StudyUtils.getStudySampleInformation(study).values(), new SampleSelectionListCellRenderer());
-            selector.createGUI();
-            selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
+            try {
+                selector = new AutoCompleteUI<SampleInformation>(this, StudyUtils.getStudySampleInformation(study).values(), new SampleSelectionListCellRenderer());
+                selector.createGUI();
+                selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
+            } catch (Exception e) {
+                System.out.println("Study samples haven't been updated yet.");
+            }
         }
 
         updateContent();

@@ -213,11 +213,8 @@ public class TableReferenceObject implements Serializable {
     }
 
     private String[] getTableColumns() {
-        String[] tableColumns = new String[tableConfig.getFields().size()];
-        int field = 0;
-
+        List<String> finalFields = new ArrayList<String>();
         List<FieldObject> fields = tableConfig.getFields();
-
 
         // ensure the correctness of the field order!
         Collections.sort(fields,
@@ -236,11 +233,14 @@ public class TableReferenceObject implements Serializable {
                 });
 
         for (FieldObject fo : fields) {
-            tableColumns[field] = fo.getFieldName();
-            field++;
+            if (!fo.isHidden()) {
+                finalFields.add(fo.getFieldName());
+            } else {
+                System.out.println("Not adding " + fo.getFieldName());
+            }
         }
 
-        return tableColumns;
+        return finalFields.toArray(new String[finalFields.size()]);
     }
 
     public Map<Integer, String[]> getTableStructure() {
@@ -531,7 +531,9 @@ public class TableReferenceObject implements Serializable {
                 });
 
         for (FieldObject sortedField : fields) {
-            headers.add(sortedField.getFieldName());
+            if (!sortedField.isHidden()) {
+                headers.add(sortedField.getFieldName());
+            }
         }
 
         return headers;
