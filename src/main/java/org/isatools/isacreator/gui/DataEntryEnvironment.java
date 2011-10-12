@@ -101,6 +101,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     private Controller newSubmission;
     private DefaultMutableTreeNode lastAddedNode = null;
 
+    private DefaultMutableTreeNode selectedNode;
+
     public DataEntryEnvironment(ISAcreator mGUI) {
         super();
 
@@ -738,8 +740,12 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         add(westPanel, BorderLayout.WEST);
     }
 
+    public DefaultMutableTreeNode getSelectedNodeInOverviewTree() {
+        return selectedNode;
+    }
+
     public void valueChanged(TreeSelectionEvent event) {
-        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
+        selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
 
         if (selectedNode == null) {
             return;
