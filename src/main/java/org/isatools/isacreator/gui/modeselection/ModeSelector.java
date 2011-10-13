@@ -4,6 +4,7 @@ import com.sun.awt.AWTUtilities;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoActivator;
+import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -36,10 +37,8 @@ public class ModeSelector extends JFrame implements BundleActivator {
                 ModeSelector.class.getResource("/dependency-injections/gui-package.properties"));
     }
 
-
     private JLabel lightMode;
     private JLabel normalMode;
-
     private Box optionContainer;
     private JPanel loadingContainer;
 
@@ -51,7 +50,6 @@ public class ModeSelector extends JFrame implements BundleActivator {
     }
 
     private void createGUI(final BundleContext context) {
-
         setLayout(new BorderLayout());
         setAlwaysOnTop(true);
         setUndecorated(true);
@@ -162,7 +160,15 @@ public class ModeSelector extends JFrame implements BundleActivator {
     public void start(final BundleContext context) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                createGUI(context);
+                if (GraphicsUtils.isWindowTransparencySupported()) {
+                    System.out.println("Creating GUI");
+                    createGUI(context);
+                } else {
+                    ISAcreator main = new ISAcreator(Mode.NORMAL_MODE, context);
+                    main.createGUI();
+                    dispose();
+                }
+
             }
         });
     }

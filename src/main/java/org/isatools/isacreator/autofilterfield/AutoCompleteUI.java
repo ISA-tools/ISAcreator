@@ -6,6 +6,7 @@ import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.autofilteringlist.FilterField;
 import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
@@ -175,13 +176,21 @@ public class AutoCompleteUI<T> extends JWindow implements ActionListener, KeyLis
 
 
     public void fadeInWindow() {
-        animationDirection = INCOMING;
-        startAnimation();
+        if (GraphicsUtils.isWindowTransparencySupported()) {
+            animationDirection = INCOMING;
+            startAnimation();
+        } else {
+            setVisible(true);
+        }
     }
 
     public void fadeOutWindow() {
-        animationDirection = OUTGOING;
-        startAnimation();
+        if (GraphicsUtils.isWindowTransparencySupported()) {
+            animationDirection = OUTGOING;
+            startAnimation();
+        } else {
+            setVisible(false);
+        }
 
     }
 
@@ -197,6 +206,7 @@ public class AutoCompleteUI<T> extends JWindow implements ActionListener, KeyLis
         animating = true;
 
         if (!isShowing()) {
+
             AWTUtilities.setWindowOpacity(this, 0f);
             repaint();
             setVisible(true);

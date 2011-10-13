@@ -11,6 +11,7 @@ import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
+import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Assay;
@@ -70,7 +71,9 @@ public class ValidateUI extends JFrame {
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
 
-        AWTUtilities.setWindowOpacity(this, DESIRED_OPACITY);
+        if (GraphicsUtils.isWindowTransparencySupported()) {
+            AWTUtilities.setWindowOpacity(this, DESIRED_OPACITY);
+        }
 
         HUDTitleBar titlePanel = new HUDTitleBar(
                 mode == OperatingMode.VALIDATE ? validateIcon : convertIcon,
