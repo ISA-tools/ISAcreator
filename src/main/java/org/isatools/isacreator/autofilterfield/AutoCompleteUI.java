@@ -23,7 +23,7 @@ import java.util.Set;
  * The AutoCompleteUI class provides the user interface to allow users to select study samples from an autocompleting list
  * of Study sample ids. It also allows the user to propagate metadata from the study sample file directly into the Assay file.
  */
-public class AutoCompleteUI<T> extends JWindow implements ActionListener, KeyListener {
+public class AutoCompleteUI<T> extends JWindow implements ActionListener {
 
     public static final int INCOMING = 1;
     public static final int OUTGOING = -1;
@@ -65,7 +65,6 @@ public class AutoCompleteUI<T> extends JWindow implements ActionListener, KeyLis
 
         setAlwaysOnTop(true);
 
-        addKeyListener(this);
 
         setBackground(UIHelper.BG_COLOR);
 
@@ -248,36 +247,6 @@ public class AutoCompleteUI<T> extends JWindow implements ActionListener, KeyLis
         animating = false;
 
         repaint();
-    }
-
-    public void keyTyped(KeyEvent keyEvent) {
-    }
-
-    public void keyPressed(KeyEvent keyEvent) {
-
-        if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
-            selectNextItem();
-        }
-
-        if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
-            selectPreviousItem();
-        }
-
-        if (keyEvent.getKeyCode() == KeyEvent.VK_ESCAPE) {
-
-            fadeOutWindow();
-        }
-
-        if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
-
-            if (!filterList.isSelectionEmpty()) {
-                filterField.setText(filterList.getSelectedTerm());
-                firePropertyChange("itemSelected", "", filterList.getSelectedValue());
-            }
-        }
-    }
-
-    public void keyReleased(KeyEvent keyEvent) {
     }
 
     public void updateContent(Collection<T> studySampleInformation) {

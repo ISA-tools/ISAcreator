@@ -275,12 +275,22 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
     }
 
     public void keyTyped(KeyEvent keyEvent) {
+        processKeyInputEvent(keyEvent);
     }
 
     public void keyPressed(KeyEvent keyEvent) {
+        processKeyInputEvent(keyEvent);
+    }
+
+    public void keyReleased(KeyEvent keyEvent) {
+
+    }
+
+    private void processKeyInputEvent(KeyEvent keyEvent) {
         instantiateSelectorIfRequired();
 
         if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
+
             if (!selector.isShowing()) {
                 showSelector();
             } else {
@@ -303,7 +313,6 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
         }
 
         if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
-
             if (selector.getSelectedItem() != null) {
                 setText(selector.getSelectedItem().toString());
             } else {
@@ -311,12 +320,7 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
             }
 
             performAdditionalTasks();
-
         }
-    }
-
-    public void keyReleased(KeyEvent keyEvent) {
-
     }
 
     public abstract void performAdditionalTasks();

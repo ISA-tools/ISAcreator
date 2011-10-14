@@ -68,6 +68,7 @@ public class AutoFilterCombo extends JComboBox {
             public void keyReleased(KeyEvent e) {
                 super.keyPressed(e);
 
+
                 // as long as the key pressed isnt up arrow, down arrow, or return, the proceed
                 if ((e.getKeyCode() != 38) && (e.getKeyCode() != 40) &&
                         (e.getKeyCode() != 10)) {
