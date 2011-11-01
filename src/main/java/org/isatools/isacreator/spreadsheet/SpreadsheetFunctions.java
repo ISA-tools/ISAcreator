@@ -734,13 +734,13 @@ public class SpreadsheetFunctions {
     public int getModelIndexForColumn(String colName) {
         Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
         // if the column can be referenced multiple times, then we should return false in this check.
-        System.out.println(colName);
+
         if (colName != null) {
             if (!spreadsheet.getTableReferenceObject().acceptsMultipleValues(colName)) {
                 while (columns.hasMoreElements()) {
                     TableColumn col = columns.nextElement();
 
-                    if (col.getHeaderValue().toString().equals(colName)) {
+                    if (col.getHeaderValue().toString().equalsIgnoreCase(colName)) {
                         return col.getModelIndex();
                     }
                 }

@@ -89,7 +89,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             removeStudyIconOver, removeStudyIconInactive, navigationPanelHeader, informationPanelHeader,
             warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp;
 
-
     private DefaultMutableTreeNode overviewTreeRoot;
     private DefaultTreeModel overviewTreeModel;
     private Investigation investigation;

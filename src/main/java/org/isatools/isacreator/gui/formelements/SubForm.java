@@ -221,12 +221,13 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         lockedTable = new ExtendedJTable(model, rowEditor);
         setTableProperties(lockedTable, true);
 
-        //lockedTable.getColumnModel().getColumn(0).setPreferredWidth(220);
         scrollTable = new ExtendedJTable(model, rowEditor);
         setTableProperties(scrollTable, false);
         scrollTable.getSelectionModel()
                 .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         scrollTable.getTableHeader().setResizingAllowed(true);
+
+        // todo make scrollable...
 
         try {
             lockedTable.setDefaultRenderer(Class.forName("java.lang.Object"),
@@ -256,7 +257,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         JTableHeader lockedHeader = lockedTable.getTableHeader();
         setHeaderProperties(lockedTable, lockedTableHeaderRenderer);
         lockedHeader.setReorderingAllowed(false);
-        lockedHeader.setResizingAllowed(false);
+//        lockedHeader.setResizingAllowed(false);
         frozenTable.setCorner(JScrollPane.UPPER_LEFT_CORNER, lockedHeader);
 
 

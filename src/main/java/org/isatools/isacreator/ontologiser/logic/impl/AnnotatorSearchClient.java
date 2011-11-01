@@ -1,5 +1,6 @@
 package org.isatools.isacreator.ontologiser.logic.impl;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
@@ -48,6 +49,15 @@ public class AnnotatorSearchClient {
             method.addParameter("textToAnnotate", flattenSetToString(terms));
             method.addParameter("apikey", "fd88ee35-6995-475d-b15a-85f1b9dd7a42");
             //method.addParameter("format", "asText");
+
+            try {
+                HostConfiguration configuration = new HostConfiguration();
+                configuration.setHost("http://rest.bioontology.org");
+                configuration.setProxy(System.getProperty("http.proxyHost"), Integer.valueOf(System.getProperty("http.proxyPort")));
+                client.setHostConfiguration(configuration);
+            } catch (Exception e) {
+                System.err.println("Problem encountered setting proxy for annotator search");
+            }
 
             // Execute the POST method
             int statusCode = client.executeMethod(method);

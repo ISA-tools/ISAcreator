@@ -62,7 +62,7 @@ public class PropertyFileIO {
             if (f.exists()) {
                 is = new FileInputStream(f);
                 p.load(is);
-
+                setProxy(p);
                 return p;
             }
         } catch (IOException e) {
@@ -107,8 +107,13 @@ public class PropertyFileIO {
         try {
             System.getProperties().put("proxySet", p.getProperty("httpProxy.usedLast"));
 
+            System.out.println("Setting http.proxyHost to " + p.getProperty("httpProxy.hostname"));
+
             System.getProperties().put("http.proxyHost", Boolean.valueOf(p.getProperty("httpProxy.usedLast"))
                     ? p.getProperty("httpProxy.hostname") : "");
+
+
+            System.out.println("Setting http.proxyPort to " + p.getProperty("httpProxy.portNumber"));
 
             System.getProperties().put("http.proxyPort", Boolean.valueOf(p.getProperty("httpProxy.usedLast"))
                     ? p.getProperty("httpProxy.portNumber") : "");
