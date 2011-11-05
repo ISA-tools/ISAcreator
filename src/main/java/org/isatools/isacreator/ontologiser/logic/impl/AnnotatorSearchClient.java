@@ -30,6 +30,15 @@ public class AnnotatorSearchClient {
     public static final String BASE_QUERY_URL = "http://rest.bioontology.org/obs/annotator";
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms) {
+        Set<AcceptedOntologies> toIgnoreInSearch = new HashSet<AcceptedOntologies>();
+        toIgnoreInSearch.add(AcceptedOntologies.PLANT_ONTOLOGY);
+        toIgnoreInSearch.add(AcceptedOntologies.BAO);
+
+        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(
+                toIgnoreInSearch));
+    }
+
+    public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn) {
         try {
             HttpClient client = new HttpClient();
             PostMethod method = new PostMethod(BASE_QUERY_URL);
@@ -37,18 +46,11 @@ public class AnnotatorSearchClient {
             // Configure the form parameters
             method.addParameter("wholeWordOnly", "true");
             method.addParameter("scored", "true");
-
-            Set<AcceptedOntologies> toIgnoreInSearch = new HashSet<AcceptedOntologies>();
-            toIgnoreInSearch.add(AcceptedOntologies.PLANT_ONTOLOGY);
-            toIgnoreInSearch.add(AcceptedOntologies.BAO);
-
-            method.addParameter("ontologiesToKeepInResult", AcceptedOntologies.getAllowedOntologyIds(
-                    toIgnoreInSearch));
+            method.addParameter("ontologiesToKeepInResult", ontologiesToSearchOn);
             method.addParameter("isVirtualOntologyId", "true");
             method.addParameter("withSynonyms", "true");
             method.addParameter("textToAnnotate", flattenSetToString(terms));
             method.addParameter("apikey", "fd88ee35-6995-475d-b15a-85f1b9dd7a42");
-            //method.addParameter("format", "asText");
 
             try {
                 HostConfiguration configuration = new HostConfiguration();
@@ -59,9 +61,7 @@ public class AnnotatorSearchClient {
                 System.err.println("Problem encountered setting proxy for annotator search");
             }
 
-            // Execute the POST method
             int statusCode = client.executeMethod(method);
-
             if (statusCode != -1) {
                 String contents = method.getResponseBodyAsString();
 
