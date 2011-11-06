@@ -35,16 +35,16 @@ public class AnnotatorSearchClient {
         toIgnoreInSearch.add(AcceptedOntologies.BAO);
 
         return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(
-                toIgnoreInSearch));
+                toIgnoreInSearch), true);
     }
 
-    public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn) {
+    public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn, boolean wholeWordOnly) {
         try {
             HttpClient client = new HttpClient();
             PostMethod method = new PostMethod(BASE_QUERY_URL);
 
             // Configure the form parameters
-            method.addParameter("wholeWordOnly", "true");
+            method.addParameter("wholeWordOnly", wholeWordOnly ? " true" : "false");
             method.addParameter("scored", "true");
             method.addParameter("ontologiesToKeepInResult", ontologiesToSearchOn);
             method.addParameter("isVirtualOntologyId", "true");
