@@ -56,6 +56,8 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -107,7 +109,7 @@ public class SpreadsheetFunctions {
      * @param prevTerm - the term to replace
      * @param newTerm  - the new term to be used instead.
      */
-    public void susbstituteTermsInColumn(String colName, String prevTerm, String newTerm) {
+    public void substituteTermsInColumn(String colName, String prevTerm, String newTerm) {
 
         Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
 

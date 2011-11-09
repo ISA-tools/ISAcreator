@@ -89,7 +89,7 @@ import java.util.List;
  * @author Eamonn Maguire
  */
 public class Spreadsheet extends JComponent implements
-        MouseListener, ListSelectionListener, PropertyChangeListener, TableColumnModelListener {
+        MouseListener, ListSelectionListener, PropertyChangeListener, TableColumnModelListener, ActionListener {
 
     private static final Logger log = Logger.getLogger(Spreadsheet.class.getName());
 
@@ -112,6 +112,7 @@ public class Spreadsheet extends JComponent implements
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
         ResourceInjector.get("spreadsheet-package.style").load(
                 Spreadsheet.class.getResource("/dependency-injections/spreadsheet-package.properties"));
+
     }
 
     @InjectedResource
@@ -329,6 +330,9 @@ public class Spreadsheet extends JComponent implements
 
 
         table.setAutoscrolls(true);
+
+        // assign copy/paste listener
+        new CopyPasteAdaptor(this);
 
         JScrollPane pane = new JScrollPane(table,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -1652,6 +1656,24 @@ public class Spreadsheet extends JComponent implements
                         "</html>");
             }
         }
+    }
+
+    public void setCopyPasteListener(ActionListener listener) {
+        KeyStroke copy = KeyStroke.getKeyStroke(KeyEvent.VK_C,
+                ActionEvent.CTRL_MASK, false);
+
+        // Identifying the copy KeyStroke user can modify this
+        // to copy on some other Key combination.
+        KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                ActionEvent.CTRL_MASK, false);
+
+        getTable().registerKeyboardAction(listener, "Copy", copy, JComponent.WHEN_FOCUSED);
+        getTable().registerKeyboardAction(listener, "Paste", paste,
+                JComponent.WHEN_FOCUSED);
+    }
+
+    public void actionPerformed(ActionEvent actionEvent) {
+
     }
 
     /**
