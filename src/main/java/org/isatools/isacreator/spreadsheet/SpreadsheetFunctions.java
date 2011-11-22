@@ -464,6 +464,9 @@ public class SpreadsheetFunctions {
                 spreadsheet.spreadsheetModel.extendedSetSelection(affectedRange);
 
                 spreadsheet.getTable().repaint();
+
+                spreadsheet.notifyObservers(SpreadsheetEvent.PASTE);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -502,6 +505,8 @@ public class SpreadsheetFunctions {
             if (isCut) {
                 spreadsheet.spreadsheetModel.clearRange(toUse);
             }
+
+            spreadsheet.notifyObservers(SpreadsheetEvent.COPY);
         } else {
             System.out.println("no rows are selected so no copying has taken place.");
         }

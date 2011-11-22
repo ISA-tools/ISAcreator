@@ -89,7 +89,8 @@ import java.util.List;
  * @author Eamonn Maguire
  */
 public class Spreadsheet extends JComponent implements
-        MouseListener, ListSelectionListener, PropertyChangeListener, TableColumnModelListener, ActionListener {
+        MouseListener, ListSelectionListener, PropertyChangeListener, TableColumnModelListener, ActionListener,
+        CopyPasteSubject {
 
     private static final Logger log = Logger.getLogger(Spreadsheet.class.getName());
 
@@ -131,6 +132,8 @@ public class Spreadsheet extends JComponent implements
 
     protected JOptionPane optionPane;
     private CustomTable table;
+
+    private List<CopyPasteObserver> observers;
 
 
     private TableGroupInfo tableGroupInformation;
@@ -236,6 +239,8 @@ public class Spreadsheet extends JComponent implements
     public void instantiateSpreadsheet() {
 
         ResourceInjector.get("spreadsheet-package.style").inject(this);
+
+        observers = new ArrayList<CopyPasteObserver>();
 
         spreadsheetPopups = new SpreadsheetPopupMenus(this);
         spreadsheetFunctions = new SpreadsheetFunctions(this);
@@ -961,10 +966,6 @@ public class Spreadsheet extends JComponent implements
 
     }
 
-    public JPanel getSpreadsheetFunctionPanel() {
-        return spreadsheetFunctionPanel;
-    }
-
     /**
      * Reorders the columns defined in the table to ensure that parameters occur the protocol ref they were added with and
      *
@@ -1319,15 +1320,6 @@ public class Spreadsheet extends JComponent implements
     }
 
     /**
-     * Add a listener to be notified when the selected range changes
-     *
-     * @param spreadsheetSelectionListener The listener to add
-     */
-    public void addSelectionListener(SpreadsheetSelectionListener spreadsheetSelectionListener) {
-        listenerList.add(SpreadsheetSelectionListener.class, spreadsheetSelectionListener);
-    }
-
-    /**
      * Add a listener for undoable events
      *
      * @param l The listener to add
@@ -1658,23 +1650,28 @@ public class Spreadsheet extends JComponent implements
         }
     }
 
-    public void setCopyPasteListener(ActionListener listener) {
-        KeyStroke copy = KeyStroke.getKeyStroke(KeyEvent.VK_C,
-                ActionEvent.CTRL_MASK, false);
-
-        // Identifying the copy KeyStroke user can modify this
-        // to copy on some other Key combination.
-        KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V,
-                ActionEvent.CTRL_MASK, false);
-
-        getTable().registerKeyboardAction(listener, "Copy", copy, JComponent.WHEN_FOCUSED);
-        getTable().registerKeyboardAction(listener, "Paste", paste,
-                JComponent.WHEN_FOCUSED);
-    }
-
     public void actionPerformed(ActionEvent actionEvent) {
 
     }
+
+    public void registerCopyPasteObserver(CopyPasteObserver observer) {
+        if (observer != null) {
+            observers.add(observer);
+        }
+    }
+
+    public void removeCopyPasteObserver(CopyPasteObserver observer) {
+        if (observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    public void notifyObservers(SpreadsheetEvent event) {
+        for (CopyPasteObserver observer : observers) {
+            observer.notifyOfEvent(event);
+        }
+    }
+
 
     /**
      * HeaderListener source partially from http://www.java2s.com/Code/Java/Swing-Components/SortableTableExample.htm, last accessed 09-08-2008

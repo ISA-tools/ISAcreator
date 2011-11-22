@@ -481,12 +481,12 @@ public class Study extends ISASection {
                                  String newProtocolName) {
         for (String key : assays.keySet()) {
             assays.get(key).getSpreadsheetUI().getTable()
-                    .getSpreadsheetFunctions().susbstituteTermsInColumn("Protocol REF",
+                    .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                     previousProtocolName, newProtocolName);
         }
 
         studySampleRecord.getSpreadsheetUI().getTable()
-                .getSpreadsheetFunctions().susbstituteTermsInColumn("Protocol REF",
+                .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                 previousProtocolName, newProtocolName);
 
         if (newProtocolName.equals("")) {
