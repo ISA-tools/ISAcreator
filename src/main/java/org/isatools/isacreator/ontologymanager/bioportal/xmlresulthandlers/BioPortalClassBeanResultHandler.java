@@ -47,14 +47,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * BioPortalClassBeanResultHandler
- *
- * @author eamonnmaguire
- * @date Feb 18, 2010
- */
-
-
 public class BioPortalClassBeanResultHandler {
 
 
@@ -91,6 +83,15 @@ public class BioPortalClassBeanResultHandler {
                     }
 
                 }
+            }
+        }
+
+        if (classBean.getDefinitionsArray() != null) {
+            for (DefinitionsDocument.Definitions definition : classBean.getDefinitionsArray()) {
+                for (String definitionString : definition.getStringArray()) {
+                    ontology.addToComments("definition", definitionString);
+                }
+
             }
         }
 
