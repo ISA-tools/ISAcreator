@@ -40,6 +40,7 @@ package org.isatools.isacreator.spreadsheet;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
@@ -56,8 +57,6 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -909,13 +908,17 @@ public class SpreadsheetFunctions {
         return col;
     }
 
+    protected void addCellEditor(TableColumn col) {
+        addCellEditor(col, null);
+    }
+
     /**
      * Recovers cell editor for a field for attachment to a column
      *
      * @param col - Column to attach a custom cell editor to
      */
     @SuppressWarnings({"ConstantConditions"})
-    protected void addCellEditor(TableColumn col) {
+    protected void addCellEditor(TableColumn col, String previousColumnName) {
         ValidationObject vo = spreadsheet.getTableReferenceObject().getValidationConstraints(col.getHeaderValue()
                 .toString());
         DataTypes classType = spreadsheet.getTableReferenceObject().getColumnType(col.getHeaderValue().toString());
@@ -948,9 +951,24 @@ public class SpreadsheetFunctions {
         }
 
         if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.ONTOLOGY_TERM) {
+
+            Map<String, RecommendedOntology> recommendedOntologyMap = null;
+            if (columnName.equalsIgnoreCase("unit")) {
+                // we should be keeping note of the previous value, and automatically link this up with the unit.
+                // If no link, is found, the fall back is to use no recommended ontology for that field.
+                if (previousColumnName != null) {
+                    System.out.println("Finding unit after " + previousColumnName);
+                    FieldObject unitField = spreadsheet.getTableReferenceObject().getNextUnitField(previousColumnName);
+                    if (unitField != null) {
+                        recommendedOntologyMap = unitField.getRecommmendedOntologySource();
+                    }
+                }
+            } else {
+                recommendedOntologyMap = spreadsheet.getTableReferenceObject().getRecommendedSource(columnName);
+            }
+
             col.setCellEditor(new OntologyCellEditor(spreadsheet.getTableReferenceObject().acceptsMultipleValues(columnName),
-                    spreadsheet.getTableReferenceObject().forceOntology(columnName),
-                    spreadsheet.getTableReferenceObject().getRecommendedSource(columnName)));
+                    spreadsheet.getTableReferenceObject().forceOntology(columnName), recommendedOntologyMap));
             return;
         }
 

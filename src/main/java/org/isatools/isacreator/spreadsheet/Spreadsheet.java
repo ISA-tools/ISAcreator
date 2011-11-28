@@ -1421,17 +1421,22 @@ public class Spreadsheet extends JComponent implements
 
         TableColumnModel model = table.getColumnModel();
 
-        for (int i = 0; i < tableReferenceObject.getHeaders().size(); i++) {
-            if (!model.getColumn(i).getHeaderValue().toString().equals(TableReferenceObject.ROW_NO_TEXT)) {
-                model.getColumn(i).setHeaderRenderer(renderer);
-                model.getColumn(i)
+        String previousColumnName = null;
+        for (int columnIndex = 0; columnIndex < tableReferenceObject.getHeaders().size(); columnIndex++) {
+            if (!model.getColumn(columnIndex).getHeaderValue().toString().equals(TableReferenceObject.ROW_NO_TEXT)) {
+                model.getColumn(columnIndex).setHeaderRenderer(renderer);
+                model.getColumn(columnIndex)
                         .setPreferredWidth(spreadsheetFunctions.calcColWidths(
-                                model.getColumn(i).getHeaderValue().toString()));
+                                model.getColumn(columnIndex).getHeaderValue().toString()));
                 // add appropriate cell editor for cell.
-                spreadsheetFunctions.addCellEditor(model.getColumn(i));
+                spreadsheetFunctions.addCellEditor(model.getColumn(columnIndex), previousColumnName);
+
+                previousColumnName = model.getColumn(columnIndex).getHeaderValue().toString();
             } else {
-                model.getColumn(i).setHeaderRenderer(new RowNumberCellRenderer());
+                model.getColumn(columnIndex).setHeaderRenderer(new RowNumberCellRenderer());
             }
+
+
         }
 
         JTableHeader header = table.getTableHeader();

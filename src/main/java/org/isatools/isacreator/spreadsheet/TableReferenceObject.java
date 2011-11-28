@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.spreadsheet;
 
+import org.apache.commons.collections15.OrderedMap;
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
@@ -46,7 +48,6 @@ import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-
 
 import java.io.Serializable;
 import java.util.*;
@@ -64,31 +65,30 @@ public class TableReferenceObject implements Serializable {
 
     private List<List<String>> data = null;
     private Map<Integer, ListOrderedSet<Integer>> columnDependencies = new HashMap<Integer, ListOrderedSet<Integer>>();
-    private Map<String, FieldObject> fieldLookup = new HashMap<String, FieldObject>();
-    private Map<Integer, String[]> tableStructure;
+    private OrderedMap<String, FieldObject> fieldLookup = new ListOrderedMap<String, FieldObject>();
+    private Map<Integer, FieldObject> fieldIndexLookup = new HashMap<Integer, FieldObject>();
+
     private Map<Integer, FieldObject> preprocessedTableFields;
     private Vector<String> preDefinedHeaders;
-    private Map<String, OntologyTerm> definedOntologies = null;
-    private Map<String, FieldObject> missingFields = null;
 
-    // create protocols list, and a general structure which defines how table is to be laid out when being created by wizard
+    private Map<String, OntologyTerm> definedOntologies;
+    private Map<String, FieldObject> missingFields;
 
     public TableReferenceObject(TableConfiguration tableConfig) {
         this.tableConfig = tableConfig;
         this.tableName = tableConfig.getTableName();
-        this.tableStructure = tableConfig.getTableStructure();
+
+        missingFields = new HashMap<String, FieldObject>();
+        definedOntologies = new HashMap<String, OntologyTerm>();
 
         for (FieldObject fo : tableConfig.getFields()) {
             fieldLookup.put(fo.getFieldName(), fo);
         }
-
-        definedOntologies = new HashMap<String, OntologyTerm>();
     }
 
     public List<Protocol> constructProtocolObjects() {
         // we want to go through the array, building up lists of protocols and their parameters and units taking note
-        // of not only the protocols parameters and units in existence, but recording dependencies based on this information
-        // also!
+        // of not only the protocols parameters and units in existence, but recording dependencies based on this information also!
         List<Protocol> protocols = new ArrayList<Protocol>();
         String[] columns = getTableColumns();
 
@@ -169,18 +169,15 @@ public class TableReferenceObject implements Serializable {
         }
 
         return factors;
-
     }
 
 
     private void addProtocol(List<Protocol> protocolList, String listOfColumns, int protocolIndex) {
-
-
         // process list of columns to determine the protocol and respective parameters.
         if (protocolIndex > 0) {
             FieldObject protocolObject = tableConfig.getFields().get(protocolIndex);
 
-            StringBuffer parameters = new StringBuffer();
+            StringBuilder parameters = new StringBuilder();
             Set<String> parameterSet = extractValue(listOfColumns, ",", "Parameter");
             int count = 0;
             for (String param : parameterSet) {
@@ -244,7 +241,7 @@ public class TableReferenceObject implements Serializable {
     }
 
     public Map<Integer, String[]> getTableStructure() {
-        return tableStructure;
+        return tableConfig.getTableStructure();
     }
 
     public Map<String, FieldObject> getMissingFields() {
@@ -285,6 +282,7 @@ public class TableReferenceObject implements Serializable {
 
     public void addField(FieldObject fo) {
         fieldLookup.put(fo.getFieldName(), fo);
+        fieldIndexLookup.put(fo.getColNo(), fo);
     }
 
     public void addRowData(String[] headers, String[] rowData) {
@@ -397,7 +395,6 @@ public class TableReferenceObject implements Serializable {
     }
 
     public String getDefaultValue(String colName) {
-        System.out.println("getting default value " + colName);
         return fieldLookup.get(colName).getDefaultVal();
     }
 
@@ -480,8 +477,8 @@ public class TableReferenceObject implements Serializable {
     }
 
     public String getColumnFormatByName(String name) {
-        for (Integer i : tableStructure.keySet()) {
-            String[] val = tableStructure.get(i);
+        for (Integer i : getTableStructure().keySet()) {
+            String[] val = getTableStructure().get(i);
             if (val[0].equalsIgnoreCase(name)) {
                 return val[1];
             }
@@ -498,13 +495,51 @@ public class TableReferenceObject implements Serializable {
         return tfo.getRecommmendedOntologySource();
     }
 
+    public FieldObject getNextUnitField(String colName) {
+        // go through fields, find the one in the parameter, and then try and find the next unit for that field.
+
+        System.out.println("FieldIndexLookup contains...");
+        printFields();
+
+        FieldObject field = fieldLookup.get(colName);
+
+
+        int proposedColNumber = field.getColNo() + 1;
+
+        System.out.println("We propose that a unit may exist at " + proposedColNumber);
+
+        if (tableConfig == null) {
+            // for those tables built from their layout rather than directly from the tablerefenceobject
+            if (fieldIndexLookup.containsKey(proposedColNumber)) {
+                if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase("unit")) {
+                    System.out.println("We have a match!");
+                    return fieldIndexLookup.get(proposedColNumber);
+                }
+            }
+        } else {
+            if (tableConfig.getFields().size() > proposedColNumber) {
+                FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
+                System.out.println("candidateUnitField is " + candidateUnitField.getFieldName());
+
+                if (candidateUnitField.getFieldName().equalsIgnoreCase("unit")) {
+                    System.out.println("We have a match!");
+                    return candidateUnitField;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void printFields() {
+        for (Integer index : fieldIndexLookup.keySet()) {
+            System.out.println(index + " -> " + fieldIndexLookup.get(index).getFieldName());
+        }
+    }
+
     public Vector<String> getStdHeaders() {
 
         List<FieldObject> fields = new ArrayList<FieldObject>();
-
         Vector<String> headers = new Vector<String>();
-
-        // add empty column for row number
         headers.add(ROW_NO_TEXT);
 
         if (getTableFields() == null) {
@@ -521,14 +556,13 @@ public class TableReferenceObject implements Serializable {
                         if (o.getColNo() < o1.getColNo()) {
                             return -1;
                         }
-
                         if (o.getColNo() > o1.getColNo()) {
                             return 1;
                         }
-
                         return 0;
                     }
-                });
+                }
+        );
 
         for (FieldObject sortedField : fields) {
             if (!sortedField.isHidden()) {
