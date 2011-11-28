@@ -36,7 +36,6 @@
  */
 package org.isatools.isacreator.ontologybrowsingutils;
 
-import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
