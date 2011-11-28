@@ -68,6 +68,7 @@ public abstract class ISADialog extends JFrame {
                 ((JComponent) getContentPane())
                         .setBorder(new EtchedBorder(borderColor, borderColor));
                 instantiateFrame();
+
                 setAlwaysOnTop(true);
                 pack();
             }

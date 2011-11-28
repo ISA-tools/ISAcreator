@@ -210,9 +210,7 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
-            OntologyTerm result = handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
-
-            return result;
+            return handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
         } else {
             return null;
         }
