@@ -45,9 +45,7 @@ import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.filterableTree.FilterableJTree;
 import org.isatools.isacreator.common.filterableTree.TreeFilterModel;
-import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
-import org.isatools.isacreator.configuration.OntologyFormats;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
@@ -56,9 +54,12 @@ import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.ontologybrowsingutils.OntologyTreeItem;
 import org.isatools.isacreator.ontologybrowsingutils.WSOntologyTreeCreator;
-import org.isatools.isacreator.ontologymanager.*;
-import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.BioPortalClient;
+import org.isatools.isacreator.ontologymanager.OLSClient;
+import org.isatools.isacreator.ontologymanager.OntologyService;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.optionselector.OptionGroup;
 import org.isatools.isacreator.plugins.registries.OntologySearchPluginRegistry;
@@ -79,8 +80,6 @@ import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * OntologySelectionTool provides interface to connect to the OLS (OR bioPortal) to retrieve appropriate
@@ -804,12 +803,14 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     private String getRecommendedOntologyCacheIdentifier() {
-        StringBuffer identifer = new StringBuffer();
+        StringBuilder identifer = new StringBuilder();
 
-        for (String ontology : recommendedOntologies.keySet()) {
-            RecommendedOntology ro = recommendedOntologies.get(ontology);
-            String ontologyAbbr = ro.getOntology().getOntologyAbbreviation() == null ? "" : ro.getOntology().getOntologyAbbreviation();
-            identifer.append(ontologyAbbr);
+        if (recommendedOntologies != null) {
+            for (String ontology : recommendedOntologies.keySet()) {
+                RecommendedOntology ro = recommendedOntologies.get(ontology);
+                String ontologyAbbr = ro.getOntology().getOntologyAbbreviation() == null ? "" : ro.getOntology().getOntologyAbbreviation();
+                identifer.append(ontologyAbbr);
+            }
         }
 
         return identifer.toString();

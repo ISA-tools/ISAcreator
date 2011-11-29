@@ -1044,9 +1044,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
     private JPanel createStudyFactorsSubForm() {
         ArrayList<SubFormField> factorFields = new ArrayList<SubFormField>();
 
-        factorFields.add(new SubFormField("factor name *", SubFormField.STRING));
-        factorFields.add(new SubFormField("factor type *",
-                SubFormField.SINGLE_ONTOLOGY_SELECT));
+        factorFields.add(new SubFormField("factor name *", SubFormField.SINGLE_ONTOLOGY_SELECT));
         factorFields.add(new SubFormField("factor levels (; separated) *",
                 SubFormField.FACTOR_LEVEL_UNITS));
         factorFields.add(new SubFormField("factor level unit (; separated)",
@@ -1067,9 +1065,6 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         Thread finaliseStudy = new Thread(new Runnable() {
             public void run() {
-//                StudyDataEntry sde = new StudyDataEntry(dep, studyBeingEdited);
-//
-//                studyBeingEdited.setUI(sde);
 
                 Assay studySample = new Assay("s_" + studyId.getText() + ".txt",
                         null);
@@ -1341,9 +1336,9 @@ public class Wizard extends AbstractDataEntryEnvironment {
         if (!checkForDuplicates(factorInfo, 0)) {
             for (String[] aFactorInfo : factorInfo) {
                 String factorName = aFactorInfo[0];
-                String factorType = aFactorInfo[1];
-                String factorValues = aFactorInfo[2];
-                String factorValueUnits = aFactorInfo[3];
+                String factorType = aFactorInfo[0];
+                String factorValues = aFactorInfo[1];
+                String factorValueUnits = aFactorInfo[2];
 
                 //check to ensure that mandatory fields have been entered...
                 if (((factorName != null) && !factorName.trim().equals(""))

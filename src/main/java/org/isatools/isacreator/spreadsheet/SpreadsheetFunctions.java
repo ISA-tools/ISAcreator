@@ -957,7 +957,6 @@ public class SpreadsheetFunctions {
                 // we should be keeping note of the previous value, and automatically link this up with the unit.
                 // If no link, is found, the fall back is to use no recommended ontology for that field.
                 if (previousColumnName != null) {
-                    System.out.println("Finding unit after " + previousColumnName);
                     FieldObject unitField = spreadsheet.getTableReferenceObject().getNextUnitField(previousColumnName);
                     if (unitField != null) {
                         recommendedOntologyMap = unitField.getRecommmendedOntologySource();

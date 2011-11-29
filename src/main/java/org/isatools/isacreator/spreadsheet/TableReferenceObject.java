@@ -497,43 +497,27 @@ public class TableReferenceObject implements Serializable {
 
     public FieldObject getNextUnitField(String colName) {
         // go through fields, find the one in the parameter, and then try and find the next unit for that field.
-
-        System.out.println("FieldIndexLookup contains...");
-        printFields();
-
         FieldObject field = fieldLookup.get(colName);
 
-
         int proposedColNumber = field.getColNo() + 1;
-
-        System.out.println("We propose that a unit may exist at " + proposedColNumber);
 
         if (tableConfig == null) {
             // for those tables built from their layout rather than directly from the tablerefenceobject
             if (fieldIndexLookup.containsKey(proposedColNumber)) {
                 if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase("unit")) {
-                    System.out.println("We have a match!");
                     return fieldIndexLookup.get(proposedColNumber);
                 }
             }
         } else {
             if (tableConfig.getFields().size() > proposedColNumber) {
                 FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
-                System.out.println("candidateUnitField is " + candidateUnitField.getFieldName());
 
                 if (candidateUnitField.getFieldName().equalsIgnoreCase("unit")) {
-                    System.out.println("We have a match!");
                     return candidateUnitField;
                 }
             }
         }
         return null;
-    }
-
-    private void printFields() {
-        for (Integer index : fieldIndexLookup.keySet()) {
-            System.out.println(index + " -> " + fieldIndexLookup.get(index).getFieldName());
-        }
     }
 
     public Vector<String> getStdHeaders() {

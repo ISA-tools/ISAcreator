@@ -58,8 +58,8 @@ public class FactorLevelEntryCellEditor extends JTextField implements TableCellE
     private FactorLevelEntryGUI factorLevelGUI;
     private JTable table = null;
     private int curCol = -1;
-    private int LEVEL_ROW = 2;
-    private int UNIT_ROW = 3;
+    private int LEVEL_ROW = 1;
+    private int UNIT_ROW = 2;
 
     public FactorLevelEntryCellEditor() {
 

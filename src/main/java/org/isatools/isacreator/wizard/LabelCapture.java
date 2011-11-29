@@ -84,8 +84,7 @@ public class LabelCapture extends JPanel {
         labelVal.setToolTipText("<html><b>Label</b><p>Label used in this assay</p></html>");
 
         container.add(labelVal);
-        container.add(createOntologyDropDown(labelVal, false, false,
-                Collections.singletonMap("CHEBI", new RecommendedOntology(new Ontology("1007", "", "CHEBI", "Chemicals of Biological Interest")))));
+        container.add(createOntologyDropDown(labelVal, false, false, null));
         container.add(UIHelper.createLabel(""));
 
         add(container);
