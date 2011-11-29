@@ -195,10 +195,18 @@ public class ConfigXMLParser {
 
         String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]") ? MappingObject.INVESTIGATION : MappingObject.ASSAY_TYPE;
 
+
         MappingObject mo = new MappingObject(tableType, measurementInfo.getTermLabel(),
                 measurementInfo.getSourceAbbreviation(), measurementInfo.getTermAccession(),
                 technologyInfo.getTermLabel(), technologyInfo.getSourceAbbreviation(), technologyInfo.getTermAccession(),
                 isaConf.getTableName());
+
+        if (isaConf.getIsatabAssayType() != null) {
+            mo.setAssayType(isaConf.getIsatabAssayType().toString());
+        }
+        if (isaConf.getIsatabConversionTarget() != null) {
+            mo.setDispatchTarget(isaConf.getIsatabConversionTarget());
+        }
 
         List<FieldObject> fields = new ArrayList<FieldObject>();
         Map<Integer, String[]> tableStructure = new HashMap<Integer, String[]>();
