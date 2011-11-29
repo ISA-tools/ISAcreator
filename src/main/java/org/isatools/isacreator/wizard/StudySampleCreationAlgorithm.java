@@ -146,7 +146,6 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
                     newFo = buildingModel.getFieldByName("Characteristics[Organism Part]");
                     headers.add("Characteristics[Organism Part]");
                     if (newFo == null) {
-                        headers.add("Characteristics[Organism Part]");
                         newFo = new FieldObject(count, "Characteristics[Organism Part]", "Part of the organism being studied", DataTypes.ONTOLOGY_TERM, "",
                                 false, false, false);
                         buildingModel.addField(newFo);

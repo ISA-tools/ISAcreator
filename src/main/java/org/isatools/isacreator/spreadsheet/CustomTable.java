@@ -51,6 +51,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
@@ -72,9 +73,16 @@ public class CustomTable extends JTable {
         if (editor instanceof OntologyCellEditor ||
                 editor instanceof FileSelectCellEditor ||
                 editor instanceof DateCellEditor ||
-                editor instanceof FilterableListCellEditor || editor instanceof PluginSpreadsheetWidget) {
+                editor instanceof FilterableListCellEditor ||
+                editor instanceof DefaultAutoFilterCellEditor ||
+                editor instanceof PluginSpreadsheetWidget) {
 
             if (eventObject instanceof MouseEvent && ((MouseEvent) eventObject).getClickCount() == 2) {
+                super.editCellAt(row, col, eventObject);
+            }
+
+            // todo look more at this and find a way to make the interaction more natural...
+            if (eventObject instanceof KeyEvent && isKeyOK((KeyEvent) eventObject)) {
                 super.editCellAt(row, col, eventObject);
             }
         } else {
@@ -100,6 +108,12 @@ public class CustomTable extends JTable {
 
 
         return false;
+    }
+
+    private boolean isKeyOK(KeyEvent keyEvent) {
+        return keyEvent.getKeyCode() != KeyEvent.VK_DOWN
+                && keyEvent.getKeyCode() != KeyEvent.VK_UP
+                && keyEvent.getKeyCode() != KeyEvent.VK_ENTER;
     }
 
     @Override

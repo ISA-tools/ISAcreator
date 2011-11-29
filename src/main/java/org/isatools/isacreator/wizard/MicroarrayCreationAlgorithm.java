@@ -387,6 +387,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                              labelNum++) {
                             for (int i : colsToUse) {
                                 String nextDataToAdd = tableStructure.get(i)[1] == null ? "" : tableStructure.get(i)[1]; // try and insert a template item
+
                                 nextDataToAdd = nextDataToAdd.trim();
 
                                 if (nextDataToAdd.equals("")) {
@@ -411,6 +412,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                                 } else {
                                     row.append(nextDataToAdd).append("\t");
                                 }
+
                             }
 
                             String extractName = extractField.getPoolingPerformed() ? extractField.getExtractName() + ".Pooled" : extractField.getExtractName();

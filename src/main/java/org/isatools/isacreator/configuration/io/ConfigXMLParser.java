@@ -40,10 +40,10 @@ package org.isatools.isacreator.configuration.io;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.isatools.isatab.configurator.schema.*;
 import org.isatools.isacreator.configuration.*;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
+import org.isatools.isatab.configurator.schema.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -285,20 +285,27 @@ public class ConfigXMLParser {
 
                 tableStructure.put(colNo, new String[]{newField.getFieldName(), ""});
                 colNo++;
-            } else if (obj instanceof StructuredFieldType) {
-                StructuredFieldType structuredField = (StructuredFieldType) obj;
-                // we don't add it to the fields, but we do add it to the mapping object...
-                tableStructure.put(colNo, new String[]{structuredField.getName(), ""});
-                colNo++;
             }
 
             sequenceNumber++;
         }
 
+        addStructuralFields(tableStructure, tableType);
+
         TableConfiguration tc = new TableConfiguration(mo, fields, tableStructure);
 
         mappings.add(mo);
         tables.add(new TableReferenceObject(tc));
+    }
+
+    /**
+     * Appends the structural fields to the end of the file by default
+     */
+    private void addStructuralFields(Map<Integer, String[]> tableStructure, String tableType) {
+        if (tableType.equals(MappingObject.STUDY_SAMPLE)) {
+            tableStructure.put(tableStructure.size(), new String[]{"characteristics", ""});
+        }
+        tableStructure.put(tableStructure.size(), new String[]{"factors", ""});
     }
 
     private void processRecommendedOntologies(FieldType processing, FieldObject tfo) {
