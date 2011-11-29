@@ -39,7 +39,6 @@ package org.isatools.isacreator.ontologiser.ui;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.gui.menu.ImportFilesMenu;
 import org.isatools.isacreator.ontologiser.adaptors.ContentAdaptor;
 import org.isatools.isacreator.ontologiser.logic.impl.AnnotatorSearchClient;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
@@ -307,32 +306,32 @@ public class OntologiserUI extends JDialog {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                confirmChoice = new ConfirmationDialog();
+                if (confirmChoice == null || !confirmChoice.isShowing()) {
+                    confirmChoice = new ConfirmationDialog();
 
-                confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                        confirmChoice.hideDialog();
-                        confirmChoice.dispose();
-                    }
-                });
+                    confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                            confirmChoice.hideDialog();
+                            confirmChoice.dispose();
+                        }
+                    });
 
-                confirmChoice.addPropertyChangeListener(ConfirmationDialog.YES, new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                        confirmChoice.hideDialog();
-                        confirmChoice.dispose();
-                        closeWindow();
-                    }
-                });
+                    confirmChoice.addPropertyChangeListener(ConfirmationDialog.YES, new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                            confirmChoice.hideDialog();
+                            confirmChoice.dispose();
+                            closeWindow();
+                        }
+                    });
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        confirmChoice.createGUI();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            confirmChoice.createGUI();
 
-                        confirmChoice.showDialog(isacreatorEnvironment);
-                    }
-                });
-
-
+                            confirmChoice.showDialog(isacreatorEnvironment);
+                        }
+                    });
+                }
             }
         });
 

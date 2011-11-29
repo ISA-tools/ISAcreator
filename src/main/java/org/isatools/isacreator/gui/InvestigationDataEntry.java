@@ -211,10 +211,8 @@ public class InvestigationDataEntry extends DataEntryForm {
     public String toString() {
         update();
 
-        StringBuffer output = new StringBuffer();
+        StringBuilder output = new StringBuilder();
         output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
-
-        boolean displayInvestigationInfo = investigation.getStudies().size() > 1;
 
         Set<String> ontologyFields = IOUtils.filterFields(investigation.getFieldValues().keySet(), IOUtils.ACCESSION, IOUtils.SOURCE_REF);
 

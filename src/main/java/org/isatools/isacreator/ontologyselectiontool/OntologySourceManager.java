@@ -198,6 +198,10 @@ public class OntologySourceManager {
 
     public static void addToUsedOntologySources(String investigationAccession, OntologySourceRefObject ontologyToAdd) {
         removeAnyPreexistingOntologySourceRefForUpdate(investigationAccession, ontologyToAdd);
+
+        if (!usedOntologySources.containsKey(investigationAccession)) {
+            usedOntologySources.put(investigationAccession, new ArrayList<OntologySourceRefObject>());
+        }
         usedOntologySources.get(investigationAccession).add(ontologyToAdd);
     }
 

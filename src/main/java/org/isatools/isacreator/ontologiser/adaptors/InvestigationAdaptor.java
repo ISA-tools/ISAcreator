@@ -54,8 +54,7 @@ public class InvestigationAdaptor implements ContentAdaptor {
                 OntologySourceRefObject ontologySourceRefObject = OntologyUtils.convertOntologyToOntologySourceReferenceObject(sourceOntology);
 
                 // adding ontology source in case it has not already been added
-                OntologySourceManager.addToUsedOntologySources(investigation.getInvestigationId(),
-                        ontologySourceRefObject);
+                OntologySourceManager.addToUsedOntologySources("annotator", ontologySourceRefObject);
 
                 OntologyTerm ontology = annotation.getAssignedOntology().getOntologyTerm();
 
