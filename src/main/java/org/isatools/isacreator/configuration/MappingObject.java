@@ -99,19 +99,19 @@ public class MappingObject implements Serializable {
     }
 
     public String getMeasurementSource() {
-        return measurementSource;
+        return measurementSource == null ? "" : measurementSource;
     }
 
     public String getMeasurementAccession() {
-        return measurementAccession;
+        return measurementAccession == null ? "" : measurementAccession;
     }
 
     public String getTechnologySource() {
-        return technologySource;
+        return technologySource == null ? "" : technologySource;
     }
 
     public String getTechnologyAccession() {
-        return technologyAccession;
+        return technologyAccession == null ? "" : technologyAccession;
     }
 
     public void setTechnologyType(String technologyType) {
