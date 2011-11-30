@@ -1,13 +1,11 @@
 package org.isatools.isacreator.autofilterfield;
 
-import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.autofilteringlist.FilterField;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.sampleselection.SampleInformation;
-import org.isatools.isacreator.sampleselection.SampleSelectionListCellRenderer;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
@@ -241,16 +239,20 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
 
     private void showSelector() {
 
-        if (selector == null) {
-            instantiateSelectorIfRequired();
-            selector.fadeInWindow();
-        } else {
-            selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
+        try {
 
-            if (!selector.isShowing()) {
+            if (selector == null) {
+                instantiateSelectorIfRequired();
                 selector.fadeInWindow();
-            }
+            } else {
+                selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
 
+                if (!selector.isShowing()) {
+                    selector.fadeInWindow();
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 

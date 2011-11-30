@@ -43,7 +43,6 @@ import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
-import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -67,29 +66,24 @@ public class CustomTable extends JTable {
         super(dtm);
     }
 
-    public boolean editCellAt(int row, int col, EventObject eventObject) {
-        final TableCellEditor editor = getCellEditor(row, col);
+    public boolean editCellAt(int row, int column, EventObject eventObject) {
+        final TableCellEditor editor = getCellEditor(row, column);
 
         if (editor instanceof OntologyCellEditor ||
                 editor instanceof FileSelectCellEditor ||
                 editor instanceof DateCellEditor ||
                 editor instanceof FilterableListCellEditor ||
-                editor instanceof DefaultAutoFilterCellEditor ||
                 editor instanceof PluginSpreadsheetWidget) {
 
             if (eventObject instanceof MouseEvent && ((MouseEvent) eventObject).getClickCount() == 2) {
-                super.editCellAt(row, col, eventObject);
+                super.editCellAt(row, column, eventObject);
             }
 
-            // todo look more at this and find a way to make the interaction more natural...
-            if (eventObject instanceof KeyEvent && isKeyOK((KeyEvent) eventObject)) {
-                super.editCellAt(row, col, eventObject);
-            }
         } else {
 
-            super.editCellAt(row, col, eventObject);
+            super.editCellAt(row, column, eventObject);
 
-            boolean result = super.editCellAt(row, col, eventObject);
+            boolean result = super.editCellAt(row, column, eventObject);
 
             if (editor != null && editor instanceof JTextComponent) {
                 if (eventObject == null) {
@@ -102,18 +96,13 @@ public class CustomTable extends JTable {
                     });
                 }
             }
-
             return result;
         }
-
-
         return false;
     }
 
-    private boolean isKeyOK(KeyEvent keyEvent) {
-        return keyEvent.getKeyCode() != KeyEvent.VK_DOWN
-                && keyEvent.getKeyCode() != KeyEvent.VK_UP
-                && keyEvent.getKeyCode() != KeyEvent.VK_ENTER;
+    private boolean iskeyOk(KeyEvent event) {
+        return event.getKeyCode() != KeyEvent.VK_DOWN && event.getKeyCode() != KeyEvent.VK_UP && event.getKeyCode() != KeyEvent.VK_ENTER;
     }
 
     @Override
@@ -130,7 +119,6 @@ public class CustomTable extends JTable {
     @Override
     public Component prepareEditor
             (TableCellEditor tableCellEditor, int row, int column) {
-
         Component c = super.prepareEditor(tableCellEditor, row, column);
         if (c instanceof JTextComponent) {
             ((JTextField) c).selectAll();

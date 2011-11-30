@@ -49,13 +49,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * FileUtils
- *
- * @author eamonnmaguire
- * @date Mar 3, 2010
- */
-
 
 public class GeneralUtils {
 
