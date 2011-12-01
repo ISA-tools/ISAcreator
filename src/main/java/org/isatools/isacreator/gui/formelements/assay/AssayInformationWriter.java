@@ -43,7 +43,10 @@ import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Assay;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by the ISA team
@@ -57,28 +60,51 @@ public class AssayInformationWriter {
 
         Map<String, OrderedMap<String, String>> assayToInformation = new HashMap<String, OrderedMap<String, String>>();
 
-        for (Assay assay : assays) {
-
-            assayToInformation.put(assay.getAssayReference(), new ListOrderedMap<String, String>());
-
-            MappingObject technology = getMappingObjectForAssayValue(assay.getTechnologyType(), mappingObjects);
-            MappingObject measurement = getMappingObjectForAssayValue(assay.getMeasurementEndpoint(), mappingObjects);
-
-            assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT, assay.getMeasurementEndpoint());
-            assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Source REF", measurement.getMeasurementSource());
-            assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Accession Number", measurement.getMeasurementAccession());
+        if (assays.size() > 0) {
 
 
-            assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE, assay.getTechnologyType());
-            assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Source REF", technology.getTechnologySource());
-            assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Accession Number", technology.getTechnologyAccession());
+            for (Assay assay : assays) {
 
-            assayToInformation.get(assay.getAssayReference()).put(Assay.ASSAY_PLATFORM, assay.getAssayPlatform());
-            assayToInformation.get(assay.getAssayReference()).put(Assay.ASSAY_REFERENCE, assay.getAssayReference());
+                assayToInformation.put(assay.getAssayReference(), new ListOrderedMap<String, String>());
 
+                MappingObject technology = getMappingObjectForAssayValue(assay.getTechnologyType(), mappingObjects);
+                MappingObject measurement = getMappingObjectForAssayValue(assay.getMeasurementEndpoint(), mappingObjects);
+
+                assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT, assay.getMeasurementEndpoint());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Source REF", measurement.getMeasurementSource());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Accession Number", measurement.getMeasurementAccession());
+
+
+                assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE, assay.getTechnologyType());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Source REF", technology.getTechnologySource());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Accession Number", technology.getTechnologyAccession());
+
+                assayToInformation.get(assay.getAssayReference()).put(Assay.ASSAY_PLATFORM, assay.getAssayPlatform());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.ASSAY_REFERENCE, assay.getAssayReference());
+
+            }
+        } else {
+            createDefaultAssaySecton(assayToInformation);
         }
 
         return outputAssayMapAsString(assayToInformation);
+    }
+
+    private void createDefaultAssaySecton(Map<String, OrderedMap<String, String>> assayToInformation) {
+        assayToInformation.put("", new ListOrderedMap<String, String>());
+
+        assayToInformation.get("").put(Assay.MEASUREMENT_ENDPOINT, "");
+        assayToInformation.get("").put(Assay.MEASUREMENT_ENDPOINT + " Term Source REF", "");
+        assayToInformation.get("").put(Assay.MEASUREMENT_ENDPOINT + " Term Accession Number", "");
+
+
+        assayToInformation.get("").put(Assay.TECHNOLOGY_TYPE, "");
+        assayToInformation.get("").put(Assay.TECHNOLOGY_TYPE + " Term Source REF", "");
+        assayToInformation.get("").put(Assay.TECHNOLOGY_TYPE + " Term Accession Number", "");
+
+        assayToInformation.get("").put(Assay.ASSAY_PLATFORM, "");
+        assayToInformation.get("").put(Assay.ASSAY_REFERENCE, "");
+
     }
 
     private String outputAssayMapAsString(Map<String, OrderedMap<String, String>> assayToInformation) {
