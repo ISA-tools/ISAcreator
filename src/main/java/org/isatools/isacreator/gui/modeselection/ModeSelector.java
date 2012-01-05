@@ -17,8 +17,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by the ISA team
@@ -204,7 +206,8 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         Map<String, Object> configMap = new HashMap<String, Object>();
         configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "org.isatools.isacreator.plugins, uk.ac.ebi.utils.xml, uk.ac.ebi.utils.io, uk.ac.ebi.utils.xml, org.isatools.isacreator.ontologymanager.common, org.isatools.isacreator.ontologymanager, org.isatools.isacreator.io.importisa, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service," +
+                "org.isatools.isacreator.plugins, uk.ac.ebi.utils.xml, uk.ac.ebi.utils.io, uk.ac.ebi.utils.xml, org.isatools.isacreator.ontologymanager.common, " +
+                        "org.isatools.isacreator.ontologymanager, org.isatools.isacreator.io.importisa, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service," +
                         "org.isatools.isacreator.configuration.io, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, " +
                         "org.isatools.errorreporter.ui, org.apache.xmlbeans, org.apache.log4j, org.apache.log4j.spi, org.isatools.isatab.configurator.schema," +
                         "org.isatools.isacreator.effects, org.isatools.isacreator.spreadsheet, org.isatools.isacreator.apiutils, " +
@@ -212,16 +215,24 @@ public class ModeSelector extends JFrame implements BundleActivator {
                         "com.sun.awt, uk.ac.ebi.utils.collections, org.jdesktop.fuse, org.isatools.isacreator.gui.menu, " +
                         "org.isatools.isatab.isaconfigurator, com.explodingpixels.macwidgets, org.isatools.isacreator.io.importisa.errorhandling.exceptions");
 
-        File pluginDirectory = new File("Plugins");
-
-        if (!pluginDirectory.exists()) {
-            pluginDirectory.mkdir();
+        File pluginsDirectory = new File("Plugins");
+        // TODO - check if it loads the configuration correctly.
+        if (!pluginsDirectory.exists()) {
+            pluginsDirectory.mkdir();
         } else {
-            File[] plugins = pluginDirectory.listFiles();
+            File[] plugins = pluginsDirectory.listFiles();
             StringBuilder toLoad = new StringBuilder();
             for (File plugin : plugins) {
-                if (plugin.getName().contains(".jar")) {
-                    toLoad.append("file:").append(plugin.getAbsolutePath()).append(" ");
+                if (plugin.isDirectory()) {
+                    for (File jarFile : plugin.listFiles()) {
+                        if (jarFile.getName().contains(".jar")) {
+                            toLoad.append("file:").append(jarFile.getAbsolutePath()).append(" ");
+                        }
+                    }
+                } else {
+                    if (plugin.getName().contains(".jar")) {
+                        toLoad.append("file:").append(plugin.getAbsolutePath()).append(" ");
+                    }
                 }
             }
             configMap.put(AutoActivator.AUTO_START_PROP + ".1",

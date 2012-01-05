@@ -35,11 +35,10 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.ontologyselectiontool;
+package org.isatools.isacreator.ontologymanager;
 
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.util.*;
@@ -50,22 +49,24 @@ import java.util.*;
  */
 
 
-public class OntologySourceManager {
+public class OntologyManager {
     public static final String OLS_TEXT = "OLS";
 
-    // map from the investigation accession to the OntologySourceReference Objects used
     private static Map<String, List<OntologySourceRefObject>> usedOntologySources = new HashMap<String, List<OntologySourceRefObject>>();
 
     private static Map<String, OntologySourceRefObject> completeOntologySourceDictionary = new HashMap<String, OntologySourceRefObject>();
 
     private static Map<String, OntologyTerm> ontologySelectionHistory = new HashMap<String, OntologyTerm>();
 
+    public static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
+
+
     public static Map<String, OntologyTerm> getUserOntologyHistory() {
         return ontologySelectionHistory;
     }
 
     public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
-        OntologySourceManager.ontologySelectionHistory = ontologySelectionHistory;
+        OntologyManager.ontologySelectionHistory = ontologySelectionHistory;
     }
 
 
@@ -225,5 +226,9 @@ public class OntologySourceManager {
             }
         }
         return null;
+    }
+
+    public static void clearResultCache() {
+        searchResultCache.clearCache();
     }
 }

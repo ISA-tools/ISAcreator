@@ -48,7 +48,6 @@ import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPo
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalSearchBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.File;
@@ -263,6 +262,7 @@ public class BioPortalClient implements OntologyService {
     private Map<OntologySourceRefObject, List<OntologyTerm>> downloadAndProcessBranch(String term, String searchString) {
         String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + term + DownloadUtils.XML_EXT;
 
+
         DownloadUtils.downloadFile(searchString, downloadLocation);
 
         BioPortalSearchBeanResultHandler handler = new BioPortalSearchBeanResultHandler();
@@ -307,7 +307,7 @@ public class BioPortalClient implements OntologyService {
             for (AcceptedOntologies ao : AcceptedOntologies.values()) {
                 Ontology o = getOntologyById(ao.getOntologyID());
                 if (o != null) {
-                    OntologySourceManager.addOLSOntologyDefinitions(Collections.singletonMap(o.getOntologyAbbreviation(),
+                    OntologyManager.addOLSOntologyDefinitions(Collections.singletonMap(o.getOntologyAbbreviation(),
                             o.getOntologyDisplayLabel()), Collections.singletonMap(o.getOntologyAbbreviation(), o.getOntologyVersion()));
                 }
             }

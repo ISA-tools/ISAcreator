@@ -58,14 +58,14 @@ import org.isatools.isacreator.io.UserProfileIO;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.plugins.MenuPluginTracker;
 import org.isatools.isacreator.plugins.OntologyPluginTracker;
 import org.isatools.isacreator.plugins.SpreadsheetPluginTracker;
 import org.isatools.isacreator.qrcode.ui.QRCodeGeneratorUI;
-import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
@@ -547,6 +547,28 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         menuBar.add(utilities);
 
+        final JMenuItem clearOntologySearchCache = new JMenuItem("Clear Ontology Search Cache");
+
+        clearOntologySearchCache.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                OntologyManager.clearResultCache();
+            }
+        });
+
+        JMenu options = new JMenu("options");
+        options.addMouseListener(cleanUpDisplayedEditors);
+        options.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                clearOntologySearchCache.setEnabled(OntologyManager.searchResultCache.size() > 0);
+            }
+        });
+
+        options.add(clearOntologySearchCache);
+
+        menuBar.add(options);
+
         pluginMenu = new JMenu("plugins");
 
         menuBar.add(pluginMenu);
@@ -686,7 +708,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             for (UserProfile up : getUserProfiles()) {
 
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
+                    up.setUserHistory(OntologyManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
 
                     break;
@@ -706,7 +728,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             for (UserProfile up : getUserProfiles()) {
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
+                    up.setUserHistory(OntologyManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;
                 }
@@ -715,7 +737,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             userProfileIO.saveUserProfiles();
             checkMenuRequired();
 
-            OntologySourceManager.clearReferencedOntologySources();
+            OntologyManager.clearReferencedOntologySources();
 
             curDataEntryEnvironment.removeReferences();
             curDataEntryEnvironment = null;
@@ -740,7 +762,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         for (UserProfile up : getUserProfiles()) {
             if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
+                up.setUserHistory(OntologyManager.getUserOntologyHistory());
                 userProfileIO.updateUserProfileInformation(up);
 
                 break;
@@ -753,13 +775,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         currentUser = null;
 
         // reset information pertinent to a certain user
-        OntologySourceManager.clearReferencedOntologySources();
-        OntologySourceManager.clearUserHistory();
+        OntologyManager.clearReferencedOntologySources();
+        OntologyManager.clearUserHistory();
 
         Spreadsheet.fileSelectEditor.setFtpManager(new FTPManager());
 
         curDataEntryEnvironment = null;
-        OntologySourceManager.getUserOntologyHistory().clear();
+        OntologyManager.getUserOntologyHistory().clear();
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -820,7 +842,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     public static void setUserOntologyHistory(Map<String, OntologyTerm> userOntologyHistory) {
-        OntologySourceManager.setOntologySelectionHistory(userOntologyHistory);
+        OntologyManager.setOntologySelectionHistory(userOntologyHistory);
     }
 
     public void saveUserProfiles() {
@@ -1008,7 +1030,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 closeWindowTimer.start();
 
                 if (type != SAVE_ONLY) {
-                    OntologySourceManager.clearReferencedOntologySources();
+                    OntologyManager.clearReferencedOntologySources();
                 }
             } else {
                 // need to get a new reference from the user!

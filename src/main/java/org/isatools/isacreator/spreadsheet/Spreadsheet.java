@@ -53,8 +53,8 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetModel;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetView;
@@ -329,7 +329,7 @@ public class Spreadsheet extends JComponent implements
 
         if (tableReferenceObject.getDefinedOntologies().size() > 0) {
             for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
-                OntologySourceManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
+                OntologyManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
             }
         }
 
@@ -1316,7 +1316,7 @@ public class Spreadsheet extends JComponent implements
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
     private OntologyTerm searchUserHistory(String uniqueId) {
-        return OntologySourceManager.getUserOntologyHistory().get(uniqueId);
+        return OntologyManager.getUserOntologyHistory().get(uniqueId);
     }
 
     /**

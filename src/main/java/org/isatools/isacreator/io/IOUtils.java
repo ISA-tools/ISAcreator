@@ -1,7 +1,7 @@
 package org.isatools.isacreator.io;
 
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,7 +100,7 @@ public class IOUtils {
 
             int numberAdded = 0;
             for (String ontologyTerm : ontologies) {
-                OntologyTerm oo = OntologySourceManager.getUserOntologyHistory().get(ontologyTerm);
+                OntologyTerm oo = OntologyManager.getUserOntologyHistory().get(ontologyTerm);
 
 
                 if (oo != null) {
@@ -130,7 +130,7 @@ public class IOUtils {
 
         } else {
             if (term.contains(":")) {
-                OntologyTerm oo = OntologySourceManager.getUserOntologyHistory().get(term);
+                OntologyTerm oo = OntologyManager.getUserOntologyHistory().get(term);
 
                 if (oo.getOntologyTermName() != null) {
                     tmpTerm = oo.getOntologyTermName();

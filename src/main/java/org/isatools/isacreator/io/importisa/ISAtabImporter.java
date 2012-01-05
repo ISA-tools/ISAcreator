@@ -18,8 +18,8 @@ import org.isatools.isacreator.io.importisa.investigationproperties.Investigatio
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import uk.ac.ebi.utils.collections.Pair;
@@ -354,7 +354,7 @@ public class ISAtabImporter {
 
         for (OntologyTerm oo : ontologiesUsed) {
             if (!oo.getOntologyTermName().trim().equals("")) {
-                OntologySourceManager.addToUserHistory(oo);
+                OntologyManager.addToUserHistory(oo);
             }
         }
 

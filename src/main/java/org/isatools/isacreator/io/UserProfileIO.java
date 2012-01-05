@@ -41,8 +41,8 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.EncryptedObject;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
 import javax.crypto.BadPaddingException;
@@ -229,7 +229,7 @@ public class UserProfileIO {
                 up.setFtpManager(Spreadsheet.fileSelectEditor.getFTPManager());
 
                 // update used ontology sources
-                for (OntologySourceRefObject osro : OntologySourceManager.getOntologiesUsed()) {
+                for (OntologySourceRefObject osro : OntologyManager.getOntologiesUsed()) {
                     up.addOntologyReference(osro);
                 }
             }

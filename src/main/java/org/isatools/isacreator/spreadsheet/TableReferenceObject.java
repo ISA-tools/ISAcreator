@@ -46,8 +46,8 @@ import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.configuration.TableConfiguration;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -321,7 +321,7 @@ public class TableReferenceObject implements Serializable {
 
                             if (!definedOntologies.containsKey(prevVal)) {
                                 definedOntologies.put(prevVal,
-                                        new OntologyTerm(term, accession, OntologySourceManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                                        new OntologyTerm(term, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
                             }
                         }
                     }

@@ -46,8 +46,8 @@ import org.isatools.isacreator.gui.help.Controller;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.CollectionUtils;
@@ -577,7 +577,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public List<OntologySourceRefObject> getOntologySources() {
-        return OntologySourceManager.getOntologiesUsed();
+        return OntologyManager.getOntologiesUsed();
     }
 
     public ISAcreator getParentFrame() {

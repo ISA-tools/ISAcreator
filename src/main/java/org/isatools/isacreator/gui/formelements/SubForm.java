@@ -47,17 +47,15 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -409,7 +407,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         Set<Integer> ontologyRows = new HashSet<Integer>();
 
-        Map<String, OntologyTerm> history = OntologySourceManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
 
         for (int col = 0; col < dtm.getColumnCount(); col++) {
             String val;
@@ -946,7 +944,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                     .getOntologySource(source);
 
             if (osro == null) {
-                osro = new OntologySourceRefObject(source, "", OntologySourceManager.getOntologyVersion(source), OntologySourceManager.getOntologyDescription(source));
+                osro = new OntologySourceRefObject(source, "", OntologyManager.getOntologyVersion(source), OntologyManager.getOntologyDescription(source));
             }
 
             parent.getDataEntryEnvironment().getOntologySources().add(osro);

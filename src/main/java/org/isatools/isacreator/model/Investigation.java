@@ -40,8 +40,7 @@ package org.isatools.isacreator.model;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -119,7 +118,7 @@ public class Investigation extends ISASection {
         assays = new HashMap<String, String>();
         contacts = new ArrayList<Contact>();
         publications = new ArrayList<Publication>();
-        OntologySourceManager.newInvestigation(getInvestigationId().equals("") ? "investigation-" + System.currentTimeMillis() : getInvestigationId());
+        OntologyManager.newInvestigation(getInvestigationId().equals("") ? "investigation-" + System.currentTimeMillis() : getInvestigationId());
     }
 
 

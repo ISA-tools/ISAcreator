@@ -47,9 +47,9 @@ import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.GeneralUtils;
 import uk.ac.ebi.utils.collections.Pair;
 
@@ -145,7 +145,7 @@ public class StructureToInvestigationMapper {
         }
 
         if (tmpInvestigation != null) {
-            OntologySourceManager.setOntologiesUsed(tmpInvestigation.getInvestigationId(), ontologySources);
+            OntologyManager.setOntologiesUsed(tmpInvestigation.getInvestigationId(), ontologySources);
             tmpInvestigation.addToPublications(publications);
             tmpInvestigation.addToContacts(contacts);
 
@@ -617,7 +617,7 @@ public class StructureToInvestigationMapper {
     }
 
     private OntologySourceRefObject getOntologySource(String source) {
-        return OntologySourceManager.getOntologySourceReferenceObjectByAbbreviation(source);
+        return OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
     }
 
 
@@ -653,7 +653,7 @@ public class StructureToInvestigationMapper {
         // build up set of ontology sources that have been defined
         Set<String> definedOntologySources = new HashSet<String>();
 
-        for (OntologySourceRefObject osro : OntologySourceManager.getOntologiesUsed()) {
+        for (OntologySourceRefObject osro : OntologyManager.getOntologiesUsed()) {
             definedOntologySources.add(osro.getSourceName());
         }
 

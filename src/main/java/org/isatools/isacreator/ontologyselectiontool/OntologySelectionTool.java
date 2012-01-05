@@ -54,10 +54,7 @@ import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.ontologybrowsingutils.OntologyTreeItem;
 import org.isatools.isacreator.ontologybrowsingutils.WSOntologyTreeCreator;
-import org.isatools.isacreator.ontologymanager.BioPortalClient;
-import org.isatools.isacreator.ontologymanager.OLSClient;
-import org.isatools.isacreator.ontologymanager.OntologyService;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.*;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
@@ -94,7 +91,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     // We'll store recently searched terms in a cache so that multiple searches on the same term in a short period
     // of time do not result in identical queries to the OLS on each occasion. if the user searches all ontologies for
     // "mito", then the map will consist of all:mito -> result map.
-    private static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
 
     private static final int SEARCH_MODE = 0;
     private static final int BROWSE_MODE = 1;
@@ -192,8 +188,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         createPanels();
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
-        pack();
 
+        pack();
     }
 
     /**
@@ -535,7 +531,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         historyList = new ExtendedJList(new SingleSelectionListCellRenderer());
 
         try {
-            for (OntologyTerm h : OntologySourceManager.getUserOntologyHistory().values()) {
+            for (OntologyTerm h : OntologyManager.getUserOntologyHistory().values()) {
                 historyList.addItem(h);
             }
         } catch (ConcurrentModificationException cme) {
@@ -707,7 +703,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         firePropertyChange("selectedOntology", "OLD_VALUE",
                 selectedTerm.getText());
         if (historyList.getSelectedIndex() != -1) {
-            OntologySourceManager.getUserOntologyHistory().put(historyList.getSelectedValue().toString(), (OntologyTerm) historyList.getSelectedValue());
+            OntologyManager.getUserOntologyHistory().put(historyList.getSelectedValue().toString(), (OntologyTerm) historyList.getSelectedValue());
         }
         historyList.getFilterField().setText("");
         historyList.clearSelection();
@@ -741,7 +737,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
      * @return Boolean - true if the source already exists, false otherwise.
      */
     private boolean checkOntologySourceRecorded(String source) {
-        for (OntologySourceRefObject oRef : OntologySourceManager.getOntologiesUsed()) {
+        for (OntologySourceRefObject oRef : OntologyManager.getOntologiesUsed()) {
             if (oRef.getSourceName().equals(source)) {
                 return true;
             }
@@ -789,7 +785,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private void addTermToHistory(OntologyTerm termInformation) {
         // add the item to the history list
         addSourceToUsedOntologies(termInformation.getOntologySourceInformation());
-        OntologySourceManager.addToUserHistory(termInformation);
+        OntologyManager.addToUserHistory(termInformation);
         historyList.addItem(termInformation);
     }
 
@@ -797,7 +793,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private void addSourceToUsedOntologies(OntologySourceRefObject ontologySourceRefObject) {
         if (ontologySourceRefObject != null) {
             if (!checkOntologySourceRecorded(ontologySourceRefObject.getSourceName())) {
-                OntologySourceManager.addToUsedOntologies(ontologySourceRefObject);
+                OntologyManager.addToUsedOntologies(ontologySourceRefObject);
             }
         }
     }
@@ -851,7 +847,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         String cacheKeyLookup = "term" + ":" + searchOn + ":" +
                                 searchField.getText();
 
-                        if (!searchResultCache.containsKey(cacheKeyLookup)) {
+                        if (!OntologyManager.searchResultCache.containsKey(cacheKeyLookup)) {
                             result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
                             if (searchAllOntologies) {
@@ -877,12 +873,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                                 System.out.println("almalgamated result is " + result.size() + " terms");
 
-                                OntologySourceManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
+                                OntologyManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
 
 
                             } else {
 
-                                OntologySourceManager.placeRecommendedOntologyInformationInRecords(recommendedOntologies.values());
+                                OntologyManager.placeRecommendedOntologyInformationInRecords(recommendedOntologies.values());
 
                                 List<RecommendedOntology> olsOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.OLS);
 
@@ -910,12 +906,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                             // only add to the cache if we got a result!
                             if (result.size() > 0) {
-                                searchResultCache.addToCache(cacheKeyLookup,
+                                OntologyManager.searchResultCache.addToCache(cacheKeyLookup,
                                         result);
                             }
 
                         } else {
-                            result = searchResultCache.get(cacheKeyLookup);
+                            result = OntologyManager.searchResultCache.get(cacheKeyLookup);
                         }
 
 
@@ -1027,12 +1023,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     public void updatehistory() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if ((historyList != null) && (OntologySourceManager.getUserOntologyHistory() != null)) {
+                if ((historyList != null) && (OntologyManager.getUserOntologyHistory() != null)) {
 
-                    OntologyTerm[] newHistory = new OntologyTerm[OntologySourceManager.getUserOntologyHistory().size()];
+                    OntologyTerm[] newHistory = new OntologyTerm[OntologyManager.getUserOntologyHistory().size()];
 
                     int count = 0;
-                    for (OntologyTerm oo : OntologySourceManager.getUserOntologyHistory().values()) {
+                    for (OntologyTerm oo : OntologyManager.getUserOntologyHistory().values()) {
                         newHistory[count] = oo;
                         count++;
                     }

@@ -55,12 +55,9 @@ import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
-import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
-import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.*;

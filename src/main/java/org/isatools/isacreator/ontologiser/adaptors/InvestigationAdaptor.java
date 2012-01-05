@@ -7,10 +7,10 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologiser.model.OntologisedResult;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +54,7 @@ public class InvestigationAdaptor implements ContentAdaptor {
                 OntologySourceRefObject ontologySourceRefObject = OntologyUtils.convertOntologyToOntologySourceReferenceObject(sourceOntology);
 
                 // adding ontology source in case it has not already been added
-                OntologySourceManager.addToUsedOntologySources("annotator", ontologySourceRefObject);
+                OntologyManager.addToUsedOntologySources("annotator", ontologySourceRefObject);
 
                 OntologyTerm ontology = annotation.getAssignedOntology().getOntologyTerm();
 
@@ -63,7 +63,7 @@ public class InvestigationAdaptor implements ContentAdaptor {
 
                 mappingsForReplacement.put(annotation.getFreeTextTerm(), ontologyObject);
 
-                OntologySourceManager.addToUserHistory(ontologyObject);
+                OntologyManager.addToUserHistory(ontologyObject);
             }
         }
 

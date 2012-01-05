@@ -42,9 +42,9 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
@@ -232,7 +232,7 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyTerm> history = OntologySourceManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
 
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);

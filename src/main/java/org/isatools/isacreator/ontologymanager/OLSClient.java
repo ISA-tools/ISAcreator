@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import uk.ac.ebi.ook.web.services.Query;
 import uk.ac.ebi.ook.web.services.QueryServiceLocator;
 
@@ -186,7 +185,7 @@ public class OLSClient implements OntologyService {
             if (m.find()) {
                 tempVersion = tempVersion.substring(m.start(), m.end());
             }
-            versions.put(OntologySourceManager.OLS_TEXT, tempVersion);
+            versions.put(OntologyManager.OLS_TEXT, tempVersion);
         } catch (RemoteException e) {
             log.error("remote exception thrown " + e.getMessage());
         } catch (Exception e) {
