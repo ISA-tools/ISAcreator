@@ -737,6 +737,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             userProfileIO.saveUserProfiles();
             checkMenuRequired();
 
+            ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, "");
+
             OntologyManager.clearReferencedOntologySources();
 
             curDataEntryEnvironment.removeReferences();
@@ -754,40 +756,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 isacreatorMenu.startAnimation();
                 setCurrentPage(isacreatorMenu);
 
-            }
-        });
-    }
-
-    private void saveProfilesAndLogout() {
-
-        for (UserProfile up : getUserProfiles()) {
-            if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                up.setUserHistory(OntologyManager.getUserOntologyHistory());
-                userProfileIO.updateUserProfileInformation(up);
-
-                break;
-            }
-        }
-
-        userProfileIO.saveUserProfiles();
-
-        checkMenuRequired();
-        currentUser = null;
-
-        // reset information pertinent to a certain user
-        OntologyManager.clearReferencedOntologySources();
-        OntologyManager.clearUserHistory();
-
-        Spreadsheet.fileSelectEditor.setFtpManager(new FTPManager());
-
-        curDataEntryEnvironment = null;
-        OntologyManager.getUserOntologyHistory().clear();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                isacreatorMenu.showGUI(ISAcreatorMenu.SHOW_LOGIN);
-                isacreatorMenu.startAnimation();
-                setCurrentPage(isacreatorMenu);
             }
         });
     }
@@ -953,10 +921,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
                                 break;
 
-                            case LOGOUT:
-                                saveProfilesAndLogout();
-
-                                break;
 
                             case EXIT:
                                 saveProfilesAndExit();
@@ -1027,6 +991,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
                 outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
 
+
                 closeWindowTimer.start();
 
                 if (type != SAVE_ONLY) {
@@ -1045,14 +1010,17 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 sad.addPropertyChangeListener("save",
                         new PropertyChangeListener() {
                             public void propertyChange(PropertyChangeEvent event) {
-                                String fileName = DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-                                        event.getNewValue().toString() +
-                                        File.separator + "Investigation";
+                                String baseDirectory = DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+                                        event.getNewValue().toString();
+
+                                String fileName = baseDirectory + File.separator + "Investigation";
                                 createSubmissionDirectory(DEFAULT_ISATAB_SAVE_DIRECTORY +
                                         File.separator +
                                         event.getNewValue().toString());
                                 curDataEntryEnvironment.getInvestigation()
                                         .setFileReference(fileName);
+
+                                ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, baseDirectory);
 
                                 outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
                                 userProfileIO.saveUserProfiles();
@@ -1112,10 +1080,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                                 case SAVE_MAIN:
 
                                     saveProfilesAndGoToMain();
-                                    break;
-
-                                case SAVE_LOGOUT:
-                                    saveProfilesAndLogout();
                                     break;
 
                                 case SAVE_EXIT:

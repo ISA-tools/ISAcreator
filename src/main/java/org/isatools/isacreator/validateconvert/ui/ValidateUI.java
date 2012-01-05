@@ -34,6 +34,7 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class ValidateUI extends JFrame {
     private Image validateIcon, validateIconInactive, convertIcon, convertIconInactive;
 
     @InjectedResource
-    private ImageIcon validationSuccess, conversionSuccess;
+    private ImageIcon validationSuccess, conversionSuccess, saveISAtab;
 
     private ISAcreator isacreatorEnvironment;
 
@@ -104,84 +105,87 @@ public class ValidateUI extends JFrame {
         Thread performer = new Thread(new Runnable() {
             public void run() {
 
-
-                ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
-
-                final GUIISATABValidator isatabValidator = new GUIISATABValidator();
-
-                GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
-
-                if (result == GUIInvokerResult.SUCCESS) {
-                    Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
-                    swapContainers(successfulValidationContainer);
-                    if (mode == OperatingMode.CONVERT) {
-
-                        final ConvertUI convertUI = new ConvertUI(constructConversionTargets());
-                        convertUI.setPreferredSize(new Dimension(750, 440));
-                        convertUI.createGUI();
-
-                        convertUI.addPropertyChangeListener("startConversion", new PropertyChangeListener() {
-                            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
-                                swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
-
-                                convertISAtab(isatabValidator.getStore(), convertUI.getConversionToPerform(),
-                                        ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB),
-                                        convertUI.getOutputLocation());
-                            }
-                        });
-
-                        swapContainers(convertUI);
-
-                        swapContainers(convertUI);
-                    }
+                System.out.println(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+                if (!new File(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB)).exists()) {
+                    Container saveISAtabContainer = UIHelper.padComponentVerticalBox(70, new JLabel(saveISAtab));
+                    swapContainers(saveISAtabContainer);
                 } else {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
+                    ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
-                            List<TabLoggingEventWrapper> logEvents = isatabValidator.getLog();
+                    final GUIISATABValidator isatabValidator = new GUIISATABValidator();
 
-                            List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
+                    GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
-                            Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
+                    if (result == GUIInvokerResult.SUCCESS) {
+                        Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
+                        swapContainers(successfulValidationContainer);
+                        if (mode == OperatingMode.CONVERT) {
 
-                            for (TabLoggingEventWrapper event : logEvents) {
+                            final ConvertUI convertUI = new ConvertUI(constructConversionTargets());
+                            convertUI.setPreferredSize(new Dimension(750, 440));
+                            convertUI.createGUI();
 
-                                String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
+                            convertUI.addPropertyChangeListener("startConversion", new PropertyChangeListener() {
+                                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
 
-                                if (fileName != null) {
-                                    if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
-                                        if (!fileToErrors.containsKey(fileName)) {
-                                            fileToErrors.put(fileName, new ArrayList<ErrorMessage>());
+                                    swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
+
+                                    convertISAtab(isatabValidator.getStore(), convertUI.getConversionToPerform(),
+                                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB),
+                                            convertUI.getOutputLocation());
+                                }
+                            });
+
+                            swapContainers(convertUI);
+                        }
+                    } else {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+
+                                List<TabLoggingEventWrapper> logEvents = isatabValidator.getLog();
+
+                                List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
+
+                                Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
+
+                                for (TabLoggingEventWrapper event : logEvents) {
+
+                                    String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
+
+                                    if (fileName != null) {
+                                        if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
+                                            if (!fileToErrors.containsKey(fileName)) {
+                                                fileToErrors.put(fileName, new ArrayList<ErrorMessage>());
+                                            }
+                                            fileToErrors.get(fileName).add(new ErrorMessage(event.getLogEvent().getLevel() == Level.WARN ? ErrorLevel.WARNING : ErrorLevel.ERROR, event.getLogEvent().getMessage().toString()));
                                         }
-                                        fileToErrors.get(fileName).add(new ErrorMessage(event.getLogEvent().getLevel() == Level.WARN ? ErrorLevel.WARNING : ErrorLevel.ERROR, event.getLogEvent().getMessage().toString()));
                                     }
                                 }
+
+                                for (String fileName : fileToErrors.keySet()) {
+
+                                    Pair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
+                                            isacreatorEnvironment.getDataEntryEnvironment().getInvestigation());
+
+                                    errors.add(new ISAFileErrorReport(fileName,
+                                            assayAndType.fst != null ? assayAndType.fst.getTechnologyType() : "",
+                                            assayAndType.fst != null ? assayAndType.fst.getMeasurementEndpoint() : "",
+                                            assayAndType.snd, fileToErrors.get(fileName)));
+                                }
+
+                                if (fileToErrors.size() > 0) {
+                                    ErrorReporterView view = new ErrorReporterView(errors);
+                                    view.setPreferredSize(new Dimension(750, 440));
+                                    view.createGUI();
+
+                                    swapContainers(view);
+                                } else {
+                                    Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
+                                    swapContainers(successfulValidationContainer);
+                                }
                             }
-
-                            for (String fileName : fileToErrors.keySet()) {
-
-                                Pair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
-                                        isacreatorEnvironment.getDataEntryEnvironment().getInvestigation());
-
-                                errors.add(new ISAFileErrorReport(fileName,
-                                        assayAndType.fst != null ? assayAndType.fst.getTechnologyType() : "",
-                                        assayAndType.fst != null ? assayAndType.fst.getMeasurementEndpoint() : "",
-                                        assayAndType.snd, fileToErrors.get(fileName)));
-                            }
-
-                            if (fileToErrors.size() > 0) {
-                                ErrorReporterView view = new ErrorReporterView(errors);
-                                view.setPreferredSize(new Dimension(750, 440));
-                                view.createGUI();
-
-                                swapContainers(view);
-                            } else {
-                                Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
-                                swapContainers(successfulValidationContainer);
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
 
             }
