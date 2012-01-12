@@ -99,6 +99,7 @@ public class MappingLogic {
         mappingInformation = new ArrayList<MappingInformation>();
         uniqueRowHashes = new HashSet<Integer>();
         fieldsUsingUnits = new HashSet<String>();
+        factorsToAdd = new ArrayList<Factor>();
     }
 
     private void processMappings() {
@@ -115,6 +116,7 @@ public class MappingLogic {
     public TableReferenceObject doMapping(String fileName, int readerToUse) {
         this.fileName = fileName;
         this.readerToUse = readerToUse;
+
 
         // should create a new List<String> containing all fields including units and parameter etc. to be added, and in
         // doing so also create a second List<String> which will provide a way of doing string substitutions on formatted strings such as:
@@ -187,7 +189,9 @@ public class MappingLogic {
 
         Study study = new Study("Mapped Study", "A study mapped from an incoming file", "", "", "", "s_study_sample.txt");
 
-        study.getFactors().addAll(factorsToAdd);
+        System.out.println("Creating investigation, and adding all found factors");
+        addAllFactorsToInvestigationFile(mappings);
+        study.setFactors(factorsToAdd);
 
         StudyDataEntry sde = new StudyDataEntry(dep, study);
         study.setUI(sde);
@@ -217,6 +221,24 @@ public class MappingLogic {
 
     public Map<MappingField, List<String>> getVisMapping() {
         return visMapping;
+    }
+
+    private static void addAllFactorsToInvestigationFile(Map<String, TableReferenceObject> mappings) {
+        Set<String> addedFactors = new HashSet<String>();
+        System.out.println("Adding headers to factorsToAdd");
+        for (TableReferenceObject tro : mappings.values()) {
+            for (String header : tro.getHeaders()) {
+                System.out.println("Checking " + header);
+                if (header.contains("Factor Value")) {
+                    if (!addedFactors.contains(header)) {
+                        addedFactors.add(header);
+                        System.out.println("Found factor value, " + header);
+                        String tmpFactor = header.substring(header.indexOf("[") + 1, header.lastIndexOf("]"));
+                        factorsToAdd.add(new Factor(tmpFactor, tmpFactor));
+                    }
+                }
+            }
+        }
     }
 
     private TableReferenceObject manufactureReferenceObject(List<MappingField> isatab, List<String> substitutions, TableReferenceObject referenceTRO) {
@@ -271,16 +293,7 @@ public class MappingLogic {
             }
         }
 
-        factorsToAdd = new ArrayList<Factor>();
-        for (String header : headers) {
-            if (header.contains("Factor Value")) {
-                String tmpFactor = header.substring(header.indexOf("[") + 1, header.lastIndexOf("]"));
-                factorsToAdd.add(new Factor(tmpFactor, tmpFactor));
-            }
-        }
-
         // todo add a protocol processor
-
         final_tro.setMissingFields(GeneralUtils.findMissingFields(headers.toArray(new String[headers.size()]), referenceTRO));
         final_tro.setPreDefinedHeaders(headers);
 

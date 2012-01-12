@@ -243,7 +243,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
                     String newFieldName = propertyChangeEvent.getNewValue().toString();
 
-                    if (!isDuplicateField(newFieldName)) {
+                    if (!isDuplicateField(newFieldName) && dmtn.getUserObject() instanceof MappedElement) {
 
                         MappedElement mn = (MappedElement) dmtn.getUserObject();
 

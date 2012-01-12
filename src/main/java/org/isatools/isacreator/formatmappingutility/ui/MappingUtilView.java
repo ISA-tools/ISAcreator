@@ -564,7 +564,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         TableReferenceObject populatedTRO = mu.doMapping(fileName, readerToUse);
 
                         // whenever we create the mappings now, we now add the mappings in a Map which
-                        // point to the populated tros for each of the assays to be defined and the study
+                        // point to the populated TROs for each of the assays to be defined and the study
                         // sample file to be defined!
                         if (sequence == -1) {
                             fixedMappings.put("Sample Name", mappingTableGUI.getMappingNodeForField("Sample Name"));
@@ -879,7 +879,6 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         menuPanels.getMain().hideGlassPane();
                         menuPanels.getMain().setCurDataEntryPanel(dataEntryEnvironment);
                         menuPanels.getMain().setCurrentPage(dataEntryEnvironment);
-                        // todo clear object space
                     }
                 });
 
@@ -900,13 +899,9 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         saveMappingsSection.add(UIHelper.wrapComponentInPanel(saveButtonContainer));
 
         savedMappingsPanel.add(saveMappingsSection);
-
-
         selectMappingPanel.add(savedMappingsPanel);
 
         saveMappingFilesCont.add(selectMappingPanel);
-
-
         saveMappingFilesCont.add(UIHelper.wrapComponentInPanel(saveStatusInfo));
 
         assignListenerToLabel(nextButton, listeners[1]);
@@ -921,7 +916,6 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 menuPanels.getMain().getGlassPane().setVisible(false);
             }
         });
-
     }
 
     private void showErrorPanel() {
