@@ -108,6 +108,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private Set<String> fixedMappingsAdded;
 
     private MappingInfoTab mappingInfo;
+    private Toolbox toolbox;
 
     private static String[][] initialData;
 
@@ -176,9 +177,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
         statusPanel = new JPanel(new BorderLayout());
         statusPanel.setVisible(false);
-        statusPanel.add(new JLabel(errorIcon), BorderLayout.WEST);
 
-        status = UIHelper.createLabel("", UIHelper.VER_11_PLAIN, UIHelper.RED_COLOR, JLabel.CENTER);
+        status = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR, JLabel.CENTER);
         statusPanel.add(status);
 
         add(statusPanel, BorderLayout.SOUTH);
@@ -233,7 +233,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     }
 
     private Toolbox createToolbox() {
-        Toolbox toolbox = new Toolbox();
+        toolbox = new Toolbox();
 
         toolbox.addPropertyChangeListener("nodeAdded", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
@@ -314,13 +314,11 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                 newFieldName.contains("Parameter")) {
             return new GeneralAttributeEntry(newFieldName, columnsToBeMappedTo, mapping);
         } else if (newFieldName.contains("Protocol REF")) {
-            // todo need a smarter selection on the Protocol REF. This is due to it being a duplicated term and the
             // current implementation only dealing with general column names rather than their positions.
             return new ProtocolFieldEntry(newFieldName, columnsToBeMappedTo, null);
 
         } else {
             return new NormalFieldEntry(newFieldName, columnsToBeMappedTo, mapping);
-
         }
     }
 
@@ -341,7 +339,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         for (MappedElement mn : mappingRef) {
             rootNode.add(new DefaultMutableTreeNode(mn));
         }
-
         treeModel.setRoot(rootNode);
     }
 
@@ -360,6 +357,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                         isatabFieldsTree.repaint();
                     }
                 });
+
+                toolbox.updateFieldOptions(mn.getFieldName());
             } else {
                 if (mappingInfo == null) {
                     mappingInfo = new MappingInfoTab();
@@ -446,15 +445,12 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     }
 
     public void mouseReleased(MouseEvent mouseEvent) {
-
     }
 
     public void mouseEntered(MouseEvent mouseEvent) {
-
     }
 
     public void mouseExited(MouseEvent mouseEvent) {
-
     }
 
     class MappingInfoTab extends JLayeredPane {
@@ -470,7 +466,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             infoLabCont.add(infoLab);
             add(infoLabCont, BorderLayout.CENTER);
         }
-
     }
 
     public static String[][] getInitialData() {
