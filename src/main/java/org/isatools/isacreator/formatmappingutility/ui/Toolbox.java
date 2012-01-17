@@ -39,9 +39,12 @@ package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.jdesktop.fuse.InjectedResource;
+import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -49,22 +52,9 @@ import java.awt.event.MouseListener;
 public class Toolbox extends JPanel {
 
     // toolbox will have 5 buttons in it's entirety for addition of characteristics, factors, protocols, parameters and comments.
-    public static final ImageIcon ADD_CHAR = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addchar.png"));
-    public static final ImageIcon ADD_CHAR_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addchar_over.png"));
-    public static final ImageIcon ADD_FACTOR = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addfactor.png"));
-    public static final ImageIcon ADD_FACTOR_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addfactor_over.png"));
-    public static final ImageIcon ADD_PROTOCOL = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addprotocol.png"));
-    public static final ImageIcon ADD_PROTOCOL_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addprotocol_over.png"));
-    public static final ImageIcon ADD_PARAMETER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addparameter.png"));
-    public static final ImageIcon ADD_PARAMETER_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addparameter_over.png"));
-    public static final ImageIcon ADD_COMMENT = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addcomment.png"));
-    public static final ImageIcon ADD_COMMENT_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addcomment_over.png"));
-    public static final ImageIcon ADD_SAMPLE = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addsample.png"));
-    public static final ImageIcon ADD_SAMPLE_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addsample_over.png"));
-    public static final ImageIcon ADD_MATERIAL = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addMaterial.png"));
-    public static final ImageIcon ADD_MATERIAL_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addMaterial_over.png"));
-    public static final ImageIcon ADD = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/add.png"));
-    public static final ImageIcon ADD_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/add_over.png"));
+
+    @InjectedResource
+    private ImageIcon addField, addFieldOver, removeField, removeFieldOver, add, addOver;
 
     public static final int CHARACTERISTIC = 0;
     public static final int FACTOR = 1;
@@ -81,47 +71,47 @@ public class Toolbox extends JPanel {
     private int currentlySelectedForQualifierEntry = -1;
 
     public Toolbox() {
+        ResourceInjector.get("formatmappingutility-package.style").inject(this);
+
         setLayout(new BorderLayout());
         changingContentsContainer = new JPanel();
-        changingContentsContainer.setLayout(new BoxLayout(changingContentsContainer, BoxLayout.LINE_AXIS));
+        changingContentsContainer.setLayout(new BoxLayout(changingContentsContainer, BoxLayout.PAGE_AXIS));
         setContents();
         add(changingContentsContainer, BorderLayout.CENTER);
 
         createQualifierEntryPanel();
-        // now create the panel allowing for specifying qualifiers for characteristics, factors, comments, and parameters.
-
     }
 
     public void setContents() {
-        changingContentsContainer.add(createLabel(ADD_CHAR, ADD_CHAR_OVER, true, Toolbox.CHARACTERISTIC));
-        changingContentsContainer.add(createLabel(ADD_FACTOR, ADD_FACTOR_OVER, true, Toolbox.FACTOR));
-        changingContentsContainer.add(createLabel(ADD_PROTOCOL, ADD_PROTOCOL_OVER, false, Toolbox.PROTOCOL));
-        changingContentsContainer.add(createLabel(ADD_PARAMETER, ADD_PARAMETER_OVER, true, Toolbox.PARAMETER));
-        changingContentsContainer.add(createLabel(ADD_COMMENT, ADD_COMMENT_OVER, true, Toolbox.COMMENT));
-        changingContentsContainer.add(createLabel(ADD_SAMPLE, ADD_SAMPLE_OVER, false, Toolbox.SAMPLE));
-        changingContentsContainer.add(createLabel(ADD_MATERIAL, ADD_MATERIAL_OVER, false, Toolbox.MATERIAL));
+        changingContentsContainer.add(createLabel("Sample", false, Toolbox.SAMPLE));
+        changingContentsContainer.add(createLabel("Material", false, Toolbox.MATERIAL));
+        changingContentsContainer.add(createLabel("Characteristic", true, Toolbox.CHARACTERISTIC));
+        changingContentsContainer.add(createLabel("Factor Value", true, Toolbox.FACTOR));
+        changingContentsContainer.add(createLabel("Protocol", false, Toolbox.PROTOCOL));
+        changingContentsContainer.add(createLabel("Parameter Value", true, Toolbox.PARAMETER));
+        changingContentsContainer.add(createLabel("Comment", true, Toolbox.COMMENT));
     }
 
 
-    private JLabel createLabel(final ImageIcon icon, final ImageIcon rollover, final boolean showQualifierEntry, final int labelType) {
-        final JLabel label = new JLabel(icon);
+    private JLabel createLabel(String name, final boolean showQualifierEntry, final int labelType) {
+        final JLabel label = new JLabel("add a " + name, addField, JLabel.LEFT);
+        UIHelper.renderComponent(label, UIHelper.VER_10_PLAIN, UIHelper.GREY_COLOR, false);
         label.setVerticalAlignment(JLabel.TOP);
-        label.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        label.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
-                label.setIcon(rollover);
+                label.setIcon(addFieldOver);
+                label.setFont(UIHelper.VER_10_BOLD);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                label.setIcon(icon);
+                label.setIcon(addField);
+                label.setFont(UIHelper.VER_10_PLAIN);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-                label.setIcon(icon);
-
+                label.setIcon(addField);
+                label.setFont(UIHelper.VER_10_PLAIN);
                 southPanel.removeAll();
                 if (showQualifierEntry) {
                     qualifierEntryPanel.setVisible(showQualifierEntry);
@@ -150,9 +140,6 @@ public class Toolbox extends JPanel {
 
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         });
         return label;
     }
@@ -178,22 +165,19 @@ public class Toolbox extends JPanel {
         qualifierCont.add(qualifier);
 
 
-        final JLabel addButton = new JLabel(ADD);
-        addButton.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
+        final JLabel addButton = new JLabel(add);
+        addButton.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
-                addButton.setIcon(ADD_OVER);
+                addButton.setIcon(addOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
-                addButton.setIcon(ADD);
+                addButton.setIcon(add);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
-                addButton.setIcon(ADD);
+                addButton.setIcon(add);
 
                 String qualifierText;
                 if (!(qualifierText = qualifier.getText().trim()).equals("")) {
@@ -214,9 +198,6 @@ public class Toolbox extends JPanel {
                 }
             }
 
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
         });
 
         qualifierCont.add(addButton);

@@ -45,7 +45,6 @@ import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.CustomSplitPaneDivider;
-import org.isatools.isacreator.effects.ExpandingPanel;
 import org.isatools.isacreator.formatmappingutility.exceptions.NoAvailableLoaderException;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 import org.isatools.isacreator.formatmappingutility.io.SavedMappings;
@@ -108,18 +107,10 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private Map<String, MappedElement> fixedMappings;
     private Set<String> fixedMappingsAdded;
 
-    private ExpandingPanel addColumnToolbox;
-
     private MappingInfoTab mappingInfo;
 
     private static String[][] initialData;
 
-
-    public MappingEntryGUI(TableReferenceObject tro, final String[] columnsToBeMappedTo,
-                           final String fileName, int readerToUse) {
-
-        this(tro, columnsToBeMappedTo, fileName, readerToUse, null);
-    }
 
     public MappingEntryGUI(TableReferenceObject tro, final String[] columnsToBeMappedTo,
                            final String fileName, int readerToUse, SavedMappings savedMappings) {
@@ -200,14 +191,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         // shown in the RHS panel.
         rootNode = new DefaultMutableTreeNode("ISATAB Fields");
 
-        for (String column : tro.getHeaders()) {
-            if (!column.equals("Unit") && !column.equals(TableReferenceObject.ROW_NO_TEXT)) {
-                MappingInformation toUse = chooseDisplay(column);
-                MappedElement mn = new MappedElement(column, toUse);
-                mappingRef.add(mn);
-                rootNode.add(new DefaultMutableTreeNode(mn));
-            }
-        }
+        addHeadersToTree();
         treeModel = new DefaultTreeModel(rootNode);
         isatabFieldsTree = new JTree(treeModel);
         isatabFieldsTree.addTreeSelectionListener(this);
@@ -231,6 +215,24 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         westPanel.setLayout(new BorderLayout());
         westPanel.setPreferredSize(new Dimension(200, 375));
 
+        westPanel.add(treeContainer);
+        westPanel.add(createToolbox(), BorderLayout.SOUTH);
+
+        return westPanel;
+    }
+
+    private void addHeadersToTree() {
+        for (String column : tro.getHeaders()) {
+            if (!column.equals("Unit") && !column.equals(TableReferenceObject.ROW_NO_TEXT)) {
+                MappingInformation toUse = chooseDisplay(column);
+                MappedElement mn = new MappedElement(column, toUse);
+                mappingRef.add(mn);
+                rootNode.add(new DefaultMutableTreeNode(mn));
+            }
+        }
+    }
+
+    private Toolbox createToolbox() {
         Toolbox toolbox = new Toolbox();
 
         toolbox.addPropertyChangeListener("nodeAdded", new PropertyChangeListener() {
@@ -279,15 +281,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                 statusPanel.revalidate();
                 statusPanel.repaint();
             }
-        }
-
-        );
-
-        addColumnToolbox = new ExpandingPanel(treeContainer, toolbox);
-        westPanel.add(addColumnToolbox);
-
-
-        return westPanel;
+        });
+        return toolbox;
     }
 
     public MappedElement getMappingNodeForField(String fieldName) {
@@ -297,10 +292,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             }
         }
         return null;
-    }
-
-    public void expandColumnToolbox() {
-        addColumnToolbox.setExpanded(true);
     }
 
     private MappingInformation chooseDisplay(String newFieldName) {

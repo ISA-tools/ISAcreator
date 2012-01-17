@@ -336,17 +336,11 @@ public class IncomingFileBrowser extends JFrame {
             infoLabelCont.add(infoLabel);
 
             infoPanel = new JPanel();
-            infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
-            infoPanel.add(infoLabelCont);
-
-            JPanel confirmSelectPanel = new JPanel(new GridLayout(1, 1));
-            confirmSelectPanel.add(new JLabel(new ImageIcon(getClass().getResource("/images/formatmapper/confirm_select.png"))));
-
-            infoPanel.add(confirmSelectPanel);
+            infoPanel.setLayout(new BorderLayout());
+            infoPanel.add(infoLabelCont, BorderLayout.CENTER);
 
             final JLabel selectButton = new JLabel(select);
             selectButton.addMouseListener(new MouseAdapter() {
-
 
                 public void mouseEntered(MouseEvent mouseEvent) {
                     selectButton.setIcon(selectOver);
@@ -363,12 +357,10 @@ public class IncomingFileBrowser extends JFrame {
             });
 
             JPanel selectButtonCont = new JPanel();
-            selectButtonCont.setLayout(new BoxLayout(selectButtonCont, BoxLayout.LINE_AXIS));
+            selectButtonCont.setLayout(new BorderLayout());
+            selectButtonCont.add(selectButton, BorderLayout.EAST);
 
-            selectButtonCont.add(Box.createHorizontalStrut(300 - select.getIconWidth()));
-            selectButtonCont.add(selectButton);
-
-            infoPanel.add(selectButtonCont);
+            infoPanel.add(selectButtonCont, BorderLayout.SOUTH);
             infoPanel.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 7), "selection",
                     TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, UIHelper.VER_11_BOLD,
                     UIHelper.GREY_COLOR));

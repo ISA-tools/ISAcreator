@@ -46,6 +46,8 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 
 /**
@@ -58,12 +60,12 @@ import java.awt.font.FontRenderContext;
 public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
 
     private JPanel contents;
-    private JLabel icon;
+    private JLabel icon, remove;
     private JLabel text;
 
     @InjectedResource
     private ImageIcon openedNode, closedNode, mappedUnselected, mappedSelected,
-            unmappedUnselected, unmappedSelected;
+            unmappedUnselected, unmappedSelected, removeNode;
 
     public MappingSelectionTreeCellRenderer() {
         ResourceInjector.get("formatmappingutility-package.style").inject(this);
@@ -72,7 +74,13 @@ public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
         contents.setOpaque(false);
 
         icon = new JLabel();
+        remove = new JLabel();
         text = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
+
+        Box iconContainer = Box.createHorizontalBox();
+        iconContainer.add(remove);
+        iconContainer.add(Box.createHorizontalStrut(3));
+        iconContainer.add(icon);
 
         contents.add(icon, BorderLayout.WEST);
         contents.add(text, BorderLayout.CENTER);
@@ -107,10 +115,19 @@ public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
             boolean isMapped = mappedElement.getDisplay().isMappedTo();
 
             icon.setIcon(selected ? isMapped ? mappedSelected : unmappedSelected :
-                                    isMapped ? mappedUnselected : unmappedUnselected );
+                    isMapped ? mappedUnselected : unmappedUnselected);
         } else {
             icon.setIcon(expanded ? openedNode : closedNode);
         }
+
+        remove.setIcon(selected ? removeNode : null);
+        remove.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                System.out.println("Hello");
+
+            }
+        });
 
         return contents;
     }

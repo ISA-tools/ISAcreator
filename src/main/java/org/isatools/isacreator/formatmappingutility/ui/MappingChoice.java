@@ -83,7 +83,7 @@ public class MappingChoice extends JPanel {
     private boolean lastInList = false;
     private String[] columnsToBeMappedTo;
 
-    private IncomingFileBrowser csGUI;
+    private IncomingFileBrowser fileBrowserUI;
     private DropDownComponent dropdown;
 
     /**
@@ -165,8 +165,8 @@ public class MappingChoice extends JPanel {
 
         showHideFields();
 
-        // todo change to have both add and remove buttons unless there is only one item in the list.
         ImageIcon imageToUse = (lastInList) ? addButtonIcon : removeButtonIcon;
+
 
         addRemoveMappingChoice = new JLabel(imageToUse);
         addRemoveMappingChoice.addMouseListener(new MouseAdapter() {
@@ -205,20 +205,21 @@ public class MappingChoice extends JPanel {
 
     public JComponent createTableBrowseDropdown(final JComboBox field) {
 
-        csGUI = new IncomingFileBrowser(columnsToBeMappedTo, incomingFileSummaryData);
-        dropdown = new DropDownComponent(field, csGUI, DropDownComponent.TABLE_BROWSER);
-        csGUI.addPropertyChangeListener("selectedColumn",
+        fileBrowserUI = new IncomingFileBrowser(columnsToBeMappedTo, incomingFileSummaryData);
+        dropdown = new DropDownComponent(field, fileBrowserUI, DropDownComponent.TABLE_BROWSER);
+        dropdown.setToolTipText("<html><strong>Browse incoming file structure</strong</html>");
+        fileBrowserUI.addPropertyChangeListener("selectedColumn",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(csGUI);
+                        dropdown.hidePopup(fileBrowserUI);
                         field.setSelectedItem(evt.getNewValue().toString());
                     }
                 });
 
-        csGUI.addPropertyChangeListener("noneSelected",
+        fileBrowserUI.addPropertyChangeListener("noneSelected",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(csGUI);
+                        dropdown.hidePopup(fileBrowserUI);
                     }
                 });
 
