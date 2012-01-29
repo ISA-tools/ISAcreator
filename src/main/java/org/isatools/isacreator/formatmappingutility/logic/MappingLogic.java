@@ -214,6 +214,8 @@ public class MappingLogic {
             }
         }
 
+        sde.updateAssayPanel();
+
         inv.addStudy(study);
 
         return inv;

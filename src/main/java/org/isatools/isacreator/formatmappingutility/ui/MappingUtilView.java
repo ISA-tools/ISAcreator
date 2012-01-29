@@ -879,7 +879,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         investigation.setConfigurationCreateWith(menuPanels.getMain().getLoadedConfiguration());
                         investigation.setLastConfigurationUsed(menuPanels.getMain().getLoadedConfiguration());
 
-                        dataEntryEnvironment.createGUIFromSource(investigation);
+                        dataEntryEnvironment.createGUIFromInvestigatio(investigation);
 
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
                         menuPanels.getMain().hideGlassPane();

@@ -371,7 +371,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     // need to create data entry panel which has already been formed by the import layer
     // take investigation and iterate through it, adding all nodes including investigation, study, and assay nodes
 
-    public void createGUIFromSource(Investigation inv) {
+    public void createGUIFromInvestigatio(Investigation inv) {
         // investigation should have all the studies, assays, etc. in place, ready to be added to the panel
         setSize(isacreatorUI.getSize());
         setLayout(new BorderLayout());

@@ -63,8 +63,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -86,6 +88,9 @@ public class StudyDataEntry extends DataEntryForm {
     private SubForm protocolSubForm;
 
     private AssaySelectionDialog assaySelectionUI;
+
+    private final RemoveAssayListener removeAssayListener = new RemoveAssayListener();
+    private final ViewAssayListener viewAssayListener = new ViewAssayListener();
 
 
     /**
@@ -189,61 +194,7 @@ public class StudyDataEntry extends DataEntryForm {
         assayContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         assayContainer.setBackground(UIHelper.BG_COLOR);
 
-        final PropertyChangeListener removeAssayListener = new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
-                    final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
-
-                    String removalText = "<html>" + "<b>Confirm deletion of assay</b>" + "<p>Deleting this will result " +
-                            "in it's complete removal from this experiment annotation!</p>" +
-                            "<p>Do you wish to continue?</p>" + "</html>";
-
-                    JOptionPane optionPane = new JOptionPane(removalText,
-                            JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
-                    optionPane.addPropertyChangeListener(new PropertyChangeListener() {
-                        public void propertyChange(PropertyChangeEvent event) {
-                            if (event.getPropertyName()
-                                    .equals(JOptionPane.VALUE_PROPERTY)) {
-                                int lastOptionAnswer = Integer.valueOf(event.getNewValue()
-                                        .toString());
-
-                                if (lastOptionAnswer == JOptionPane.YES_OPTION) {
-                                    removeAssay(panel.getAssay().getAssayReference());
-                                    assayContainer.remove(panel);
-                                    assayContainer.repaint();
-                                    getDataEntryEnvironment().getParentFrame().hideSheet();
-                                } else {
-                                    // just hide the sheet and cancel further actions!
-                                    getDataEntryEnvironment().getParentFrame().hideSheet();
-                                }
-                            }
-                        }
-                    });
-
-                    UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-                    getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(optionPane.createDialog(StudyDataEntry.this, "Confirm Delete"));
-                }
-
-            }
-        };
-
-        final PropertyChangeListener viewAssayListener = new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
-                    final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
-
-                    getDataEntryEnvironment().selectAssayInTree(panel.getAssay());
-                }
-
-            }
-        };
-
-        for (Assay assay : study.getAssays().values()) {
-            AssayInformationPanel informationPanel = new AssayInformationPanel(assay);
-            informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
-            informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
-            assayContainer.add(informationPanel);
-        }
+        updateAssayPanel();
 
         JScrollPane assayScroller = new JScrollPane(assayContainer,
                 JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -314,6 +265,17 @@ public class StudyDataEntry extends DataEntryForm {
         container.add(assayScroller, BorderLayout.CENTER);
 
         return container;
+    }
+
+    public void updateAssayPanel() {
+        assayContainer.removeAll();
+
+        for (Assay assay : study.getAssays().values()) {
+            AssayInformationPanel informationPanel = new AssayInformationPanel(assay);
+            informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
+            informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
+            assayContainer.add(informationPanel);
+        }
     }
 
     @Override
@@ -675,4 +637,54 @@ public class StudyDataEntry extends DataEntryForm {
         study = null;
         removeAll();
     }
+
+    class RemoveAssayListener implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
+                final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
+
+                String removalText = "<html>" + "<b>Confirm deletion of assay</b>" + "<p>Deleting this will result " +
+                        "in it's complete removal from this experiment annotation!</p>" +
+                        "<p>Do you wish to continue?</p>" + "</html>";
+
+                JOptionPane optionPane = new JOptionPane(removalText,
+                        JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
+                optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent event) {
+                        if (event.getPropertyName()
+                                .equals(JOptionPane.VALUE_PROPERTY)) {
+                            int lastOptionAnswer = Integer.valueOf(event.getNewValue()
+                                    .toString());
+
+                            if (lastOptionAnswer == JOptionPane.YES_OPTION) {
+                                removeAssay(panel.getAssay().getAssayReference());
+                                assayContainer.remove(panel);
+                                assayContainer.repaint();
+                                getDataEntryEnvironment().getParentFrame().hideSheet();
+                            } else {
+                                // just hide the sheet and cancel further actions!
+                                getDataEntryEnvironment().getParentFrame().hideSheet();
+                            }
+                        }
+                    }
+                });
+
+                UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
+                getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(optionPane.createDialog(StudyDataEntry.this, "Confirm Delete"));
+            }
+
+        }
+    }
+
+    class ViewAssayListener implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
+                final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
+
+                getDataEntryEnvironment().selectAssayInTree(panel.getAssay());
+            }
+
+        }
+    }
+
 }

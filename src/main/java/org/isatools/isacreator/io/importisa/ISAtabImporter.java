@@ -184,7 +184,7 @@ public class ISAtabImporter {
 
                     if (constructWithGUIs) {
                         attachGUIsToInvestigation();
-                        dataEntryEnvironment.createGUIFromSource(investigation);
+                        dataEntryEnvironment.createGUIFromInvestigatio(investigation);
                         assignOntologiesToSession(mapper.getOntologyTermsDefined());
                     }
 

@@ -148,7 +148,6 @@ public class Study extends ISASection {
     public boolean addContact(StudyContact contact) {
         if (!checkContactExists(contact.getFirstName(), contact.getLastName(), contact.getEmail())) {
             contacts.add(contact);
-
             return true;
         }
 

@@ -1242,7 +1242,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                 investigationDefinition.setUserInterface(new InvestigationDataEntry(
                         investigationDefinition, dep));
 
-                dep.createGUIFromSource(investigationDefinition);
+                dep.createGUIFromInvestigatio(investigationDefinition);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         mainMenu.getMain().setCurrentPage(dep);
