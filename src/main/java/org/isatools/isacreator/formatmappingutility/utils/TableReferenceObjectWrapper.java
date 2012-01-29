@@ -19,6 +19,8 @@ public class TableReferenceObjectWrapper {
 
     private TableReferenceObject tableReferenceObject;
 
+    private boolean constructProtocolsWithDefaultValues = false;
+
     public TableReferenceObjectWrapper(TableReferenceObject tableReferenceObject) {
         this.tableReferenceObject = tableReferenceObject;
     }
@@ -54,12 +56,8 @@ public class TableReferenceObjectWrapper {
 
     public List<Protocol> findProtocols() {
         List<Protocol> protocols = new ArrayList<Protocol>();
-        Collection<FieldObject> fields = tableReferenceObject.getFieldLookup().values();
 
-        List<FieldObject> fieldsAsList = new ArrayList<FieldObject>();
-        fieldsAsList.addAll(fields);
-
-        tableReferenceObject.sortFieldsByColumnNumber(fieldsAsList);
+        List<FieldObject> fieldsAsList = getFields();
 
         StringBuffer protocolParameters = new StringBuffer();
         FieldObject currentProtocol = null;
@@ -69,8 +67,10 @@ public class TableReferenceObjectWrapper {
         for (FieldObject field : fieldsAsList) {
             // build up string representation of protocol definitions, then process and add them to a protocol object
             // for addition into the protocols to add List!
+            System.out.println(field.getFieldName() + " - " + field.getDefaultVal());
             if (field.getFieldName().equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
 
+                System.out.println("Encountered a Protocol REF, type is: " + field.getDefaultVal());
                 if (currentProtocol != null) {
                     // then we have a protocol directly after another protocol
                     constructProtocols(protocols, currentProtocol, protocolParameters.toString());
@@ -79,7 +79,7 @@ public class TableReferenceObjectWrapper {
                 currentProtocol = field;
                 protocolParameters = new StringBuffer();
 
-            } else if (field.getFieldName().contains("Parameter")) {
+            } else if (field.getFieldName().contains(GeneralFieldTypes.PARAMETER_VALUE.name)) {
                 String parameter = field.getFieldName().substring(field.getFieldName().indexOf("[") + 1, field.getFieldName().indexOf("]"));
                 protocolParameters.append(parameter).append(";");
                 prevParameterIndex = count;
@@ -92,13 +92,12 @@ public class TableReferenceObjectWrapper {
             } else {
                 // end of protocol definition
                 // construct a new protocol by adding what is in found :o)
-                if (!protocolParameters.toString().equals("")) {
-                    if (currentProtocol != null) {
-                        constructProtocols(protocols, currentProtocol, protocolParameters.toString());
-                        currentProtocol = null;
-                    }
-                    protocolParameters = new StringBuffer();
+
+                if (currentProtocol != null) {
+                    constructProtocols(protocols, currentProtocol, protocolParameters.toString());
+                    currentProtocol = null;
                 }
+                protocolParameters = new StringBuffer();
             }
             count++;
         }
@@ -111,12 +110,31 @@ public class TableReferenceObjectWrapper {
         return protocols;
     }
 
+    private List<FieldObject> getFields() {
+        Collection<FieldObject> fields = tableReferenceObject.getFieldIndexLookup().values();
+
+        List<FieldObject> fieldsAsList = new ArrayList<FieldObject>();
+        fieldsAsList.addAll(fields);
+
+        tableReferenceObject.sortFieldsByColumnNumber(fieldsAsList);
+        return fieldsAsList;
+    }
+
     private void constructProtocols(List<Protocol> protocols, FieldObject protocolField, String parameters) {
         Set<String> protocolNames = tableReferenceObject.getData().getDataInColumn(protocolField.getColNo());
 
-        for (String protocol : protocolNames) {
-            protocols.add(new Protocol(protocol, protocolField.getDefaultVal(), "", "", "", parameters, "", ""));
-        }
+        System.out.println("Adding protocol, " + protocolField.getDefaultVal());
 
+        if (constructProtocolsWithDefaultValues) {
+            protocols.add(new Protocol(protocolField.getDefaultVal(), protocolField.getDefaultVal(), "", "", "", parameters, "", ""));
+        } else {
+            for (String protocol : protocolNames) {
+                protocols.add(new Protocol(protocol, protocolField.getDefaultVal(), "", "", "", parameters, "", ""));
+            }
+        }
+    }
+
+    public void setConstructProtocolsWithDefaultValues(boolean constructProtocolsWithDefaultValues) {
+        this.constructProtocolsWithDefaultValues = constructProtocolsWithDefaultValues;
     }
 }

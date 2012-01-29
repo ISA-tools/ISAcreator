@@ -41,7 +41,10 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
@@ -118,9 +121,9 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
         int count = tableStructure.size() + 1;
         rowFormat = "";
 
-        for (int i = 0; i < tableStructure.size(); i++) {
+        for (int columnIndex = 0; columnIndex < tableStructure.size(); columnIndex++) {
 
-            String fieldName = tableStructure.get(i)[0];
+            String fieldName = tableStructure.get(columnIndex)[0];
             if (fieldName != null) {
 
 
@@ -159,7 +162,7 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
                     String value = fieldName.toLowerCase();
                     if (!value.contains("organism") && !value.contains("organism part")) {
                         headers.add(fieldName);
-                        colsToUse.add(i);
+                        colsToUse.add(columnIndex);
                         rowFormat += " \t";
                     }
                 } else if (fieldName.toLowerCase().equals("factors")) {
@@ -207,9 +210,14 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
                 } else if (fieldName.toLowerCase().contains("factor value[")) {
                     if (!checkForFactorExistence(fieldName)) {
                         headers.add(fieldName);
-                        colsToUse.add(i);
+                        colsToUse.add(columnIndex);
                         rowFormat += " \t";
                     }
+                } else if (fieldName.equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                    // we have a protocol. Do two things: set value to it's default value and add it to the study protocols
+                    headers.add(fieldName);
+                    colsToUse.add(columnIndex);
+                    rowFormat += buildingModel.getDefaultValue(columnIndex + 1) + "\t";
                 } else {
 
                     headers.add(fieldName);
@@ -238,6 +246,12 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
         buildingModel.setPreDefinedHeaders(headersForReferenceObject);
 
         addRowsToModel(headersAsArray);
+
+        TableReferenceObjectWrapper troAdapter = new TableReferenceObjectWrapper(buildingModel);
+        troAdapter.setConstructProtocolsWithDefaultValues(true);
+        List<Protocol> protocols = troAdapter.findProtocols();
+
+        study.getProtocols().addAll(protocols);
 
         studySample.setTableReferenceObject(buildingModel);
     }

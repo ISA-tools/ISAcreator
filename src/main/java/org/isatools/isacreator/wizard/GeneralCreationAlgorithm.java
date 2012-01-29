@@ -40,7 +40,10 @@ package org.isatools.isacreator.wizard;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
@@ -135,22 +138,25 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                 for (int replicates = startReplicate; replicates <= treatmentGroups.get(groups).getNumReplicates();
                      replicates++) {
 
-                    for (int i : colsToUse) {
-                        if (!tableStructure.get(i)[0].toLowerCase().equals("characteristics")) {
-                            String nextDataToAdd = tableStructure.get(i)[1]; // try and insert a template item
+                    for (int columnIndex : colsToUse) {
+                        if (!tableStructure.get(columnIndex)[0].toLowerCase().equals("characteristics")) {
+                            String nextDataToAdd = tableStructure.get(columnIndex)[1]; // try and insert a template item
 
                             if (nextDataToAdd.trim().equals("")) {
                                 // then we are dealing with a protocol, factor, or characteristic
-                                if (tableStructure.get(i)[0].toLowerCase()
+                                if (tableStructure.get(columnIndex)[0].toLowerCase()
                                         .equals("factors")) {
 
                                     row += treatmentGroups.get(groups).getTreatmentGroup();
-                                } else if (tableStructure.get(i)[0].toLowerCase()
+                                } else if (tableStructure.get(columnIndex)[0].toLowerCase()
                                         .equals("label")) {
 
                                     String val = labelUsed.isSelected() ? labelCapture.getLabelName() : "";
 
                                     row += val + "\t";
+                                } else if (tableStructure.get(columnIndex)[0].equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                                    // we have a protocol. Do two things: set value to it's default value and add it to the study protocols
+                                    row += buildingModel.getDefaultValue(columnIndex + 1) + "\t";
                                 } else {
                                     // just empty row data
                                     row += (nextDataToAdd + "\t");
@@ -190,6 +196,12 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
             }
 
         }
+
+        TableReferenceObjectWrapper troAdapter = new TableReferenceObjectWrapper(buildingModel);
+        troAdapter.setConstructProtocolsWithDefaultValues(true);
+        List<Protocol> protocols = troAdapter.findProtocols();
+
+        study.getProtocols().addAll(protocols);
 
         // add extract statement for reference sample addition.
         assay.setTableReferenceObject(buildingModel);

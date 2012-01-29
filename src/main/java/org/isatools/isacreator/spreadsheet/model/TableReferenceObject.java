@@ -87,6 +87,7 @@ public class TableReferenceObject implements Serializable {
 
         for (FieldObject fo : tableConfig.getFields()) {
             fieldLookup.put(fo.getFieldName(), fo);
+            fieldIndexLookup.put(fo.getColNo(), fo);
         }
     }
 
@@ -351,8 +352,6 @@ public class TableReferenceObject implements Serializable {
     // replace with col name. must be unique in any case! And even if it isn't, the datatypes will be the same :o)
 
     public DataTypes getColumnType(String colName) {
-
-
         if (colName.equals(ROW_NO_TEXT)) {
             return DataTypes.INTEGER;
         } else {
@@ -379,7 +378,6 @@ public class TableReferenceObject implements Serializable {
         }
 
         return ssContents;
-
     }
 
     public String getDefaultValue(String colName) {
@@ -399,6 +397,7 @@ public class TableReferenceObject implements Serializable {
                 return "";
             }
 
+            System.out.println("Field is " + field.getFieldName());
             return field.getDefaultVal() == null ? "" : field.getDefaultVal();
         }
         return "";
@@ -594,5 +593,9 @@ public class TableReferenceObject implements Serializable {
 
     public OrderedMap<String, FieldObject> getFieldLookup() {
         return fieldLookup;
+    }
+
+    public Map<Integer, FieldObject> getFieldIndexLookup() {
+        return fieldIndexLookup;
     }
 }

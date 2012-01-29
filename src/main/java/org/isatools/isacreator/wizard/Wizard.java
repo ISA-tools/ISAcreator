@@ -1106,6 +1106,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                     a.setUserInterface(studyBeingEdited.getUserInterface());
                 }
 
+                studyBeingEdited.getUserInterface().reformProtocols();
                 investigationDefinition.addStudy(studyBeingEdited);
 
                 //if more studies to define, then define them, else show created thing!
