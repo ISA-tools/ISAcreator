@@ -123,31 +123,34 @@ public class ExperimentVisualization extends JLayeredPane {
 
     public void createGUI() {
 
-        JPanel containerPanel = new JPanel(new BorderLayout());
-        containerPanel.setBackground(UIHelper.BG_COLOR);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JPanel containerPanel = new JPanel(new BorderLayout());
+                containerPanel.setBackground(UIHelper.BG_COLOR);
+
+                File file;
+                GenerateView gv = new GenerateView();
+                if (investigation == null) {
+                    file = gv.generateView(study);
+                } else {
+                    file = gv.generateView(investigation);
+                }
 
 
-        GenerateView gv = new GenerateView();
-        if (investigation == null) {
-            gv.generateView(study);
-        } else {
+                if (fullGUI && investigation != null) {
+                    containerPanel.add(createNorthPanel(), BorderLayout.NORTH);
+                    containerPanel.setBorder(new EtchedBorder(UIHelper.DARK_GREEN_COLOR,
+                            UIHelper.DARK_GREEN_COLOR));
+                }
 
-            if (fullGUI) {
-                containerPanel.add(createNorthPanel(), BorderLayout.NORTH);
-                containerPanel.setBorder(new EtchedBorder(UIHelper.DARK_GREEN_COLOR,
-                        UIHelper.DARK_GREEN_COLOR));
+                containerPanel.add(createSouthPanel(), BorderLayout.SOUTH);
+                containerPanel.add(createTreeView(file),
+                        BorderLayout.CENTER);
+
+                add(containerPanel, BorderLayout.CENTER);
             }
-            gv.generateView(investigation);
-        }
-
-        containerPanel.add(createSouthPanel(), BorderLayout.SOUTH);
-
-        containerPanel.add(createTreeView(System.getProperty("java.io.tmpdir") + File.separator + "view.xml", "name"),
-                BorderLayout.CENTER);
-
-
-        add(containerPanel, BorderLayout.CENTER);
-
+        });
 
     }
 
@@ -198,12 +201,16 @@ public class ExperimentVisualization extends JLayeredPane {
         return southPanel;
     }
 
-    public JPanel createTreeView(String datafile, final String label) {
+    public JPanel createTreeView(File datafile) {
+
         Color background = UIHelper.BG_COLOR;
         Color foreground = Color.BLACK;
 
         Tree t = null;
 
+        System.out.println("Reading " + datafile.getAbsolutePath());
+
+        System.out.println("Does data file exist? " + datafile.exists());
         try {
             t = (Tree) new TreeMLReader().readGraph(datafile);
         } catch (Exception e) {
@@ -211,7 +218,7 @@ public class ExperimentVisualization extends JLayeredPane {
         }
 
         // create a new treemap
-        final TreeView tview = new TreeView(t, label,
+        final TreeView tview = new TreeView(t,
                 new Dimension(getWidth(), 500));
 
         tview.setBackground(background);
@@ -220,8 +227,8 @@ public class ExperimentVisualization extends JLayeredPane {
         // create a search panel for the tree map
         tview.addControlListener(new ControlAdapter() {
             public void itemClicked(VisualItem item, MouseEvent e) {
-                if (item.canGetString("name") && item.canGetString("type")) {
-                    final String name = item.getString("name");
+                if (item.canGetString(TreeView.NAME_STRING) && item.canGetString("type")) {
+                    final String name = item.getString(TreeView.NAME_STRING);
                     final String type = item.getString("type");
 
                     SwingUtilities.invokeLater(new Runnable() {

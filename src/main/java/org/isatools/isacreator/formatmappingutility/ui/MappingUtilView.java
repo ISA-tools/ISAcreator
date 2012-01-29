@@ -580,7 +580,12 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         nextButton.setIcon(next);
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
 
-                        setCurrentPage(createMappingVisualization(sequence + 1, fileName, mu.getVisMapping()));
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                setCurrentPage(createMappingVisualization(sequence + 1, fileName, mu.getVisMapping()));
+                            }
+                        });
+
                     }
                 });
 
@@ -600,29 +605,31 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     /**
      * Create a visualization of the mapping showing what columns the file had and what isatab fields each of these columns have been mapped to
      *
-     * @param sequence - sequence of assay processing.
-     * @param filename - name to save the mapping visualization as.
-     * @param mapping  - Mappings for each isatab file to the incoming column name(s) and any literals.
+     * @param sequence              - sequence of assay processing.
+     * @param nameOfFileBeingMapped - name to save the mapping visualization as.
+     * @param mapping               - Mappings for each isatab file to the incoming column name(s) and any literals.
      * @return JLayeredPane containing the GUI to display the mapping visualization.
      */
-    private JLayeredPane createMappingVisualization(final int sequence, final String filename, Map<MappingField, List<String>> mapping) {
+    private JLayeredPane createMappingVisualization(final int sequence, final String nameOfFileBeingMapped,
+                                                    Map<MappingField, List<String>> mapping) {
+
         JPanel visContainer = new JPanel();
         visContainer.setLayout(new BoxLayout(visContainer, BoxLayout.PAGE_AXIS));
         visContainer.setSize(new Dimension((int) (menuPanels.getWidth() * 0.80), (int) (menuPanels.getHeight() * 0.90)));
 
         Tree t = null;
 
-        GenerateMappingView gmv = new GenerateMappingView(filename, mapping);
-        String treeFileName = gmv.generateView();
+        GenerateMappingView gmv = new GenerateMappingView(nameOfFileBeingMapped, mapping);
+        File treeFile = gmv.generateView();
 
         try {
-            t = (Tree) new TreeMLReader().readGraph(treeFileName);
+            t = (Tree) new TreeMLReader().readGraph(treeFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // create a new treemap
-        final TreeView tview = new TreeView(t, "name",
+        final TreeView tview = new TreeView(t,
                 new Dimension((int) (menuPanels.getWidth() * 0.80), (int) (menuPanels.getHeight() * 0.90)));
 
         tview.setBackground(UIHelper.BG_COLOR);
@@ -687,9 +694,9 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                                 String nextMeasurement = aso.getMeasurement();
                                 String nextTechnology = aso.getTechnology();
                                 setCurrentPage(createMappings(sequence,
-                                        getTableReferenceObject(nextTechnology, nextMeasurement), fileColumns, filename, reader));
+                                        getTableReferenceObject(nextTechnology, nextMeasurement), fileColumns, nameOfFileBeingMapped, reader));
                             } else {
-                                setCurrentPage(createSaveMappings(filename));
+                                setCurrentPage(createSaveMappings());
                             }
                         } catch (BiffException e) {
                             setCurrentPage(lastPage);
@@ -719,7 +726,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
      *
      * @return JLayeredPane containing the gui to allow a user to save the mapping file!
      */
-    private JLayeredPane createSaveMappings(final String filename) {
+    private JLayeredPane createSaveMappings() {
         JPanel saveMappingFilesCont = new JPanel();
         saveMappingFilesCont.setSize(new Dimension(400, 300));
         saveMappingFilesCont.setLayout(new BoxLayout(saveMappingFilesCont, BoxLayout.PAGE_AXIS));
