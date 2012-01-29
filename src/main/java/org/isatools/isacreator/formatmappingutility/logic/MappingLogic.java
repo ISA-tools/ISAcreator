@@ -227,14 +227,11 @@ public class MappingLogic {
 
     private static void addAllFactorsToInvestigationFile(Map<String, TableReferenceObject> mappings) {
         Set<String> addedFactors = new HashSet<String>();
-        System.out.println("Adding headers to factorsToAdd");
         for (TableReferenceObject tro : mappings.values()) {
             for (String header : tro.getHeaders()) {
-                System.out.println("Checking " + header);
                 if (header.contains("Factor Value")) {
                     if (!addedFactors.contains(header)) {
                         addedFactors.add(header);
-                        System.out.println("Found factor value, " + header);
                         String tmpFactor = header.substring(header.indexOf("[") + 1, header.lastIndexOf("]"));
                         factorsToAdd.add(new Factor(tmpFactor, tmpFactor));
                     }
