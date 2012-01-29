@@ -50,7 +50,9 @@ import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 import org.isatools.isacreator.formatmappingutility.io.SavedMappings;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.renderers.MappingSelectionTreeCellRenderer;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -89,7 +91,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     @InjectedResource
     private static ImageIcon tableBrowserIcon;
 
-    private TableReferenceObject tro;
+    private TableReferenceObject tableReferenceObject;
     private static String[] columnsToBeMappedTo;
     private String fileName;
     private int readerToUse;
@@ -99,7 +101,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private JTree isatabFieldsTree;
     private JPanel swappableDataEntryContainer;
     private JPanel statusPanel;
-    private JLabel status;
+    private JLabel statusUI;
 
     private List<String> addedFields;
     // maintain the mapping from a tree element to it's respective mapping entry screen.
@@ -108,20 +110,13 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private Set<String> fixedMappingsAdded;
 
     private MappingInfoTab mappingInfo;
-    private Toolbox toolbox;
+    private Toolbox addNewFieldUI;
 
     private static String[][] initialData;
 
-
-    public MappingEntryGUI(TableReferenceObject tro, final String[] columnsToBeMappedTo,
-                           final String fileName, int readerToUse, SavedMappings savedMappings) {
-
-        this(tro, columnsToBeMappedTo, fileName, readerToUse, savedMappings, null);
-    }
-
-    public MappingEntryGUI(TableReferenceObject tro, final String[] columnsToBeMappedTo,
+    public MappingEntryGUI(TableReferenceObject tableReferenceObject, final String[] columnsToBeMappedTo,
                            final String fileName, int readerToUse, SavedMappings savedMappings, Map<String, MappedElement> fixedMappings) {
-        this.tro = tro;
+        this.tableReferenceObject = tableReferenceObject;
         MappingEntryGUI.columnsToBeMappedTo = columnsToBeMappedTo;
         this.fileName = fileName;
         this.readerToUse = readerToUse;
@@ -178,8 +173,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         statusPanel = new JPanel(new BorderLayout());
         statusPanel.setVisible(false);
 
-        status = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR, JLabel.CENTER);
-        statusPanel.add(status);
+        statusUI = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR, JLabel.CENTER);
+        statusPanel.add(statusUI);
 
         add(statusPanel, BorderLayout.SOUTH);
     }
@@ -222,20 +217,22 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     }
 
     private void addHeadersToTree() {
-        for (String column : tro.getHeaders()) {
-            if (!column.equals("Unit") && !column.equals(TableReferenceObject.ROW_NO_TEXT)) {
+        TableReferenceObjectWrapper wrapperForMapper = new TableReferenceObjectWrapper(tableReferenceObject);
+        for (String column : wrapperForMapper.getStdHeaders()) {
+            if (!column.equals(GeneralFieldTypes.UNIT.name) && !column.equals(TableReferenceObject.ROW_NO_TEXT)) {
                 MappingInformation toUse = chooseDisplay(column);
                 MappedElement mn = new MappedElement(column, toUse);
                 mappingRef.add(mn);
+
                 rootNode.add(new DefaultMutableTreeNode(mn));
             }
         }
     }
 
     private Toolbox createToolbox() {
-        toolbox = new Toolbox();
+        addNewFieldUI = new Toolbox();
 
-        toolbox.addPropertyChangeListener("nodeAdded", new PropertyChangeListener() {
+        addNewFieldUI.addPropertyChangeListener("nodeAdded", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
 
                 // now need to reform tree based on the addition of this element!
@@ -249,9 +246,9 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
                         MappedElement mn = (MappedElement) dmtn.getUserObject();
 
-                        if (newFieldName.contains("Parameter Value") && !mn.getFieldName().equals("Protocol REF")) {
-                            status.setText("you can only add a Parameter Value to a Protocol REF");
-                            status.setVisible(true);
+                        if (newFieldName.contains(GeneralFieldTypes.PARAMETER_VALUE.name) && !mn.getFieldName().contains(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                            statusUI.setText("you can only add a Parameter Value to a Protocol REF");
+                            statusUI.setVisible(true);
                         } else {
                             int count = 0;
 
@@ -271,18 +268,18 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                             statusPanel.setVisible(false);
                         }
                     } else {
-                        status.setText("a field with the name " + newFieldName + " already exists!");
+                        statusUI.setText("a field with the name " + newFieldName + " already exists!");
                         statusPanel.setVisible(true);
                     }
                 } else {
-                    status.setText("please select a node in the tree to add the element after!");
+                    statusUI.setText("please select a node in the tree to add the element after!");
                     statusPanel.setVisible(true);
                 }
                 statusPanel.revalidate();
                 statusPanel.repaint();
             }
         });
-        return toolbox;
+        return addNewFieldUI;
     }
 
     public MappedElement getMappingNodeForField(String fieldName) {
@@ -310,12 +307,12 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             return mi.getDisplay();
 
         } else if (newFieldName.contains("Characteristics") ||
-                newFieldName.contains("Factor Value") ||
-                newFieldName.contains("Parameter")) {
+                newFieldName.contains(GeneralFieldTypes.FACTOR_VALUE.name) ||
+                newFieldName.contains(GeneralFieldTypes.PARAMETER_VALUE.name)) {
             return new GeneralAttributeEntry(newFieldName, columnsToBeMappedTo, mapping);
-        } else if (newFieldName.contains("Protocol REF")) {
+        } else if (newFieldName.contains(GeneralFieldTypes.PROTOCOL_REF.name)) {
             // current implementation only dealing with general column names rather than their positions.
-            return new ProtocolFieldEntry(newFieldName, columnsToBeMappedTo, null);
+            return new ProtocolFieldEntry(newFieldName, columnsToBeMappedTo, mapping);
 
         } else {
             return new NormalFieldEntry(newFieldName, columnsToBeMappedTo, mapping);
@@ -324,9 +321,9 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
     private boolean isDuplicateField(String newFieldName) {
         for (MappedElement mn : mappingRef) {
-            if (mn.getFieldName().equals(newFieldName) && !newFieldName.equals("Sample Name") &&
+            if (mn.getFieldName().equals(newFieldName) && !newFieldName.equals(GeneralFieldTypes.SAMPLE_NAME.name) &&
                     !newFieldName.equals("Material Type") &&
-                    !newFieldName.equals("Protocol REF")) {
+                    !newFieldName.equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
 
                 return true;
             }
@@ -358,7 +355,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                     }
                 });
 
-                toolbox.updateFieldOptions(mn.getFieldName());
+                addNewFieldUI.updateFieldOptions(mn.getFieldName());
             } else {
                 if (mappingInfo == null) {
                     mappingInfo = new MappingInfoTab();
@@ -395,7 +392,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                         addedFields.remove(mn.getFieldName());
                         statusPanel.setVisible(false);
                     } else {
-                        status.setText("this field cannot be deleted as it is required!");
+                        statusUI.setText("this field cannot be deleted as it is required!");
                         statusPanel.setVisible(true);
                     }
                 }
@@ -544,13 +541,10 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     public Map<String, ISAFieldMapping> createMappingRefs() {
         Map<String, ISAFieldMapping> fields = new HashMap<String, ISAFieldMapping>();
         for (MappedElement mn : mappingRef) {
-            String fieldName = mn.getFieldName();
-            // todo possible change this to reflect the need to represent all fields individually (identified by column number...?)
-            if (!fieldName.equals("Protocol REF")) {
-                ISAFieldMapping mapping = mn.getDisplay().createISAFieldMapping();
-                if (mapping != null) {
-                    fields.put(mn.getFieldName(), mapping);
-                }
+            // todo accommodate the protocol ref mapping...?)
+            ISAFieldMapping mapping = mn.getDisplay().createISAFieldMapping();
+            if (mapping != null) {
+                fields.put(mn.getFieldName(), mapping);
             }
         }
 

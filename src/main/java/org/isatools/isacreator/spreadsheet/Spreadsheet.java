@@ -55,6 +55,8 @@ import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.spreadsheet.model.ReferenceData;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetModel;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetView;
@@ -476,7 +478,7 @@ public class Spreadsheet extends JComponent implements
      * have been filled in. If they have not been filled in, an ErrorLocator is logged and returned in a List of ErrorLocator objects!
      *
      * @return returns a List (@see List) of ErrorLocator (@see ErrorLocator) objects
-     * @see org.isatools.isacreator.spreadsheet.TableReferenceObject
+     * @see org.isatools.isacreator.spreadsheet.model.TableReferenceObject
      * @see org.isatools.isacreator.archiveoutput.ArchiveOutputError
      */
     public List<ArchiveOutputError> checkForCompleteness() {
@@ -1114,13 +1116,13 @@ public class Spreadsheet extends JComponent implements
      *
      * @param data - data to be entered.
      */
-    public void populateTable(List<List<String>> data) {
-        spreadsheetFunctions.addRows(data.size(), false);
+    public void populateTable(ReferenceData data) {
+        spreadsheetFunctions.addRows(data.getData().size(), false);
 
-        int dataSize = data.size();
+        int dataSize = data.getData().size();
 
         for (int row = 0; row < dataSize; row++) {
-            List<String> rowData = data.get(row);
+            List<String> rowData = data.getData().get(row);
             int rowDataSize = rowData.size();
 
             for (int col = 0; col < rowDataSize; col++) {

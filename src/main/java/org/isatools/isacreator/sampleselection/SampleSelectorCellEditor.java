@@ -6,7 +6,7 @@ import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.spreadsheet.Utils;
 
 import javax.swing.table.TableColumn;

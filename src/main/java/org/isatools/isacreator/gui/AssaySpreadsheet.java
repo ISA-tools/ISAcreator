@@ -38,7 +38,7 @@
 package org.isatools.isacreator.gui;
 
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.awt.*;
 
@@ -56,7 +56,7 @@ public class AssaySpreadsheet extends DataEntryForm {
      * AssayDataEntry constructor
      * Associated StudyDataEntry object and TableReferenceObject are defined here.
      *
-     * @param studyDataEntry - The StudyDataEntryObject associated with this assays related study.
+     * @param studyDataEntry       - The StudyDataEntryObject associated with this assays related study.
      * @param tableReferenceObject - TableReferenceObject to be used to create the Spreadsheet.
      */
     public AssaySpreadsheet(StudyDataEntry studyDataEntry, TableReferenceObject tableReferenceObject) {

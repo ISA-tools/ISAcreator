@@ -61,7 +61,7 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;

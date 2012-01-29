@@ -61,7 +61,7 @@ import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.model.Investigation;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.TreeView;
 import org.jdesktop.fuse.InjectedResource;
@@ -100,9 +100,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private ISAcreatorMenu menuPanels;
     private String fileBeingMapped;
     private JFileChooser fileChooser;
-
     private ErrorDisplay errorPanel;
-
     private WorkingScreen workingProgressScreen;
     private Component lastPage;
 

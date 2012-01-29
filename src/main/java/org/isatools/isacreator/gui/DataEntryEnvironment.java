@@ -49,7 +49,7 @@ import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.CollectionUtils;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;

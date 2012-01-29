@@ -49,6 +49,7 @@ import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
 import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;

@@ -122,7 +122,7 @@ public class Toolbox extends JPanel {
             options = new Object[]{FieldTypes.SELECT_A_FIELD};
         } else {
             options = FieldTypes.values();
-            if (!currentField.equals(FieldTypes.PROTOCOL.name)) {
+            if (!currentField.contains(FieldTypes.PROTOCOL.name)) {
                 options = FieldTypes.values(FieldTypes.PARAMETER);
             }
         }

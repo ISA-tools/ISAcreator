@@ -46,19 +46,9 @@ import org.isatools.isacreator.mapping.schema.*;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * MappingXMLLoader
- *
- * @author Eamonn Maguire
- * @date Oct 26, 2009
- */
-
-
 public class MappingXMLLoader {
     private static final Logger log = Logger.getLogger(MappingXMLLoader.class.getName());
     private File savedMappingsFile;
-    private String problemLog = "";
-    private boolean problemsEncountered = false;
 
     public MappingXMLLoader(String savedMappingsFile) {
         this.savedMappingsFile = new File(savedMappingsFile);
@@ -74,7 +64,6 @@ public class MappingXMLLoader {
             return processISAFields(isaFieldMappings);
 
         } else {
-            problemsEncountered = true;
             log.info("file not found...");
         }
 
@@ -90,11 +79,7 @@ public class MappingXMLLoader {
      */
     private void processFieldMappings(MappedField[] fieldsToMapTo, int type, ISAFieldMapping currentMapping) {
         for (MappedField mf : fieldsToMapTo) {
-            currentMapping.addToISAField(
-                    new ISAField(
-                            MappingTypes.resolveTypeFromString(mf.getType().toString()), mf.getValue()),
-                    type
-            );
+            currentMapping.addToISAField(new ISAField(MappingTypes.resolveTypeFromString(mf.getType().toString()), mf.getValue()), type);
         }
     }
 
@@ -142,19 +127,5 @@ public class MappingXMLLoader {
         }
 
         return mappings;
-    }
-
-    public String getProblemLog() {
-        return "<html>" + "<head>" +
-                "<style type=\"text/css\">" + "<!--" + ".bodyFont {" +
-                "   font-family: Verdana;" + "   font-size: 10px;" +
-                "   color: #BF1E2D;" + "}" + "-->" + "</style>" + "</head>" +
-                "<body class=\"bodyFont\">" +
-                "<b>Problem loading configuration files</b>" + problemLog +
-                "</body></html>";
-    }
-
-    public boolean isProblemsEncountered() {
-        return problemsEncountered;
     }
 }

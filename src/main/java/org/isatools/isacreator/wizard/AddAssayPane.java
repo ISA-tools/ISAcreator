@@ -47,7 +47,7 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import javax.swing.*;
 import java.awt.*;

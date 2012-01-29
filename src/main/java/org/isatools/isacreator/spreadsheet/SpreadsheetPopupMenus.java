@@ -39,6 +39,7 @@ package org.isatools.isacreator.spreadsheet;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import javax.swing.*;
 import java.awt.*;

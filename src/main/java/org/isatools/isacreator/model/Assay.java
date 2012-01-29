@@ -40,7 +40,7 @@ package org.isatools.isacreator.model;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.gui.StudySubData;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 
 /**

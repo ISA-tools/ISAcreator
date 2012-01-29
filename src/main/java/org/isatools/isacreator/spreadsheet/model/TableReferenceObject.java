@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.spreadsheet;
+package org.isatools.isacreator.spreadsheet.model;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
@@ -45,9 +45,12 @@ import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.configuration.TableConfiguration;
 import org.isatools.isacreator.model.Factor;
+import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.spreadsheet.StringValidation;
+import org.isatools.isacreator.spreadsheet.ValidationObject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -63,8 +66,9 @@ public class TableReferenceObject implements Serializable {
     private String tableName;
     private TableConfiguration tableConfig;
 
-    private List<List<String>> data = null;
+    private ReferenceData data = null;
     private Map<Integer, ListOrderedSet<Integer>> columnDependencies = new HashMap<Integer, ListOrderedSet<Integer>>();
+
     private OrderedMap<String, FieldObject> fieldLookup = new ListOrderedMap<String, FieldObject>();
     private Map<Integer, FieldObject> fieldIndexLookup = new HashMap<Integer, FieldObject>();
 
@@ -92,30 +96,30 @@ public class TableReferenceObject implements Serializable {
         List<Protocol> protocols = new ArrayList<Protocol>();
         String[] columns = getTableColumns();
 
-        StringBuffer found = new StringBuffer();
+        StringBuffer protocolParameters = new StringBuffer();
         int count = 0;
         int prevParameterIndex = -1;
         int currentProtocolIndex = -1;
-        for (String c : columns) {
+        for (String column : columns) {
             // build up string representation of protocol definitions, then process and add them to a protocol object
             // for addition into the protocols to add List!
-            if (c.equals("Protocol REF")) {
+            if (column.equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
 
-                if (!found.toString().equals("")) {
+                if (!protocolParameters.toString().equals("")) {
                     // construct a new protocol by adding what is in found.
-                    addProtocol(protocols, found.toString(), currentProtocolIndex);
-                    found = new StringBuffer();
+                    addProtocol(protocols, protocolParameters.toString(), currentProtocolIndex);
+                    protocolParameters = new StringBuffer();
                 }
 
                 currentProtocolIndex = count;
-                found.append(c).append(",");
+                protocolParameters.append(column).append(",");
 
-            } else if (c.contains("Parameter")) {
-                found.append(c).append(",");
+            } else if (column.contains("Parameter")) {
+                protocolParameters.append(column).append(",");
                 prevParameterIndex = count;
-            } else if (c.equals("Unit")) {
-                if (!found.toString().equals("")) {
-                    found.append(c).append(",");
+            } else if (column.equals(GeneralFieldTypes.UNIT.name)) {
+                if (!protocolParameters.toString().equals("")) {
+                    protocolParameters.append(column).append(";");
                     if (prevParameterIndex != -1) {
                         prevParameterIndex = -1;
                     }
@@ -123,18 +127,18 @@ public class TableReferenceObject implements Serializable {
             } else {
                 // end of protocol definition
                 // construct a new protocol by adding what is in found :o)
-                if (!found.toString().equals("")) {
-                    addProtocol(protocols, found.toString(), currentProtocolIndex);
+                if (!protocolParameters.toString().equals("")) {
+                    addProtocol(protocols, protocolParameters.toString(), currentProtocolIndex);
                     currentProtocolIndex = -1;
-                    found = new StringBuffer();
+                    protocolParameters = new StringBuffer();
                 }
             }
             count++;
         }
 
         // if a parameter was added at the end, it will be detected here!
-        if (!found.toString().equals("")) {
-            addProtocol(protocols, found.toString(), currentProtocolIndex);
+        if (!protocolParameters.toString().equals("")) {
+            addProtocol(protocols, protocolParameters.toString(), currentProtocolIndex);
         }
 
         return protocols;
@@ -145,11 +149,11 @@ public class TableReferenceObject implements Serializable {
         // of not only the protocols parameters and units in existence, but recording dependencies based on this information
         // also!
         List<Factor> factors = new ArrayList<Factor>();
-        String[] columns = getTableColumns();
+        Vector<String> columns = getHeaders();
         for (String c : columns) {
             // build up string representation of protocol definitions, then process and add them to a protocol object
             // for addition into the protocols to add List!
-            if (c.contains("Factor Value")) {
+            if (c.contains(GeneralFieldTypes.FACTOR_VALUE.name)) {
                 // construct a new protocol by adding what is in found.
                 String factor = c.substring(c.indexOf("[") + 1, c.lastIndexOf("]"));
                 factors.add(new Factor(factor, factor));
@@ -163,7 +167,7 @@ public class TableReferenceObject implements Serializable {
         List<FieldObject> factors = new ArrayList<FieldObject>();
 
         for (String columnName : fieldLookup.keySet()) {
-            if (columnName.contains("Factor Value")) {
+            if (columnName.contains(GeneralFieldTypes.FACTOR_VALUE.name)) {
                 factors.add(fieldLookup.get(columnName));
             }
         }
@@ -214,20 +218,7 @@ public class TableReferenceObject implements Serializable {
         List<FieldObject> fields = tableConfig.getFields();
 
         // ensure the correctness of the field order!
-        Collections.sort(fields,
-                new Comparator<FieldObject>() {
-                    public int compare(FieldObject o, FieldObject o1) {
-                        if (o.getColNo() < o1.getColNo()) {
-                            return -1;
-                        }
-
-                        if (o.getColNo() > o1.getColNo()) {
-                            return 1;
-                        }
-
-                        return 0;
-                    }
-                });
+        sortFieldsByColumnNumber(fields);
 
         for (FieldObject fo : fields) {
             if (!fo.isHidden()) {
@@ -287,7 +278,7 @@ public class TableReferenceObject implements Serializable {
 
     public void addRowData(String[] headers, String[] rowData) {
         if (data == null) {
-            data = new ArrayList<List<String>>();
+            data = new ReferenceData();
         }
 
         List<String> rowDataModified = new ArrayList<String>();
@@ -332,7 +323,7 @@ public class TableReferenceObject implements Serializable {
             }
         }
 
-        data.add(rowDataModified);
+        data.addData(rowDataModified);
     }
 
     public DataTypes getClassType(String colName) {
@@ -373,19 +364,16 @@ public class TableReferenceObject implements Serializable {
         return DataTypes.STRING;
     }
 
-    public List<List<String>> getData() {
-        return data;
-    }
 
     public Object[][] getDataAsArray() {
-        List<List<String>> data = getData();
+        List<List<String>> spreadsheetData = this.data.getData();
 
-        Object[][] ssContents = new Object[data.size() + 1][];
+        Object[][] ssContents = new Object[spreadsheetData.size() + 1][];
 
         ssContents[0] = getHeaders().subList(1, getHeaders().size() - 1).toArray(new String[getHeaders().size() - 2]);
 
         int count = 1;
-        for (List<String> rowContent : data) {
+        for (List<String> rowContent : spreadsheetData) {
             ssContents[count] = rowContent.toArray(new Object[rowContent.size()]);
             count++;
         }
@@ -422,10 +410,6 @@ public class TableReferenceObject implements Serializable {
 
     public FieldObject getFieldByName(String name) {
         return fieldLookup.get(name);
-    }
-
-    public int getFieldColumnNoByName(String name) {
-        return fieldLookup.get(name).getColNo();
     }
 
     public Vector<String> getHeaders() {
@@ -504,7 +488,7 @@ public class TableReferenceObject implements Serializable {
         if (tableConfig == null) {
             // for those tables built from their layout rather than directly from the tablerefenceobject
             if (fieldIndexLookup.containsKey(proposedColNumber)) {
-                if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase("unit")) {
+                if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
                     return fieldIndexLookup.get(proposedColNumber);
                 }
             }
@@ -512,7 +496,7 @@ public class TableReferenceObject implements Serializable {
             if (tableConfig.getFields().size() > proposedColNumber) {
                 FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
 
-                if (candidateUnitField.getFieldName().equalsIgnoreCase("unit")) {
+                if (candidateUnitField.getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
                     return candidateUnitField;
                 }
             }
@@ -534,19 +518,7 @@ public class TableReferenceObject implements Serializable {
             fields = getTableFields().getFields();
         }
 
-        Collections.sort(fields,
-                new Comparator<FieldObject>() {
-                    public int compare(FieldObject o, FieldObject o1) {
-                        if (o.getColNo() < o1.getColNo()) {
-                            return -1;
-                        }
-                        if (o.getColNo() > o1.getColNo()) {
-                            return 1;
-                        }
-                        return 0;
-                    }
-                }
-        );
+        sortFieldsByColumnNumber(fields);
 
         for (FieldObject sortedField : fields) {
             if (!sortedField.isHidden()) {
@@ -555,6 +527,22 @@ public class TableReferenceObject implements Serializable {
         }
 
         return headers;
+    }
+
+    public void sortFieldsByColumnNumber(List<FieldObject> fields) {
+        Collections.sort(fields,
+                new Comparator<FieldObject>() {
+                    public int compare(FieldObject field1, FieldObject field2) {
+                        if (field1.getColNo() < field2.getColNo()) {
+                            return -1;
+                        }
+                        if (field1.getColNo() > field2.getColNo()) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                }
+        );
     }
 
     public TableConfiguration getTableFields() {
@@ -587,6 +575,9 @@ public class TableReferenceObject implements Serializable {
         return null;
     }
 
+    public ReferenceData getData() {
+        return data;
+    }
 
     public boolean isRequired(String colName) {
         return colName.equals(ROW_NO_TEXT) ||
@@ -599,5 +590,9 @@ public class TableReferenceObject implements Serializable {
 
     public boolean usesValidation(String colName) {
         return fieldLookup.get(colName).getNumberValidation() != null;
+    }
+
+    public OrderedMap<String, FieldObject> getFieldLookup() {
+        return fieldLookup;
     }
 }
