@@ -1,6 +1,7 @@
 package org.isatools.isacreator.formatmappingutility.utils;
 
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.formatmappingutility.ui.MappedElement;
 import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
@@ -25,11 +26,11 @@ public class TableReferenceObjectWrapper {
         this.tableReferenceObject = tableReferenceObject;
     }
 
-    public Vector<String> getStdHeaders() {
+    public List<MappedElement> getStdHeaders() {
 
         List<FieldObject> fields = new ArrayList<FieldObject>();
-        Vector<String> headers = new Vector<String>();
-        headers.add(TableReferenceObject.ROW_NO_TEXT);
+
+        List<MappedElement> elements = new ArrayList<MappedElement>();
 
         if (tableReferenceObject.getTableFields() == null) {
             for (String key : tableReferenceObject.getFieldLookup().keySet()) {
@@ -44,14 +45,14 @@ public class TableReferenceObjectWrapper {
         for (FieldObject sortedField : fields) {
             if (!sortedField.isHidden()) {
                 if (sortedField.getFieldName().equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
-                    headers.add(sortedField.getFieldName() + " (" + sortedField.getDefaultVal() + ")");
-                } else {
-                    headers.add(sortedField.getFieldName());
+                    elements.add(new MappedElement(sortedField.getFieldName() + " (" + sortedField.getDefaultVal() + ")", null, sortedField.isRequired()));
+                } else if(!sortedField.getFieldName().equals(GeneralFieldTypes.UNIT.name)){
+                    elements.add(new MappedElement(sortedField.getFieldName(), null, sortedField.isRequired()));
                 }
             }
         }
 
-        return headers;
+        return elements;
     }
 
     public List<Protocol> findProtocols() {

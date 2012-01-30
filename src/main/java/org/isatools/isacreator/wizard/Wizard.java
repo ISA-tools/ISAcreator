@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -259,7 +259,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         // create organism list panel
         JPanel organismListPanel = createFieldPanel(1, 3);
 
-        JLabel organismLab = UIHelper.createLabel("organism used *");
+        JLabel organismLab = UIHelper.createLabel("Organism used *");
 
 
         organism = new RoundedJTextField(10);
@@ -287,12 +287,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
         numTreatmentGroupsPanel.setBackground(UIHelper.BG_COLOR);
 
         JLabel numTreatmentGroupslabel = UIHelper.createLabel(
-                "how many study groups? *");
+                "How many study/treatment groups? *");
 
         numTreatmentGroups = new RoundedFormattedTextField(NumberFormat.getInstance());
         UIHelper.renderComponent(numTreatmentGroups, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         numTreatmentGroups.setToolTipText(
-                "<html><b>Number of study groups</b> <p>Please specify the number of study groups which you have in this study.</p></html>");
+                "<html><b>Number of study/treatment groups</b> <p>Please specify the number of study/treatment groups defined in this study.</p></html>");
 
         numTreatmentGroupsPanel.add(numTreatmentGroupslabel);
         numTreatmentGroupsPanel.add(numTreatmentGroups);
@@ -301,13 +301,13 @@ public class Wizard extends AbstractDataEntryEnvironment {
         numSubjectsPanel.setBackground(UIHelper.BG_COLOR);
 
         JLabel numSubjectsLabel = UIHelper.createLabel(
-                "how many subjects per study group? *");
+                "How many subjects per study/treatment group? *");
         numSubjectsLabel.setBackground(UIHelper.BG_COLOR);
 
         numSamplesPerGroup = new RoundedFormattedTextField(NumberFormat.getInstance());
         UIHelper.renderComponent(numSamplesPerGroup, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
         numSamplesPerGroup.setToolTipText(
-                "<html><b>Number of samples per study group</b><p>Please specify the number of samples per factor group.</p></html>");
+                "<html><b>Number of samples per study group</b><p>Please specify the number of samples per study/treatment group.</p></html>");
 
         numSubjectsPanel.add(numSubjectsLabel);
         numSubjectsPanel.add(numSamplesPerGroup);
