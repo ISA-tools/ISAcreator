@@ -943,18 +943,23 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         Map<OntologySourceRefObject, Set<OntologyTerm>> processedResult = new HashMap<OntologySourceRefObject, Set<OntologyTerm>>();
         for (OntologySourceRefObject osro : result.keySet()) {
+            System.out.println("Processing OSRO");
             if (osro != null) {
+                System.out.println("INSIDE IF");
                 if (!processedResult.containsKey(osro)) {
                     processedResult.put(osro, new HashSet<OntologyTerm>());
                 }
 
                 for (OntologyTerm term : result.get(osro)) {
+                    System.out.println("Adding term outside if " + term);
                     if (!recordedAccessions.contains(term.getOntologySourceAccession())) {
+                        System.out.println("Adding term " + term);
                         processedResult.get(osro).add(term);
                         recordedAccessions.add(term.getOntologySourceAccession());
                     }
                 }
             }
+            System.out.println("OUTSIDE IF");
         }
 
         return removeRedundantSearchResults(processedResult);

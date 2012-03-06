@@ -39,7 +39,6 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
-import org.isatools.helpbrowser.ui.WebBrowser;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputUtil;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
@@ -70,7 +69,6 @@ import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
-import org.isatools.isacreator.utils.WebUtils;
 import org.isatools.isacreator.validateconvert.ui.OperatingMode;
 import org.isatools.isacreator.validateconvert.ui.ValidateUI;
 import org.jdesktop.fuse.InjectedResource;

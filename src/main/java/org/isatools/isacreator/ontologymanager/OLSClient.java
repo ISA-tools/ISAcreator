@@ -339,6 +339,7 @@ public class OLSClient implements OntologyService {
                 source = "NEWT";
             }
 
+
             OntologySourceRefObject ontologySource = getOntologySourceReferenceForOntology(source);
 
             if (!processedResult.containsKey(ontologySource)) {
@@ -382,7 +383,6 @@ public class OLSClient implements OntologyService {
 
     private OntologySourceRefObject getOntologySourceReferenceForOntology(String source) {
         Map<String, OntologySourceRefObject> ontologySources = getOntologies();
-
         return ontologySources.get(source);
     }
 
