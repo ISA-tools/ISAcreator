@@ -1,15 +1,18 @@
 package org.isatools.isacreator.ontologiser.logic.impl;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
+import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalAnnotatorResultHandler;
-import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
+import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,30 +30,41 @@ public class AnnotatorSearchClient {
     public static final String BASE_QUERY_URL = "http://rest.bioontology.org/obs/annotator";
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms) {
+        Set<AcceptedOntologies> toIgnoreInSearch = new HashSet<AcceptedOntologies>();
+        toIgnoreInSearch.add(AcceptedOntologies.PLANT_ONTOLOGY);
+        toIgnoreInSearch.add(AcceptedOntologies.BAO);
+
+        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(
+                toIgnoreInSearch), true);
+    }
+
+    public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn, boolean wholeWordOnly) {
         try {
             HttpClient client = new HttpClient();
             PostMethod method = new PostMethod(BASE_QUERY_URL);
 
             // Configure the form parameters
-//            method.addParameter("longestOnly", "true");
-            method.addParameter("wholeWordOnly", "true");
-            //method.addParameter("stopWords", "choubala");
-            //method.addParameter("withDefaultStopWords", "true");
+            method.addParameter("wholeWordOnly", wholeWordOnly ? " true" : "false");
             method.addParameter("scored", "true");
-            //method.addParameter("ontologiesToExpand", "38802,13578,40644,40403");
-            //method.addParameter("ontologiesToKeepInResult", "40403");
-            //method.addParameter("semanticTypes", "T999");
-            //method.addParameter("levelMax", "50");
+            method.addParameter("ontologiesToKeepInResult", ontologiesToSearchOn);
             method.addParameter("isVirtualOntologyId", "true");
             method.addParameter("withSynonyms", "true");
             method.addParameter("textToAnnotate", flattenSetToString(terms));
-            //method.addParameter("format", "asText");
+            method.addParameter("apikey", "fd88ee35-6995-475d-b15a-85f1b9dd7a42");
 
-            // Execute the POST method
+            try {
+                HostConfiguration configuration = new HostConfiguration();
+                configuration.setHost("http://rest.bioontology.org");
+                configuration.setProxy(System.getProperty("http.proxyHost"), Integer.valueOf(System.getProperty("http.proxyPort")));
+                client.setHostConfiguration(configuration);
+            } catch (Exception e) {
+                System.err.println("Problem encountered setting proxy for annotator search");
+            }
+
             int statusCode = client.executeMethod(method);
-
             if (statusCode != -1) {
                 String contents = method.getResponseBodyAsString();
+
                 method.releaseConnection();
                 return processContent(contents, terms);
             }

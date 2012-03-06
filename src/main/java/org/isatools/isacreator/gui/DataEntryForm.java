@@ -55,12 +55,9 @@ import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
-import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
-import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.*;
@@ -144,9 +141,9 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     }
 
     public JComponent createOntologyDropDown(JTextComponent field,
-                                             boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
+                                             boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource) {
 
-        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, recommendedOntologySource);
+        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
         ontologySelectionTool.createGUI();
 
         DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
@@ -308,7 +305,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
                     String tmpFieldName = fieldName;
 
-                    if(realNamesToAliases.containsKey(fieldName)) {
+                    if (realNamesToAliases.containsKey(fieldName)) {
                         tmpFieldName = realNamesToAliases.get(fieldName);
                     }
 
@@ -321,6 +318,10 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         textComponent = new RoundedJTextField(10);
                     } else if (fieldDescriptor.getDatatype() == DataTypes.LONG_STRING) {
                         textComponent = new JTextArea();
+
+                        textComponent.setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
+                        textComponent.setSelectedTextColor(UIHelper.BG_COLOR);
+
                         ((JTextArea) textComponent).setWrapStyleWord(true);
                         ((JTextArea) textComponent).setLineWrap(true);
                         textComponent.setBackground(UIHelper.BG_COLOR);
@@ -353,7 +354,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                     } else {
 
                         if (fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || ontologyFields.contains(fieldName)) {
-                            fieldPanel.add(createOntologyDropDown(textComponent, true, fieldDescriptor.getRecommmendedOntologySource()));
+                            fieldPanel.add(createOntologyDropDown(textComponent, true, false, fieldDescriptor.getRecommmendedOntologySource()));
                         } else if (fieldDescriptor.getDatatype() == DataTypes.DATE) {
                             fieldPanel.add(createDateDropDown(textComponent));
                         } else {
@@ -368,6 +369,57 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                 }
             }
         }
+    }
+
+
+    protected SubFormField generateSubFormField(Set<String> fieldsToIgnore, Set<String> ontologyFields, Study study, String fieldName) {
+        FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(fieldName);
+        return createField(fieldsToIgnore, ontologyFields, fieldDescriptor, fieldName);
+    }
+
+    protected SubFormField generateSubFormField(Set<String> fieldsToIgnore, Set<String> ontologyFields, Investigation investigation, String fieldName) {
+        FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(fieldName);
+        return createField(fieldsToIgnore, ontologyFields, fieldDescriptor, fieldName);
+
+    }
+
+    private SubFormField createField(Set<String> fieldsToIgnore, Set<String> ontologyFields, FieldObject fieldDescriptor, String fieldName) {
+        if (!fieldsToIgnore.contains(fieldName)) {
+
+            int fieldType = SubFormField.STRING;
+
+            if (ontologyFields.contains(fieldName)) {
+
+                fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+
+                if (fieldDescriptor != null)
+                    if (fieldDescriptor.isAcceptsMultipleValues())
+                        fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+
+                return new SubFormField(fieldName, fieldType, fieldDescriptor.getRecommmendedOntologySource());
+            } else {
+
+                if (fieldDescriptor != null) {
+                    fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
+                            fieldDescriptor.isAcceptsMultipleValues());
+
+                    if (fieldType == SubFormField.STRING) {
+                        if (fieldDescriptor.isAcceptsFileLocations()) {
+                            fieldType = SubFormField.FILE;
+                        }
+                    }
+                }
+
+                if (fieldType == SubFormField.COMBOLIST) {
+                    return new SubFormField(fieldName, fieldType, fieldDescriptor.getFieldList());
+                } else {
+                    return new SubFormField(fieldName, fieldType);
+                }
+
+            }
+        }
+
+        return null;
     }
 
 

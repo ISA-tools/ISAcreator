@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.spreadsheet;
 
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
+
 import javax.swing.*;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.table.DefaultTableModel;
@@ -447,8 +449,7 @@ public class SpreadsheetModel extends DefaultTableModel {
                     colcount = col;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
 
@@ -505,8 +506,7 @@ public class SpreadsheetModel extends DefaultTableModel {
         /* try making it a number */
         try {
             return new Float(input);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             /* all else fails treat as string */
             return input;
         }
@@ -834,8 +834,7 @@ public class SpreadsheetModel extends DefaultTableModel {
 
                 row++;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 
@@ -892,8 +891,7 @@ public class SpreadsheetModel extends DefaultTableModel {
                     row++;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 

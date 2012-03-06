@@ -38,17 +38,20 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
+import org.isatools.isacreator.apiutils.StudyUtils;
+import org.isatools.isacreator.assayselection.AssaySelection;
+import org.isatools.isacreator.assayselection.AssaySelectionDialog;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
+import org.isatools.isacreator.gui.formelements.assay.AssayInformationPanel;
+import org.isatools.isacreator.gui.formelements.assay.AssayInformationWriter;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -56,8 +59,14 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.util.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -68,15 +77,20 @@ import java.util.List;
 public class StudyDataEntry extends DataEntryForm {
 
     @InjectedResource
-    private ImageIcon panelHeader;
+    private ImageIcon panelHeader, addRecordIcon, addRecordIconOver;
 
     private Study study;
     private SubForm studyDesignSubform;
     private SubForm studyPublicationsSubForm;
-    private SubForm assaySubForm;
+    private JPanel assayContainer;
     private SubForm contactSubForm;
     private SubForm factorSubForm;
     private SubForm protocolSubForm;
+
+    private AssaySelectionDialog assaySelectionUI;
+
+    private final RemoveAssayListener removeAssayListener = new RemoveAssayListener();
+    private final ViewAssayListener viewAssayListener = new ViewAssayListener();
 
 
     /**
@@ -91,7 +105,19 @@ public class StudyDataEntry extends DataEntryForm {
         ResourceInjector.get("gui-package.style").inject(this);
 
         this.study = study;
+
+        createGUI();
+    }
+
+    public void createGUI() {
+        Map<String, List<String>> measToAllowedTechnologies =
+                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
+
+        assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
+
+
         generateAliases(study.getFieldValues().keySet());
+
         instantiatePane();
         createFields();
         finalisePane();
@@ -128,6 +154,9 @@ public class StudyDataEntry extends DataEntryForm {
         Box subPanel = Box.createVerticalBox();
         subPanel.add(Box.createVerticalStrut(20));
 
+        subPanel.add(createStudyAssaysSubForm());
+        subPanel.add(Box.createVerticalStrut(20));
+
         subPanel.add(createStudyDesignSubForm());
         subPanel.add(Box.createVerticalStrut(20));
 
@@ -135,9 +164,6 @@ public class StudyDataEntry extends DataEntryForm {
         subPanel.add(Box.createVerticalStrut(20));
 
         subPanel.add(createStudyFactorsSubForm());
-        subPanel.add(Box.createVerticalStrut(20));
-
-        subPanel.add(createStudyAssaysSubForm());
         subPanel.add(Box.createVerticalStrut(20));
 
         subPanel.add(createStudyProtocolsSubForm());
@@ -163,85 +189,100 @@ public class StudyDataEntry extends DataEntryForm {
      *
      * @return - JPanel containing the subform required for definition of the Assay.
      */
-    private JPanel createStudyAssaysSubForm() {
-        List<SubFormField> assayFields = new ArrayList<SubFormField>();
+    private Container createStudyAssaysSubForm() {
 
-        List<MappingObject> assayToTypeMapping = getDataEntryEnvironment().getParentFrame()
-                .getMappings();
+        assayContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        assayContainer.setBackground(UIHelper.BG_COLOR);
 
-        Set<String> measurementEndPointSet = new HashSet<String>();
-        Set<String> techTypeSet = new HashSet<String>();
+        updateAssayPanel();
 
-        for (MappingObject mo : assayToTypeMapping) {
-            if (!mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]") && !mo.getMeasurementEndpointType().equalsIgnoreCase("[investigation]")) {
-                measurementEndPointSet.add(mo.getMeasurementEndpointType());
-                if (!mo.getTechnologyType().trim().equals("")) {
-                    techTypeSet.add(mo.getTechnologyType());
-                }
-            }
-        }
+        JScrollPane assayScroller = new JScrollPane(assayContainer,
+                JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        List<String> tempMeasurements = new ArrayList<String>();
-        List<String> tempTechnologies = new ArrayList<String>();
+        IAppWidgetFactory.makeIAppScrollPane(assayScroller);
 
-        // add everything for the sets to a list.
-        tempMeasurements.addAll(measurementEndPointSet);
-        tempTechnologies.addAll(techTypeSet);
+        JPanel container = new JPanel(new BorderLayout());
+        container.setPreferredSize(new Dimension(300, 180));
+        container.setBorder(new TitledBorder(
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), InvestigationFileSection.STUDY_ASSAYS.toString(),
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.CENTER,
+                UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
-        tempTechnologies.add(0, AutoFilterComboCellEditor.BLANK_VALUE);
+        final JLabel addRecord = new JLabel("add new assay(s)", addRecordIcon, JLabel.LEFT);
+        UIHelper.renderComponent(addRecord, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        // sort lists
-        Collections.sort(tempMeasurements);
-        Collections.sort(tempTechnologies);
+        addRecord.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
 
-        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_ASSAYS);
-        Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
+                        Map<String, List<String>> measToAllowedTechnologies =
+                                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
 
-        for (String assayField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_ASSAYS)) {
+                        assaySelectionUI = new AssaySelectionDialog(getISAcreatorEnvironment(), measToAllowedTechnologies);
+                        assaySelectionUI.createGUI();
 
-            if (!fieldsToIgnore.contains(assayField)) {
+                        getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(assaySelectionUI);
+                        addRecord.setIcon(addRecordIcon);
 
-                FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(assayField);
+                        assaySelectionUI.addPropertyChangeListener("assaysChosen", new PropertyChangeListener() {
+                            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                                List<AssaySelection> selectedAssays = assaySelectionUI.getSelectedAssays();
 
-                int fieldType = SubFormField.STRING;
+                                for (AssaySelection assay : selectedAssays) {
 
-                if (assayField.equals(Assay.MEASUREMENT_ENDPOINT)) {
-                    assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempMeasurements.toArray(new String[tempMeasurements.size()])));
-                } else if (assayField.equals(Assay.TECHNOLOGY_TYPE)) {
-                    assayFields.add(new SubFormField(assayField, SubFormField.COMBOLIST, tempTechnologies.toArray(new String[tempTechnologies.size()])));
-                } else if (ontologyFields.contains(assayField)) {
+                                    String assayRef = StudyUtils.generateAssayReference(study, assay.getMeasurement(), assay.getTechnology());
 
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
+                                    Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), assayRef);
 
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
+                                    AssayInformationPanel informationPanel = new AssayInformationPanel(addedAssay);
+                                    informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
+                                    informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
 
-                    assayFields.add(new SubFormField(assayField, fieldType));
-                } else {
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
+                                    assayContainer.add(informationPanel);
+                                    assayContainer.repaint();
+                                }
+                            }
+                        });
+
+
                     }
-                    assayFields.add(new SubFormField(assayField, fieldType));
-                }
+                });
             }
+
+            public void mouseEntered(MouseEvent mouseEvent) {
+                addRecord.setIcon(addRecordIconOver);
+            }
+
+            public void mouseExited(MouseEvent mouseEvent) {
+                addRecord.setIcon(addRecordIcon);
+            }
+        });
+
+        container.add(addRecord, BorderLayout.NORTH);
+
+        container.add(assayScroller, BorderLayout.CENTER);
+
+        return container;
+    }
+
+    public void updateAssayPanel() {
+        assayContainer.removeAll();
+
+        for (Assay assay : study.getAssays().values()) {
+            AssayInformationPanel informationPanel = new AssayInformationPanel(assay);
+            informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
+            informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
+            assayContainer.add(informationPanel);
         }
-
-        int numColsToAdd = (study.getAssays().size() == 0) ? 1
-                : (study.getAssays()
-                .size() + 1);
-        assaySubForm = new AssaySubForm(InvestigationFileSection.STUDY_ASSAYS.toString(), FieldTypes.ASSAY, assayFields,
-                numColsToAdd, 300, 110, this);
-        assaySubForm.createGUI();
-
-        return assaySubForm;
     }
 
     @Override
     public List<StudyDesign> getDesigns() {
         return study.getStudyDesigns();
     }
+
 
     /**
      * Create the Contacts subform for the definition of contacts in the Study form.
@@ -255,31 +296,10 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String contactField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_CONTACTS)) {
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, contactField);
 
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(contactField);
-
-            if (!fieldsToIgnore.contains(contactField)) {
-
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(contactField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    contactFields.add(new SubFormField(contactField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    contactFields.add(new SubFormField(contactField, fieldType));
-                }
+            if (generatedField != null) {
+                contactFields.add(generatedField);
             }
         }
 
@@ -334,33 +354,11 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String factorField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_FACTORS)) {
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(factorField);
 
-            if (!fieldDescriptor.isHidden()) {
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, factorField);
 
-                if (!fieldsToIgnore.contains(factorField)) {
-
-                    int fieldType = SubFormField.STRING;
-
-                    if (ontologyFields.contains(factorField)) {
-
-                        fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                        if (fieldDescriptor != null)
-                            if (fieldDescriptor.isAcceptsMultipleValues())
-                                fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                        factorFields.add(new SubFormField(factorField, fieldType));
-                    } else {
-
-                        if (fieldDescriptor != null) {
-                            fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                    fieldDescriptor.isAcceptsMultipleValues());
-                        }
-
-                        factorFields.add(new SubFormField(factorField, fieldType));
-                    }
-                }
+            if (generatedField != null) {
+                factorFields.add(generatedField);
             }
         }
 
@@ -388,30 +386,11 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
         for (String protocolField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PROTOCOLS)) {
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(protocolField);
 
-            if (!fieldsToIgnore.contains(protocolField)) {
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, protocolField);
 
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(protocolField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    protocolFields.add(new SubFormField(protocolField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    protocolFields.add(new SubFormField(protocolField, fieldType));
-                }
+            if (generatedField != null) {
+                protocolFields.add(generatedField);
             }
         }
 
@@ -436,30 +415,10 @@ public class StudyDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PUBLICATIONS)) {
 
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(publicationField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, publicationField);
 
-            if (!fieldsToIgnore.contains(publicationField)) {
-
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(publicationField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    publicationFields.add(new SubFormField(publicationField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    publicationFields.add(new SubFormField(publicationField, fieldType));
-                }
+            if (generatedField != null) {
+                publicationFields.add(generatedField);
             }
         }
 
@@ -488,32 +447,11 @@ public class StudyDataEntry extends DataEntryForm {
 
         for (String studyDesignField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_DESIGN_SECTION)) {
 
-            FieldObject fieldDescriptor = study.getReferenceObject().getFieldDefinition(studyDesignField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, studyDesignField);
 
-            if (!fieldsToIgnore.contains(studyDesignField)) {
-
-                int fieldType = SubFormField.STRING;
-
-                if (ontologyFields.contains(studyDesignField)) {
-
-                    fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    studyDesignFields.add(new SubFormField(studyDesignField, fieldType));
-                } else {
-
-                    if (fieldDescriptor != null) {
-                        fieldType = translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(),
-                                fieldDescriptor.isAcceptsMultipleValues());
-                    }
-
-                    studyDesignFields.add(new SubFormField(studyDesignField, fieldType));
-                }
+            if (generatedField != null) {
+                studyDesignFields.add(generatedField);
             }
-
         }
 
         int numColsToAdd = (study.getStudyDesigns().size() == 0) ? 2
@@ -604,7 +542,8 @@ public class StudyDataEntry extends DataEntryForm {
         output.append(studyDesignSubform.toString());
         output.append(studyPublicationsSubForm.toString());
         output.append(factorSubForm.toString());
-        output.append(assaySubForm.toString());
+        output.append(new AssayInformationWriter().printAssays(study.getAssays().values(),
+                getDataEntryEnvironment().getParentFrame().getMappings()));
         output.append(protocolSubForm.toString());
         output.append(contactSubForm.toString());
 
@@ -677,11 +616,6 @@ public class StudyDataEntry extends DataEntryForm {
         protocolSubForm.setParent(null);
         protocolSubForm = null;
 
-        assaySubForm.setDataEntryEnvironment(null);
-        assaySubForm.getRowEditor().removeAllListeners();
-        assaySubForm.setParent(null);
-        assaySubForm = null;
-
         study.getStudySample().getSpreadsheetUI().setDataEntryEnvironment(null);
 
         for (String a : study.getAssays().keySet()) {
@@ -703,4 +637,54 @@ public class StudyDataEntry extends DataEntryForm {
         study = null;
         removeAll();
     }
+
+    class RemoveAssayListener implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
+                final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
+
+                String removalText = "<html>" + "<b>Confirm deletion of assay</b>" + "<p>Deleting this will result " +
+                        "in it's complete removal from this experiment annotation!</p>" +
+                        "<p>Do you wish to continue?</p>" + "</html>";
+
+                JOptionPane optionPane = new JOptionPane(removalText,
+                        JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
+                optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent event) {
+                        if (event.getPropertyName()
+                                .equals(JOptionPane.VALUE_PROPERTY)) {
+                            int lastOptionAnswer = Integer.valueOf(event.getNewValue()
+                                    .toString());
+
+                            if (lastOptionAnswer == JOptionPane.YES_OPTION) {
+                                removeAssay(panel.getAssay().getAssayReference());
+                                assayContainer.remove(panel);
+                                assayContainer.repaint();
+                                getDataEntryEnvironment().getParentFrame().hideSheet();
+                            } else {
+                                // just hide the sheet and cancel further actions!
+                                getDataEntryEnvironment().getParentFrame().hideSheet();
+                            }
+                        }
+                    }
+                });
+
+                UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
+                getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(optionPane.createDialog(StudyDataEntry.this, "Confirm Delete"));
+            }
+
+        }
+    }
+
+    class ViewAssayListener implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
+                final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
+
+                getDataEntryEnvironment().selectAssayInTree(panel.getAssay());
+            }
+
+        }
+    }
+
 }

@@ -61,7 +61,7 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;
@@ -97,7 +97,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             completedHeader, completedInfo, breadcrumb1, breadcrumb2, breadcrumb3, breadcrumb5, breadcrumb6;
 
     // define subset of study fields to get some information about a study before creating it
-    private JTextField studyId,studyTitle;
+    private JTextField studyId, studyTitle;
     private JTextArea studyDescription;
 
     // define fields to describe an investigation
@@ -117,7 +117,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
     private Study studyBeingEdited = null;
     private Map<Integer, String> studyTreatmentGroups = null;
     private Set<String> tmpVals;
-    private List<TempFactors> factorsToAdd;
+    private List<PropertyType> factorsToAdd;
     private AddAssayPane addAssayUI;
     private Stack<HistoryComponent> previousPage;
     private Component initialPane;
@@ -280,7 +280,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         recommendedOntologyMap.put("NEWT",
                 new RecommendedOntology(new Ontology("", "Jun 2011", "NEWT", "NEWT UniProt Taxonomy Database")));
 
-        organismListPanel.add(createOntologyDropDown(organism, false, recommendedOntologyMap));
+        organismListPanel.add(createOntologyDropDown(organism, false, false, recommendedOntologyMap));
 
         // create number of treatment groups field
         JPanel numTreatmentGroupsPanel = createFieldPanel(1, 2);
@@ -1044,9 +1044,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
     private JPanel createStudyFactorsSubForm() {
         ArrayList<SubFormField> factorFields = new ArrayList<SubFormField>();
 
-        factorFields.add(new SubFormField("factor name *", SubFormField.STRING));
-        factorFields.add(new SubFormField("factor type *",
-                SubFormField.SINGLE_ONTOLOGY_SELECT));
+        factorFields.add(new SubFormField("factor name *", SubFormField.SINGLE_ONTOLOGY_SELECT));
         factorFields.add(new SubFormField("factor levels (; separated) *",
                 SubFormField.FACTOR_LEVEL_UNITS));
         factorFields.add(new SubFormField("factor level unit (; separated)",
@@ -1067,9 +1065,6 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         Thread finaliseStudy = new Thread(new Runnable() {
             public void run() {
-//                StudyDataEntry sde = new StudyDataEntry(dep, studyBeingEdited);
-//
-//                studyBeingEdited.setUI(sde);
 
                 Assay studySample = new Assay("s_" + studyId.getText() + ".txt",
                         null);
@@ -1111,6 +1106,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                     a.setUserInterface(studyBeingEdited.getUserInterface());
                 }
 
+                studyBeingEdited.getUserInterface().reformProtocols();
                 investigationDefinition.addStudy(studyBeingEdited);
 
                 //if more studies to define, then define them, else show created thing!
@@ -1247,7 +1243,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                 investigationDefinition.setUserInterface(new InvestigationDataEntry(
                         investigationDefinition, dep));
 
-                dep.createGUIFromSource(investigationDefinition);
+                dep.createGUIFromInvestigatio(investigationDefinition);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         mainMenu.getMain().setCurrentPage(dep);
@@ -1334,16 +1330,16 @@ public class Wizard extends AbstractDataEntryEnvironment {
     }
 
     private boolean processFactorSubform() {
-        factorsToAdd = new ArrayList<TempFactors>();
+        factorsToAdd = new ArrayList<PropertyType>();
 
         String[][] factorInfo = factorSubForm.getDataAsArray();
 
         if (!checkForDuplicates(factorInfo, 0)) {
             for (String[] aFactorInfo : factorInfo) {
                 String factorName = aFactorInfo[0];
-                String factorType = aFactorInfo[1];
-                String factorValues = aFactorInfo[2];
-                String factorValueUnits = aFactorInfo[3];
+                String factorType = aFactorInfo[0];
+                String factorValues = aFactorInfo[1];
+                String factorValueUnits = aFactorInfo[2];
 
                 //check to ensure that mandatory fields have been entered...
                 if (((factorName != null) && !factorName.trim().equals(""))
@@ -1354,7 +1350,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                                 !factorValues.trim().equals(""))) {
                     String[] studyFactorLevels = factorValues.split(";");
 
-                    List<TimeUnitPair> factorLevels = new ArrayList<TimeUnitPair>();
+                    List<PropertyValue> factorLevels = new ArrayList<PropertyValue>();
 
                     if ((factorValueUnits != null) &&
                             !factorValueUnits.trim().equals("")) {
@@ -1364,12 +1360,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
                         if (studyFactorLevels.length == studyFactorLevelUnits.length) {
                             // equal number of levels and units
-                            factorLevels = new ArrayList<TimeUnitPair>();
+                            factorLevels = new ArrayList<PropertyValue>();
 
                             for (int i = 0; i < studyFactorLevels.length;
                                  i++) {
                                 if (!studyFactorLevels[i].trim().equals("")) {
-                                    factorLevels.add(new TimeUnitPair(
+                                    factorLevels.add(new PropertyValue(
                                             studyFactorLevels[i],
                                             studyFactorLevelUnits[i]));
                                 }
@@ -1386,12 +1382,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
                     } else {
                         for (String s : studyFactorLevels) {
                             if (!s.trim().equals("")) {
-                                factorLevels.add(new TimeUnitPair(s, ""));
+                                factorLevels.add(new PropertyValue(s, ""));
                             }
                         }
                     }
 
-                    factorsToAdd.add(new TempFactors(factorName, factorType,
+                    factorsToAdd.add(new PropertyType(factorName, factorType,
                             factorLevels));
                 } else {
                     // check to see if all items are empty, if so, this is not an error.
@@ -1405,10 +1401,10 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             // add factors to study
-            for (TempFactors wsf : factorsToAdd) {
-                if (!wsf.getFactorName().trim().equals("")) {
-                    studyBeingEdited.addFactor(new Factor(wsf.getFactorName(),
-                            wsf.getFactorType()));
+            for (PropertyType wsf : factorsToAdd) {
+                if (!wsf.getPropertyName().trim().equals("")) {
+                    studyBeingEdited.addFactor(new Factor(wsf.getPropertyName(),
+                            wsf.getPropertyType()));
                 }
             }
 

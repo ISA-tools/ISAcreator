@@ -48,8 +48,7 @@ import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPo
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalSearchBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologymanager.utils.DownloadUtils;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.File;
 import java.util.*;
@@ -103,9 +102,11 @@ public class BioPortalClient implements OntologyService {
 
             ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
-            for (Ontology ontology : ontologies) {
-                ontologyVersions.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
-                ontologySources.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
+            if (ontologies != null) {
+                for (Ontology ontology : ontologies) {
+                    ontologyVersions.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
+                    ontologySources.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
+                }
             }
         }
 
@@ -113,7 +114,7 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Ontology getOntologyById(String ontologyId) {
-        String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" +  API_KEY;
+        String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
 
         log.info("Getting ontology by id : query string is " + searchString);
 
@@ -208,9 +209,7 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
-            OntologyTerm result = handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
-
-            return result;
+            return handler.parseMetadataFile(fileWithNameSpace.getAbsolutePath());
         } else {
             return null;
         }
@@ -263,6 +262,7 @@ public class BioPortalClient implements OntologyService {
     private Map<OntologySourceRefObject, List<OntologyTerm>> downloadAndProcessBranch(String term, String searchString) {
         String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + term + DownloadUtils.XML_EXT;
 
+
         DownloadUtils.downloadFile(searchString, downloadLocation);
 
         BioPortalSearchBeanResultHandler handler = new BioPortalSearchBeanResultHandler();
@@ -307,7 +307,7 @@ public class BioPortalClient implements OntologyService {
             for (AcceptedOntologies ao : AcceptedOntologies.values()) {
                 Ontology o = getOntologyById(ao.getOntologyID());
                 if (o != null) {
-                    OntologySourceManager.addOLSOntologyDefinitions(Collections.singletonMap(o.getOntologyAbbreviation(),
+                    OntologyManager.addOLSOntologyDefinitions(Collections.singletonMap(o.getOntologyAbbreviation(),
                             o.getOntologyDisplayLabel()), Collections.singletonMap(o.getOntologyAbbreviation(), o.getOntologyVersion()));
                 }
             }
@@ -402,7 +402,7 @@ public class BioPortalClient implements OntologyService {
         if (!noChildren.contains(termAccession)) {
             if (!cachedNodeChildrenQueries.containsKey(ontology + "-" + termAccession)) {
 
-                String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession + "&" +  API_KEY;
+                String searchString = REST_URL + "concepts/" + ((type == PARENTS) ? "parents/" : "") + "" + ontology + "?conceptid=" + termAccession + "&" + API_KEY;
 
                 System.out.println("Searching for : " + searchString);
 

@@ -41,9 +41,12 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,9 +65,9 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
     private TableReferenceObject buildingModel;
     private String organism;
     private String rowFormat;
-    private List<TempFactors> factorsToAdd;
+    private List<PropertyType> factorsToAdd;
 
-    public StudySampleCreationAlgorithm(Study study, Assay studySample, List<TempFactors> factorsToAdd,
+    public StudySampleCreationAlgorithm(Study study, Assay studySample, List<PropertyType> factorsToAdd,
                                         Map<String, GeneratedSampleDetails> generatedSampleInfo, String organism,
                                         TableReferenceObject buildingModel) {
         super(buildingModel, study, factorsToAdd);
@@ -118,103 +121,115 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
         int count = tableStructure.size() + 1;
         rowFormat = "";
 
-        for (int i = 0; i < tableStructure.size(); i++) {
+        for (int columnIndex = 0; columnIndex < tableStructure.size(); columnIndex++) {
 
-            String fieldName = tableStructure.get(i)[0];
-            if (fieldName == null) {
-                fieldName = "";
-            }
+            String fieldName = tableStructure.get(columnIndex)[0];
+            if (fieldName != null) {
 
-            if (colsToUse == null) {
-                colsToUse = new ListOrderedSet<Integer>();
-            }
 
-            if (fieldName.toLowerCase().equals("characteristics")) {
-
-                headers.add("Characteristics[Organism]");
-                newFo = new FieldObject(count, "Characteristics[Organism]",
-                        "The organism being studied", DataTypes.ONTOLOGY_TERM, "",
-                        false, false, false);
-                // todo set recommended ontology for organism...
-                buildingModel.addField(newFo);
-
-                count++;
-                rowFormat += (organism + "\t");
-
-                headers.add("Characteristics[Organism Part]");
-                newFo = new FieldObject(count, "Characteristics[Organism Part]", "Part of the organism being studied", DataTypes.ONTOLOGY_TERM, "",
-                        false, false, false);
-                buildingModel.addField(newFo);
-                count++;
-                rowFormat += "[ORGANISM_PART]\t";
-
-            } else if (fieldName.toLowerCase().contains("characteristics[")) {
-                // then a check needs to be done to ensure the characteristic isn't added if it is already there!
-                String value = fieldName.toLowerCase();
-                if (!value.contains("organism") && !value.contains("organism part")) {
-                    headers.add(fieldName);
-                    colsToUse.add(i);
-                    rowFormat += " \t";
+                if (colsToUse == null) {
+                    colsToUse = new ListOrderedSet<Integer>();
                 }
-            } else if (fieldName.toLowerCase().equals("factors")) {
-                for (TempFactors tf : factorsToAdd) {
 
-                    headers.add("Factor Value[" + tf.getFactorName().trim() + "]");
+                if (fieldName.toLowerCase().equals("characteristics")) {
 
-                    boolean unitAdded = false;
+                    // SHOULD CHECK IF ONE is available
+                    newFo = buildingModel.getFieldByName("Characteristics[Organism]");
+                    headers.add("Characteristics[Organism]");
+                    if (newFo == null) {
+                        newFo = new FieldObject(count, "Characteristics[Organism]",
+                                "The organism being studied", DataTypes.ONTOLOGY_TERM, "",
+                                false, false, false);
+                        buildingModel.addField(newFo);
+                    }
 
-                    for (TimeUnitPair tup : tf.getFactorLevels()) {
-                        if (!tup.getUnit().trim().equals("")) {
-                            headers.add("Unit");
-                            unitAdded = true;
+                    count++;
+                    rowFormat += (organism + "\t");
 
-                            break;
+                    newFo = buildingModel.getFieldByName("Characteristics[Organism Part]");
+                    headers.add("Characteristics[Organism Part]");
+                    if (newFo == null) {
+                        newFo = new FieldObject(count, "Characteristics[Organism Part]", "Part of the organism being studied", DataTypes.ONTOLOGY_TERM, "",
+                                false, false, false);
+                        buildingModel.addField(newFo);
+                    }
+
+                    count++;
+                    rowFormat += "[ORGANISM_PART]\t";
+
+                } else if (fieldName.toLowerCase().contains("characteristics[")) {
+                    // then a check needs to be done to ensure the characteristic isn't added if it is already there!
+                    String value = fieldName.toLowerCase();
+                    if (!value.contains("organism") && !value.contains("organism part")) {
+                        headers.add(fieldName);
+                        colsToUse.add(columnIndex);
+                        rowFormat += " \t";
+                    }
+                } else if (fieldName.toLowerCase().equals("factors")) {
+                    for (PropertyType tf : factorsToAdd) {
+
+                        headers.add("Factor Value[" + tf.getPropertyName().trim() + "]");
+
+                        boolean unitAdded = false;
+
+                        for (PropertyValue tup : tf.getValuesAndUnits()) {
+                            if (!tup.getUnit().trim().equals("")) {
+                                headers.add("Unit");
+                                unitAdded = true;
+
+                                break;
+                            }
+                        }
+
+                        if (unitAdded) {
+                            // add factor column field first
+                            newFo = new FieldObject(count,
+                                    "Factor Value[" + tf.getPropertyName().trim() +
+                                            "]", "Factor", DataTypes.STRING, "", false,
+                                    false, false);
+                            buildingModel.addField(newFo);
+                            count++;
+
+                            newFo = new FieldObject(count, "Unit",
+                                    "Unit to give meaning to it's associated value",
+                                    DataTypes.ONTOLOGY_TERM, "", false, false, false);
+                            buildingModel.addField(newFo);
+                            count++;
+                        } else {
+                            newFo = new FieldObject(count,
+                                    "Factor Value[" + tf.getPropertyName().trim() +
+                                            "]", "Factor", DataTypes.ONTOLOGY_TERM, "",
+                                    false, false, false);
+                            buildingModel.addField(newFo);
+                            count++;
                         }
                     }
 
-                    if (unitAdded) {
-                        // add factor column field first
-                        newFo = new FieldObject(count,
-                                "Factor Value[" + tf.getFactorName().trim() +
-                                        "]", "Factor", DataTypes.STRING, "", false,
-                                false, false);
-                        buildingModel.addField(newFo);
-                        count++;
+                    rowFormat += "[FACTORS]";
 
-                        newFo = new FieldObject(count, "Unit",
-                                "Unit to give meaning to it's associated value",
-                                DataTypes.ONTOLOGY_TERM, "", false, false, false);
-                        buildingModel.addField(newFo);
-                        count++;
-                    } else {
-                        newFo = new FieldObject(count,
-                                "Factor Value[" + tf.getFactorName().trim() +
-                                        "]", "Factor", DataTypes.ONTOLOGY_TERM, "",
-                                false, false, false);
-                        buildingModel.addField(newFo);
-                        count++;
+                } else if (fieldName.toLowerCase().contains("factor value[")) {
+                    if (!checkForFactorExistence(fieldName)) {
+                        headers.add(fieldName);
+                        colsToUse.add(columnIndex);
+                        rowFormat += " \t";
                     }
-                }
-
-                rowFormat += "[FACTORS]";
-
-            } else if (fieldName.toLowerCase().contains("factor value[")) {
-                if (!checkForFactorExistence(fieldName)) {
+                } else if (fieldName.equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                    // we have a protocol. Do two things: set value to it's default value and add it to the study protocols
                     headers.add(fieldName);
-                    colsToUse.add(i);
-                    rowFormat += " \t";
-                }
-            } else {
-
-                headers.add(fieldName);
-
-                if (fieldName.equalsIgnoreCase("source name")) {
-                    rowFormat += (SOURCE_NAME_PLACE_HOLDER + "\t");
-                } else if (fieldName.equalsIgnoreCase(
-                        "sample name")) {
-                    rowFormat += SAMPLE_NAMES_PLACE_HOLDER + "\t";
+                    colsToUse.add(columnIndex);
+                    rowFormat += buildingModel.getDefaultValue(columnIndex + 1) + "\t";
                 } else {
-                    rowFormat += " \t";
+
+                    headers.add(fieldName);
+
+                    if (fieldName.equalsIgnoreCase("source name")) {
+                        rowFormat += (SOURCE_NAME_PLACE_HOLDER + "\t");
+                    } else if (fieldName.equalsIgnoreCase(
+                            "sample name")) {
+                        rowFormat += SAMPLE_NAMES_PLACE_HOLDER + "\t";
+                    } else {
+                        rowFormat += " \t";
+                    }
                 }
             }
         }
@@ -231,6 +246,12 @@ public class StudySampleCreationAlgorithm extends CreationAlgorithm {
         buildingModel.setPreDefinedHeaders(headersForReferenceObject);
 
         addRowsToModel(headersAsArray);
+
+        TableReferenceObjectWrapper troAdapter = new TableReferenceObjectWrapper(buildingModel);
+        troAdapter.setConstructProtocolsWithDefaultValues(true);
+        List<Protocol> protocols = troAdapter.findProtocols();
+
+        study.getProtocols().addAll(protocols);
 
         studySample.setTableReferenceObject(buildingModel);
     }

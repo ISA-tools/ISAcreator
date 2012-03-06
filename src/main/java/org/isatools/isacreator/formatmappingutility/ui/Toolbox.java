@@ -39,207 +39,197 @@ package org.isatools.isacreator.formatmappingutility.ui;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.jdesktop.fuse.InjectedResource;
+import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Toolbox extends JPanel {
+    public static final String ENTER_A_QUALIFIER = "Enter a qualifier";
 
     // toolbox will have 5 buttons in it's entirety for addition of characteristics, factors, protocols, parameters and comments.
-    public static final ImageIcon ADD_CHAR = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addchar.png"));
-    public static final ImageIcon ADD_CHAR_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addchar_over.png"));
-    public static final ImageIcon ADD_FACTOR = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addfactor.png"));
-    public static final ImageIcon ADD_FACTOR_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addfactor_over.png"));
-    public static final ImageIcon ADD_PROTOCOL = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addprotocol.png"));
-    public static final ImageIcon ADD_PROTOCOL_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addprotocol_over.png"));
-    public static final ImageIcon ADD_PARAMETER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addparameter.png"));
-    public static final ImageIcon ADD_PARAMETER_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addparameter_over.png"));
-    public static final ImageIcon ADD_COMMENT = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addcomment.png"));
-    public static final ImageIcon ADD_COMMENT_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addcomment_over.png"));
-    public static final ImageIcon ADD_SAMPLE = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addsample.png"));
-    public static final ImageIcon ADD_SAMPLE_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addsample_over.png"));
-    public static final ImageIcon ADD_MATERIAL = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addMaterial.png"));
-    public static final ImageIcon ADD_MATERIAL_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/addMaterial_over.png"));
-    public static final ImageIcon ADD = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/add.png"));
-    public static final ImageIcon ADD_OVER = new ImageIcon(Toolbox.class.getResource("/images/formatmapper/add_over.png"));
 
-    public static final int CHARACTERISTIC = 0;
-    public static final int FACTOR = 1;
-    public static final int PROTOCOL = 2;
-    public static final int PARAMETER = 3;
-    public static final int COMMENT = 4;
-    public static final int SAMPLE = 5;
-    public static final int MATERIAL = 6;
+    @InjectedResource
+    private ImageIcon addField, addFieldOver, removeField, removeFieldOver, add, addOver;
 
-    private JPanel changingContentsContainer;
-    private JPanel southPanel;
+    private JPanel southPanel, addButtonContainer;
     private JPanel qualifierEntryPanel;
-    private JPanel fillerPanel;
+    private JTextField qualifier;
+    private JComboBox fieldOptions;
     private int currentlySelectedForQualifierEntry = -1;
 
+    private String fieldToAdd;
+    private boolean validFieldName;
+
     public Toolbox() {
+        ResourceInjector.get("formatmappingutility-package.style").inject(this);
+
         setLayout(new BorderLayout());
-        changingContentsContainer = new JPanel();
-        changingContentsContainer.setLayout(new BoxLayout(changingContentsContainer, BoxLayout.LINE_AXIS));
-        setContents();
-        add(changingContentsContainer, BorderLayout.CENTER);
-
         createQualifierEntryPanel();
-        // now create the panel allowing for specifying qualifiers for characteristics, factors, comments, and parameters.
-
+        setContents(null);
     }
 
-    public void setContents() {
-        changingContentsContainer.add(createLabel(ADD_CHAR, ADD_CHAR_OVER, true, Toolbox.CHARACTERISTIC));
-        changingContentsContainer.add(createLabel(ADD_FACTOR, ADD_FACTOR_OVER, true, Toolbox.FACTOR));
-        changingContentsContainer.add(createLabel(ADD_PROTOCOL, ADD_PROTOCOL_OVER, false, Toolbox.PROTOCOL));
-        changingContentsContainer.add(createLabel(ADD_PARAMETER, ADD_PARAMETER_OVER, true, Toolbox.PARAMETER));
-        changingContentsContainer.add(createLabel(ADD_COMMENT, ADD_COMMENT_OVER, true, Toolbox.COMMENT));
-        changingContentsContainer.add(createLabel(ADD_SAMPLE, ADD_SAMPLE_OVER, false, Toolbox.SAMPLE));
-        changingContentsContainer.add(createLabel(ADD_MATERIAL, ADD_MATERIAL_OVER, false, Toolbox.MATERIAL));
-    }
-
-
-    private JLabel createLabel(final ImageIcon icon, final ImageIcon rollover, final boolean showQualifierEntry, final int labelType) {
-        final JLabel label = new JLabel(icon);
-        label.setVerticalAlignment(JLabel.TOP);
-        label.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
-
-            public void mouseEntered(MouseEvent mouseEvent) {
-                label.setIcon(rollover);
-            }
-
-            public void mouseExited(MouseEvent mouseEvent) {
-                label.setIcon(icon);
-            }
-
-            public void mousePressed(MouseEvent mouseEvent) {
-                label.setIcon(icon);
-
-                southPanel.removeAll();
-                if (showQualifierEntry) {
-                    qualifierEntryPanel.setVisible(showQualifierEntry);
-                    southPanel.add(qualifierEntryPanel);
-                    currentlySelectedForQualifierEntry = labelType;
-                    // property change event should be thrown from within the qualifier entry panel add button!
-                } else {
-                    fillerPanel.setVisible(!showQualifierEntry);
-                    southPanel.add(fillerPanel);
-                    // now fire an property change to inform listening component that a node should be added to the
-                    // tree in the position directly after the currently selected node item in the tree.
-                    String toAdd;
-                    currentlySelectedForQualifierEntry = -1;
-                    if (labelType == Toolbox.PROTOCOL) {
-                        toAdd = "Protocol REF";
-                    } else if (labelType == Toolbox.SAMPLE) {
-                        toAdd = "Sample Name";
+    public void setContents(String currentField) {
+        Box fieldBox = Box.createHorizontalBox();
+        fieldBox.add(UIHelper.createLabel("Add a", UIHelper.VER_10_BOLD, UIHelper.LIGHT_GREY_COLOR));
+        fieldOptions = new JComboBox();
+        fieldOptions.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (fieldOptions.getSelectedItem() != null && !(fieldOptions.getSelectedItem() == FieldTypes.SELECT_A_FIELD)) {
+                    boolean showQualifierEntry = shouldDisplayQualifierEntry(fieldOptions.getSelectedItem().toString());
+                    if (showQualifierEntry) {
+                        qualifierEntryPanel.setVisible(showQualifierEntry);
+                        addButtonContainer.setVisible(showQualifierEntry);
+                        currentlySelectedForQualifierEntry = ((FieldTypes) fieldOptions.getSelectedItem()).id;
+                        // property change event should be thrown from within the qualifier entry panel add button!
                     } else {
-                        toAdd = "Material Type";
+                        qualifierEntryPanel.setVisible(showQualifierEntry);
+                        // now fire an property change to inform listening component that a node should be added to the
+                        // tree in the position directly after the currently selected node item in the tree.
+                        currentlySelectedForQualifierEntry = -1;
+                        validFieldName = true;
+                        fieldToAdd = fieldOptions.getSelectedItem().toString();
+                        addButtonContainer.setVisible(true);
                     }
-                    firePropertyChange("nodeAdded", "", toAdd);
+                } else {
+                    addButtonContainer.setVisible(false);
+                    qualifierEntryPanel.setVisible(false);
                 }
-                revalidate();
-                repaint();
-                // do stuff
-
-            }
-
-            public void mouseReleased(MouseEvent mouseEvent) {
-
             }
         });
-        return label;
+        updateFieldOptions(currentField);
+        fieldBox.add(fieldOptions);
+
+        add(fieldBox, BorderLayout.NORTH);
+    }
+
+    private boolean shouldDisplayQualifierEntry(String field) {
+        return (field.equals(FieldTypes.COMMENT.name) || field.equals(FieldTypes.PARAMETER.name)
+                || field.equals(FieldTypes.CHARACTERISTIC.name) || field.equals(FieldTypes.FACTOR.name));
+    }
+
+    public void updateFieldOptions(String currentField) {
+        Object[] options;
+        if (currentField == null) {
+            options = new Object[]{FieldTypes.SELECT_A_FIELD};
+        } else {
+            options = FieldTypes.values();
+            if (!currentField.contains(FieldTypes.PROTOCOL.name)) {
+                options = FieldTypes.values(FieldTypes.PARAMETER);
+            }
+        }
+
+        fieldOptions.removeAllItems();
+
+        for (Object option : options) {
+            fieldOptions.addItem(option);
+        }
     }
 
     private void createQualifierEntryPanel() {
         qualifierEntryPanel = new JPanel();
         qualifierEntryPanel.setLayout(new BoxLayout(qualifierEntryPanel, BoxLayout.PAGE_AXIS));
-        qualifierEntryPanel.setPreferredSize(new Dimension(170, 40));
+        qualifierEntryPanel.setPreferredSize(new Dimension(170, 20));
 
-        JPanel qualifierCont = new JPanel();
-        qualifierCont.setLayout(new BoxLayout(qualifierCont, BoxLayout.LINE_AXIS));
-
-        JPanel qualifierLabelCont = new JPanel(new GridLayout(1, 1));
-
-        JLabel qualifierLabel = UIHelper.createLabel(" enter a qualifier", UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR);
-
-        qualifierLabelCont.add(qualifierLabel);
-
-        final JTextField qualifier = new RoundedJTextField(12);
+        qualifier = new RoundedJTextField(12);
+        qualifier.setText(ENTER_A_QUALIFIER);
         UIHelper.renderComponent(qualifier, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, false);
 
-
-        qualifierCont.add(qualifier);
-
-
-        final JLabel addButton = new JLabel(ADD);
-        addButton.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-
-            }
-
-            public void mouseEntered(MouseEvent mouseEvent) {
-                addButton.setIcon(ADD_OVER);
-            }
-
-            public void mouseExited(MouseEvent mouseEvent) {
-                addButton.setIcon(ADD);
-            }
-
-            public void mousePressed(MouseEvent mouseEvent) {
-                addButton.setIcon(ADD);
-
-                String qualifierText;
-                if (!(qualifierText = qualifier.getText().trim()).equals("")) {
-
-                    String toAdd;
-
-                    if (currentlySelectedForQualifierEntry == Toolbox.CHARACTERISTIC) {
-                        toAdd = "Characteristics[" + qualifierText + "]";
-                    } else if (currentlySelectedForQualifierEntry == Toolbox.FACTOR) {
-                        toAdd = "Factor Value[" + qualifierText + "]";
-                    } else if (currentlySelectedForQualifierEntry == Toolbox.PARAMETER) {
-                        toAdd = "Parameter Value[" + qualifierText + "]";
-                    } else {
-                        toAdd = "Comment[" + qualifierText + "]";
-                    }
-
-                    firePropertyChange("nodeAdded", "", toAdd);
-                }
-            }
-
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
-        });
-
-        qualifierCont.add(addButton);
-
-        qualifierEntryPanel.add(qualifierLabelCont);
-
-        qualifierEntryPanel.add(qualifierCont);
+        qualifierEntryPanel.add(qualifier);
 
         qualifierEntryPanel.add(Box.createGlue());
         qualifierEntryPanel.setVisible(false);
 
-        fillerPanel = new JPanel();
-        fillerPanel.setLayout(new BoxLayout(fillerPanel, BoxLayout.PAGE_AXIS));
-
-        fillerPanel.add(Box.createVerticalStrut(40));
-
         southPanel = new JPanel();
+        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.PAGE_AXIS));
 
-        southPanel.add(fillerPanel);
+        createAddButtonContainer();
 
+        southPanel.add(qualifierEntryPanel);
+        southPanel.add(addButtonContainer);
         // add stuff to it.
         add(southPanel, BorderLayout.SOUTH);
+    }
 
+    private void createAddButtonContainer() {
+        final JLabel addButton = new JLabel(add);
+        addButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent mouseEvent) {
+                addButton.setIcon(addOver);
+            }
+
+            public void mouseExited(MouseEvent mouseEvent) {
+                addButton.setIcon(add);
+            }
+
+            public void mousePressed(MouseEvent mouseEvent) {
+                addButton.setIcon(add);
+
+                String qualifierText;
+                if (qualifierEntryPanel.isVisible()) {
+                    if (!(qualifierText = qualifier.getText().trim()).equals("") && !qualifierText.equals(ENTER_A_QUALIFIER)) {
+                        if (currentlySelectedForQualifierEntry == FieldTypes.CHARACTERISTIC.id) {
+                            fieldToAdd = "Characteristics[" + qualifierText + "]";
+                        } else if (currentlySelectedForQualifierEntry == FieldTypes.FACTOR.id) {
+                            fieldToAdd = "Factor Value[" + qualifierText + "]";
+                        } else if (currentlySelectedForQualifierEntry == FieldTypes.PARAMETER.id) {
+                            fieldToAdd = "Parameter Value[" + qualifierText + "]";
+                        } else {
+                            fieldToAdd = "Comment[" + qualifierText + "]";
+                        }
+                        firePropertyChange("nodeAdded", "", fieldToAdd);
+                        updateFieldOptions(null);
+                    } else {
+                        qualifier.setText(ENTER_A_QUALIFIER);
+                    }
+                } else {
+                    firePropertyChange("nodeAdded", "", fieldToAdd);
+                    updateFieldOptions(null);
+                }
+            }
+
+        });
+
+        addButtonContainer = new JPanel();
+        addButtonContainer.add(addButton);
+    }
+
+    enum FieldTypes {
+        SELECT_A_FIELD("Field Type", -1), CHARACTERISTIC("Characteristic", 0), FACTOR("Factor Value", 1),
+        PROTOCOL("Protocol REF", 2), PARAMETER("Parameter Value", 3), COMMENT("Comment", 4),
+        SAMPLE("Sample Name", 5), MATERIAL("Material Type", 6);
+
+        private String name;
+        private int id;
+
+        FieldTypes(String name, int id) {
+            this.name = name;
+            this.id = id;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+        public static FieldTypes[] values(FieldTypes exclusion) {
+            List<FieldTypes> fields = new ArrayList<FieldTypes>();
+            for (FieldTypes type : values()) {
+                if (exclusion != type) {
+                    fields.add(type);
+                }
+            }
+
+            return fields.toArray(new FieldTypes[fields.size()]);
+        }
     }
 
 }

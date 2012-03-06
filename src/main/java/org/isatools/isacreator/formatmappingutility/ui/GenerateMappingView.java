@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.formatmappingutility.ui;
 
-import org.isatools.isacreator.common.Utils;
+import org.isatools.isacreator.visualization.TreeView;
 
 import java.io.*;
 import java.util.List;
@@ -50,17 +50,16 @@ import java.util.Map;
  */
 
 public class GenerateMappingView {
-    private String fileName;
+    private String mappingFileName;
     private Map<MappingField, List<String>> mappings;
 
-    public GenerateMappingView(String fileName, Map<MappingField, List<String>> mappings) {
-        this.fileName = fileName;
+    public GenerateMappingView(String mappingFileName, Map<MappingField, List<String>> mappings) {
+        this.mappingFileName = mappingFileName;
         this.mappings = mappings;
     }
 
-    public String generateView() {
+    public File generateView() {
         // construct XML file from investigation
-
 
         File f = new File(System.getProperty("java.io.tmpdir") + File.separator + "mapping_view.xml");
         PrintStream ps = null;
@@ -87,27 +86,27 @@ public class GenerateMappingView {
             }
         }
 
-        return f.getAbsolutePath();
+        return f;
     }
 
     private String getDeclaration() {
         return "<declarations>\n" +
                 "   <attributeDecl name=\"type\" type=\"String\"/>\n" +
-                "   <attributeDecl name=\"name\" type=\"String\"/>\n" +
+                "   <attributeDecl name=\"" + TreeView.NAME_STRING + "\" type=\"String\"/>\n" +
                 " </declarations>";
     }
 
     private String getMappingDetails() {
-        String tmpFileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
+        String tmpFileName = mappingFileName.substring(mappingFileName.lastIndexOf(File.separator) + 1);
         return "<branch>\n" +
                 "<attribute name = \"type\" value = \"File Name\"/>" +
-                "<attribute name = \"name\" value = \"" + tmpFileName + "\"/>\n";
+                "<attribute name = \"" + TreeView.NAME_STRING + "\" value = \"" + tmpFileName + "\"/>\n";
     }
 
     private String processMapping(MappingField key) {
         String mappingInfo = "<branch>" +
                 "<attribute name = \"type\" value = \"Study\"/>" +
-                "<attribute name=\"name\" value= \"" + key.getFieldName() + "\"/>\n";
+                "<attribute name=\"" + TreeView.NAME_STRING + "\" value= \"" + key.getFieldName() + "\"/>\n";
 
         for (String mapping : mappings.get(key)) {
 
@@ -120,7 +119,7 @@ public class GenerateMappingView {
 
             mappingInfo += ("<leaf>\n" +
                     "<attribute name = \"type\" value = \"Assay\"/>" +
-                    "<attribute name=\"name\" value= \"" + processedMapping + "\"/>" +
+                    "<attribute name=\"" + TreeView.NAME_STRING + "\" value= \"" + processedMapping + "\"/>" +
                     "\n</leaf>");
         }
         mappingInfo += "</branch>";

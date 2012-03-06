@@ -13,14 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by the ISA team
- *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 26/01/2011
- *         Time: 18:39
- */
 public class BioPortalAnnotatorResultHandler {
 
     public SuccessDocument getDocument(String fileLocation) {
@@ -57,8 +49,6 @@ public class BioPortalAnnotatorResultHandler {
                     AnnotatorResult annotatorResult = extractAnnotatorResult(annotationBean, ontologies);
 
                     if (annotatorResult != null) {
-
-                        System.out.println("Original test to annotate: " + originalTextToAnnotate);
 
                         String originalTerm = originalTextToAnnotate.substring(annotatorResult.getStartIndex() - 1, annotatorResult.getEndIndex());
 

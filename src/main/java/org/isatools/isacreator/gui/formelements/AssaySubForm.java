@@ -115,7 +115,7 @@ public class AssaySubForm extends SubForm implements Serializable {
                         .addAssay(tmpAssay.getMeasurementEndpoint(),
                                 tmpAssay.getTechnologyType(),
                                 tmpAssay.getAssayPlatform(),
-                                tmpAssay.getAssayReference())) {
+                                tmpAssay.getAssayReference()) != null) {
                     // set previous column to be uneditable
                     uneditableRecords.add(dtm.getColumnCount() - 1);
                     scrollTable.addColumn(col);

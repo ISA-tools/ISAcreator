@@ -68,9 +68,9 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
      * @param allowsMultipleTerms - Whether or not the user is allowed to enter multiple ontology values into a field
      * @param recommendedSource   - A recommended source - can be null, could be something like UO for a unit field for example.
      */
-    public OntologyCellEditor(final boolean allowsMultipleTerms, Map<String, RecommendedOntology> recommendedSource) {
+    public OntologyCellEditor(final boolean allowsMultipleTerms, final boolean forceOntologySelection, Map<String, RecommendedOntology> recommendedSource) {
         super();
-        ontologyTool = new OntologySelectionTool(allowsMultipleTerms,
+        ontologyTool = new OntologySelectionTool(allowsMultipleTerms, forceOntologySelection,
                 recommendedSource);
         ontologyTool.createGUI();
         // OntologySelectionTool doesn't directly interact with the CellEditor. Instead, a PropertyChange event is
@@ -159,6 +159,7 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
      */
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
+
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
 

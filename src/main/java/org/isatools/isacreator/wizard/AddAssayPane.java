@@ -47,7 +47,7 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,7 +80,7 @@ public class AddAssayPane extends JPanel {
     private Collection<Assay> assaysToDefine;
     private List<CreationAlgorithm> algorithmsToRun;
     private Study study;
-    private List<TempFactors> factorsToAdd;
+    private List<PropertyType> factorsToAdd;
     private Map<Integer, TreatmentReplicate> treatmentGroups;
     private DataEntryEnvironment dep;
     private ListOrderedMap<String, GeneratedSampleDetails> sampleNameValues;
@@ -88,7 +88,7 @@ public class AddAssayPane extends JPanel {
     private UserProfile up;
     private MouseListener[] listeners;
 
-    public AddAssayPane(AbstractDataEntryEnvironment dew, Study study, List<TempFactors> factorsToAdd,
+    public AddAssayPane(AbstractDataEntryEnvironment dew, Study study, List<PropertyType> factorsToAdd,
                         Map<Integer, TreatmentReplicate> treatmentGroups, DataEntryEnvironment dep, UserProfile up) {
         this.dew = dew;
         this.up = up;
@@ -163,7 +163,6 @@ public class AddAssayPane extends JPanel {
     public void createSouthPanel() {
         AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
         listeners[0] = new MouseAdapter() {
-            // todo add timer here to ensure that the algorithm isn't run twice!
             public void mousePressed(MouseEvent event) {
                 firePropertyChange("canceledAssayCreation", "cancelling", "assaydef");
             }
@@ -182,7 +181,6 @@ public class AddAssayPane extends JPanel {
         listeners[1] = new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                // todo add timer here to ensure that the algorithm isn't run twice!
                 for (CreationAlgorithm ca : algorithmsToRun) {
                     // possible way to create a study sample file is to take the set of all study sample information then adding
                     // it to the row data for a study sample
@@ -215,7 +213,7 @@ public class AddAssayPane extends JPanel {
 
     private String[] retrieveArrayDesigns() {
         String[] arrayDesignList = new String[]{"no designs available"};
-        StringBuffer data = new StringBuffer();
+        StringBuilder data = new StringBuilder();
 
         File arrayDesignsFile = new File(ARRAY_DESIGN_FILE);
 

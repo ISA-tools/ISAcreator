@@ -41,12 +41,15 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationStructureLoader;
 import org.isatools.isacreator.utils.StringProcessing;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
 import org.isatools.isacreator.utils.datastructures.SetUtils;
+import uk.ac.ebi.utils.collections.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -67,11 +70,11 @@ public class InvestigationImport {
 
     private static final Character TAB_DELIM = '\t';
 
-    private Set<String> messages;
+    private List<ErrorMessage> messages;
 
 
     public InvestigationImport() {
-        messages = new HashSet<String>();
+        messages = new ArrayList<ErrorMessage>();
     }
 
     /**
@@ -86,7 +89,7 @@ public class InvestigationImport {
      *         EFO
      *         etc
      */
-    public ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
+    public Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> importInvestigationFile(File investigationFile) throws IOException {
 
         OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> importedInvestigationFile = new ListOrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>();
 
@@ -120,8 +123,7 @@ public class InvestigationImport {
 
                 String lineLabel = line[0].trim();
 
-                if (!org.apache.axis.utils.StringUtils.isEmpty(lineLabel)) {
-                    // todo this doesn't work! Since it converts the characters which aren't meant to be lower case, to lower case
+                if (!StringUtils.isEmpty(lineLabel)) {
                     String valueToTitleCase = StringProcessing.convertStringToTitleCase(lineLabel);
 
                     if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(valueToTitleCase)) {
@@ -138,7 +140,7 @@ public class InvestigationImport {
             }
         }
 
-        return new ISAPair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>>(
+        return new Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>>(
                 isValidInvestigationSections(importedInvestigationFile), importedInvestigationFile);
     }
 
@@ -173,10 +175,10 @@ public class InvestigationImport {
 
                 Set<String> requiredValuesAsLowercase = setUtils.getLowerCaseSetContents(sections.get(section).getRequiredValues());
 
-                ISAPair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
+                Pair<Boolean, Set<String>> equalityResult = setUtils.compareSets(minorSectionParts, requiredValuesAsLowercase, false);
                 if (!equalityResult.fst) {
                     for (String sectionValue : equalityResult.snd) {
-                        messages.add(fmt.format(new Object[]{sectionValue, section}));
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, fmt.format(new Object[]{sectionValue, section})));
                     }
                 }
                 // check minor section for salient information
@@ -187,16 +189,16 @@ public class InvestigationImport {
             // the mainsection string is investigation-1 or study-2 - here we strip away from - onwards.
             Set<InvestigationFileSection> requiredSections = loader.getRequiredSections(mainSection.substring(0, mainSection.lastIndexOf("-")));
             SetUtils<InvestigationFileSection> setUtils = new SetUtils<InvestigationFileSection>();
-            ISAPair<Boolean, Set<InvestigationFileSection>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
+            Pair<Boolean, Set<InvestigationFileSection>> equalityResult = setUtils.compareSets(majorSectionParts, requiredSections, true);
 
             // if false,
             if (!equalityResult.fst) {
                 if (equalityResult.snd != null) {
                     for (InvestigationFileSection section : equalityResult.snd) {
-                        messages.add(fmt.format(new Object[]{section, mainSection.substring(0, mainSection.lastIndexOf("-"))}));
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, fmt.format(new Object[]{section, mainSection.substring(0, mainSection.lastIndexOf("-"))})));
                     }
                 } else {
-                    messages.add("Incorrect number of sections defined for " + mainSection.substring(0, mainSection.lastIndexOf("-")));
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "Incorrect number of sections defined for " + mainSection.substring(0, mainSection.lastIndexOf("-"))));
                 }
             }
         }
@@ -215,7 +217,7 @@ public class InvestigationImport {
         }
     }
 
-    public Set<String> getMessages() {
+    public List<ErrorMessage> getMessages() {
         return messages;
     }
 }

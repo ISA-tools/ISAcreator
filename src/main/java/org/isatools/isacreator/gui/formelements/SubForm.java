@@ -41,21 +41,21 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -219,12 +219,13 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         lockedTable = new ExtendedJTable(model, rowEditor);
         setTableProperties(lockedTable, true);
 
-        //lockedTable.getColumnModel().getColumn(0).setPreferredWidth(220);
         scrollTable = new ExtendedJTable(model, rowEditor);
         setTableProperties(scrollTable, false);
         scrollTable.getSelectionModel()
                 .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         scrollTable.getTableHeader().setResizingAllowed(true);
+
+        // todo make scrollable...
 
         try {
             lockedTable.setDefaultRenderer(Class.forName("java.lang.Object"),
@@ -254,7 +255,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         JTableHeader lockedHeader = lockedTable.getTableHeader();
         setHeaderProperties(lockedTable, lockedTableHeaderRenderer);
         lockedHeader.setReorderingAllowed(false);
-        lockedHeader.setResizingAllowed(false);
+//        lockedHeader.setResizingAllowed(false);
         frozenTable.setCorner(JScrollPane.UPPER_LEFT_CORNER, lockedHeader);
 
 
@@ -369,12 +370,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             if (fields.get(i).getDataType() == SubFormField.SINGLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(false, null));
+                        new OntologyCellEditor(false, false, fields.get(i).getRecommendedOntologyType()));
             }
 
             if (fields.get(i).getDataType() == SubFormField.MULTIPLE_ONTOLOGY_SELECT) {
                 rowEditor.addCellEditorForRow(i,
-                        new OntologyCellEditor(true, null));
+                        new OntologyCellEditor(true, false, fields.get(i).getRecommendedOntologyType()));
             }
 
             if (fields.get(i).getDataType() == SubFormField.COMBOLIST) {
@@ -406,7 +407,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         Set<Integer> ontologyRows = new HashSet<Integer>();
 
-        Map<String, OntologyTerm> history = OntologySourceManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
 
         for (int col = 0; col < dtm.getColumnCount(); col++) {
             String val;
@@ -453,98 +454,77 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
                     } else {
 
+                        // change val to not have the ontology source ref anymore, and add the ref to
+                        // the term source!
+                        tmpTerm = val;
 
-                        // code to print out assay accessions and sources from table mapping definitions...
-                        if (fieldType == FieldTypes.ASSAY) {
-                            if (row == 0 || row == 1) {
-                                String termSourceAcc = getSourceAndAccessionForMapping(tmpTerm);
-                                if (termSourceAcc != null) {
+                        if (!tmpTerm.equals("")) {
+                            if (tmpTerm.contains(";")) {
+                                // then we have multiple values
+                                String[] ontologies = tmpTerm.split(";");
 
-                                    String[] parts = termSourceAcc.split(":");
+                                int numberAdded = 0;
+                                for (String ontologyTerm : ontologies) {
 
-                                    if (parts.length > 1) {
-                                        tmpTermSource = parts[0];
-                                        tmpTermAcc = parts[1];
-                                    } else if (parts.length > 0) {
-                                        tmpTermSource = parts[0];
-                                    }
-                                }
-                            }
-
-                        } else {
-                            // change val to not have the ontology source ref anymore, and add the ref to
-                            // the term source!
-                            tmpTerm = val;
-
-                            if (!tmpTerm.equals("")) {
-                                if (tmpTerm.contains(";")) {
-                                    // then we have multiple values
-                                    String[] ontologies = tmpTerm.split(";");
-
-                                    int numberAdded = 0;
-                                    for (String ontologyTerm : ontologies) {
-
-                                        OntologyTerm oo = history.get(ontologyTerm);
+                                    OntologyTerm oo = history.get(ontologyTerm);
 
 
-                                        if (oo != null) {
-                                            tmpTerm += oo.getOntologyTermName();
-                                            tmpTermAcc += oo.getOntologySourceAccession();
-                                            tmpTermSource += oo.getOntologySource();
-                                        } else {
-                                            if (ontologyTerm.contains(":")) {
-
-                                                String[] termAndSource = ontologyTerm.split(":");
-
-                                                if (termAndSource.length > 1) {
-                                                    tmpTermSource += termAndSource[0];
-                                                    tmpTerm += termAndSource[1];
-                                                } else {
-                                                    tmpTerm = termAndSource[0];
-                                                }
-                                            }
-                                        }
-
-
-                                        if (numberAdded < ontologies.length - 1) {
-                                            tmpTerm += ";";
-                                            tmpTermAcc += ";";
-                                            tmpTermSource += ";";
-                                        }
-                                        numberAdded++;
-                                    }
-
-                                } else {
-                                    if (tmpTerm.contains(":")) {
-                                        OntologyTerm oo = history.get(tmpTerm);
-
-                                        if (oo != null) {
-                                            tmpTerm = oo.getOntologyTermName();
-                                            tmpTermAcc = oo.getOntologySourceAccession();
-                                            tmpTermSource = oo.getOntologySource();
-                                        } else {
-                                            if (tmpTerm.contains(":")) {
-                                                String[] termAndSource = tmpTerm.split(":");
-
-                                                if (termAndSource.length > 1) {
-                                                    tmpTermSource += termAndSource[0];
-                                                    tmpTerm += termAndSource[1];
-                                                } else {
-                                                    tmpTerm = termAndSource[0];
-                                                }
-                                            } else {
-
-                                                tmpTermAcc = "";
-                                                tmpTermSource = "";
-                                            }
-                                        }
+                                    if (oo != null) {
+                                        tmpTerm += oo.getOntologyTermName();
+                                        tmpTermAcc += oo.getOntologySourceAccession();
+                                        tmpTermSource += oo.getOntologySource();
                                     } else {
-                                        tmpTermAcc = "";
-                                        tmpTermSource = "";
+                                        if (ontologyTerm.contains(":")) {
+
+                                            String[] termAndSource = ontologyTerm.split(":");
+
+                                            if (termAndSource.length > 1) {
+                                                tmpTermSource += termAndSource[0];
+                                                tmpTerm += termAndSource[1];
+                                            } else {
+                                                tmpTerm = termAndSource[0];
+                                            }
+                                        }
                                     }
+
+
+                                    if (numberAdded < ontologies.length - 1) {
+                                        tmpTerm += ";";
+                                        tmpTermAcc += ";";
+                                        tmpTermSource += ";";
+                                    }
+                                    numberAdded++;
+                                }
+
+                            } else {
+                                if (tmpTerm.contains(":")) {
+                                    OntologyTerm oo = history.get(tmpTerm);
+
+                                    if (oo != null) {
+                                        tmpTerm = oo.getOntologyTermName();
+                                        tmpTermAcc = oo.getOntologySourceAccession();
+                                        tmpTermSource = oo.getOntologySource();
+                                    } else {
+                                        if (tmpTerm.contains(":")) {
+                                            String[] termAndSource = tmpTerm.split(":");
+
+                                            if (termAndSource.length > 1) {
+                                                tmpTermSource += termAndSource[0];
+                                                tmpTerm += termAndSource[1];
+                                            } else {
+                                                tmpTerm = termAndSource[0];
+                                            }
+                                        } else {
+
+                                            tmpTermAcc = "";
+                                            tmpTermSource = "";
+                                        }
+                                    }
+                                } else {
+                                    tmpTermAcc = "";
+                                    tmpTermSource = "";
                                 }
                             }
-
                         }
                     }
 
@@ -595,18 +575,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         return data;
     }
 
-    private String getSourceAndAccessionForMapping(String val) {
-        for (MappingObject mo : parent.getDataEntryEnvironment().getParentFrame().getMappings()) {
-            if (mo.getMeasurementEndpointType().equals(val)) {
-                return mo.getMeasurementSource() + ":" + mo.getMeasurementAccession();
-            }
-
-            if (mo.getTechnologyType().equals(val)) {
-                return mo.getTechnologySource() + ":" + mo.getTechnologyAccession();
-            }
-        }
-        return null;
-    }
 
     private int calculateNoRows() {
         int noOntologyRows = 0;
@@ -816,9 +784,8 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         DefaultTableModel model = (DefaultTableModel) scrollTable.getModel();
         TableColumn col = new TableColumn(scrollTable.getModel().getColumnCount());
         col.setHeaderRenderer(scrollTableHeaderRenderer);
-        if (scrollTable.getEditingColumn() != -1) {
-            scrollTable.getCellEditor(scrollTable.getEditingRow(), scrollTable.getEditingColumn()).stopCellEditing();
-        }
+
+        SpreadsheetUtils.stopCellEditingInTable(scrollTable);
 
         return doAddColumn(model, col);
     }
@@ -977,7 +944,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                     .getOntologySource(source);
 
             if (osro == null) {
-                osro = new OntologySourceRefObject(source, "", OntologySourceManager.getOntologyVersion(source), OntologySourceManager.getOntologyDescription(source));
+                osro = new OntologySourceRefObject(source, "", OntologyManager.getOntologyVersion(source), OntologyManager.getOntologyDescription(source));
             }
 
             parent.getDataEntryEnvironment().getOntologySources().add(osro);

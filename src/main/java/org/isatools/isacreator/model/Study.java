@@ -148,7 +148,6 @@ public class Study extends ISASection {
     public boolean addContact(StudyContact contact) {
         if (!checkContactExists(contact.getFirstName(), contact.getLastName(), contact.getEmail())) {
             contacts.add(contact);
-
             return true;
         }
 
@@ -481,12 +480,12 @@ public class Study extends ISASection {
                                  String newProtocolName) {
         for (String key : assays.keySet()) {
             assays.get(key).getSpreadsheetUI().getTable()
-                    .getSpreadsheetFunctions().susbstituteTermsInColumn("Protocol REF",
+                    .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                     previousProtocolName, newProtocolName);
         }
 
         studySampleRecord.getSpreadsheetUI().getTable()
-                .getSpreadsheetFunctions().susbstituteTermsInColumn("Protocol REF",
+                .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                 previousProtocolName, newProtocolName);
 
         if (newProtocolName.equals("")) {

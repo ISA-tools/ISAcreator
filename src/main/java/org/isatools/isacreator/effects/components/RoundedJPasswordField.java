@@ -61,7 +61,8 @@ public class RoundedJPasswordField extends JPasswordField {
     public RoundedJPasswordField(int columns, Color backgroundColor) {
         super(columns);
         this.backgroundColor = backgroundColor;
-
+        setSelectedTextColor(UIHelper.BG_COLOR);
+        setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
         setOpaque(false);
 
         setBorder(new EmptyBorder(3, 5, 3, 5));

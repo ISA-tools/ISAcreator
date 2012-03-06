@@ -108,7 +108,7 @@ public class ExtractDetailsCapture extends JPanel {
 
         System.out.println("DataEntryEnvironment parent frame is null? " + (dep == null));
 
-        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, recommendedOntologySource);
+        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, false, recommendedOntologySource);
         ontologySelectionTool.createGUI();
 
         DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);

@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import uk.ac.ebi.ook.web.services.Query;
 import uk.ac.ebi.ook.web.services.QueryServiceLocator;
 
@@ -186,7 +185,7 @@ public class OLSClient implements OntologyService {
             if (m.find()) {
                 tempVersion = tempVersion.substring(m.start(), m.end());
             }
-            versions.put(OntologySourceManager.OLS_TEXT, tempVersion);
+            versions.put(OntologyManager.OLS_TEXT, tempVersion);
         } catch (RemoteException e) {
             log.error("remote exception thrown " + e.getMessage());
         } catch (Exception e) {
@@ -313,9 +312,9 @@ public class OLSClient implements OntologyService {
 
             for (OntologyTerm term : termSearchResult.get(termSource)) {
 
-                if (termsInBranch.contains(term.getOntologySource()  + ":" + term.getOntologySourceAccession())) {
+                if (termsInBranch.contains(term.getOntologySource() + ":" + term.getOntologySourceAccession())) {
 
-                    if(!filteredResult.containsKey(termSource)) {
+                    if (!filteredResult.containsKey(termSource)) {
                         filteredResult.put(termSource, new ArrayList<OntologyTerm>());
                     }
 
@@ -334,7 +333,7 @@ public class OLSClient implements OntologyService {
 
             String source = "";
 
-            if(accession.contains(":")) {
+            if (accession.contains(":")) {
                 source = accession.substring(0, accession.lastIndexOf(":"));
             } else {
                 source = "NEWT";
@@ -360,11 +359,13 @@ public class OLSClient implements OntologyService {
 
         for (String accession : ontologyAccessionToTerm.keySet()) {
             System.out.println("Processing accession - " + accession);
-            String source = accession.substring(0, accession.lastIndexOf(":"));
+            if (accession.contains(":")) {
+                String source = accession.substring(0, accession.lastIndexOf(":"));
 
-            String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
+                String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
 
-            processedResult.put(accession, createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
+                processedResult.put(accession, createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
+            }
         }
 
         return processedResult;
@@ -438,7 +439,7 @@ public class OLSClient implements OntologyService {
 
     public List<Ontology> getAllOntologies() {
         List<Ontology> ontologies = new ArrayList<Ontology>();
-        for(OntologySourceRefObject ontologySource : getOntologies().values()) {
+        for (OntologySourceRefObject ontologySource : getOntologies().values()) {
             ontologies.add(new Ontology("", ontologySource.getSourceVersion(), ontologySource.getSourceName(), ontologySource.getSourceDescription()));
         }
 

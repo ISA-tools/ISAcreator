@@ -40,9 +40,12 @@ package org.isatools.isacreator.wizard;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -80,7 +83,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
     private String institution;
 
 
-    public GeneralCreationAlgorithm(Study study, Assay assay, List<TempFactors> factorsToAdd,
+    public GeneralCreationAlgorithm(Study study, Assay assay, List<PropertyType> factorsToAdd,
                                     Map<Integer, TreatmentReplicate> treatmentGroups,
                                     TableReferenceObject buildingModel, String institution, String sourceNameFormat) {
         super(buildingModel, study, factorsToAdd);
@@ -117,12 +120,14 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
         String row = "";
 
         Vector<String> headersForReferenceObject = new Vector<String>();
-        String[] headersAsArray = new String[headers.size()];
+        List<String> headersAsArray = new ArrayList<String>();
         headersForReferenceObject.add(TableReferenceObject.ROW_NO_TEXT);
 
-        for (int i = 0; i < headers.size(); i++) {
-            headersForReferenceObject.add(headers.get(i));
-            headersAsArray[i] = headers.get(i);
+        for (String header : headers) {
+            if (!header.equals("characteristics")) {
+                headersForReferenceObject.add(header);
+                headersAsArray.add(header);
+            }
         }
 
         buildingModel.setPreDefinedHeaders(headersForReferenceObject);
@@ -133,27 +138,32 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                 for (int replicates = startReplicate; replicates <= treatmentGroups.get(groups).getNumReplicates();
                      replicates++) {
 
-                    for (int i : colsToUse) {
-                        String nextDataToAdd = tableStructure.get(i)[1]; // try and insert a template item
+                    for (int columnIndex : colsToUse) {
+                        if (!tableStructure.get(columnIndex)[0].toLowerCase().equals("characteristics")) {
+                            String nextDataToAdd = tableStructure.get(columnIndex)[1]; // try and insert a template item
 
-                        if (nextDataToAdd.trim().equals("")) {
-                            // then we are dealing with a protocol, factor, or characteristic
-                            if (tableStructure.get(i)[0].toLowerCase()
-                                    .equals("factors")) {
+                            if (nextDataToAdd.trim().equals("")) {
+                                // then we are dealing with a protocol, factor, or characteristic
+                                if (tableStructure.get(columnIndex)[0].toLowerCase()
+                                        .equals("factors")) {
 
-                                row += treatmentGroups.get(groups).getTreatmentGroup();
-                            } else if (tableStructure.get(i)[0].toLowerCase()
-                                    .equals("label")) {
+                                    row += treatmentGroups.get(groups).getTreatmentGroup();
+                                } else if (tableStructure.get(columnIndex)[0].toLowerCase()
+                                        .equals("label")) {
 
-                                String val = labelUsed.isSelected() ? labelCapture.getLabelName() : "";
+                                    String val = labelUsed.isSelected() ? labelCapture.getLabelName() : "";
 
-                                row += val + "\t";
+                                    row += val + "\t";
+                                } else if (tableStructure.get(columnIndex)[0].equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                                    // we have a protocol. Do two things: set value to it's default value and add it to the study protocols
+                                    row += buildingModel.getDefaultValue(columnIndex + 1) + "\t";
+                                } else {
+                                    // just empty row data
+                                    row += (nextDataToAdd + "\t");
+                                }
                             } else {
-                                // just empty row data
                                 row += (nextDataToAdd + "\t");
                             }
-                        } else {
-                            row += (nextDataToAdd + "\t");
                         }
                     }
 
@@ -177,7 +187,8 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
 
                     sampleInfo.put(sampleName, new GeneratedSampleDetails(extractName, sourceName, treatmentGroups.get(groups).getTreatmentGroup()));
 
-                    buildingModel.addRowData(headersAsArray, row.split("\t"));
+                    buildingModel.addRowData(headersAsArray.toArray(new String[headersAsArray.size()]),
+                            row.split("\t"));
 
                     // reset variables for next iteration
                     row = "";
@@ -185,6 +196,12 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
             }
 
         }
+
+        TableReferenceObjectWrapper troAdapter = new TableReferenceObjectWrapper(buildingModel);
+        troAdapter.setConstructProtocolsWithDefaultValues(true);
+        List<Protocol> protocols = troAdapter.findProtocols();
+
+        study.getProtocols().addAll(protocols);
 
         // add extract statement for reference sample addition.
         assay.setTableReferenceObject(buildingModel);

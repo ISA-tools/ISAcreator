@@ -79,8 +79,6 @@ public class QRCodeGeneratorUI extends JDialog {
                 QRCodeGeneratorUI.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
         ResourceInjector.get("common-package.style").load(
                 QRCodeViewerPane.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("exporters-package.style").load(
-                QRCodeViewerPane.class.getResource("/dependency-injections/exporters-package.properties"));
 
     }
 
@@ -142,7 +140,6 @@ public class QRCodeGeneratorUI extends JDialog {
         add(createSouthPanel(), BorderLayout.SOUTH);
 
         pack();
-
     }
 
     private Container createTopPanel() {
@@ -358,7 +355,8 @@ public class QRCodeGeneratorUI extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         confirmChoice.createGUI();
-                        confirmChoice.showDialog(QRCodeGeneratorUI.this);
+
+                        confirmChoice.showDialog(isacreatorEnvironment);
                     }
                 });
 

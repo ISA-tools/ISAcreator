@@ -52,9 +52,9 @@ import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.isatools.isacreator.ontologymanager.OntologyService;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologyselectiontool.ViewTermDefinitionUI;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import uk.ac.ebi.utils.collections.Pair;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -72,7 +72,6 @@ import java.util.List;
  * 1) The list of unannotated terms found in the spreadsheet(s);
  * 2) The list of suggested terms for each unannotated term; and
  * 3) The definition pane containg definitions
- *
  */
 public class OntologiserAnnotationPane extends JPanel {
 
@@ -262,7 +261,7 @@ public class OntologiserAnnotationPane extends JPanel {
 
             public void mouseExited(MouseEvent mouseEvent) {
 
-                doNotUseAnnotationButton.setIcon((currentlySelectedOntologyTerm  == null
+                doNotUseAnnotationButton.setIcon((currentlySelectedOntologyTerm == null
                         || currentlySelectedOntologyTerm.getAssignedOntology() == null) ? doNotUseTermOver : doNotUseTerm);
             }
 
@@ -350,7 +349,7 @@ public class OntologiserAnnotationPane extends JPanel {
 
             ScoreAnalysisUtility analysisUtility = new ScoreAnalysisUtility();
 
-            ISAPair<Integer, SuggestedAnnotation> maxResult = analysisUtility.getMaxScore(annotations.get(ontologisedResult));
+            Pair<Integer, SuggestedAnnotation> maxResult = analysisUtility.getMaxScore(annotations.get(ontologisedResult));
 
             setAnnotation(maxResult.snd, ontologisedResult);
         }

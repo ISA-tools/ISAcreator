@@ -84,8 +84,7 @@ public class LabelCapture extends JPanel {
         labelVal.setToolTipText("<html><b>Label</b><p>Label used in this assay</p></html>");
 
         container.add(labelVal);
-        container.add(createOntologyDropDown(labelVal, false,
-                Collections.singletonMap("CHEBI", new RecommendedOntology(new Ontology("1007", "", "CHEBI", "Chemicals of Biological Interest")))));
+        container.add(createOntologyDropDown(labelVal, false, false, null));
         container.add(UIHelper.createLabel(""));
 
         add(container);
@@ -96,11 +95,11 @@ public class LabelCapture extends JPanel {
     }
 
     private JComponent createOntologyDropDown(JTextComponent field,
-                                              boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
+                                              boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource) {
 
         System.out.println("DataEntryEnvironment parent frame is null? " + (dep == null));
 
-        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, recommendedOntologySource);
+        OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
         ontologySelectionTool.createGUI();
 
         DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);

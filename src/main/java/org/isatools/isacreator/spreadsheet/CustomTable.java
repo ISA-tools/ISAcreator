@@ -37,16 +37,20 @@
 
 package org.isatools.isacreator.spreadsheet;
 
+import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
+import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
@@ -62,21 +66,64 @@ public class CustomTable extends JTable {
         super(dtm);
     }
 
-    public boolean editCellAt(int row, int col, EventObject e) {
-        TableCellEditor editor = getCellEditor(row, col);
+    public boolean editCellAt(int row, int column, EventObject eventObject) {
+        final TableCellEditor editor = getCellEditor(row, column);
 
         if (editor instanceof OntologyCellEditor ||
                 editor instanceof FileSelectCellEditor ||
-                editor instanceof DateCellEditor || editor instanceof FilterableListCellEditor) {
+                editor instanceof DateCellEditor ||
+                editor instanceof FilterableListCellEditor ||
+                editor instanceof PluginSpreadsheetWidget) {
 
-            if (e instanceof MouseEvent && ((MouseEvent) e).getClickCount() == 2) {
-                super.editCellAt(row, col, e);
+            if (eventObject instanceof MouseEvent && ((MouseEvent) eventObject).getClickCount() == 2) {
+                super.editCellAt(row, column, eventObject);
             }
-        } else {
-            super.editCellAt(row, col, e);
-        }
 
+        } else {
+
+            super.editCellAt(row, column, eventObject);
+
+            boolean result = super.editCellAt(row, column, eventObject);
+
+            if (editor != null && editor instanceof JTextComponent) {
+                if (eventObject == null) {
+                    ((JTextComponent) editor).selectAll();
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            ((JTextComponent) editor).selectAll();
+                        }
+                    });
+                }
+            }
+            return result;
+        }
         return false;
+    }
+
+    private boolean iskeyOk(KeyEvent event) {
+        return event.getKeyCode() != KeyEvent.VK_DOWN && event.getKeyCode() != KeyEvent.VK_UP && event.getKeyCode() != KeyEvent.VK_ENTER;
+    }
+
+    @Override
+    public void changeSelection(int row, int column, boolean toggle, boolean extend) {
+        super.changeSelection(row, column, toggle, extend);
+        TableCellEditor editor = getCellEditor(row, column);
+        if (editor instanceof DefaultAutoFilterCellEditor) {
+            if (editCellAt(row, column))
+                getEditorComponent().requestFocusInWindow();
+        }
+    }
+
+
+    @Override
+    public Component prepareEditor
+            (TableCellEditor tableCellEditor, int row, int column) {
+        Component c = super.prepareEditor(tableCellEditor, row, column);
+        if (c instanceof JTextComponent) {
+            ((JTextField) c).selectAll();
+        }
+        return c;
     }
 
     public int columnViewIndextoModel(int vColIndex) {

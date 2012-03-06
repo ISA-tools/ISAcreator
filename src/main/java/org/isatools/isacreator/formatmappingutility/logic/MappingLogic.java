@@ -43,18 +43,18 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.assayselection.AssaySelection;
+import org.isatools.isacreator.assayselection.AssaySelectionUI;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.ui.*;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
-import org.isatools.isacreator.model.Assay;
-import org.isatools.isacreator.model.Factor;
-import org.isatools.isacreator.model.Investigation;
-import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 import org.isatools.isacreator.utils.StringProcessing;
 
@@ -81,6 +81,7 @@ public class MappingLogic {
     private TableReferenceObject referenceTRO;
 
     private static List<Factor> factorsToAdd;
+    private static List<Protocol> protocolsToAdd;
 
     private String fileName;
     private int readerToUse;
@@ -97,6 +98,8 @@ public class MappingLogic {
         mappingInformation = new ArrayList<MappingInformation>();
         uniqueRowHashes = new HashSet<Integer>();
         fieldsUsingUnits = new HashSet<String>();
+        factorsToAdd = new ArrayList<Factor>();
+        protocolsToAdd = new ArrayList<Protocol>();
     }
 
     private void processMappings() {
@@ -149,7 +152,7 @@ public class MappingLogic {
 
                 if (generalFieldEntry.getUnitPanel().useField()) {
                     fieldsUsingUnits.add(generalFieldEntry.getFieldName());
-                    fullTable.add(new MappingField("Unit"));
+                    fullTable.add(new MappingField(GeneralFieldTypes.UNIT.name));
                     substitutions.add(generalFieldEntry.getUnitPanel().getFieldBuilder().toString());
                     visMapping.get(mappingField).addAll(generalFieldEntry.getUnitPanel().getFieldBuilder().getVisualizationText());
                 }
@@ -185,11 +188,18 @@ public class MappingLogic {
 
         Study study = new Study("Mapped Study", "A study mapped from an incoming file", "", "", "", "s_study_sample.txt");
 
-        study.getFactors().addAll(factorsToAdd);
+        System.out.println("Creating investigation, and adding all found factors");
+        addAllFactorsToInvestigationFile(mappings);
+        study.setFactors(factorsToAdd);
+        addProtocols(mappings);
+
+        study.setProtocols(protocolsToAdd);
+
 
         StudyDataEntry sde = new StudyDataEntry(dep, study);
         study.setUI(sde);
         Assay studySample = new Assay("s_study_sample.txt", mappings.get(MappingObject.STUDY_SAMPLE));
+
         studySample.setUserInterface(sde);
         study.setStudySamples(studySample);
 
@@ -208,13 +218,37 @@ public class MappingLogic {
             }
         }
 
+
+        sde.updateAssayPanel();
+
         inv.addStudy(study);
 
         return inv;
     }
 
+    private static void addProtocols(Map<String, TableReferenceObject> mappings) {
+        for (TableReferenceObject tableReferenceObject : mappings.values()) {
+            protocolsToAdd.addAll(new TableReferenceObjectWrapper(tableReferenceObject).findProtocols());
+        }
+    }
+
     public Map<MappingField, List<String>> getVisMapping() {
         return visMapping;
+    }
+
+    private static void addAllFactorsToInvestigationFile(Map<String, TableReferenceObject> mappings) {
+        Set<String> addedFactors = new HashSet<String>();
+        for (TableReferenceObject tro : mappings.values()) {
+            for (String header : tro.getHeaders()) {
+                if (header.contains(GeneralFieldTypes.FACTOR_VALUE.name)) {
+                    if (!addedFactors.contains(header)) {
+                        addedFactors.add(header);
+                        String tmpFactor = header.substring(header.indexOf("[") + 1, header.lastIndexOf("]"));
+                        factorsToAdd.add(new Factor(tmpFactor, tmpFactor));
+                    }
+                }
+            }
+        }
     }
 
     private TableReferenceObject manufactureReferenceObject(List<MappingField> isatab, List<String> substitutions, TableReferenceObject referenceTRO) {
@@ -239,10 +273,11 @@ public class MappingLogic {
                 filteredSubstitutions.add(substitutions.get(fieldNumber));
                 count++;
             } else {
-                if (field.getFieldName().equals("Protocol REF")) {
-                    fo = new FieldObject(count, field.getFieldName(), "A protocol used", DataTypes.LIST, "", false, false, false);
+                if (field.getFieldName().contains(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                    String protocolType = field.getFieldName().substring(field.getFieldName().indexOf("(") + 1, field.getFieldName().indexOf(")")).trim();
+                    fo = new FieldObject(count, GeneralFieldTypes.PROTOCOL_REF.name, "", DataTypes.LIST, protocolType, false, false, false);
                     final_tro.addField(fo);
-                    headers.add(field.getFieldName());
+                    headers.add(GeneralFieldTypes.PROTOCOL_REF.name);
                     filteredSubstitutions.add(substitutions.get(fieldNumber));
                     count++;
                 } else if (field.getFieldName().contains("Characteristics") || field.getFieldName().contains("Factor Value") ||
@@ -268,16 +303,6 @@ public class MappingLogic {
                 }
             }
         }
-
-        factorsToAdd = new ArrayList<Factor>();
-        for (String header : headers) {
-            if (header.contains("Factor Value")) {
-                String tmpFactor = header.substring(header.indexOf("[") + 1, header.lastIndexOf("]"));
-                factorsToAdd.add(new Factor(tmpFactor, tmpFactor));
-            }
-        }
-
-        // todo add a protocol processor
 
         final_tro.setMissingFields(GeneralUtils.findMissingFields(headers.toArray(new String[headers.size()]), referenceTRO));
         final_tro.setPreDefinedHeaders(headers);
@@ -360,7 +385,6 @@ public class MappingLogic {
         int count = 0;
 
         // start off at 1 to ignore the Row no. header
-        // todo record the protocols present here!
         for (int column = 1; column < headers.length; column++) {
             lineToAdd[count] = StringProcessing.processSubstitutionString(substitutions[column - 1], nextLine);
             count++;
@@ -377,12 +401,10 @@ public class MappingLogic {
 
 
     private int createHashFromArray(String[] array) {
-        StringBuffer buffer = new StringBuffer();
-
+        StringBuilder buffer = new StringBuilder();
         for (String a : array) {
             buffer.append(a);
         }
-
         return buffer.toString().hashCode();
 
 

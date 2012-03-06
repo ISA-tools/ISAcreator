@@ -107,8 +107,8 @@ public class FactorLevelEntryGUI extends JFrame {
         setPreferredSize(new Dimension(300, 350));
         setUndecorated(true);
 
-        unitOCE = new OntologyCellEditor(false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "Jun 2011", "UO", "Unit Ontology"))));
-        levelOCE = new OntologyCellEditor(false, Collections.singletonMap("Factor", new RecommendedOntology(new Ontology("", "Jun 2011", "EFO", "Experimental Factor Ontology"))));
+        unitOCE = new OntologyCellEditor(false, false, null);
+        levelOCE = new OntologyCellEditor(false, false, null);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

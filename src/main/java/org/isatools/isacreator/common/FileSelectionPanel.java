@@ -96,7 +96,7 @@ public class FileSelectionPanel extends JPanel {
         this.textColor = textColor;
 
         setLayout(new GridLayout(2, 1));
-        setSize(new Dimension(400, 60));
+        setSize(new Dimension(400, 70));
 
         ResourceInjector.get("common-package.style").inject(this);
 
@@ -155,6 +155,14 @@ public class FileSelectionPanel extends JPanel {
     public void setText(String text) {
         if (text != null && fileToUse != null) {
             fileToUse.setText(text);
+        }
+    }
+
+    public void setWarning(boolean warningOn) {
+        if (warningOn) {
+            ((RoundedJTextField) fileToUse).setWarningMode();
+        } else {
+            ((RoundedJTextField) fileToUse).unsetWarningMode();
         }
     }
 

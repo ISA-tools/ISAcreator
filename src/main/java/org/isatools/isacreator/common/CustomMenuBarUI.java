@@ -43,12 +43,6 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicMenuBarUI;
 import java.awt.*;
 
-/**
- * @author Eamonn Maguire
- * @date Apr 15, 2009
- */
-
-
 public class CustomMenuBarUI extends BasicMenuBarUI {
     public static ComponentUI createUI(JComponent c) {
         return new CustomMenuBarUI();

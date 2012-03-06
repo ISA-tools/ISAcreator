@@ -40,6 +40,8 @@ package org.isatools.isacreator.formatmappingutility.ui;
 import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
+import org.isatools.isacreator.assayselection.AssaySelection;
+import org.isatools.isacreator.assayselection.AssaySelectionUI;
 import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.UIHelper;
@@ -59,7 +61,7 @@ import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.model.Investigation;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.TreeView;
 import org.jdesktop.fuse.InjectedResource;
@@ -87,7 +89,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private static final Logger log = Logger.getLogger(MappingUtilView.class.getName());
 
     @InjectedResource
-    private ImageIcon logo, mappingInfo, selectFilesHeader, selectAssaysUsedHeader, performMappingHeader,
+    private ImageIcon logo, selectFilesHeader, selectAssaysUsedHeader, performMappingHeader,
             mappingVisualisationHelp, mappingOverviewHeader, saveMappingHelp, saveMappingsHeader, saveMappingsButtonIcon,
             saveMappingsButtonIconOver, breadcrumb1, breadcrumb2, breadcrumb3, breadcrumb4, breadcrumb5, breadcrumb6, breadcrumb7;
 
@@ -98,9 +100,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private ISAcreatorMenu menuPanels;
     private String fileBeingMapped;
     private JFileChooser fileChooser;
-
     private ErrorDisplay errorPanel;
-
     private WorkingScreen workingProgressScreen;
     private Component lastPage;
 
@@ -145,9 +145,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
         menuPanels.getMain().hideGlassPane();
 
-
-        createWestPanel(logo, mappingInfo);
-
+        createWestPanel(logo, null);
         createSouthPanel();
 
         workingProgressScreen = new WorkingScreen();
@@ -192,8 +190,8 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         selectFilesContainer.setLayout(new BoxLayout(selectFilesContainer, BoxLayout.PAGE_AXIS));
 
         // create selector for mapping files
-        final FileSelectionPanel fileToMapFSP = new FileSelectionPanel("<html>please select file(s) to be mapped. Please ensure " +
-                "that this file has <b>no empty columns</b> and if possible, please remove any special characters e.g. mu.</html>", fileChooser);
+        final FileSelectionPanel fileToMapFSP = new FileSelectionPanel("<html>please select file(s) to be mapped (txt, csv or xls (Excel). Please ensure " +
+                "that this file has <b>no empty columns</b> and if possible, please remove any special characters, e.g. &mu;</html>", fileChooser);
         selectFilesContainer.add(fileToMapFSP);
 
         JPanel selectMappingPanel = new JPanel();
@@ -512,7 +510,6 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         final MappingEntryGUI mappingTableGUI = new MappingEntryGUI(tableReference, columnsToBeMappedTo, fileName, readerToUse, preExistingMapping, fixedMappings);
         mappingTableGUI.performPreliminaryLoading();
         mappingTableGUI.createGUI();
-        mappingTableGUI.expandColumnToolbox();
         mappingTableGUI.setSize(new Dimension((int) (menuPanels.getWidth() * 0.80), (int) (menuPanels.getHeight() * 0.90)));
         mappingTableGUI.setBorder(null);
 
@@ -564,7 +561,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         TableReferenceObject populatedTRO = mu.doMapping(fileName, readerToUse);
 
                         // whenever we create the mappings now, we now add the mappings in a Map which
-                        // point to the populated tros for each of the assays to be defined and the study
+                        // point to the populated TROs for each of the assays to be defined and the study
                         // sample file to be defined!
                         if (sequence == -1) {
                             fixedMappings.put("Sample Name", mappingTableGUI.getMappingNodeForField("Sample Name"));
@@ -581,7 +578,12 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         nextButton.setIcon(next);
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
 
-                        setCurrentPage(createMappingVisualization(sequence + 1, fileName, mu.getVisMapping()));
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                setCurrentPage(createMappingVisualization(sequence + 1, fileName, mu.getVisMapping()));
+                            }
+                        });
+
                     }
                 });
 
@@ -601,29 +603,31 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     /**
      * Create a visualization of the mapping showing what columns the file had and what isatab fields each of these columns have been mapped to
      *
-     * @param sequence - sequence of assay processing.
-     * @param filename - name to save the mapping visualization as.
-     * @param mapping  - Mappings for each isatab file to the incoming column name(s) and any literals.
+     * @param sequence              - sequence of assay processing.
+     * @param nameOfFileBeingMapped - name to save the mapping visualization as.
+     * @param mapping               - Mappings for each isatab file to the incoming column name(s) and any literals.
      * @return JLayeredPane containing the GUI to display the mapping visualization.
      */
-    private JLayeredPane createMappingVisualization(final int sequence, final String filename, Map<MappingField, List<String>> mapping) {
+    private JLayeredPane createMappingVisualization(final int sequence, final String nameOfFileBeingMapped,
+                                                    Map<MappingField, List<String>> mapping) {
+
         JPanel visContainer = new JPanel();
         visContainer.setLayout(new BoxLayout(visContainer, BoxLayout.PAGE_AXIS));
         visContainer.setSize(new Dimension((int) (menuPanels.getWidth() * 0.80), (int) (menuPanels.getHeight() * 0.90)));
 
         Tree t = null;
 
-        GenerateMappingView gmv = new GenerateMappingView(filename, mapping);
-        String treeFileName = gmv.generateView();
+        GenerateMappingView gmv = new GenerateMappingView(nameOfFileBeingMapped, mapping);
+        File treeFile = gmv.generateView();
 
         try {
-            t = (Tree) new TreeMLReader().readGraph(treeFileName);
+            t = (Tree) new TreeMLReader().readGraph(treeFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // create a new treemap
-        final TreeView tview = new TreeView(t, "name",
+        final TreeView tview = new TreeView(t,
                 new Dimension((int) (menuPanels.getWidth() * 0.80), (int) (menuPanels.getHeight() * 0.90)));
 
         tview.setBackground(UIHelper.BG_COLOR);
@@ -688,9 +692,9 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                                 String nextMeasurement = aso.getMeasurement();
                                 String nextTechnology = aso.getTechnology();
                                 setCurrentPage(createMappings(sequence,
-                                        getTableReferenceObject(nextTechnology, nextMeasurement), fileColumns, filename, reader));
+                                        getTableReferenceObject(nextTechnology, nextMeasurement), fileColumns, nameOfFileBeingMapped, reader));
                             } else {
-                                setCurrentPage(createSaveMappings(filename));
+                                setCurrentPage(createSaveMappings());
                             }
                         } catch (BiffException e) {
                             setCurrentPage(lastPage);
@@ -720,7 +724,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
      *
      * @return JLayeredPane containing the gui to allow a user to save the mapping file!
      */
-    private JLayeredPane createSaveMappings(final String filename) {
+    private JLayeredPane createSaveMappings() {
         JPanel saveMappingFilesCont = new JPanel();
         saveMappingFilesCont.setSize(new Dimension(400, 300));
         saveMappingFilesCont.setLayout(new BoxLayout(saveMappingFilesCont, BoxLayout.PAGE_AXIS));
@@ -873,13 +877,12 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         investigation.setConfigurationCreateWith(menuPanels.getMain().getLoadedConfiguration());
                         investigation.setLastConfigurationUsed(menuPanels.getMain().getLoadedConfiguration());
 
-                        dataEntryEnvironment.createGUIFromSource(investigation);
+                        dataEntryEnvironment.createGUIFromInvestigatio(investigation);
 
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
                         menuPanels.getMain().hideGlassPane();
                         menuPanels.getMain().setCurDataEntryPanel(dataEntryEnvironment);
                         menuPanels.getMain().setCurrentPage(dataEntryEnvironment);
-                        // todo clear object space
                     }
                 });
 
@@ -900,13 +903,9 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         saveMappingsSection.add(UIHelper.wrapComponentInPanel(saveButtonContainer));
 
         savedMappingsPanel.add(saveMappingsSection);
-
-
         selectMappingPanel.add(savedMappingsPanel);
 
         saveMappingFilesCont.add(selectMappingPanel);
-
-
         saveMappingFilesCont.add(UIHelper.wrapComponentInPanel(saveStatusInfo));
 
         assignListenerToLabel(nextButton, listeners[1]);
@@ -921,7 +920,6 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 menuPanels.getMain().getGlassPane().setVisible(false);
             }
         });
-
     }
 
     private void showErrorPanel() {

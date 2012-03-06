@@ -37,19 +37,12 @@
 
 package org.isatools.isacreator.gui.formelements;
 
-import org.apache.commons.collections15.OrderedMap;
-import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.gui.DataEntryForm;
-import org.isatools.isacreator.io.IOUtils;
-import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Factor;
-import org.isatools.isacreator.model.Protocol;
-import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -137,7 +130,9 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
             }
         }
 
-        parent.getStudy().setFactors(newFactors);
+        if (parent.getStudy() != null) {
+            parent.getStudy().setFactors(newFactors);
+        }
     }
 
     public void update() {

@@ -38,6 +38,7 @@
 package org.isatools.isacreator.spreadsheet.transposedview;
 
 import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.utils.TableDataStructureCreator;
@@ -105,22 +106,29 @@ public class SpreadsheetConverter {
             DataTypes dt = sheet.getTableReferenceObject().getColumnType(colName);
             boolean acceptsFiles = sheet.getTableReferenceObject().acceptsFileLocations(colName);
 
-            String[] list = sheet.getTableReferenceObject().getListItems(colName);
-
             int fieldType = resolveDataTypeForSubform(dt, acceptsFiles);
 
-            if (colName.startsWith("Protocol")) {
-                list = sheet.getStudyDataEntryEnvironment().getProtocolNames();
-            }
-
-            if (list != null) {
-                fields.add(new SubFormField(colName, fieldType, list));
+            if (fieldType == SubFormField.SINGLE_ONTOLOGY_SELECT || fieldType == SubFormField.MULTIPLE_ONTOLOGY_SELECT) {
+                Map<String, RecommendedOntology> recommendedOntologyMap = sheet.getTableReferenceObject().getRecommendedSource(colName);
+                if (recommendedOntologyMap != null) {
+                    fields.add(new SubFormField(colName, fieldType, recommendedOntologyMap));
+                } else {
+                    fields.add(new SubFormField(colName, fieldType));
+                }
             } else {
-                fields.add(new SubFormField(colName, fieldType));
-            }
 
-//			Map<String, RecommendedOntology> recommendedOntologies =
-//					sheet.getTableReferenceObject().getRecommendedSource(colName);
+                String[] list = sheet.getTableReferenceObject().getListItems(colName);
+                if (sheet.getStudyDataEntryEnvironment() != null) {
+                    if (colName.startsWith("Protocol")) {
+                        list = sheet.getStudyDataEntryEnvironment().getProtocolNames();
+                    }
+                }
+                if (list != null) {
+                    fields.add(new SubFormField(colName, fieldType, list));
+                } else {
+                    fields.add(new SubFormField(colName, fieldType));
+                }
+            }
         }
 
         return fields;

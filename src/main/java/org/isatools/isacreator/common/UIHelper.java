@@ -38,12 +38,18 @@
 
 package org.isatools.isacreator.common;
 
+import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.autofilteringlist.ExtendedJList;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Vector;
@@ -296,5 +302,39 @@ public class UIHelper {
         c.fill = GridBagConstraints.BOTH;
         gbl.setConstraints(icon, c);
         parentPanel.add(icon);
+    }
+
+
+    public static Container createStyledFilterField(JTextField textField, ImageIcon leftImage, ImageIcon rightImage) {
+        Box horBox = Box.createHorizontalBox();
+
+        horBox.add(new JLabel(leftImage));
+
+        textField.setBorder(null);
+        UIHelper.renderComponent(textField, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+
+        horBox.add(textField);
+        horBox.add(new ClearFieldUtility(textField));
+        horBox.add(new JLabel(rightImage));
+
+        return horBox;
+    }
+
+    public static Container padComponentInHorizontalBox(int leftPadding, Component componentToAdd) {
+        Box container = Box.createHorizontalBox();
+        container.add(Box.createHorizontalStrut(leftPadding));
+
+        container.add(componentToAdd);
+
+        return container;
+    }
+
+    public static Container padComponentVerticalBox(int topPadding, Component componentToAdd) {
+        Box container = Box.createVerticalBox();
+        container.add(Box.createVerticalStrut(topPadding));
+
+        container.add(componentToAdd);
+
+        return container;
     }
 }

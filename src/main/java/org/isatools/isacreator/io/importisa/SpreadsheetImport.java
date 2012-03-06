@@ -5,7 +5,7 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import java.io.File;
@@ -39,8 +39,6 @@ public class SpreadsheetImport {
      */
     public TableReferenceObject loadInTables(String fileName,
                                              TableReferenceObject defaultTableRef) throws IOException, MalformedInvestigationException {
-        // process headers to build table reference object for table.
-        // create new sortable and then read in the data row by row :o)
         messages = new HashSet<String>();
 
         File f = new File(fileName);

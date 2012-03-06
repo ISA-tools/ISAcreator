@@ -44,10 +44,9 @@ import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.StudyPublication;
 import uk.ac.ebi.cdb.client.*;
 
+import javax.print.attribute.ResolutionSyntax;
 import javax.xml.ws.WebServiceRef;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class CiteExploreClient {
@@ -74,54 +73,57 @@ public class CiteExploreClient {
     public Map<String, Publication> getPublication(SearchOption searchOption, String query, DataEntryForm parent) throws NoPublicationFoundException {
         Map<String, Publication> publications = new HashMap<String, Publication>();
         try {
-            WSCitationImpl port = service.getWSCitationImplPort();
 
-            String fullQueryString = searchOption == SearchOption.DOI ? formDOIQueryString(query) : formPubMedQueryString(query);
+            List<ResultBean> resultBeanCollection = searchForPublication(searchOption, query);
 
-            ResultListBean resultListBean = port.searchCitations(fullQueryString, "all", 0, "");
-
-            if (resultListBean.getHitCount() > 0) {
-                List<ResultBean> resultBeanCollection = resultListBean.getResultBeanCollection();
-
-                for (ResultBean resultBean : resultBeanCollection) {
-                    uk.ac.ebi.cdb.client.Citation citation = resultBean.getCitation();
+            for (ResultBean resultBean : resultBeanCollection) {
+                uk.ac.ebi.cdb.client.Citation citation = resultBean.getCitation();
 
 
-                    String authorList = "";
-                    for (Author author : citation.getAuthorCollection()) {
-                        authorList += author.getLastName() + " " + author.getInitials() + ",";
-                    }
-                    if (authorList.length() > 1) {
-                        authorList = authorList.substring(0, authorList.length() - 1);
-                    }
-
-                    String doi = "";
-                    for (FullTextURL ftURL : citation.getUrlCollection()) {
-                        if (ftURL.getUrl().contains("doi")) {
-                            doi = ftURL.getUrl();
-                            break;
-                        }
-                    }
-
-                    Publication pub;
-                    if (parent instanceof StudyDataEntry) {
-                        pub = new StudyPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
-                    } else {
-                        pub = new InvestigationPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
-                    }
-                    pub.setAbstractText(citation.getAbstractText());
-                    publications.put(citation.getExternalId(), pub);
-
+                String authorList = "";
+                for (Author author : citation.getAuthorCollection()) {
+                    authorList += author.getLastName() + " " + author.getInitials() + ",";
                 }
-            } else {
-                throw new NoPublicationFoundException(searchOption, query);
-            }
+                if (authorList.length() > 1) {
+                    authorList = authorList.substring(0, authorList.length() - 1);
+                }
 
+                String doi = "";
+                for (FullTextURL ftURL : citation.getUrlCollection()) {
+                    if (ftURL.getUrl().contains("doi")) {
+                        doi = ftURL.getUrl();
+                        break;
+                    }
+                }
+
+                Publication pub;
+                if (parent instanceof StudyDataEntry) {
+                    pub = new StudyPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                } else {
+                    pub = new InvestigationPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                }
+                pub.setAbstractText(citation.getAbstractText());
+                publications.put(citation.getExternalId(), pub);
+            }
         } catch (QueryException_Exception qex) {
             System.out.printf("Caught QueryException_Exception: %s\n", qex.getFaultInfo().getMessage());
         }
 
         return publications;
+    }
+
+    public List<ResultBean> searchForPublication(SearchOption searchOption, String query) throws QueryException_Exception, NoPublicationFoundException {
+        WSCitationImpl port = service.getWSCitationImplPort();
+
+        String fullQueryString = searchOption == SearchOption.DOI ? formDOIQueryString(query) : formPubMedQueryString(query);
+
+        ResultListBean resultListBean = port.searchCitations(fullQueryString, "all", 0, "");
+
+        if (resultListBean.getHitCount() > 0) {
+            return resultListBean.getResultBeanCollection();
+        } else {
+            throw new NoPublicationFoundException(searchOption, query);
+        }
     }
 
 

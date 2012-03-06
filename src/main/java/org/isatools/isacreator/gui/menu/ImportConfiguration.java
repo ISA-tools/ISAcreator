@@ -39,6 +39,7 @@ package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.configuration.io.ConfigXMLParser;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -148,7 +149,7 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
                             menu.getMain().setAssayDefinitions(configParser.getTables());
                             menu.getMain().setMappings(configParser.getMappings());
 
-                            menu.getMain().setLoadedConfiguration(new File(dir).getName());
+                            ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_CONFIGURATION, new File(dir).getAbsolutePath());
 
                             if (!initialLoadingPassed) {
                                 System.err.println("loading hasn't been performed before, so now going to authentication screen");

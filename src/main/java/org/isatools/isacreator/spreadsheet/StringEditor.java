@@ -38,9 +38,11 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.RegExFormatter;
+import org.isatools.isacreator.common.UIHelper;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -74,6 +76,11 @@ public class StringEditor extends SpreadsheetCellEditor {
         textField.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
         textField.setFormatterFactory(new DefaultFormatterFactory(
                 regExpFormatter));
+
+        textField.setForeground(UIHelper.DARK_GREEN_COLOR);
+        textField.setSelectedTextColor(UIHelper.BG_COLOR);
+        textField.setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
+        textField.setCaretColor(UIHelper.LIGHT_GREEN_COLOR);
 
         textField.getInputMap()
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "validate");

@@ -45,13 +45,14 @@ import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.CustomSplitPaneDivider;
-import org.isatools.isacreator.effects.ExpandingPanel;
 import org.isatools.isacreator.formatmappingutility.exceptions.NoAvailableLoaderException;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
 import org.isatools.isacreator.formatmappingutility.io.SavedMappings;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.renderers.MappingSelectionTreeCellRenderer;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -90,7 +91,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     @InjectedResource
     private static ImageIcon tableBrowserIcon;
 
-    private TableReferenceObject tro;
+    private TableReferenceObject tableReferenceObject;
     private static String[] columnsToBeMappedTo;
     private String fileName;
     private int readerToUse;
@@ -100,7 +101,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private JTree isatabFieldsTree;
     private JPanel swappableDataEntryContainer;
     private JPanel statusPanel;
-    private JLabel status;
+    private JLabel statusUI;
 
     private List<String> addedFields;
     // maintain the mapping from a tree element to it's respective mapping entry screen.
@@ -108,28 +109,14 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private Map<String, MappedElement> fixedMappings;
     private Set<String> fixedMappingsAdded;
 
-    private ExpandingPanel addColumnToolbox;
-
     private MappingInfoTab mappingInfo;
+    private Toolbox addNewFieldUI;
 
     private static String[][] initialData;
 
-
-    public MappingEntryGUI(TableReferenceObject tro, final String[] columnsToBeMappedTo,
-                           final String fileName, int readerToUse) {
-
-        this(tro, columnsToBeMappedTo, fileName, readerToUse, null);
-    }
-
-    public MappingEntryGUI(TableReferenceObject tro, final String[] columnsToBeMappedTo,
-                           final String fileName, int readerToUse, SavedMappings savedMappings) {
-
-        this(tro, columnsToBeMappedTo, fileName, readerToUse, savedMappings, null);
-    }
-
-    public MappingEntryGUI(TableReferenceObject tro, final String[] columnsToBeMappedTo,
+    public MappingEntryGUI(TableReferenceObject tableReferenceObject, final String[] columnsToBeMappedTo,
                            final String fileName, int readerToUse, SavedMappings savedMappings, Map<String, MappedElement> fixedMappings) {
-        this.tro = tro;
+        this.tableReferenceObject = tableReferenceObject;
         MappingEntryGUI.columnsToBeMappedTo = columnsToBeMappedTo;
         this.fileName = fileName;
         this.readerToUse = readerToUse;
@@ -185,10 +172,9 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
         statusPanel = new JPanel(new BorderLayout());
         statusPanel.setVisible(false);
-        statusPanel.add(new JLabel(errorIcon), BorderLayout.WEST);
 
-        status = UIHelper.createLabel("", UIHelper.VER_11_PLAIN, UIHelper.RED_COLOR, JLabel.CENTER);
-        statusPanel.add(status);
+        statusUI = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR, JLabel.CENTER);
+        statusPanel.add(statusUI);
 
         add(statusPanel, BorderLayout.SOUTH);
     }
@@ -200,14 +186,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         // shown in the RHS panel.
         rootNode = new DefaultMutableTreeNode("ISATAB Fields");
 
-        for (String column : tro.getHeaders()) {
-            if (!column.equals("Unit") && !column.equals(TableReferenceObject.ROW_NO_TEXT)) {
-                MappingInformation toUse = chooseDisplay(column);
-                MappedElement mn = new MappedElement(column, toUse);
-                mappingRef.add(mn);
-                rootNode.add(new DefaultMutableTreeNode(mn));
-            }
-        }
+        addHeadersToTree();
         treeModel = new DefaultTreeModel(rootNode);
         isatabFieldsTree = new JTree(treeModel);
         isatabFieldsTree.addTreeSelectionListener(this);
@@ -231,9 +210,29 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         westPanel.setLayout(new BorderLayout());
         westPanel.setPreferredSize(new Dimension(200, 375));
 
-        Toolbox toolbox = new Toolbox();
+        westPanel.add(treeContainer);
+        westPanel.add(createToolbox(), BorderLayout.SOUTH);
 
-        toolbox.addPropertyChangeListener("nodeAdded", new PropertyChangeListener() {
+        return westPanel;
+    }
+
+    private void addHeadersToTree() {
+        TableReferenceObjectWrapper wrapperForMapper = new TableReferenceObjectWrapper(tableReferenceObject);
+        for (String column : wrapperForMapper.getStdHeaders()) {
+            if (!column.equals(GeneralFieldTypes.UNIT.name) && !column.equals(TableReferenceObject.ROW_NO_TEXT)) {
+                MappingInformation toUse = chooseDisplay(column);
+                MappedElement mn = new MappedElement(column, toUse);
+                mappingRef.add(mn);
+
+                rootNode.add(new DefaultMutableTreeNode(mn));
+            }
+        }
+    }
+
+    private Toolbox createToolbox() {
+        addNewFieldUI = new Toolbox();
+
+        addNewFieldUI.addPropertyChangeListener("nodeAdded", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
 
                 // now need to reform tree based on the addition of this element!
@@ -243,13 +242,13 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
                     String newFieldName = propertyChangeEvent.getNewValue().toString();
 
-                    if (!isDuplicateField(newFieldName)) {
+                    if (!isDuplicateField(newFieldName) && dmtn.getUserObject() instanceof MappedElement) {
 
                         MappedElement mn = (MappedElement) dmtn.getUserObject();
 
-                        if (newFieldName.contains("Parameter Value") && !mn.getFieldName().equals("Protocol REF")) {
-                            status.setText("you can only add a Parameter Value to a Protocol REF");
-                            status.setVisible(true);
+                        if (newFieldName.contains(GeneralFieldTypes.PARAMETER_VALUE.name) && !mn.getFieldName().contains(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                            statusUI.setText("you can only add a Parameter Value to a Protocol REF");
+                            statusUI.setVisible(true);
                         } else {
                             int count = 0;
 
@@ -269,25 +268,18 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                             statusPanel.setVisible(false);
                         }
                     } else {
-                        status.setText("a field with the name " + newFieldName + " already exists!");
+                        statusUI.setText("a field with the name " + newFieldName + " already exists!");
                         statusPanel.setVisible(true);
                     }
                 } else {
-                    status.setText("please select a node in the tree to add the element after!");
+                    statusUI.setText("please select a node in the tree to add the element after!");
                     statusPanel.setVisible(true);
                 }
                 statusPanel.revalidate();
                 statusPanel.repaint();
             }
-        }
-
-        );
-
-        addColumnToolbox = new ExpandingPanel(treeContainer, toolbox);
-        westPanel.add(addColumnToolbox);
-
-
-        return westPanel;
+        });
+        return addNewFieldUI;
     }
 
     public MappedElement getMappingNodeForField(String fieldName) {
@@ -297,10 +289,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             }
         }
         return null;
-    }
-
-    public void expandColumnToolbox() {
-        addColumnToolbox.setExpanded(true);
     }
 
     private MappingInformation chooseDisplay(String newFieldName) {
@@ -319,25 +307,23 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             return mi.getDisplay();
 
         } else if (newFieldName.contains("Characteristics") ||
-                newFieldName.contains("Factor Value") ||
-                newFieldName.contains("Parameter")) {
+                newFieldName.contains(GeneralFieldTypes.FACTOR_VALUE.name) ||
+                newFieldName.contains(GeneralFieldTypes.PARAMETER_VALUE.name)) {
             return new GeneralAttributeEntry(newFieldName, columnsToBeMappedTo, mapping);
-        } else if (newFieldName.contains("Protocol REF")) {
-            // todo need a smarter selection on the Protocol REF. This is due to it being a duplicated term and the
+        } else if (newFieldName.contains(GeneralFieldTypes.PROTOCOL_REF.name)) {
             // current implementation only dealing with general column names rather than their positions.
-            return new ProtocolFieldEntry(newFieldName, columnsToBeMappedTo, null);
+            return new ProtocolFieldEntry(newFieldName, columnsToBeMappedTo, mapping);
 
         } else {
             return new NormalFieldEntry(newFieldName, columnsToBeMappedTo, mapping);
-
         }
     }
 
     private boolean isDuplicateField(String newFieldName) {
         for (MappedElement mn : mappingRef) {
-            if (mn.getFieldName().equals(newFieldName) && !newFieldName.equals("Sample Name") &&
+            if (mn.getFieldName().equals(newFieldName) && !newFieldName.equals(GeneralFieldTypes.SAMPLE_NAME.name) &&
                     !newFieldName.equals("Material Type") &&
-                    !newFieldName.equals("Protocol REF")) {
+                    !newFieldName.equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
 
                 return true;
             }
@@ -350,7 +336,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         for (MappedElement mn : mappingRef) {
             rootNode.add(new DefaultMutableTreeNode(mn));
         }
-
         treeModel.setRoot(rootNode);
     }
 
@@ -369,6 +354,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                         isatabFieldsTree.repaint();
                     }
                 });
+
+                addNewFieldUI.updateFieldOptions(mn.getFieldName());
             } else {
                 if (mappingInfo == null) {
                     mappingInfo = new MappingInfoTab();
@@ -405,7 +392,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
                         addedFields.remove(mn.getFieldName());
                         statusPanel.setVisible(false);
                     } else {
-                        status.setText("this field cannot be deleted as it is required!");
+                        statusUI.setText("this field cannot be deleted as it is required!");
                         statusPanel.setVisible(true);
                     }
                 }
@@ -455,15 +442,12 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     }
 
     public void mouseReleased(MouseEvent mouseEvent) {
-
     }
 
     public void mouseEntered(MouseEvent mouseEvent) {
-
     }
 
     public void mouseExited(MouseEvent mouseEvent) {
-
     }
 
     class MappingInfoTab extends JLayeredPane {
@@ -479,7 +463,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             infoLabCont.add(infoLab);
             add(infoLabCont, BorderLayout.CENTER);
         }
-
     }
 
     public static String[][] getInitialData() {
@@ -558,13 +541,10 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     public Map<String, ISAFieldMapping> createMappingRefs() {
         Map<String, ISAFieldMapping> fields = new HashMap<String, ISAFieldMapping>();
         for (MappedElement mn : mappingRef) {
-            String fieldName = mn.getFieldName();
-            // todo possible change this to reflect the need to represent all fields individually (identified by column number...?)
-            if (!fieldName.equals("Protocol REF")) {
-                ISAFieldMapping mapping = mn.getDisplay().createISAFieldMapping();
-                if (mapping != null) {
-                    fields.put(mn.getFieldName(), mapping);
-                }
+            // todo accommodate the protocol ref mapping...?)
+            ISAFieldMapping mapping = mn.getDisplay().createISAFieldMapping();
+            if (mapping != null) {
+                fields.put(mn.getFieldName(), mapping);
             }
         }
 

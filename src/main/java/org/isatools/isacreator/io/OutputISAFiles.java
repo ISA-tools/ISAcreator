@@ -43,8 +43,8 @@ import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
@@ -142,7 +142,7 @@ public class OutputISAFiles {
         for (int i = 0; i < headerTerms.length; i++) {
             StringBuffer line = new StringBuffer(headerTerms[i] + "\t");
             String val = "";
-            for (OntologySourceRefObject anOntologiesUsed : OntologySourceManager.getOntologiesUsed()) {
+            for (OntologySourceRefObject anOntologiesUsed : OntologyManager.getOntologiesUsed()) {
 
                 if (headerTerms[i].equals("Term Source Name")) {
                     val = anOntologiesUsed.getSourceName();

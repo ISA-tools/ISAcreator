@@ -37,8 +37,8 @@
 
 package org.isatools.isacreator.io.importisa.investigationproperties;
 
-import org.isatools.isacreator.io.xpath.XPathReader;
 import org.w3c.dom.NodeList;
+import uk.ac.ebi.utils.xml.XPathReader;
 
 import javax.xml.xpath.XPathConstants;
 import java.util.HashMap;

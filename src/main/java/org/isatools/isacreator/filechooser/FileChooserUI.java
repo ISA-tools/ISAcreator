@@ -113,8 +113,15 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
     public FileChooserUI() {
         fileBrowser = new LocalBrowser();
-
         ResourceInjector.get("filechooser-package.style").inject(this);
+        createGUI();
+    }
+
+
+    /**
+     * Create the entire GUI
+     */
+    private void createGUI() {
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setLayout(new BorderLayout());
@@ -123,23 +130,15 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         addWindowListener(this);
         setUndecorated(true);
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
-        createGUI();
-        pack();
-    }
-
-
-    /**
-     * Create the entire GUI
-     */
-    private void createGUI() {
         add(createTopPanel(), BorderLayout.NORTH);
-
         JPanel centralContainer = new JPanel(new GridLayout(1, 2));
         centralContainer.setBackground(UIHelper.BG_COLOR);
         centralContainer.add(createNavTree());
         centralContainer.add(createFilesSelectedPanel());
         add(centralContainer, BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
+
+        pack();
     }
 
 
@@ -541,8 +540,8 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         ok.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
                 firePropertyChange("selectedFiles", "", selectedFiles.getSelectedValues());
+                setVisible(false);
                 listModel.removeAllElements();
             }
 
@@ -572,7 +571,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         glass.setLayout(new BorderLayout());
         glass.add(panel);
         glass.setBackground(new Color(255, 255, 255, 10));
-        //glass.setOpaque(true);
+
         glass.setVisible(true);
         glass.revalidate();
         glass.repaint();
@@ -941,17 +940,14 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
     }
 
     public void windowActivated(WindowEvent event) {
-
+        selectedFiles.requestFocusInWindow();
     }
 
     public void windowDeactivated(WindowEvent event) {
+        System.out.println("Window deactivated");
         firePropertyChange("noSelectedFiles", "", selectedFiles);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                listModel.removeAllElements();
-                setVisible(false);
-            }
-        });
+        listModel.removeAllElements();
+        setVisible(false);
     }
 
     class SelectFromFTPHistory extends JDialog {
@@ -1021,11 +1017,8 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
             close.addMouseListener(new MouseAdapter() {
 
-
                 public void mousePressed(MouseEvent event) {
                     closeAndDisposeWindow();
-
-
                 }
 
                 public void mouseEntered(MouseEvent event) {
@@ -1082,9 +1075,9 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 setVisible(true);
-                repaint();
                 selectedFiles.requestFocusInWindow();
             }
         });
     }
+
 }

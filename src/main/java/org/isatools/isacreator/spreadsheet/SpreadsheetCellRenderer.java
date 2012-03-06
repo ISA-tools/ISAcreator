@@ -95,7 +95,6 @@ public class SpreadsheetCellRenderer extends DefaultTableCellRenderer {
         boolean colorMatch = (back != null) && (back.equals(table.getBackground())) && table.isOpaque();
         setOpaque(!colorMatch);
 
-        // end optimization to aviod painting background
         return this;
     }
 
@@ -112,7 +111,7 @@ public class SpreadsheetCellRenderer extends DefaultTableCellRenderer {
      */
     protected void setValue(Object value, boolean hasFocus, boolean isSelected, int row, int column) {
         if (value instanceof SpreadsheetCell) {
-            //we only care about the value, not the formula string
+
             SpreadsheetCell temp = (SpreadsheetCell) value;
             Object data = temp.getValue();
 

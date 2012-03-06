@@ -83,6 +83,9 @@ public class OntologiserUI extends JDialog {
 
     }
 
+    private ImageIcon loadingIndicator =
+            new ImageIcon(OntologiserUI.class.getResource("/images/ontologiser/working.gif"));
+
     private boolean isLoading = false;
 
     private JPanel swappableContainer;
@@ -121,11 +124,9 @@ public class OntologiserUI extends JDialog {
         ResourceInjector.get("ontologiser-generator-package.style").inject(this);
 
         setBackground(UIHelper.BG_COLOR);
-        setUndecorated(true);
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(650, 500));
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
-
 
         add(createTopPanel(), BorderLayout.NORTH);
 
@@ -133,12 +134,12 @@ public class OntologiserUI extends JDialog {
         swappableContainer.setBorder(new EmptyBorder(1, 1, 1, 1));
         swappableContainer.setPreferredSize(new Dimension(650, 350));
 
-        tagTerms();
-
         add(swappableContainer, BorderLayout.CENTER);
         add(createSouthPanel(), BorderLayout.SOUTH);
 
         pack();
+
+        tagTerms();
     }
 
     private Container createTopPanel() {
@@ -220,7 +221,7 @@ public class OntologiserUI extends JDialog {
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                clearAllButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading)? clearAllIcon : clearAllInactiveIcon);
+                clearAllButton.setIcon((selectedSection == TERM_TAGGER_VIEW && !isLoading) ? clearAllIcon : clearAllInactiveIcon);
             }
 
             @Override
@@ -305,31 +306,32 @@ public class OntologiserUI extends JDialog {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                confirmChoice = new ConfirmationDialog();
+                if (confirmChoice == null || !confirmChoice.isShowing()) {
+                    confirmChoice = new ConfirmationDialog();
 
-                confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                        confirmChoice.hideDialog();
-                        confirmChoice.dispose();
-                    }
-                });
+                    confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                            confirmChoice.hideDialog();
+                            confirmChoice.dispose();
+                        }
+                    });
 
-                confirmChoice.addPropertyChangeListener(ConfirmationDialog.YES, new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                        confirmChoice.hideDialog();
-                        confirmChoice.dispose();
-                        closeWindow();
-                    }
-                });
+                    confirmChoice.addPropertyChangeListener(ConfirmationDialog.YES, new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                            confirmChoice.hideDialog();
+                            confirmChoice.dispose();
+                            closeWindow();
+                        }
+                    });
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        confirmChoice.createGUI();
-                        confirmChoice.showDialog(OntologiserUI.this);
-                    }
-                });
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            confirmChoice.createGUI();
 
-
+                            confirmChoice.showDialog(isacreatorEnvironment);
+                        }
+                    });
+                }
             }
         });
 
@@ -353,12 +355,13 @@ public class OntologiserUI extends JDialog {
                         if (annotationPane != null) {
                             content.replaceTerms(annotationPane.getAnnotations());
                         }
-                        // todo show summary page stating what has been replaced.
                         closeWindow();
                     }
 
                 });
-                swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
+
+
+                swapContainers(createLoadingPanel());
                 performer.start();
             }
         });
@@ -368,6 +371,15 @@ public class OntologiserUI extends JDialog {
         southPanel.add(export);
 
         return southPanel;
+    }
+
+    private JPanel createLoadingPanel() {
+        JPanel container = new JPanel(new BorderLayout());
+
+        container.add(new JLabel(loadingIndicator), BorderLayout.NORTH);
+        container.add(new JLabel(working), BorderLayout.CENTER);
+
+        return container;
     }
 
     private void closeWindow() {
@@ -403,7 +415,7 @@ public class OntologiserUI extends JDialog {
         Thread performer = new Thread(new Runnable() {
             public void run() {
 
-                if(terms == null) {
+                if (terms == null) {
                     terms = getTerms();
                 }
 
@@ -433,7 +445,6 @@ public class OntologiserUI extends JDialog {
                         }
                     });
                 } else {
-                    // todo add info pane saying there are no terms to annotate
                     swapContainers(helpPane);
                 }
 
@@ -442,11 +453,11 @@ public class OntologiserUI extends JDialog {
 
         });
         isLoading = true;
-        swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
+        swapContainers(UIHelper.wrapComponentInPanel(createLoadingPanel()));
         performer.start();
     }
 
-     public Map<String, Map<String, AnnotatorResult>> getTerms() {
+    public Map<String, Map<String, AnnotatorResult>> getTerms() {
 
         AnnotatorSearchClient sc = new AnnotatorSearchClient();
 

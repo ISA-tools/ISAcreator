@@ -37,7 +37,11 @@
 
 package org.isatools.isacreator.gui.formelements;
 
+import org.isatools.isacreator.configuration.RecommendedOntology;
+
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -59,30 +63,28 @@ public class SubFormField implements Serializable {
     public static final int POPUP_LIST = 8;
 
     private String fieldName;
-    private String recommendedOntologyType = null;
+    private Map<String, RecommendedOntology> recommendedOntologyType = null;
     private String[] listValues;
     private int dataType;
-    private boolean editable;
 
-    public SubFormField(String fieldName, int dataType,
-                        String recommendedOntologyType) {
+
+    public SubFormField(String fieldName, int dataType) {
         this.fieldName = fieldName;
         this.dataType = dataType;
-        this.recommendedOntologyType = recommendedOntologyType;
-        this.editable = true;
     }
+
 
     public SubFormField(String fieldName, int dataType, String[] listValues) {
         this.fieldName = fieldName;
         this.dataType = dataType;
         this.listValues = listValues;
-        this.editable = true;
     }
 
-    public SubFormField(String fieldName, int dataType) {
+    public SubFormField(String fieldName, int dataType,
+                        Map<String, RecommendedOntology> recommendedOntologyType) {
         this.fieldName = fieldName;
         this.dataType = dataType;
-        this.editable = true;
+        this.recommendedOntologyType = recommendedOntologyType;
     }
 
 
@@ -98,12 +100,8 @@ public class SubFormField implements Serializable {
         return listValues;
     }
 
-    public String getRecommendedOntologyType() {
+    public Map<String, RecommendedOntology> getRecommendedOntologyType() {
         return recommendedOntologyType;
-    }
-
-    public boolean isEditable() {
-        return editable;
     }
 
     public String toString() {

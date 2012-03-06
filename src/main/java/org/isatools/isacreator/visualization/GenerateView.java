@@ -37,7 +37,6 @@
 
 package org.isatools.isacreator.visualization;
 
-import org.isatools.isacreator.common.Utils;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -49,17 +48,13 @@ import java.io.PrintStream;
 
 public class GenerateView {
 
-    public GenerateView() {
-    }
-
-    public void generateView(Investigation inv) {
+    public File generateView(Investigation inv) {
         // construct XML file from investigation
-//        Utils.createDir("Data");
-        File f = new File(System.getProperty("java.io.tmpdir") + File.separator + "view.xml");
+        File treeFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "view.xml");
         PrintStream ps = null;
 
         try {
-            ps = new PrintStream(new FileOutputStream(f));
+            ps = new PrintStream(new FileOutputStream(treeFile));
 
             if (inv != null) {
                 ps.println("<tree>");
@@ -72,6 +67,7 @@ public class GenerateView {
 
                 ps.println("</branch>\n</tree>");
             }
+            return treeFile;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -79,16 +75,18 @@ public class GenerateView {
                 ps.close();
             }
         }
+
+        return null;
     }
 
-    public void generateView(Study s) {
+    public File generateView(Study s) {
         // construct XML file from investigation
 
-        File f = new File(System.getProperty("java.io.tmpdir") + File.separator + "view.xml");
+        File treeFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "view.xml");
         PrintStream ps = null;
 
         try {
-            ps = new PrintStream(new FileOutputStream(f));
+            ps = new PrintStream(new FileOutputStream(treeFile));
 
             if (s != null) {
                 ps.println("<tree>");
@@ -100,6 +98,7 @@ public class GenerateView {
 
                 ps.println("</tree>");
             }
+            return treeFile;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -107,25 +106,26 @@ public class GenerateView {
                 ps.close();
             }
         }
+        return null;
     }
 
     private String getDeclaration() {
         return "<declarations>\n" +
                 "   <attributeDecl name=\"type\" type=\"String\"/>\n" +
-                "   <attributeDecl name=\"name\" type=\"String\"/>\n" +
+                "   <attributeDecl name=\"" + TreeView.NAME_STRING + "\" type=\"String\"/>\n" +
                 " </declarations>";
     }
 
     private String getInvestigationDetails() {
         return "<branch>\n" +
                 "<attribute name = \"type\" value = \"Investigation\"/>" +
-                "<attribute name = \"name\" value = \"Investigation" + "\"/>\n";
+                "<attribute name = \"" + TreeView.NAME_STRING + "\" value = \"Investigation" + "\"/>\n";
     }
 
     private String processStudy(Study s) {
         String studyInfo = "<branch>" +
                 "<attribute name = \"type\" value = \"Study\"/>" +
-                "<attribute name=\"name\" value= \"" + s.getStudyId() + "\"/>\n";
+                "<attribute name=\"" + TreeView.NAME_STRING + "\" value= \"" + s.getStudyId() + "\"/>\n";
 
         for (Assay a : s.getAssays().values()) {
 
@@ -137,7 +137,7 @@ public class GenerateView {
 
             studyInfo += ("<leaf>\n" +
                     "<attribute name = \"type\" value = \"Assay\"/>" +
-                    "<attribute name=\"name\" value= \"" + nameSt + "\"/>" +
+                    "<attribute name=\"" + TreeView.NAME_STRING + "\" value= \"" + nameSt + "\"/>" +
                     "\n</leaf>");
         }
 

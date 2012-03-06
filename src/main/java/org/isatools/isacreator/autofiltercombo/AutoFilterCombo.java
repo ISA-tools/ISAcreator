@@ -57,7 +57,7 @@ public class AutoFilterCombo extends JComboBox {
         // set data in combo to be a copy of the data input. This is required due to behaviour of removeAllItems()
         // method in JComboBox which results in removal of elements from the data source also. By making a copy, only
         // the elements in the copy are removed, not the original source.
-        super(data.clone());
+        super(data == null ? new String[]{""} : data.clone());
         // make combo editable
         super.setEditable(editable);
 
@@ -67,6 +67,7 @@ public class AutoFilterCombo extends JComboBox {
         super.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 super.keyPressed(e);
+
 
                 // as long as the key pressed isnt up arrow, down arrow, or return, the proceed
                 if ((e.getKeyCode() != 38) && (e.getKeyCode() != 40) &&

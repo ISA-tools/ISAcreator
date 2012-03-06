@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.utils.datastructures;
 
+import uk.ac.ebi.utils.collections.Pair;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,9 +52,9 @@ import java.util.Set;
  */
 public class SetUtils<T> {
 
-    public ISAPair<Boolean, Set<T>> compareSets(Set<T> setA, Set<T> setB, boolean enforceSizeMatch) {
+    public Pair<Boolean, Set<T>> compareSets(Set<T> setA, Set<T> setB, boolean enforceSizeMatch) {
 
-        ISAPair<Boolean, Set<T>> result = new ISAPair<Boolean, Set<T>>(false, new HashSet<T>());
+        Pair<Boolean, Set<T>> result = new Pair<Boolean, Set<T>>(false, new HashSet<T>());
 
         for (T value : setB) {
             if (!setA.contains(value)) {
@@ -64,9 +66,9 @@ public class SetUtils<T> {
             return result;
         } else {
             if (enforceSizeMatch) {
-                return new ISAPair<Boolean, Set<T>>(setA.size() == setB.size(), null);
+                return new Pair<Boolean, Set<T>>(setA.size() == setB.size(), null);
             }
-            return new ISAPair<Boolean, Set<T>>(true, null);
+            return new Pair<Boolean, Set<T>>(true, null);
         }
     }
 

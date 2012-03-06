@@ -38,15 +38,18 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
+import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.help.Controller;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.Spreadsheet;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.CollectionUtils;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;
@@ -86,7 +89,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             removeStudyIconOver, removeStudyIconInactive, navigationPanelHeader, informationPanelHeader,
             warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp;
 
-
     private DefaultMutableTreeNode overviewTreeRoot;
     private DefaultTreeModel overviewTreeModel;
     private Investigation investigation;
@@ -94,16 +96,19 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     private JLabel visualization, removeStudyButton;
 
     private JTree overviewTree;
-    private ISAcreator mGUI;
+    private ISAcreator isacreatorUI;
+
     private Controller newSubmission;
     private DefaultMutableTreeNode lastAddedNode = null;
 
-    public DataEntryEnvironment(ISAcreator mGUI) {
+    private DefaultMutableTreeNode selectedNode;
+
+    public DataEntryEnvironment(ISAcreator isacreatorUI) {
         super();
 
         ResourceInjector.get("gui-package.style").inject(this);
 
-        this.mGUI = mGUI;
+        this.isacreatorUI = isacreatorUI;
         newSubmission = new Controller();
         newSubmission.createGUI();
         newSubmission.addPropertyChangeListener("addNewStudy", new PropertyChangeListener() {
@@ -122,11 +127,11 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
      * @param assayName           - Name of the node to be entered.
      * @return true if added, false otherwise
      */
-    public boolean addAssay(String measurementEndpoint, String techType,
-                            String assayPlatform, String assayName) {
+    public Assay addAssay(String measurementEndpoint, String techType,
+                          String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-        TableReferenceObject tro = mGUI.selectTROForUserSelection(measurementEndpoint,
+        TableReferenceObject tro = isacreatorUI.selectTROForUserSelection(measurementEndpoint,
                 techType);
 
         if (tro != null) {
@@ -141,14 +146,17 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             techType, assayPlatform, s.getUserInterface(), tro);
                     DefaultMutableTreeNode newField = new DefaultMutableTreeNode(newAssay);
                     newField.setAllowsChildren(false);
+
                     overviewTreeModel.insertNodeInto(newField, entryPoint == null ? selectedNode : entryPoint,
-                            selectedNode.getChildCount());
+                            entryPoint == null ? selectedNode.getChildCount() : entryPoint.getChildCount());
 
                     ((Study) selectedNode.getUserObject()).addAssay(newAssay);
                     investigation.addToAssays(newAssay.getAssayReference(),
                             s.getStudyId());
 
-                    return true;
+                    overviewTree.expandPath(new TreePath(entryPoint == null ? selectedNode.getPath() : entryPoint.getPath()));
+
+                    return newAssay;
                 }
             } else {
                 JOptionPane optionPane = new JOptionPane(
@@ -171,7 +179,19 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             "Assay definition does not exist"));
         }
 
-        return false;
+        return null;
+    }
+
+    public void selectAssayInTree(Assay assay) {
+
+        if (currentPage instanceof StudyDataEntry) {
+            System.out.println("Current page is instance of StudyDataEntry...");
+            StudyUtils.studySampleFileModified(((StudyDataEntry) currentPage).getStudy(), true);
+        }
+
+        setCurrentPage(assay.getSpreadsheetUI());
+        DefaultMutableTreeNode node = locateNodeWithName((DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent(), assay.getAssayReference());
+        overviewTree.setSelectionPath(new TreePath(node.getPath()));
     }
 
     private DefaultMutableTreeNode locateStudySampleNode(DefaultMutableTreeNode studyNode) {
@@ -193,6 +213,24 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return null;
     }
 
+    private DefaultMutableTreeNode locateNodeWithName(DefaultMutableTreeNode node, String nodeName) {
+
+        Enumeration enumeration = node.children();
+        while (enumeration.hasMoreElements()) {
+            DefaultMutableTreeNode candidateNode = (DefaultMutableTreeNode) enumeration.nextElement();
+
+            if (candidateNode.isLeaf()) {
+                if (candidateNode.toString().equals(nodeName)) {
+                    return candidateNode;
+                }
+            } else {
+                return locateNodeWithName(candidateNode, nodeName);
+            }
+
+        }
+        return null;
+    }
+
     public void setInvestigation(Investigation investigation) {
         this.investigation = investigation;
     }
@@ -206,7 +244,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public boolean addStudy(String studyName) {
-        TableReferenceObject tro = mGUI.selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
+        TableReferenceObject tro = isacreatorUI.selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
 
         if (tro != null) {
             Study newStudy = new Study(studyName);
@@ -217,6 +255,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                     tro);
             studySampleRec.setUserInterface(ui);
 
+            newStudy.setSampleFileName(studySampleRec.getAssayReference());
             newStudy.setStudySamples(studySampleRec);
 
             investigation.addStudy(newStudy);
@@ -238,7 +277,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             public void run() {
                 AddStudyDialog studyEntry = new AddStudyDialog(DataEntryEnvironment.this, "Study");
                 studyEntry.createGUI();
-                mGUI.showJDialogAsSheet(studyEntry);
+                isacreatorUI.showJDialogAsSheet(studyEntry);
             }
         });
 
@@ -314,13 +353,12 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 }
             }
         }
-
         return false;
     }
 
 
     public void createGUI() {
-        setSize(mGUI.getSize());
+        setSize(isacreatorUI.getSize());
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
         this.investigation = new Investigation("Investigation", "");
@@ -333,9 +371,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     // need to create data entry panel which has already been formed by the import layer
     // take investigation and iterate through it, adding all nodes including investigation, study, and assay nodes
 
-    public void createGUIFromSource(Investigation inv) {
+    public void createGUIFromInvestigatio(Investigation inv) {
         // investigation should have all the studies, assays, etc. in place, ready to be added to the panel
-        setSize(mGUI.getSize());
+        setSize(isacreatorUI.getSize());
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
         // change this!
@@ -352,7 +390,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         } else if (nodeInfo instanceof Study) {
             setCurrentPage(((Study) nodeInfo).getUserInterface());
         }
-
         setVisible(true);
     }
 
@@ -368,7 +405,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         navPanel.add(navPanelHeader, BorderLayout.NORTH);
 
         if (inv.getUserInterface() == null) {
-            investigation.setUserInterface(new InvestigationDataEntry(investigation, this));
+            investigation.setUserInterface(new InvestigationDataEntry(investigation, DataEntryEnvironment.this));
         }
 
         overviewTreeModel = new DefaultTreeModel(buildTreeFromInvestigation(investigation));
@@ -425,6 +462,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 ((JLabel) mouseEvent.getSource()).setIcon(addStudyIcon);
+                closeEditors();
                 addStudyToTree();
             }
         });
@@ -451,6 +489,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                closeEditors();
                 if (removeStudyButton.getIcon() != removeStudyIconInactive) {
                     removeStudyButton.setIcon(removeStudyIcon);
                     removeStudy();
@@ -466,6 +505,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         visualization.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                closeEditors();
+
                 ExperimentVisualization expViz = new ExperimentVisualization(investigation);
                 expViz.createGUI();
 
@@ -513,13 +554,12 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     private DefaultMutableTreeNode createStudyNode(Investigation inv, Study s) {
         if (s.getUserInterface() == null) {
 
-            s.setUI(new StudyDataEntry(this, s));
+            s.setUI(new StudyDataEntry(DataEntryEnvironment.this, s));
         }
 
         DefaultMutableTreeNode studyNode = new DefaultMutableTreeNode(s);
 
         DefaultMutableTreeNode studySampleNode = new DefaultMutableTreeNode(s.getStudySample());
-
 
         for (Assay a : s.getAssays().values()) {
             inv.addToAssays(a.getAssayReference(), s.getStudyId());
@@ -537,11 +577,11 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public List<OntologySourceRefObject> getOntologySources() {
-        return OntologySourceManager.getOntologiesUsed();
+        return OntologyManager.getOntologiesUsed();
     }
 
     public ISAcreator getParentFrame() {
-        return mGUI;
+        return isacreatorUI;
     }
 
     private void navigateToPath(DefaultMutableTreeNode nodeToGo) {
@@ -697,8 +737,12 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         add(westPanel, BorderLayout.WEST);
     }
 
+    public DefaultMutableTreeNode getSelectedNodeInOverviewTree() {
+        return selectedNode;
+    }
+
     public void valueChanged(TreeSelectionEvent event) {
-        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
+        selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
 
         if (selectedNode == null) {
             return;
@@ -710,6 +754,15 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         removeStudyButton.setIcon(removeStudyIconInactive);
 
+        // close all cell editors that may be in view.
+        closeEditors();
+
+        // if we are coming away from the Study form or study sample file, we want to set a flag noting that the info
+        // may have changed.
+        if (currentPage instanceof StudyDataEntry) {
+            StudyUtils.studySampleFileModified(((StudyDataEntry) currentPage).getStudy().getStudyId());
+        }
+
         if (nodeInfo instanceof Investigation) {
             setCurrentPage(((Investigation) nodeInfo).getUserInterface());
             setStatusPaneInfo(investigationHelp);
@@ -717,8 +770,18 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             setCurrentPage(((Study) nodeInfo).getUserInterface());
             setStatusPaneInfo(studyHelp);
             removeStudyButton.setIcon(removeStudyIcon);
+            // expand underlying nodes
+            overviewTree.expandPath(new TreePath(selectedNode.getNextNode().getPath()));
         } else if (nodeInfo instanceof Assay) {
-            setCurrentPage(((Assay) nodeInfo).getSpreadsheetUI());
+            Assay assay = (Assay) nodeInfo;
+
+            if (currentPage instanceof AssaySpreadsheet) {
+                Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
+                if (spreadsheet.getSpreadsheetTitle().contains("Sample Definition")) {
+                    StudyUtils.studySampleFileModified(getParentStudy(selectedNode), true);
+                }
+            }
+            setCurrentPage(assay.getSpreadsheetUI());
             setStatusPaneInfo("");
         } else {
             setStatusPaneInfo("");
@@ -740,7 +803,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         tsgui.createGUI();
-                        mGUI.setGlassPanelContents(tsgui);
+                        isacreatorUI.setGlassPanelContents(tsgui);
                     }
                 });
 
@@ -774,13 +837,20 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             }
                         }
                         curStudyEntry.getStudy().clearTermReplacementHistory();
-                        mGUI.hideGlassPane();
+                        isacreatorUI.hideGlassPane();
                     }
                 });
             }
         }
+    }
 
-
+    private Study getParentStudy(DefaultMutableTreeNode node) {
+        System.out.println("Node parent is " + node.getParent());
+        if (((DefaultMutableTreeNode) node.getParent()).getUserObject() instanceof Study) {
+            return (Study) ((DefaultMutableTreeNode) node.getParent()).getUserObject();
+        } else {
+            return getParentStudy((DefaultMutableTreeNode) node.getParent());
+        }
     }
 
     private boolean needToSubstitute(Map<String, String[]> terms) {
@@ -794,6 +864,13 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         }
 
         return false;
+    }
+
+    public void closeEditors() {
+        if (currentPage instanceof AssaySpreadsheet) {
+            Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
+            SpreadsheetUtils.stopCellEditingInTable(spreadsheet.getTable());
+        }
     }
 
     public void removeReferences() {

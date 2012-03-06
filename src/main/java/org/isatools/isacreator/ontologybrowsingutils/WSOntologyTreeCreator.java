@@ -36,7 +36,6 @@
  */
 package org.isatools.isacreator.ontologybrowsingutils;
 
-import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
@@ -237,6 +236,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
     private void addTermToTree(DefaultMutableTreeNode parent, OntologyTerm ontologyTerm, Ontology ontology) {
         if (ontologyTerm != null) {
+
             DefaultMutableTreeNode childNode =
                     new DefaultMutableTreeNode(new OntologyTreeItem(
                             new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
@@ -361,44 +361,6 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     }
 
     public void treeCollapsed(TreeExpansionEvent treeExpansionEvent) {
-    }
-
-    public static void main(String[] args) {
-        JFrame ontologyTest = new JFrame("Ontology browse test");
-
-        ontologyTest.setBackground(UIHelper.BG_COLOR);
-        ontologyTest.setSize(500, 300);
-
-        JPanel container = new JPanel();
-        container.setBackground(UIHelper.BG_COLOR);
-
-        JTree tree = new JTree();
-
-        JScrollPane scroller = new JScrollPane(tree);
-
-        WSOntologyTreeCreator wsOntologyTreeCreator = new WSOntologyTreeCreator(container, tree);
-
-        container.add(scroller);
-
-        ontologyTest.add(container, BorderLayout.CENTER);
-
-        ontologyTest.pack();
-        ontologyTest.setVisible(true);
-
-
-        try {
-
-            Map<String, RecommendedOntology> ontologies = new HashMap<String, RecommendedOntology>();
-
-            ontologies.put("EFO", new RecommendedOntology(new Ontology("1136", "45659", "EFO", "Experimental Factor Ontology"), new OntologyBranch("span:ProcessualEntity", "process")));
-            ontologies.put("CHEBI", new RecommendedOntology(new Ontology("1007", "45788", "ChEBI", "Chemicals of Biological Interest")));
-            ontologies.put("FBsp", new RecommendedOntology(new Ontology("", "Jun 2010", "FBsp", "Fly Taxonomy"), new OntologyBranch("FBsp:10000001", "taxon")));
-
-            wsOntologyTreeCreator.createTree(ontologies);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void notifyObservers() {

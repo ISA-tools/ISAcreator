@@ -40,10 +40,10 @@ package org.isatools.isacreator.configuration.io;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.isatools.isaconfigurator.schema.*;
 import org.isatools.isacreator.configuration.*;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
+import org.isatools.isatab.configurator.schema.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -189,16 +189,24 @@ public class ConfigXMLParser {
         return newISAConfig.getIsatabConfigFile();
     }
 
-    private void processTable(IsaTabConfigurationType isaConf) {
+    public void processTable(IsaTabConfigurationType isaConf) {
         OntologyEntryType measurementInfo = isaConf.getMeasurement();
         OntologyEntryType technologyInfo = isaConf.getTechnology();
 
         String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]") ? MappingObject.INVESTIGATION : MappingObject.ASSAY_TYPE;
 
+
         MappingObject mo = new MappingObject(tableType, measurementInfo.getTermLabel(),
                 measurementInfo.getSourceAbbreviation(), measurementInfo.getTermAccession(),
                 technologyInfo.getTermLabel(), technologyInfo.getSourceAbbreviation(), technologyInfo.getTermAccession(),
                 isaConf.getTableName());
+
+        if (isaConf.getIsatabAssayType() != null) {
+            mo.setAssayType(isaConf.getIsatabAssayType().toString());
+        }
+        if (isaConf.getIsatabConversionTarget() != null) {
+            mo.setDispatchTarget(isaConf.getIsatabConversionTarget());
+        }
 
         List<FieldObject> fields = new ArrayList<FieldObject>();
         Map<Integer, String[]> tableStructure = new HashMap<Integer, String[]>();
@@ -213,7 +221,7 @@ public class ConfigXMLParser {
 
                 FieldObject newField = new FieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(), stdField.getSection(),
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
-                        stdField.getIsFileField(), stdField.getIsHidden());
+                        stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
 
                 newField.setWizardTemplate(stdField.getGeneratedValueTemplate());
 
@@ -259,10 +267,10 @@ public class ConfigXMLParser {
                 FieldObject newField;
                 if (loadingSource == ConfigurationLoadingSource.ISACREATOR) {
                     newField = new FieldObject(colNo, "Protocol REF", "", DataTypes.LIST, protocolField.getProtocolType(), "",
-                            protocolField.getIsRequired(), false, false, false);
+                            protocolField.getIsRequired(), false, false, false, false);
                 } else {
                     newField = new FieldObject(colNo, "Protocol REF", "Protocol for " + protocolField.getProtocolType(), DataTypes.STRING, protocolField.getProtocolType(),
-                        protocolField.getIsRequired(), false, false);
+                            protocolField.getIsRequired(), false, false);
                 }
 
                 newField.setWizardTemplate(newField.getWizardTemplate());
@@ -275,7 +283,7 @@ public class ConfigXMLParser {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
                 FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "", "",
-                        unitField.getIsRequired(), false, false, false);
+                        unitField.getIsRequired(), false, false, false, unitField.getIsForcedOntology());
 
                 if (unitField.getRecommendedOntologies() != null) {
                     processRecommendedOntologies(unitField, newField);
@@ -285,20 +293,27 @@ public class ConfigXMLParser {
 
                 tableStructure.put(colNo, new String[]{newField.getFieldName(), ""});
                 colNo++;
-            } else if (obj instanceof StructuredFieldType) {
-                StructuredFieldType structuredField = (StructuredFieldType) obj;
-                // we don't add it to the fields, but we do add it to the mapping object...
-                tableStructure.put(colNo, new String[]{structuredField.getName(), ""});
-                colNo++;
             }
 
             sequenceNumber++;
         }
 
+        addStructuralFields(tableStructure, tableType);
+
         TableConfiguration tc = new TableConfiguration(mo, fields, tableStructure);
 
         mappings.add(mo);
         tables.add(new TableReferenceObject(tc));
+    }
+
+    /**
+     * Appends the structural fields to the end of the file by default
+     */
+    private void addStructuralFields(Map<Integer, String[]> tableStructure, String tableType) {
+        if (tableType.equals(MappingObject.STUDY_SAMPLE)) {
+            tableStructure.put(tableStructure.size(), new String[]{"characteristics", ""});
+        }
+        tableStructure.put(tableStructure.size(), new String[]{"factors", ""});
     }
 
     private void processRecommendedOntologies(FieldType processing, FieldObject tfo) {

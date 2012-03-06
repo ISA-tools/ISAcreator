@@ -40,13 +40,20 @@ package org.isatools.isacreator.spreadsheet;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
+import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
+import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
+import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -102,7 +109,7 @@ public class SpreadsheetFunctions {
      * @param prevTerm - the term to replace
      * @param newTerm  - the new term to be used instead.
      */
-    public void susbstituteTermsInColumn(String colName, String prevTerm, String newTerm) {
+    public void substituteTermsInColumn(String colName, String prevTerm, String newTerm) {
 
         Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
 
@@ -226,7 +233,7 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyTerm> history = OntologySourceManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
 
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
@@ -280,6 +287,9 @@ public class SpreadsheetFunctions {
 
                                 if (oo != null) {
                                     termAccession = oo.getOntologySourceAccession();
+                                    if (termAccession.contains(":")) {
+                                        termAccession = termAccession.substring(val.indexOf(":") + 1);
+                                    }
                                 }
 
                                 if (val.contains(":")) {
@@ -454,6 +464,9 @@ public class SpreadsheetFunctions {
                 spreadsheet.spreadsheetModel.extendedSetSelection(affectedRange);
 
                 spreadsheet.getTable().repaint();
+
+                spreadsheet.notifyObservers(SpreadsheetEvent.PASTE);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -468,7 +481,7 @@ public class SpreadsheetFunctions {
      * @param toUse - the SpreadsheetCellRange representing the values to be pasted into the spreadsheet
      */
 
-    protected void doCopy(boolean isCut, SpreadsheetCellRange toUse) {
+    public void doCopy(boolean isCut, SpreadsheetCellRange toUse) {
         CellEditor editor = spreadsheet.getTable().getCellEditor();
         if (editor != null) {
             editor.cancelCellEditing();
@@ -492,6 +505,8 @@ public class SpreadsheetFunctions {
             if (isCut) {
                 spreadsheet.spreadsheetModel.clearRange(toUse);
             }
+
+            spreadsheet.notifyObservers(SpreadsheetEvent.COPY);
         } else {
             System.out.println("no rows are selected so no copying has taken place.");
         }
@@ -505,8 +520,7 @@ public class SpreadsheetFunctions {
      * @param col - Column to be removed
      */
     public void removeColumnFromDependencies
-    (TableColumn
-             col) {
+    (TableColumn col) {
         boolean removingParent = false;
         TableColumn toRemove = null;
         TableColumn parentColumn = null;
@@ -540,6 +554,7 @@ public class SpreadsheetFunctions {
             System.out.println("Dependents on this column not found, so not removing any other columns!");
         }
     }
+
 
     /**
      * if a given column has dependent columns, e.g. does a factor column have an associated unit column. if it does,
@@ -575,6 +590,31 @@ public class SpreadsheetFunctions {
             removeColumnFromDependencies(col);
         }
     }
+
+    public Map<TableColumn, TableColumn> getFactors() {
+        Map<TableColumn, TableColumn> factors = new HashMap<TableColumn, TableColumn>();
+
+        Enumeration<TableColumn> tableColumns = spreadsheet.getTable().getColumnModel().getColumns();
+
+        while (tableColumns.hasMoreElements()) {
+            TableColumn column = tableColumns.nextElement();
+            if (column.getHeaderValue().toString().contains("Factor Value")) {
+
+                if (spreadsheet.columnDependencies.containsKey(column)) {
+                    for (TableColumn unitColumn : spreadsheet.columnDependencies.get(column)) {
+                        factors.put(column, unitColumn);
+                        break;
+                    }
+
+                } else {
+                    factors.put(column, null);
+                }
+            }
+        }
+
+        return factors;
+    }
+
 
     /**
      * Remove a column from the spreadsheet.getTable(), delete all the data associated with the column in the model, and keep indices
@@ -691,6 +731,32 @@ public class SpreadsheetFunctions {
         return false;
     }
 
+    /**
+     * Check to see if a column with a given name exists.
+     * Result is always false if the column allows multiple values.
+     *
+     * @param colName name of column to check for.
+     * @return true if it exists, false otherwise.
+     */
+    public int getModelIndexForColumn(String colName) {
+        Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+        // if the column can be referenced multiple times, then we should return false in this check.
+
+        if (colName != null) {
+            if (!spreadsheet.getTableReferenceObject().acceptsMultipleValues(colName)) {
+                while (columns.hasMoreElements()) {
+                    TableColumn col = columns.nextElement();
+
+                    if (col.getHeaderValue().toString().equalsIgnoreCase(colName)) {
+                        return col.getModelIndex();
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
     public void clearCells(int startRow, int startCol, int endRow, int endCol) {
         int[] rows = Utils.getArrayOfVals(startRow, endRow);
         int[] columns = Utils.getArrayOfVals(startCol, endCol);
@@ -709,7 +775,8 @@ public class SpreadsheetFunctions {
 
     public void copyColumnDownwards(int rowId, int colInd) {
         int convColIndex = convertViewIndexToModelIndex(colInd);
-        String val = spreadsheet.spreadsheetModel.getValueAt(rowId, convColIndex).toString();
+        Object columnValue = spreadsheet.spreadsheetModel.getValueAt(rowId, convColIndex);
+        String val = columnValue == null ? "" : columnValue.toString();
         fill(new SpreadsheetCellRange(rowId, spreadsheet.getTable().getRowCount(), convColIndex, convColIndex), val);
     }
 
@@ -742,22 +809,23 @@ public class SpreadsheetFunctions {
      *
      * @param headerLabel - name of column to be added
      */
-    public void addColumn(Object headerLabel) {
+    public TableColumn addColumn(Object headerLabel) {
         SpreadsheetModel model = (SpreadsheetModel) spreadsheet.getTable().getModel();
-        TableColumn col = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
-        col.setHeaderValue(headerLabel);
-        col.setPreferredWidth(calcColWidths(headerLabel.toString()));
+        TableColumn newColumn = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
+        newColumn.setHeaderValue(headerLabel);
+        newColumn.setPreferredWidth(calcColWidths(headerLabel.toString()));
+        newColumn.setHeaderRenderer(spreadsheet.renderer);
 
         // add a cell editor (if available to the column)
-        addCellEditor(col);
+        addCellEditor(newColumn);
 
-        spreadsheet.getTable().addColumn(col);
-
+        model.addToColumns(headerLabel.toString());
         model.addColumn(headerLabel.toString());
-        model.fireTableStructureChanged();
 
-        spreadsheet.getTable().getColumnModel().getColumn(spreadsheet.getTable().getColumnCount() - 1)
-                .setHeaderRenderer(spreadsheet.renderer);
+        spreadsheet.getTable().addColumn(newColumn);
+
+        model.fireTableStructureChanged();
+        model.fireTableDataChanged();
 
         if (spreadsheet.getTable().getRowCount() > 0) {
             spreadsheet.getTable().setValueAt(spreadsheet.getTableReferenceObject().getDefaultValue(headerLabel.toString()), 0,
@@ -765,6 +833,10 @@ public class SpreadsheetFunctions {
             copyColumnDownwards(0, spreadsheet.getTable().getColumnCount() - 1);
             spreadsheet.getTableReferenceObject().getDefaultValue(headerLabel.toString());
         }
+
+        spreadsheet.getTable().addNotify();
+
+        return newColumn;
     }
 
     /**
@@ -774,8 +846,8 @@ public class SpreadsheetFunctions {
      * @param fixedVal                - initial value to populate column with, if any.
      * @param currentlySelectedColumn - place in table to add the column after.
      */
-    public void addColumnAfterPosition(Object headerLabel, String fixedVal,
-                                       int currentlySelectedColumn) {
+    public TableColumn addColumnAfterPosition(Object headerLabel, String fixedVal,
+                                              int currentlySelectedColumn) {
 
         if (currentlySelectedColumn == -1) {
             currentlySelectedColumn = (spreadsheet.getTable().getSelectedColumn() == -1)
@@ -833,6 +905,12 @@ public class SpreadsheetFunctions {
         }
 
         spreadsheet.getTable().addNotify();
+
+        return col;
+    }
+
+    protected void addCellEditor(TableColumn col) {
+        addCellEditor(col, null);
     }
 
     /**
@@ -841,10 +919,20 @@ public class SpreadsheetFunctions {
      * @param col - Column to attach a custom cell editor to
      */
     @SuppressWarnings({"ConstantConditions"})
-    protected void addCellEditor(TableColumn col) {
+    protected void addCellEditor(TableColumn col, String previousColumnName) {
         ValidationObject vo = spreadsheet.getTableReferenceObject().getValidationConstraints(col.getHeaderValue()
                 .toString());
         DataTypes classType = spreadsheet.getTableReferenceObject().getColumnType(col.getHeaderValue().toString());
+
+        String columnName = col.getHeaderValue().toString();
+
+        PluginSpreadsheetWidget widget;
+
+        if ((widget = SpreadsheetPluginRegistry.findPluginForColumn(columnName)) != null) {
+            TableCellEditor editor = (TableCellEditor) widget;
+            col.setCellEditor(editor);
+            return;
+        }
 
         if (vo != null && classType == DataTypes.STRING) {
             StringValidation sv = ((StringValidation) vo);
@@ -852,36 +940,57 @@ public class SpreadsheetFunctions {
             return;
         }
 
-        if (col.getHeaderValue().toString().equals("Protocol REF")) {
-            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getStudyDataEntryEnvironment().getStudy()));
+        if (columnName.equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")
+                && spreadsheet.getStudyDataEntryEnvironment() != null) {
+            col.setCellEditor(new SampleSelectorCellEditor(spreadsheet));
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.ONTOLOGY_TERM) {
-            col.setCellEditor(new OntologyCellEditor(spreadsheet.getTableReferenceObject().acceptsMultipleValues(col.getHeaderValue().toString()),
-                    spreadsheet.getTableReferenceObject().getRecommendedSource(col.getHeaderValue().toString())));
+        if (columnName.equals("Protocol REF") && spreadsheet.getStudyDataEntryEnvironment() != null) {
+            col.setCellEditor(new ProtocolSelectorCellEditor(spreadsheet));
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.LIST) {
-            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getTableReferenceObject().getListItems(col.getHeaderValue().toString())));
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.ONTOLOGY_TERM) {
+
+            Map<String, RecommendedOntology> recommendedOntologyMap = null;
+            if (columnName.equalsIgnoreCase("unit")) {
+                // we should be keeping note of the previous value, and automatically link this up with the unit.
+                // If no link, is found, the fall back is to use no recommended ontology for that field.
+                if (previousColumnName != null) {
+                    FieldObject unitField = spreadsheet.getTableReferenceObject().getNextUnitField(previousColumnName);
+                    if (unitField != null) {
+                        recommendedOntologyMap = unitField.getRecommmendedOntologySource();
+                    }
+                }
+            } else {
+                recommendedOntologyMap = spreadsheet.getTableReferenceObject().getRecommendedSource(columnName);
+            }
+
+            col.setCellEditor(new OntologyCellEditor(spreadsheet.getTableReferenceObject().acceptsMultipleValues(columnName),
+                    spreadsheet.getTableReferenceObject().forceOntology(columnName), recommendedOntologyMap));
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString())
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.LIST) {
+            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getTableReferenceObject().getListItems(columnName)));
+            return;
+        }
+
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName)
                 == DataTypes.DATE) {
             col.setCellEditor(Spreadsheet.dateEditor);
 
             return;
         }
 
-        if (spreadsheet.getTableReferenceObject().getClassType(col.getHeaderValue().toString()) == DataTypes.BOOLEAN) {
+        if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.BOOLEAN) {
             col.setCellEditor(new StringEditor(new StringValidation("true|yes|TRUE|YES|NO|FALSE|no|false", "not a valid boolean!"), true));
             return;
         }
 
         if ((classType == DataTypes.STRING) &&
-                spreadsheet.getTableReferenceObject().acceptsFileLocations(col.getHeaderValue().toString())) {
+                spreadsheet.getTableReferenceObject().acceptsFileLocations(columnName)) {
             col.setCellEditor(Spreadsheet.fileSelectEditor);
             return;
         }
@@ -938,14 +1047,6 @@ public class SpreadsheetFunctions {
         spreadsheet.getTableReferenceObject().addField(fo);
     }
 
-    public void addRow() {
-        Vector r;
-        r = createBlankElement(false);
-        spreadsheet.rows.addElement(r);
-        spreadsheet.getTable().addNotify();
-    }
-
-
     /**
      * Add rows to the table
      *
@@ -993,7 +1094,6 @@ public class SpreadsheetFunctions {
 
     /**
      * Creates blank elements (or those including default data) into the rows being added
-     * todo check this again and make sure the proper values are being obtained for default values.
      *
      * @param creatingFromEmpty - whether or not the rows have been added at the very start.
      * @return Vector containing elements to be added to the row.
@@ -1043,13 +1143,12 @@ public class SpreadsheetFunctions {
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName()
                                 .equals(JOptionPane.VALUE_PROPERTY)) {
-                            spreadsheet.getDataEntryEnv().getParentFrame().hideSheet();
+                            spreadsheet.getParentFrame().hideSheet();
                         }
                     }
                 });
-                spreadsheet.getDataEntryEnv().getParentFrame()
-                        .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
-                                "Can not delete"));
+                spreadsheet.getParentFrame().showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
+                        "Can not delete"));
             } else {
                 spreadsheet.optionPane = new JOptionPane("<html>Are you sure you want to delete this column? <p>This Action can not be undone!</p></html>",
                         JOptionPane.INFORMATION_MESSAGE,
@@ -1057,9 +1156,8 @@ public class SpreadsheetFunctions {
                         spreadsheet.confirmRemoveColumnIcon);
                 UIHelper.applyOptionPaneBackground(spreadsheet.optionPane, UIHelper.BG_COLOR);
                 spreadsheet.optionPane.addPropertyChangeListener(spreadsheet);
-                spreadsheet.getDataEntryEnv().getParentFrame()
-                        .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
-                                "Confirm Delete Column"));
+                spreadsheet.getParentFrame().showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
+                        "Confirm Delete Column"));
             }
         }
     }
@@ -1096,7 +1194,7 @@ public class SpreadsheetFunctions {
                 spreadsheet.confirmRemoveRowIcon);
         spreadsheet.optionPane.addPropertyChangeListener(spreadsheet);
         UIHelper.applyOptionPaneBackground(spreadsheet.optionPane, UIHelper.BG_COLOR);
-        spreadsheet.getDataEntryEnv().getParentFrame()
+        spreadsheet.getParentFrame()
                 .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
                         "Confirm Delete Rows"));
     }
@@ -1115,7 +1213,7 @@ public class SpreadsheetFunctions {
                 spreadsheet.confirmRemoveRowIcon);
         spreadsheet.optionPane.addPropertyChangeListener(spreadsheet);
         UIHelper.applyOptionPaneBackground(spreadsheet.optionPane, UIHelper.BG_COLOR);
-        spreadsheet.getDataEntryEnv().getParentFrame()
+        spreadsheet.getParentFrame()
                 .showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
                         "Confirm Delete Rows"));
     }

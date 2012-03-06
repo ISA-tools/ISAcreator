@@ -41,9 +41,12 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
+import org.isatools.isacreator.sampleselection.SampleInformation;
 
+import javax.swing.*;
 import javax.swing.table.TableColumn;
 import java.util.*;
 
@@ -104,6 +107,48 @@ public class SpreadsheetUtils {
             }
         }
         return columnNames;
+    }
+
+    /**
+     * Pulls out all values of a particular column and associates the other metadata with it as well
+     *
+     * @param primaryColumnName - e.g. Sample Name to pull out all the unique sample names available.
+     * @param targetSheet       - Spreadsheet to 'look at' for extraction of desired column names
+     * @return Map<String, Map<String, String>> -> primary Column values mapped to the key/value pairs describing the particular group
+     */
+    public static Map<String, SampleInformation> getGroupInformation(String primaryColumnName, Spreadsheet targetSheet) {
+
+        Map<String, SampleInformation> groupInformation = new HashMap<String, SampleInformation>();
+
+        Map<Integer, String> columnIndicesToName = getColumns(targetSheet, new HashSet<String>());
+
+        for (int rowNo = 0; rowNo < targetSheet.getTable().getRowCount(); rowNo++) {
+
+            String primaryColumnValue = "";
+
+            if (!groupInformation.containsKey(primaryColumnName)) {
+
+                Map<String, String> keyValues = new ListOrderedMap<String, String>();
+                Map<String, Integer> columnNameToIndex = new HashMap<String, Integer>();
+
+                for (int column = 1; column < targetSheet.getColumnCount(); column++) {
+                    Object dataVal = targetSheet.getTable().getValueAt(rowNo, column);
+
+                    String columnName = columnIndicesToName.get(column);
+
+                    if (columnName.equalsIgnoreCase(primaryColumnName)) {
+                        primaryColumnValue = dataVal == null ? "" : dataVal.toString();
+                    } else {
+                        keyValues.put(columnName, dataVal == null ? "" : dataVal.toString());
+                        columnNameToIndex.put(columnName, column);
+                    }
+                }
+                groupInformation.put(primaryColumnValue,
+                        new SampleInformation(rowNo, primaryColumnValue, keyValues, columnNameToIndex));
+            }
+        }
+
+        return groupInformation;
     }
 
     public static Set<String> getDataInColumn(Spreadsheet targetSheet, int tableViewIndex) {
@@ -198,8 +243,7 @@ public class SpreadsheetUtils {
                             : spreadsheet.getTable().getValueAt(row,
                             colIndex).toString();
 
-                    if(annotations.containsKey(columnValue)) {
-                        System.out.println("Replacing " + columnValue + " with " + annotations.get(columnValue).getUniqueId());
+                    if (annotations.containsKey(columnValue)) {
                         spreadsheet.getTable().setValueAt(annotations.get(columnValue).getUniqueId(), row, colIndex);
                     }
                 }
@@ -238,5 +282,14 @@ public class SpreadsheetUtils {
         }
 
         return files;
+    }
+
+    public static void stopCellEditingInTable(JTable table) {
+        if (table.getEditingColumn() != -1) {
+            // the ontology cell editor is a JFrame, so closing it is useless since it will close when it loses focus anyway.
+            if (!(table.getCellEditor() instanceof OntologyCellEditor)) {
+                table.getCellEditor(table.getEditingRow(), table.getEditingColumn()).stopCellEditing();
+            }
+        }
     }
 }

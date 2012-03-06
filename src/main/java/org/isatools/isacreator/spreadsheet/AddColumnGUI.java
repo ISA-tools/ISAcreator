@@ -218,7 +218,7 @@ public class AddColumnGUI extends JDialog {
                 setBackground(UIHelper.BG_COLOR);
 
                 instantiatePanel();
-                pack();
+
             }
         });
     }
@@ -232,8 +232,8 @@ public class AddColumnGUI extends JDialog {
      * @return DropDownComponent object.
      */
     protected DropDownComponent createOntologyDropDown(final JTextField field,
-                                                       boolean allowsMultiple, Map<String, RecommendedOntology> recommendedOntologySource) {
-        ost = new OntologySelectionTool(allowsMultiple, recommendedOntologySource);
+                                                       boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource) {
+        ost = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
         ost.createGUI();
 
         dropdown = new DropDownComponent(field, ost, DropDownComponent.ONTOLOGY);
@@ -271,8 +271,7 @@ public class AddColumnGUI extends JDialog {
 
         olsFieldCont.add(stdFieldLab);
 
-        olsFieldCont.add(createOntologyDropDown(varSelectOntologyField, false,
-                null));
+        olsFieldCont.add(createOntologyDropDown(varSelectOntologyField, false, false, null));
 
         return olsFieldCont;
     }
@@ -297,7 +296,7 @@ public class AddColumnGUI extends JDialog {
 
         unitFieldCont.add(stdFieldLab);
 
-        final DropDownComponent ontologyDropDown = createOntologyDropDown(unitField,
+        final DropDownComponent ontologyDropDown = createOntologyDropDown(unitField, false,
                 false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("1112", "", UNIT_ONTOLOGY, "Unit Ontology"))));
         unitFieldCont.add(ontologyDropDown);
 
@@ -566,5 +565,6 @@ public class AddColumnGUI extends JDialog {
         southPanel.add(Box.createGlue());
 
         add(southPanel, BorderLayout.SOUTH);
+        pack();
     }
 }

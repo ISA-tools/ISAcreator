@@ -39,6 +39,7 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
+import org.isatools.helpbrowser.ui.WebBrowser;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputUtil;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
@@ -48,7 +49,6 @@ import org.isatools.isacreator.configuration.io.ConfigXMLParser;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
-import org.isatools.isacreator.filechooser.FTPManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.io.OutputISAFiles;
@@ -57,17 +57,25 @@ import org.isatools.isacreator.io.UserProfileIO;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.plugins.MenuPluginTracker;
+import org.isatools.isacreator.plugins.OntologyPluginTracker;
+import org.isatools.isacreator.plugins.SpreadsheetPluginTracker;
 import org.isatools.isacreator.qrcode.ui.QRCodeGeneratorUI;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
+import org.isatools.isacreator.utils.WebUtils;
+import org.isatools.isacreator.validateconvert.ui.OperatingMode;
+import org.isatools.isacreator.validateconvert.ui.ValidateUI;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import org.osgi.framework.BundleContext;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -78,6 +86,9 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
@@ -92,7 +103,7 @@ import java.util.List;
  *
  * @author Eamonn Maguire
  */
-public class ISAcreator extends AnimatableJFrame {
+public class ISAcreator extends AnimatableJFrame implements WindowFocusListener {
 
     private static Logger log = Logger.getLogger(ISAcreator.class.getName());
 
@@ -106,10 +117,9 @@ public class ISAcreator extends AnimatableJFrame {
     @InjectedResource
     private Image isacreatorIcon;
     @InjectedResource
-    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon,
-            logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon,
-            removeStudyIcon, fullScreenIcon, defaultScreenIcon, aboutIcon, helpIcon, mgRastIcon, qrCodeIcon,
-            supportIcon, feedbackIcon, confirmLogout, confirmMenu, confirmExit;
+    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, validateIcon, convertIcon,
+            logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon, removeStudyIcon, fullScreenIcon,
+            defaultScreenIcon, aboutIcon, helpIcon, supportIcon, feedbackIcon, confirmLogout, confirmMenu, confirmExit;
 
     private AboutPanel aboutPanel;
     private Properties programSettings;
@@ -125,22 +135,27 @@ public class ISAcreator extends AnimatableJFrame {
     private ISAcreatorMenu isacreatorMenu = null;
     private UserProfile currentUser = null;
     private JMenuBar menuBar;
+    private JMenu pluginMenu;
 
     private Map<String, JMenu> menusRequiringStudyIds;
-
-    private String lastExport = "";
 
     private OutputISAFiles outputISATAB;
     private IncorrectColumnOrderGUI incorrectGUI;
     private UserProfileIO userProfileIO;
-    private String loadedConfiguration;
     private Mode mode;
+
+    private MenuPluginTracker menuPluginTracker;
+    private SpreadsheetPluginTracker spreadsheetPluginTracker;
+    private OntologyPluginTracker ontologyPluginTracker;
 
     static {
         UIManager.put("Panel.background", UIHelper.BG_COLOR);
         UIManager.put("ToolTip.foreground", Color.white);
         UIManager.put("ToolTip.background", UIHelper.DARK_GREEN_COLOR);
         UIManager.put("Tree.background", UIHelper.BG_COLOR);
+        UIManager.put("Menu.selectionBackground", UIHelper.LIGHT_GREEN_COLOR);
+        UIManager.put("MenuItem.selectionBackground", UIHelper.LIGHT_GREEN_COLOR);
+
 
         UIManager.put("Container.background", UIHelper.BG_COLOR);
         UIManager.put("PopupMenuUI", "org.isatools.isacreator.common.CustomPopupMenuUI");
@@ -170,25 +185,36 @@ public class ISAcreator extends AnimatableJFrame {
                 ISAcreator.class.getResource("/dependency-injections/wizard-package.properties"));
         ResourceInjector.get("formatmappingutility-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
-        ResourceInjector.get("arraydesignbrowser-package.style").load(ISAcreator.class.getResource
-                ("/dependency-injections/arraydesignbrowser-package.properties"));
-
-        ResourceInjector.get("effects-package.style").load(ISAcreator.class.getResource
-                ("/dependency-injections/effects-package.properties"));
-
+        ResourceInjector.get("arraydesignbrowser-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/arraydesignbrowser-package.properties"));
+        ResourceInjector.get("effects-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/effects-package.properties"));
+        ResourceInjector.get("assayselection-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/assayselection-package.properties"));
         ResourceInjector.get("calendar-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
+        ResourceInjector.get("validateconvert-package.style").load(
+                ISAcreator.class.getResource("/dependency-injections/validator-package.properties"));
     }
 
-    public ISAcreator(Mode mode) {
-        this(mode, null);
+    public ISAcreator(Mode mode, BundleContext context) {
+        this(mode, context, null);
     }
 
-    public ISAcreator(Mode mode, String configDir) {
+    public ISAcreator(Mode mode, BundleContext context, String configDir) {
 
         ResourceInjector.get("gui-package.style").inject(this);
 
         this.mode = mode;
+
+        if (context != null) {
+            menuPluginTracker = new MenuPluginTracker(context, this);
+            spreadsheetPluginTracker = new SpreadsheetPluginTracker(context);
+            ontologyPluginTracker = new OntologyPluginTracker(context);
+            menuPluginTracker.open();
+            spreadsheetPluginTracker.open();
+            ontologyPluginTracker.open();
+        }
 
         outputISATAB = new OutputISAFiles(this);
         userProfileIO = new UserProfileIO(this);
@@ -211,6 +237,8 @@ public class ISAcreator extends AnimatableJFrame {
             assayDefinitions = cp.getTables();
         }
 
+        ApplicationManager.setCurrentApplicationInstance(this);
+
     }
 
     public void createGUI() {
@@ -222,6 +250,8 @@ public class ISAcreator extends AnimatableJFrame {
         setUndecorated(true);
         setResizable(true);
         setLayout(new BorderLayout());
+
+        addWindowFocusListener(this);
         // load user profiles into the system
         userProfileIO.loadUserProfiles();
         loadProgramSettings();
@@ -254,7 +284,6 @@ public class ISAcreator extends AnimatableJFrame {
     public void setAssayDefinitions(List<TableReferenceObject> assayDefinitions) {
         this.assayDefinitions = assayDefinitions;
     }
-
 
 
     private void checkMenuRequired() {
@@ -347,18 +376,26 @@ public class ISAcreator extends AnimatableJFrame {
         menuBar.setForeground(UIHelper.DARK_GREEN_COLOR);
         menuBar.setBorder(null);
 
+        MouseAdapter cleanUpDisplayedEditors = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                closeEditors();
+            }
+        };
+
         JMenu file = new JMenu("file");
+        file.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem save = new JMenuItem(new SaveAction(SaveAction.SAVE_ONLY,
                 "save", saveIcon, "save ISA files", KeyEvent.VK_S));
+
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 KeyEvent.CTRL_MASK));
-
         file.add(save);
-
         JMenuItem saveAs = new JMenuItem(new SaveAction(SaveAction.SAVE_AS,
                 "save as", saveIcon, "save as a different set of ISA files",
                 KeyEvent.VK_A));
+
 
         file.add(saveAs);
 
@@ -368,8 +405,8 @@ public class ISAcreator extends AnimatableJFrame {
                 "go to main menu",
                 menuIcon,
                 "go back to main menu without saving", null));
-        file.add(main);
 
+        file.add(main);
         file.add(new JSeparator());
 
         JMenuItem exportISArchive = new JMenuItem("create ISArchive",
@@ -392,15 +429,49 @@ public class ISAcreator extends AnimatableJFrame {
 
         file.add(exportISArchive);
 
+
+        JMenuItem validateISA = new JMenuItem("Validate ISAtab", validateIcon);
+        validateISA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.VALIDATE);
+                validateUI.createGUI();
+                validateUI.setLocationRelativeTo(ISAcreator.this);
+                validateUI.setAlwaysOnTop(true);
+                validateUI.setVisible(true);
+                validateUI.validateISAtab();
+            }
+        });
+
+        file.add(new JSeparator());
+
+        file.add(validateISA);
+
+        JMenuItem convertISA = new JMenuItem("Convert ISAtab", convertIcon);
+
+        convertISA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                ValidateUI validateUI = new ValidateUI(ISAcreator.this, OperatingMode.CONVERT);
+                validateUI.createGUI();
+                validateUI.setLocationRelativeTo(ISAcreator.this);
+                validateUI.setAlwaysOnTop(true);
+                validateUI.setVisible(true);
+                validateUI.validateISAtab();
+            }
+        });
+
+        file.add(convertISA);
+
         menuBar.add(file);
 
 
         // study section
 
         JMenu studyMenu = new JMenu("study");
+        studyMenu.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem addStudy = new JMenuItem("add study",
                 addStudyIcon);
+
         addStudy.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 getDataEntryEnvironment().addStudyToTree();
@@ -410,6 +481,7 @@ public class ISAcreator extends AnimatableJFrame {
 
         JMenuItem removeStudy = new JMenuItem("remove study",
                 removeStudyIcon);
+
         removeStudy.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 getDataEntryEnvironment().removeStudy();
@@ -422,11 +494,13 @@ public class ISAcreator extends AnimatableJFrame {
         // end study section
 
         JMenu view = new JMenu("view");
+        view.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem fullScreen = new JMenuItem(new ScreenResizeAction(
                 ScreenResizeAction.FULL_SCREEN, "full screen",
                 fullScreenIcon,
                 "Put application in full screen mode.", KeyEvent.VK_F));
+
         fullScreen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
                 KeyEvent.ALT_MASK));
 
@@ -434,6 +508,7 @@ public class ISAcreator extends AnimatableJFrame {
                 ScreenResizeAction.DEFAULT_SIZE, "default screen",
                 defaultScreenIcon,
                 "Put application in the default screen mode.", KeyEvent.VK_D));
+
         defaultScreen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
                 KeyEvent.ALT_MASK));
 
@@ -442,10 +517,11 @@ public class ISAcreator extends AnimatableJFrame {
 
         menuBar.add(view);
 
-        JMenu plugins = new JMenu("utilities");
-
+        JMenu utilities = new JMenu("utilities");
+        utilities.addMouseListener(cleanUpDisplayedEditors);
 
         JMenu sampleTracking = new JMenu("Sample Tracking");
+
         sampleTracking.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -465,16 +541,43 @@ public class ISAcreator extends AnimatableJFrame {
         });
 
         JMenu qrCodeExport = new JMenu("generate QR codes for Study samples");
-        qrCodeExport.setIcon(qrCodeIcon);
         menusRequiringStudyIds.put("qr", qrCodeExport);
         sampleTracking.add(qrCodeExport);
 
-        plugins.add(sampleTracking);
-        plugins.add(tagInvestigation);
 
-        menuBar.add(plugins);
+        utilities.add(sampleTracking);
+        utilities.add(tagInvestigation);
+
+        menuBar.add(utilities);
+
+        final JMenuItem clearOntologySearchCache = new JMenuItem("Clear Ontology Search Cache");
+
+        clearOntologySearchCache.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                OntologyManager.clearResultCache();
+            }
+        });
+
+        JMenu options = new JMenu("options");
+        options.addMouseListener(cleanUpDisplayedEditors);
+        options.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                clearOntologySearchCache.setEnabled(OntologyManager.searchResultCache.size() > 0);
+            }
+        });
+
+        options.add(clearOntologySearchCache);
+
+        menuBar.add(options);
+
+        pluginMenu = new JMenu("plugins");
+
+        menuBar.add(pluginMenu);
 
         JMenu help = new JMenu("help");
+        help.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem about = new JMenuItem("about",
                 aboutIcon);
@@ -489,28 +592,58 @@ public class ISAcreator extends AnimatableJFrame {
         JMenuItem manual = new JMenuItem("user manual",
                 helpIcon);
         manual.setForeground(UIHelper.DARK_GREEN_COLOR);
+        manual.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI("http://isatab.sourceforge.net/isahelp/ch04.html"));
+                } catch (IOException e1) {
+                    log.error("IOException - " + e1.getMessage());
+                } catch (URISyntaxException e1) {
+                    log.error("URISyntaxException - " + e1.getMessage());
+                }
+
+            }
+        });
         help.add(manual);
-        manual.setEnabled(false);
+        manual.setEnabled(true);
 
         JMenuItem contact = new JMenuItem("contact support team",
                 supportIcon);
         contact.setForeground(UIHelper.DARK_GREEN_COLOR);
+        contact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI("http://isatab.sourceforge.net/contact.html"));
+                } catch (IOException e1) {
+                    log.error("IOException - " + e1.getMessage());
+                } catch (URISyntaxException e1) {
+                    log.error("URISyntaxException - " + e1.getMessage());
+                }
+            }
+        });
         help.add(contact);
-        contact.setEnabled(false);
 
-        JMenuItem feedback = new JMenuItem("submit feedback",
+        JMenuItem feedback = new JMenuItem("report a bug",
                 feedbackIcon);
         feedback.setForeground(UIHelper.DARK_GREEN_COLOR);
+        feedback.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI("http://www.github.com/ISA-tools/ISAcreator/issues"));
+                } catch (IOException e1) {
+                    log.error("IOException - " + e1.getMessage());
+                } catch (URISyntaxException e1) {
+                    log.error("URISyntaxException - " + e1.getMessage());
+                }
+            }
+        });
         help.add(feedback);
-        feedback.setEnabled(false);
-
         menuBar.add(help);
 
         return UIHelper.wrapComponentInPanel(menuBar);
     }
 
     private void updateExportList() {
-
 
         Investigation i = curDataEntryEnvironment.getInvestigation();
 
@@ -522,9 +655,10 @@ public class ISAcreator extends AnimatableJFrame {
             id += s;
         }
         // we only want to update when something changes!
+        String lastExport = ISAcreatorProperties.getProperty("last_export");
         if (lastExport.isEmpty() || !lastExport.equals(id)) {
 
-            lastExport = id;
+            ISAcreatorProperties.setProperty("last_export", id);
 
             for (String menuType : menusRequiringStudyIds.keySet()) {
                 Component[] menuComponents = menusRequiringStudyIds.get(menuType).getMenuComponents();
@@ -601,7 +735,7 @@ public class ISAcreator extends AnimatableJFrame {
             for (UserProfile up : getUserProfiles()) {
 
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
+                    up.setUserHistory(OntologyManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
 
                     break;
@@ -621,7 +755,7 @@ public class ISAcreator extends AnimatableJFrame {
 
             for (UserProfile up : getUserProfiles()) {
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
+                    up.setUserHistory(OntologyManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;
                 }
@@ -630,7 +764,9 @@ public class ISAcreator extends AnimatableJFrame {
             userProfileIO.saveUserProfiles();
             checkMenuRequired();
 
-            OntologySourceManager.clearReferencedOntologySources();
+            ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, "");
+
+            OntologyManager.clearReferencedOntologySources();
 
             curDataEntryEnvironment.removeReferences();
             curDataEntryEnvironment = null;
@@ -651,43 +787,9 @@ public class ISAcreator extends AnimatableJFrame {
         });
     }
 
-    private void saveProfilesAndLogout() {
-
-        for (UserProfile up : getUserProfiles()) {
-            if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                up.setUserHistory(OntologySourceManager.getUserOntologyHistory());
-                userProfileIO.updateUserProfileInformation(up);
-
-                break;
-            }
-        }
-
-        userProfileIO.saveUserProfiles();
-
-        checkMenuRequired();
-        currentUser = null;
-
-        // reset information pertinent to a certain user
-        OntologySourceManager.clearReferencedOntologySources();
-        OntologySourceManager.clearUserHistory();
-
-        Spreadsheet.fileSelectEditor.setFtpManager(new FTPManager());
-
-        curDataEntryEnvironment = null;
-        OntologySourceManager.getUserOntologyHistory().clear();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                isacreatorMenu.showGUI(ISAcreatorMenu.SHOW_LOGIN);
-                isacreatorMenu.startAnimation();
-                setCurrentPage(isacreatorMenu);
-            }
-        });
-    }
-
 
     public void setCurDataEntryPanel(DataEntryEnvironment dataEntryEnvironment) {
-       curDataEntryEnvironment = dataEntryEnvironment;
+        curDataEntryEnvironment = dataEntryEnvironment;
         System.out.println("Data entry panel changed & initialised");
     }
 
@@ -735,7 +837,7 @@ public class ISAcreator extends AnimatableJFrame {
     }
 
     public static void setUserOntologyHistory(Map<String, OntologyTerm> userOntologyHistory) {
-        OntologySourceManager.setOntologySelectionHistory(userOntologyHistory);
+        OntologyManager.setOntologySelectionHistory(userOntologyHistory);
     }
 
     public void saveUserProfiles() {
@@ -746,12 +848,8 @@ public class ISAcreator extends AnimatableJFrame {
         return programSettings;
     }
 
-    public void setLoadedConfiguration(String name) {
-        this.loadedConfiguration = name;
-    }
-
     public String getLoadedConfiguration() {
-        return loadedConfiguration;
+        return ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION);
     }
 
 
@@ -850,10 +948,6 @@ public class ISAcreator extends AnimatableJFrame {
 
                                 break;
 
-                            case LOGOUT:
-                                saveProfilesAndLogout();
-
-                                break;
 
                             case EXIT:
                                 saveProfilesAndExit();
@@ -924,10 +1018,11 @@ public class ISAcreator extends AnimatableJFrame {
 
                 outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
 
+
                 closeWindowTimer.start();
 
                 if (type != SAVE_ONLY) {
-                    OntologySourceManager.clearReferencedOntologySources();
+                    OntologyManager.clearReferencedOntologySources();
                 }
             } else {
                 // need to get a new reference from the user!
@@ -942,14 +1037,17 @@ public class ISAcreator extends AnimatableJFrame {
                 sad.addPropertyChangeListener("save",
                         new PropertyChangeListener() {
                             public void propertyChange(PropertyChangeEvent event) {
-                                String fileName = DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-                                        event.getNewValue().toString() +
-                                        File.separator + "Investigation";
+                                String baseDirectory = DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+                                        event.getNewValue().toString();
+
+                                String fileName = baseDirectory + File.separator + "Investigation";
                                 createSubmissionDirectory(DEFAULT_ISATAB_SAVE_DIRECTORY +
                                         File.separator +
                                         event.getNewValue().toString());
                                 curDataEntryEnvironment.getInvestigation()
                                         .setFileReference(fileName);
+
+                                ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, baseDirectory);
 
                                 outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
                                 userProfileIO.saveUserProfiles();
@@ -1009,10 +1107,6 @@ public class ISAcreator extends AnimatableJFrame {
                                 case SAVE_MAIN:
 
                                     saveProfilesAndGoToMain();
-                                    break;
-
-                                case SAVE_LOGOUT:
-                                    saveProfilesAndLogout();
                                     break;
 
                                 case SAVE_EXIT:
@@ -1217,13 +1311,30 @@ public class ISAcreator extends AnimatableJFrame {
         }
     }
 
+    public void windowGainedFocus(WindowEvent windowEvent) {
+        // do nothing
+    }
+
+    public void windowLostFocus(WindowEvent windowEvent) {
+        closeEditors();
+    }
+
+    private void closeEditors() {
+        if (curDataEntryEnvironment != null) {
+            curDataEntryEnvironment.closeEditors();
+        }
+    }
+
+    public JMenu getPluginMenu() {
+        return pluginMenu;
+    }
 
     public static void main(String[] args) {
 
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE);
+                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE, null);
                 main.createGUI();
             }
         });

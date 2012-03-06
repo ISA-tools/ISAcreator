@@ -62,7 +62,7 @@ public class PropertyFileIO {
             if (f.exists()) {
                 is = new FileInputStream(f);
                 p.load(is);
-
+                setProxy(p);
                 return p;
             }
         } catch (IOException e) {

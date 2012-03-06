@@ -39,7 +39,7 @@ package org.isatools.isacreator.utils;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.FieldObject;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -48,13 +48,6 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-/**
- * FileUtils
- *
- * @author eamonnmaguire
- * @date Mar 3, 2010
- */
 
 
 public class GeneralUtils {

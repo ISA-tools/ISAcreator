@@ -310,7 +310,6 @@ public class TransposedSpreadsheetView extends JDialog {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 confirmChoice = new ConfirmationDialog();
-
                 confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                         confirmChoice.hideDialog();
@@ -329,11 +328,9 @@ public class TransposedSpreadsheetView extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         confirmChoice.createGUI();
-                        confirmChoice.showDialog(TransposedSpreadsheetView.this);
+                        confirmChoice.showDialog(transposedSpreadsheetSubform);
                     }
                 });
-
-
             }
         });
 
@@ -386,8 +383,6 @@ public class TransposedSpreadsheetView extends JDialog {
                         confirmChoice.showDialog(TransposedSpreadsheetView.this);
                     }
                 });
-
-
             }
         });
 

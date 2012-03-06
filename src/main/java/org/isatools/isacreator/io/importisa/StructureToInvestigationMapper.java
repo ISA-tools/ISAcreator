@@ -40,16 +40,19 @@ package org.isatools.isacreator.io.importisa;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
 import org.isatools.isacreator.utils.GeneralUtils;
-import org.isatools.isacreator.utils.datastructures.ISAPair;
+import uk.ac.ebi.utils.collections.Pair;
+
 
 import java.util.*;
 
@@ -65,16 +68,16 @@ public class StructureToInvestigationMapper {
 
 
     private List<OntologyTerm> ontologyTermsDefined;
-    private Set<String> messages;
+    private List<ErrorMessage> messages;
 
     private Investigation investigation;
 
     public StructureToInvestigationMapper() {
         ontologyTermsDefined = new ArrayList<OntologyTerm>();
-        messages = new HashSet<String>();
+        messages = new ArrayList<ErrorMessage>();
     }
 
-    public ISAPair<Boolean, Investigation> createInvestigationFromDataStructure(
+    public Pair<Boolean, Investigation> createInvestigationFromDataStructure(
             OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> investigationStructure) {
 
         investigation = null;
@@ -102,7 +105,7 @@ public class StructureToInvestigationMapper {
         }
 
 
-        return new ISAPair<Boolean, Investigation>(validateInvestigationFile(investigation), investigation);
+        return new Pair<Boolean, Investigation>(validateInvestigationFile(investigation), investigation);
     }
 
     private Investigation processInvestigation(OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>> investigationSections) {
@@ -117,32 +120,32 @@ public class StructureToInvestigationMapper {
         for (InvestigationFileSection investigationSection : investigationSections.keySet()) {
             if (investigationSection == InvestigationFileSection.INVESTIGATION_SECTION) {
 
-                ISAPair<Set<String>, Investigation> processedInvestigationSection = processInvestigationSection(investigationSections.get(investigationSection));
+                Pair<Set<String>, Investigation> processedInvestigationSection = processInvestigationSection(investigationSections.get(investigationSection));
                 sectionFields.put(investigationSection, processedInvestigationSection.fst);
                 tmpInvestigation = processedInvestigationSection.snd;
 
             } else if (investigationSection == InvestigationFileSection.ONTOLOGY_SECTION) {
 
-                ISAPair<Set<String>, List<OntologySourceRefObject>> processedFactorsSection = processOntologySourceReferences(investigationSections.get(investigationSection));
+                Pair<Set<String>, List<OntologySourceRefObject>> processedFactorsSection = processOntologySourceReferences(investigationSections.get(investigationSection));
                 sectionFields.put(investigationSection, processedFactorsSection.fst);
                 ontologySources = processedFactorsSection.snd;
 
             } else if (investigationSection == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
 
-                ISAPair<Set<String>, List<Publication>> processedPublicationSection = processPublication(investigationSection,
+                Pair<Set<String>, List<Publication>> processedPublicationSection = processPublication(investigationSection,
                         investigationSections.get(investigationSection));
                 sectionFields.put(investigationSection, processedPublicationSection.fst);
                 publications = processedPublicationSection.snd;
 
             } else if (investigationSection == InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION) {
-                ISAPair<Set<String>, List<Contact>> processedContactSection = processContacts(investigationSection, investigationSections.get(investigationSection));
+                Pair<Set<String>, List<Contact>> processedContactSection = processContacts(investigationSection, investigationSections.get(investigationSection));
                 sectionFields.put(investigationSection, processedContactSection.fst);
                 contacts = processedContactSection.snd;
             }
         }
 
         if (tmpInvestigation != null) {
-            OntologySourceManager.setOntologiesUsed(tmpInvestigation.getInvestigationId(), ontologySources);
+            OntologyManager.setOntologiesUsed(tmpInvestigation.getInvestigationId(), ontologySources);
             tmpInvestigation.addToPublications(publications);
             tmpInvestigation.addToContacts(contacts);
 
@@ -152,7 +155,7 @@ public class StructureToInvestigationMapper {
         return tmpInvestigation;
     }
 
-    private ISAPair<Set<String>, Investigation> processInvestigationSection(OrderedMap<String, List<String>> investigationSection) {
+    private Pair<Set<String>, Investigation> processInvestigationSection(OrderedMap<String, List<String>> investigationSection) {
         Investigation investigation = new Investigation();
 
         Set<String> sectionFields = getFieldList(investigationSection);
@@ -170,11 +173,11 @@ public class StructureToInvestigationMapper {
                 String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                 investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
-                messages.add(e.getMessage());
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
             }
         }
 
-        return new ISAPair<Set<String>, Investigation>(sectionFields, investigation);
+        return new Pair<Set<String>, Investigation>(sectionFields, investigation);
     }
 
     private Study processStudy(OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>> studySections) {
@@ -192,43 +195,43 @@ public class StructureToInvestigationMapper {
         for (InvestigationFileSection studySection : studySections.keySet()) {
             if (studySection == InvestigationFileSection.STUDY_SECTION) {
 
-                ISAPair<Set<String>, Study> processedStudySection = processStudySection(studySections.get(studySection));
+                Pair<Set<String>, Study> processedStudySection = processStudySection(studySections.get(studySection));
                 study = processedStudySection.snd;
                 sectionFields.put(studySection, processedStudySection.fst);
 
             } else if (studySection == InvestigationFileSection.STUDY_FACTORS) {
 
-                ISAPair<Set<String>, List<Factor>> processedFactorsSection = processFactors(studySections.get(studySection));
+                Pair<Set<String>, List<Factor>> processedFactorsSection = processFactors(studySections.get(studySection));
                 sectionFields.put(studySection, processedFactorsSection.fst);
                 factors = processedFactorsSection.snd;
 
             } else if (studySection == InvestigationFileSection.STUDY_DESIGN_SECTION) {
 
-                ISAPair<Set<String>, List<StudyDesign>> processedStudyDesignSection = processStudyDesigns(studySections.get(studySection));
+                Pair<Set<String>, List<StudyDesign>> processedStudyDesignSection = processStudyDesigns(studySections.get(studySection));
                 sectionFields.put(studySection, processedStudyDesignSection.fst);
                 studyDesigns = processedStudyDesignSection.snd;
 
             } else if (studySection == InvestigationFileSection.STUDY_ASSAYS) {
 
-                ISAPair<Set<String>, List<Assay>> processedAssaySection = processAssay(studySections.get(studySection));
+                Pair<Set<String>, List<Assay>> processedAssaySection = processAssay(studySections.get(studySection));
                 sectionFields.put(studySection, processedAssaySection.fst);
                 assays = processedAssaySection.snd;
 
             } else if (studySection == InvestigationFileSection.STUDY_PUBLICATIONS) {
 
-                ISAPair<Set<String>, List<Publication>> processedPublicationSection = processPublication(studySection, studySections.get(studySection));
+                Pair<Set<String>, List<Publication>> processedPublicationSection = processPublication(studySection, studySections.get(studySection));
                 sectionFields.put(studySection, processedPublicationSection.fst);
                 publications = processedPublicationSection.snd;
 
             } else if (studySection == InvestigationFileSection.STUDY_PROTOCOLS) {
 
-                ISAPair<Set<String>, List<Protocol>> processedProtocolSection = processProtocol(studySections.get(studySection));
+                Pair<Set<String>, List<Protocol>> processedProtocolSection = processProtocol(studySections.get(studySection));
                 sectionFields.put(studySection, processedProtocolSection.fst);
                 protocols = processedProtocolSection.snd;
 
             } else if (studySection == InvestigationFileSection.STUDY_CONTACTS) {
 
-                ISAPair<Set<String>, List<Contact>> processedContactSection = processContacts(studySection, studySections.get(studySection));
+                Pair<Set<String>, List<Contact>> processedContactSection = processContacts(studySection, studySections.get(studySection));
                 sectionFields.put(studySection, processedContactSection.fst);
                 contacts = processedContactSection.snd;
             }
@@ -249,7 +252,7 @@ public class StructureToInvestigationMapper {
         return study;
     }
 
-    private ISAPair<Set<String>, Study> processStudySection(OrderedMap<String, List<String>> studySection) {
+    private Pair<Set<String>, Study> processStudySection(OrderedMap<String, List<String>> studySection) {
         Study study = new Study();
 
         Set<String> sectionFields = getFieldList(studySection);
@@ -267,14 +270,14 @@ public class StructureToInvestigationMapper {
                 String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                 study.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
             } catch (MalformedOntologyTermException e) {
-                messages.add(e.getMessage());
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
             }
         }
 
-        return new ISAPair<Set<String>, Study>(sectionFields, study);
+        return new Pair<Set<String>, Study>(sectionFields, study);
     }
 
-    private ISAPair<Set<String>, List<OntologySourceRefObject>> processOntologySourceReferences(OrderedMap<String, List<String>> ontologySection) {
+    private Pair<Set<String>, List<OntologySourceRefObject>> processOntologySourceReferences(OrderedMap<String, List<String>> ontologySection) {
         List<OntologySourceRefObject> ontologySources = new ArrayList<OntologySourceRefObject>();
 
         int recordCount = getLoopCount(ontologySection);
@@ -290,10 +293,10 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return new ISAPair<Set<String>, List<OntologySourceRefObject>>(sectionFields, ontologySources);
+        return new Pair<Set<String>, List<OntologySourceRefObject>>(sectionFields, ontologySources);
     }
 
-    private ISAPair<Set<String>, List<Publication>> processPublication(InvestigationFileSection section, OrderedMap<String, List<String>> publicationSection) {
+    private Pair<Set<String>, List<Publication>> processPublication(InvestigationFileSection section, OrderedMap<String, List<String>> publicationSection) {
         List<Publication> publications = new ArrayList<Publication>();
 
         int recordCount = getLoopCount(publicationSection);
@@ -322,7 +325,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -333,10 +336,10 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return new ISAPair<Set<String>, List<Publication>>(sectionFields, publications);
+        return new Pair<Set<String>, List<Publication>>(sectionFields, publications);
     }
 
-    private ISAPair<Set<String>, List<StudyDesign>> processStudyDesigns(OrderedMap<String, List<String>> studyDesignSection) {
+    private Pair<Set<String>, List<StudyDesign>> processStudyDesigns(OrderedMap<String, List<String>> studyDesignSection) {
         List<StudyDesign> studyDesigns = new ArrayList<StudyDesign>();
 
         int recordCount = getLoopCount(studyDesignSection);
@@ -359,7 +362,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         design.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -367,10 +370,10 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return new ISAPair<Set<String>, List<StudyDesign>>(sectionFields, studyDesigns);
+        return new Pair<Set<String>, List<StudyDesign>>(sectionFields, studyDesigns);
     }
 
-    private ISAPair<Set<String>, List<Contact>> processContacts(InvestigationFileSection section, OrderedMap<String, List<String>> contactSection) {
+    private Pair<Set<String>, List<Contact>> processContacts(InvestigationFileSection section, OrderedMap<String, List<String>> contactSection) {
         List<Contact> contacts = new ArrayList<Contact>();
 
         int recordCount = getLoopCount(contactSection);
@@ -399,7 +402,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         c.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -407,10 +410,10 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return new ISAPair<Set<String>, List<Contact>>(sectionFields, contacts);
+        return new Pair<Set<String>, List<Contact>>(sectionFields, contacts);
     }
 
-    private ISAPair<Set<String>, List<Factor>> processFactors(OrderedMap<String, List<String>> factorSection) {
+    private Pair<Set<String>, List<Factor>> processFactors(OrderedMap<String, List<String>> factorSection) {
         List<Factor> factors = new ArrayList<Factor>();
 
         int recordCount = getLoopCount(factorSection);
@@ -433,7 +436,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         f.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -441,10 +444,10 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return new ISAPair<Set<String>, List<Factor>>(sectionFields, factors);
+        return new Pair<Set<String>, List<Factor>>(sectionFields, factors);
     }
 
-    private ISAPair<Set<String>, List<Protocol>> processProtocol(OrderedMap<String, List<String>> protocolSection) {
+    private Pair<Set<String>, List<Protocol>> processProtocol(OrderedMap<String, List<String>> protocolSection) {
         List<Protocol> protocols = new ArrayList<Protocol>();
 
         int recordCount = getLoopCount(protocolSection);
@@ -468,7 +471,7 @@ public class StructureToInvestigationMapper {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
                         p.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
-                        messages.add(e.getMessage());
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
 
@@ -476,10 +479,10 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return new ISAPair<Set<String>, List<Protocol>>(sectionFields, protocols);
+        return new Pair<Set<String>, List<Protocol>>(sectionFields, protocols);
     }
 
-    private ISAPair<Set<String>, List<Assay>> processAssay(OrderedMap<String, List<String>> assaySection) {
+    private Pair<Set<String>, List<Assay>> processAssay(OrderedMap<String, List<String>> assaySection) {
 
         List<Assay> assays = new ArrayList<Assay>();
 
@@ -497,7 +500,7 @@ public class StructureToInvestigationMapper {
             }
         }
 
-        return new ISAPair<Set<String>, List<Assay>>(sectionFields, assays);
+        return new Pair<Set<String>, List<Assay>>(sectionFields, assays);
     }
 
 
@@ -614,7 +617,7 @@ public class StructureToInvestigationMapper {
     }
 
     private OntologySourceRefObject getOntologySource(String source) {
-        return OntologySourceManager.getOntologySourceReferenceObjectByAbbreviation(source);
+        return OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
     }
 
 
@@ -626,7 +629,7 @@ public class StructureToInvestigationMapper {
         for (Study study : investigation.getStudies().values()) {
             if (studyNames.contains(study.getStudyId())) {
                 String message = "Duplicate study names found in investigation! Study with with ID : " + study.getStudyId() + " already exists!";
-                messages.add(message);
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, message));
                 log.info(message);
                 return false;
             } else {
@@ -636,7 +639,7 @@ public class StructureToInvestigationMapper {
             for (Assay assay : study.getAssays().values()) {
                 if (assayNames.contains(assay.getAssayReference())) {
                     String message = "Duplicate assay found in investigation! Assay with with name : " + assay.getAssayReference() + " already exists!";
-                    messages.add(message);
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, message));
                     log.info(message);
                     return false;
                 } else {
@@ -650,7 +653,7 @@ public class StructureToInvestigationMapper {
         // build up set of ontology sources that have been defined
         Set<String> definedOntologySources = new HashSet<String>();
 
-        for (OntologySourceRefObject osro : OntologySourceManager.getOntologiesUsed()) {
+        for (OntologySourceRefObject osro : OntologyManager.getOntologiesUsed()) {
             definedOntologySources.add(osro.getSourceName());
         }
 
@@ -674,7 +677,7 @@ public class StructureToInvestigationMapper {
                 missing += (m + " ");
             }
 
-            messages.add("Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing);
+            messages.add(new ErrorMessage(ErrorLevel.ERROR, "Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing));
             log.info("Some ontology sources are not defined in the ONTOLOGY SOURCE REFERENCE section -> " + missing);
             return false;
         }
@@ -682,7 +685,7 @@ public class StructureToInvestigationMapper {
         return true;
     }
 
-    public Set<String> getMessages() {
+    public List<ErrorMessage> getMessages() {
         return messages;
     }
 

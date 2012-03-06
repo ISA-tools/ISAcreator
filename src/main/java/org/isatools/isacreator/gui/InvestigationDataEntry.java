@@ -39,7 +39,6 @@ package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
@@ -50,7 +49,7 @@ import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -77,7 +76,6 @@ public class InvestigationDataEntry extends DataEntryForm {
 
     private SubForm publicationsSubForm;
     private SubForm contactsSubform;
-
 
 
     public InvestigationDataEntry(Investigation investigation, DataEntryEnvironment dep) {
@@ -165,22 +163,10 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         for (String contactField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION)) {
 
-            FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(contactField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
 
-            if (!fieldsToIgnore.contains(contactField)) {
-                if (ontologyFields.contains(contactField)) {
-                    int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    contactFields.add(new SubFormField(contactField, fieldType));
-                } else {
-
-                    contactFields.add(new SubFormField(contactField,
-                            translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(), fieldDescriptor.isAcceptsMultipleValues())));
-                }
+            if (generatedField != null) {
+                contactFields.add(generatedField);
             }
         }
 
@@ -203,21 +189,10 @@ public class InvestigationDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
 
-            FieldObject fieldDescriptor = investigation.getReferenceObject().getFieldDefinition(publicationField);
+            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, publicationField);
 
-            if (!fieldsToIgnore.contains(publicationField)) {
-                if (ontologyFields.contains(publicationField)) {
-                    int fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
-
-                    if (fieldDescriptor != null)
-                        if (fieldDescriptor.isAcceptsMultipleValues())
-                            fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
-                    publicationFields.add(new SubFormField(publicationField, fieldType));
-                } else {
-                    publicationFields.add(new SubFormField(publicationField,
-                            translateDataTypeToSubFormFieldType(fieldDescriptor.getDatatype(), fieldDescriptor.isAcceptsMultipleValues())));
-                }
+            if (generatedField != null) {
+                publicationFields.add(generatedField);
             }
         }
 
@@ -225,7 +200,6 @@ public class InvestigationDataEntry extends DataEntryForm {
                 : investigation.getPublications()
                 .size();
 
-        // todo should calculate the height of the subform based on the number of fields.
         publicationsSubForm = new PublicationSubForm(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(),
                 FieldTypes.PUBLICATION, publicationFields, numColsToAdd, 300, 125, this);
         publicationsSubForm.createGUI();
@@ -236,10 +210,8 @@ public class InvestigationDataEntry extends DataEntryForm {
     public String toString() {
         update();
 
-        StringBuffer output = new StringBuffer();
+        StringBuilder output = new StringBuilder();
         output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
-
-        boolean displayInvestigationInfo = investigation.getStudies().size() > 1;
 
         Set<String> ontologyFields = IOUtils.filterFields(investigation.getFieldValues().keySet(), IOUtils.ACCESSION, IOUtils.SOURCE_REF);
 
@@ -267,7 +239,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
             String tmpFieldName = fieldName;
 
-            if(aliasesToRealNames.containsKey(fieldName)) {
+            if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
 
@@ -300,7 +272,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
             String tmpFieldName = fieldName;
 
-            if(aliasesToRealNames.containsKey(fieldName)) {
+            if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
 

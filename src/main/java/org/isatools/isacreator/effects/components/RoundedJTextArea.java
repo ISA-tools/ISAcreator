@@ -30,6 +30,8 @@ public class RoundedJTextArea extends JTextArea {
     public RoundedJTextArea(String text, int rows, int columns, Color backgroundColor) {
         super(text, rows, columns);
         this.backgroundColor = backgroundColor;
+        setSelectedTextColor(UIHelper.BG_COLOR);
+        setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
         setOpaque(false);
         setBorder(new EmptyBorder(3, 5, 3, 5));
     }

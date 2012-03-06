@@ -53,8 +53,10 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.spreadsheet.model.ReferenceData;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetModel;
 import org.isatools.isacreator.spreadsheet.transposedview.TransposedSpreadsheetView;
@@ -89,7 +91,8 @@ import java.util.List;
  * @author Eamonn Maguire
  */
 public class Spreadsheet extends JComponent implements
-        MouseListener, ListSelectionListener, PropertyChangeListener, TableColumnModelListener {
+        MouseListener, ListSelectionListener, PropertyChangeListener, TableColumnModelListener, ActionListener,
+        CopyPasteSubject {
 
     private static final Logger log = Logger.getLogger(Spreadsheet.class.getName());
 
@@ -112,6 +115,7 @@ public class Spreadsheet extends JComponent implements
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
         ResourceInjector.get("spreadsheet-package.style").load(
                 Spreadsheet.class.getResource("/dependency-injections/spreadsheet-package.properties"));
+
     }
 
     @InjectedResource
@@ -131,10 +135,13 @@ public class Spreadsheet extends JComponent implements
     protected JOptionPane optionPane;
     private CustomTable table;
 
+    private List<CopyPasteObserver> observers;
+
 
     private TableGroupInfo tableGroupInformation;
     protected SpreadsheetColumnRenderer renderer = new SpreadsheetColumnRenderer();
     protected SpreadsheetModel spreadsheetModel;
+    private AnimatableJFrame parentFrame;
     private StudyDataEntry studyDataEntryEnvironment;
     private AssaySpreadsheet assayDataEntryEnvironment;
     private TableReferenceObject tableReferenceObject;
@@ -153,6 +160,7 @@ public class Spreadsheet extends JComponent implements
     private TableConsistencyChecker tableConsistencyChecker;
 
     private SpreadsheetPopupMenus spreadsheetPopups;
+    private JPanel spreadsheetFunctionPanel;
 
     protected SpreadsheetFunctions spreadsheetFunctions;
 
@@ -198,19 +206,43 @@ public class Spreadsheet extends JComponent implements
     /**
      * Spreadsheet Constructor.
      *
+     * @param parentFrame          - AnimatableJFrame object for display of the notification panels.
+     * @param tableReferenceObject - The @see TableReferenceObject representing the sheets format
+     * @param spreadsheetTitle     - Spreadsheet name
+     */
+    public Spreadsheet(AnimatableJFrame parentFrame, TableReferenceObject tableReferenceObject, String spreadsheetTitle) {
+        this.parentFrame = parentFrame;
+        this.tableReferenceObject = tableReferenceObject;
+        this.spreadsheetTitle = spreadsheetTitle;
+
+        instantiateSpreadsheet();
+    }
+
+    /**
+     * Spreadsheet Constructor.
+     *
      * @param tableReferenceObject      - Reference Object to build the table with.
      * @param studyDataEntryEnvironment - StudyDataEntry. Used to retrieve factors and protocols which have been entered.
      * @param spreadsheetTitle          - name to display on the spreadsheet...
      * @param assayDataEntryEnvironment - The assay data entry object :o)
      */
-    public Spreadsheet(final TableReferenceObject tableReferenceObject, StudyDataEntry studyDataEntryEnvironment, String spreadsheetTitle, AssaySpreadsheet assayDataEntryEnvironment) {
-        ResourceInjector.get("spreadsheet-package.style").inject(this);
+    public Spreadsheet(TableReferenceObject tableReferenceObject, StudyDataEntry studyDataEntryEnvironment, String spreadsheetTitle, AssaySpreadsheet assayDataEntryEnvironment) {
 
         this.studyDataEntryEnvironment = studyDataEntryEnvironment;
+        this.parentFrame = studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
         this.assayDataEntryEnvironment = assayDataEntryEnvironment;
 
         this.spreadsheetTitle = spreadsheetTitle;
         this.tableReferenceObject = tableReferenceObject;
+
+        instantiateSpreadsheet();
+    }
+
+    public void instantiateSpreadsheet() {
+
+        ResourceInjector.get("spreadsheet-package.style").inject(this);
+
+        observers = new ArrayList<CopyPasteObserver>();
 
         spreadsheetPopups = new SpreadsheetPopupMenus(this);
         spreadsheetFunctions = new SpreadsheetFunctions(this);
@@ -221,10 +253,6 @@ public class Spreadsheet extends JComponent implements
 
         setLayout(new BorderLayout());
 
-        instantiateSpreadsheet();
-    }
-
-    public void instantiateSpreadsheet() {
         // create a spreadsheet model which overrides two methods that allow the reference model for the spreadsheet to
         // control which columns can be deleted, and which cannot.
         spreadsheetModel = new SpreadsheetModel(tableReferenceObject) {
@@ -279,33 +307,39 @@ public class Spreadsheet extends JComponent implements
             // populate table with some empty fields.
             spreadsheetFunctions.addRows(INITIAL_ROWS, true);
 
-            List<Protocol> protocols = tableReferenceObject.constructProtocolObjects();
-            if (protocols.size() > 0) {
-                for (Protocol p : protocols) {
-                    studyDataEntryEnvironment.getStudy().addProtocol(p);
-                }
-                studyDataEntryEnvironment.reformProtocols();
-            }
+            if (studyDataEntryEnvironment != null) {
 
-            List<Factor> factors = tableReferenceObject.constructFactorObjects();
-
-            if (factors.size() > 0) {
-                for (Factor f : factors) {
-                    studyDataEntryEnvironment.getStudy().addFactor(f);
+                List<Protocol> protocols = tableReferenceObject.constructProtocolObjects();
+                if (protocols.size() > 0) {
+                    for (Protocol p : protocols) {
+                        studyDataEntryEnvironment.getStudy().addProtocol(p);
+                    }
+                    studyDataEntryEnvironment.reformProtocols();
                 }
-                studyDataEntryEnvironment.reformFactors();
+
+                List<Factor> factors = tableReferenceObject.constructFactorObjects();
+
+                if (factors.size() > 0) {
+                    for (Factor f : factors) {
+                        studyDataEntryEnvironment.getStudy().addFactor(f);
+                    }
+                    studyDataEntryEnvironment.reformFactors();
+                }
             }
         }
 
 
         if (tableReferenceObject.getDefinedOntologies().size() > 0) {
             for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
-                OntologySourceManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
+                OntologyManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
             }
         }
 
 
         table.setAutoscrolls(true);
+
+        // assign copy/paste listener
+        new CopyPasteAdaptor(this);
 
         JScrollPane pane = new JScrollPane(table,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -444,7 +478,7 @@ public class Spreadsheet extends JComponent implements
      * have been filled in. If they have not been filled in, an ErrorLocator is logged and returned in a List of ErrorLocator objects!
      *
      * @return returns a List (@see List) of ErrorLocator (@see ErrorLocator) objects
-     * @see org.isatools.isacreator.spreadsheet.TableReferenceObject
+     * @see org.isatools.isacreator.spreadsheet.model.TableReferenceObject
      * @see org.isatools.isacreator.archiveoutput.ArchiveOutputError
      */
     public List<ArchiveOutputError> checkForCompleteness() {
@@ -540,9 +574,9 @@ public class Spreadsheet extends JComponent implements
      */
     private void createButtonPanel() {
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
-        buttonPanel.setBackground(UIHelper.BG_COLOR);
+        spreadsheetFunctionPanel = new JPanel();
+        spreadsheetFunctionPanel.setLayout(new BoxLayout(spreadsheetFunctionPanel, BoxLayout.LINE_AXIS));
+        spreadsheetFunctionPanel.setBackground(UIHelper.BG_COLOR);
 
         addRow = new JLabel(addRowButton);
         addRow.setToolTipText("<html><b>add row</b>" +
@@ -657,19 +691,19 @@ public class Spreadsheet extends JComponent implements
                     copyColDownConfirmationPane.setIcon(copyColumnDownWarningIcon);
                     UIHelper.applyOptionPaneBackground(copyColDownConfirmationPane, UIHelper.BG_COLOR);
 
+
                     copyColDownConfirmationPane.addPropertyChangeListener(new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent event) {
                             if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
                                 int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-                                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
+                                parentFrame.hideSheet();
                                 if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                                     spreadsheetFunctions.copyColumnDownwards(row, col);
                                 }
                             }
                         }
                     });
-                    studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
-                            .showJDialogAsSheet(copyColDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Column?"));
+                    parentFrame.showJDialogAsSheet(copyColDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Column?"));
 
                 }
             }
@@ -702,19 +736,20 @@ public class Spreadsheet extends JComponent implements
 
                 UIHelper.applyOptionPaneBackground(copyRowDownConfirmationPane, UIHelper.BG_COLOR);
 
+
                 copyRowDownConfirmationPane.addPropertyChangeListener(new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
                             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-                            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
+                            parentFrame.hideSheet();
                             if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                                 spreadsheetFunctions.copyRowDownwards(row);
                             }
                         }
                     }
                 });
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
-                        .showJDialogAsSheet(copyRowDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Row Down?"));
+                parentFrame.showJDialogAsSheet(
+                        copyRowDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Row Down?"));
             }
         });
 
@@ -872,54 +907,65 @@ public class Spreadsheet extends JComponent implements
             }
         });
 
+        addButtons();
 
-        buttonPanel.add(addRow);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(deleteRow);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(deleteColumn);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(multipleSort);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(copyColDown);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(copyRowDown);
-        buttonPanel.add(Box.createHorizontalStrut(5));
+        if (studyDataEntryEnvironment != null) {
+            JPanel labelContainer = new JPanel(new GridLayout(1, 1));
+            labelContainer.setBackground(UIHelper.BG_COLOR);
+
+            JLabel lab = UIHelper.createLabel(spreadsheetTitle, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, JLabel.RIGHT);
+            lab.setBackground(UIHelper.BG_COLOR);
+            lab.setVerticalAlignment(JLabel.CENTER);
+            lab.setPreferredSize(new Dimension(200, 30));
+
+            labelContainer.add(lab);
+
+            spreadsheetFunctionPanel.add(labelContainer);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(10));
+        }
+
+        add(spreadsheetFunctionPanel, BorderLayout.NORTH);
+    }
+
+    /**
+     * This method is meant to be overridden in the event that one wishes to add in custom functions to the spreadsheet UI
+     */
+    public void addButtons() {
+        spreadsheetFunctionPanel.add(addRow);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(deleteRow);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(deleteColumn);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(multipleSort);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(copyColDown);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(copyRowDown);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
 
         //add factor, protocol, parameter and characteristic here!
-        buttonPanel.add(addFactor);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(addCharacteristic);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(addProtocol);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(addParameter);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(transpose);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(undo);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(redo);
+        if (studyDataEntryEnvironment != null) {
+            spreadsheetFunctionPanel.add(addFactor);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(addCharacteristic);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(addProtocol);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(addParameter);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            spreadsheetFunctionPanel.add(transpose);
+            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        }
+        spreadsheetFunctionPanel.add(undo);
+        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+        spreadsheetFunctionPanel.add(redo);
 
 
         addProtocol.setEnabled(false);
         addParameter.setEnabled(false);
         addCharacteristic.setEnabled(false);
 
-        JPanel labelContainer = new JPanel(new GridLayout(1, 1));
-        labelContainer.setBackground(UIHelper.BG_COLOR);
-
-        JLabel lab = UIHelper.createLabel(spreadsheetTitle, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, JLabel.RIGHT);
-        lab.setBackground(UIHelper.BG_COLOR);
-        lab.setVerticalAlignment(JLabel.CENTER);
-        lab.setPreferredSize(new Dimension(200, 30));
-
-        labelContainer.add(lab);
-
-        buttonPanel.add(labelContainer);
-        buttonPanel.add(Box.createHorizontalStrut(10));
-        //buttonPanel.add(exportAsCSV);
-        add(buttonPanel, BorderLayout.NORTH);
     }
 
     /**
@@ -956,10 +1002,7 @@ public class Spreadsheet extends JComponent implements
      * @param unique    - if unique is true, then only unique columns are sent back. doens't make sense when needColNo is set to true.
      * @return A vector of strings containing headers - set to vector since the values will be instantly suitable for a ComboBox for example.
      */
-    public Vector<String> getHeaders
-    (
-            boolean needColNo,
-            boolean unique) {
+    public Vector<String> getHeaders(boolean needColNo, boolean unique) {
         Vector<String> headerList = new Vector<String>();
 
         for (int i = 0; i < spreadsheetModel.getColumnCount(); i++) {
@@ -986,54 +1029,12 @@ public class Spreadsheet extends JComponent implements
     }
 
     /**
-     * Gets the ontology sources used within the table by searching each column defined to use ontologies and pulling out
-     * all Sources used. These sources can then be used in the import section to ensure that all ontologies used throughout
-     * the submission have been defined.
-     *
-     * @return Set<String> containing the Ontologies defined in the Spreadsheet.
-     */
-    public Set<String> getOntologiesDefinedInTable() {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        HashSet<String> ontologySources = new HashSet<String>();
-
-        while (columns.hasMoreElements()) {
-            TableColumn tc = columns.nextElement();
-
-            if (tableReferenceObject.getClassType(tc.getHeaderValue().toString().trim())
-                    == DataTypes.ONTOLOGY_TERM ||
-                    tc.getHeaderValue().toString().trim()
-                            .equalsIgnoreCase("unit")) {
-                int colIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
-
-                for (int row = 0; row < table.getRowCount(); row++) {
-                    String s = (table.getValueAt(row, colIndex) == null) ? ""
-                            : table.getValueAt(row,
-                            colIndex).toString();
-
-                    if (s.contains(":")) {
-                        // an ontology term should be in the field!
-                        String[] termParts = s.split(":");
-
-                        if (!termParts[0].trim().equals("") && !ontologySources.contains(termParts[0].trim())) {
-                            ontologySources.add(termParts[0].trim());
-                        }
-                    }
-                }
-            }
-        }
-
-        return ontologySources;
-    }
-
-    /**
      * Return the parent frame for the entire ISAcreator GUI.
      *
      * @return MainGUI object.
      */
-    public AnimatableJFrame getParentFrame
-    () {
-        return studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
+    public AnimatableJFrame getParentFrame() {
+        return parentFrame;
     }
 
     /**
@@ -1041,8 +1042,7 @@ public class Spreadsheet extends JComponent implements
      *
      * @return the StudyDataEntry object for the current Spreadsheet
      */
-    public StudyDataEntry getStudyDataEntryEnvironment
-    () {
+    public StudyDataEntry getStudyDataEntryEnvironment() {
         return studyDataEntryEnvironment;
     }
 
@@ -1116,14 +1116,13 @@ public class Spreadsheet extends JComponent implements
      *
      * @param data - data to be entered.
      */
-    public void populateTable
-    (List<List<String>> data) {
-        spreadsheetFunctions.addRows(data.size(), false);
+    public void populateTable(ReferenceData data) {
+        spreadsheetFunctions.addRows(data.getData().size(), false);
 
-        int dataSize = data.size();
+        int dataSize = data.getData().size();
 
         for (int row = 0; row < dataSize; row++) {
-            List<String> rowData = data.get(row);
+            List<String> rowData = data.getData().get(row);
             int rowDataSize = rowData.size();
 
             for (int col = 0; col < rowDataSize; col++) {
@@ -1258,7 +1257,7 @@ public class Spreadsheet extends JComponent implements
                      event) {
         if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
             int lastOptionAnswer = Integer.valueOf(event.getNewValue().toString());
-            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().hideSheet();
+            parentFrame.hideSheet();
 
             if ((currentState == DELETING_COLUMN) &&
                     (lastOptionAnswer == JOptionPane.YES_OPTION)) {
@@ -1288,8 +1287,7 @@ public class Spreadsheet extends JComponent implements
      * @param mappings - Mappings of parent column positions to the dependent column positions.
      */
     private void rebuildDependencies(Map<Integer, ListOrderedSet<Integer>> mappings) {
-        log.info("Rebuilding dependencies for: " + spreadsheetTitle);
-        log.info("Number of columns is " + table.getColumnCount());
+
         for (Integer parentColIndex : mappings.keySet()) {
             if (parentColIndex + 1 < table.getColumnCount()) {
                 TableColumn parentCol = table.getColumnModel()
@@ -1320,16 +1318,7 @@ public class Spreadsheet extends JComponent implements
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
     private OntologyTerm searchUserHistory(String uniqueId) {
-        return OntologySourceManager.getUserOntologyHistory().get(uniqueId);
-    }
-
-    /**
-     * Add a listener to be notified when the selected range changes
-     *
-     * @param spreadsheetSelectionListener The listener to add
-     */
-    public void addSelectionListener(SpreadsheetSelectionListener spreadsheetSelectionListener) {
-        listenerList.add(SpreadsheetSelectionListener.class, spreadsheetSelectionListener);
+        return OntologyManager.getUserOntologyHistory().get(uniqueId);
     }
 
     /**
@@ -1434,17 +1423,22 @@ public class Spreadsheet extends JComponent implements
 
         TableColumnModel model = table.getColumnModel();
 
-        for (int i = 0; i < tableReferenceObject.getHeaders().size(); i++) {
-            if (!model.getColumn(i).getHeaderValue().toString().equals(TableReferenceObject.ROW_NO_TEXT)) {
-                model.getColumn(i).setHeaderRenderer(renderer);
-                model.getColumn(i)
+        String previousColumnName = null;
+        for (int columnIndex = 0; columnIndex < tableReferenceObject.getHeaders().size(); columnIndex++) {
+            if (!model.getColumn(columnIndex).getHeaderValue().toString().equals(TableReferenceObject.ROW_NO_TEXT)) {
+                model.getColumn(columnIndex).setHeaderRenderer(renderer);
+                model.getColumn(columnIndex)
                         .setPreferredWidth(spreadsheetFunctions.calcColWidths(
-                                model.getColumn(i).getHeaderValue().toString()));
+                                model.getColumn(columnIndex).getHeaderValue().toString()));
                 // add appropriate cell editor for cell.
-                spreadsheetFunctions.addCellEditor(model.getColumn(i));
+                spreadsheetFunctions.addCellEditor(model.getColumn(columnIndex), previousColumnName);
+
+                previousColumnName = model.getColumn(columnIndex).getHeaderValue().toString();
             } else {
-                model.getColumn(i).setHeaderRenderer(new RowNumberCellRenderer());
+                model.getColumn(columnIndex).setHeaderRenderer(new RowNumberCellRenderer());
             }
+
+
         }
 
         JTableHeader header = table.getTableHeader();
@@ -1498,7 +1492,7 @@ public class Spreadsheet extends JComponent implements
                 if (goingToDisplay != null) {
                     goingToDisplay.createGUI();
                     // do this to ensure that the gui is fully created before displaying it.
-                    studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(goingToDisplay);
+                    parentFrame.showJDialogAsSheet(goingToDisplay);
                 }
             }
         });
@@ -1516,8 +1510,7 @@ public class Spreadsheet extends JComponent implements
             optionPane.setIcon(selectOneColumnWarningIcon);
             UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
             optionPane.addPropertyChangeListener(this);
-            studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame()
-                    .showJDialogAsSheet(optionPane.createDialog(this, "Delete Column"));
+            parentFrame.showJDialogAsSheet(optionPane.createDialog(this, "Delete Column"));
         }
     }
 
@@ -1533,7 +1526,7 @@ public class Spreadsheet extends JComponent implements
                 msGUI.createGUI();
                 msGUI.updateAllCombos();
 
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(msGUI);
+                parentFrame.showJDialogAsSheet(msGUI);
             }
         });
     }
@@ -1543,16 +1536,15 @@ public class Spreadsheet extends JComponent implements
      * Displays the Transposed Spreadsheet UI
      */
     protected void showTransposeSpreadsheetGUI() {
-        // todo migrate this to occur in the view so that a loading pane is shown whilst the spreadsheet is loaded.
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 SpreadsheetConverter converter = new SpreadsheetConverter(Spreadsheet.this);
                 TransposedSpreadsheetModel transposedSpreadsheetModel = converter.doConversion();
-                TransposedSpreadsheetView transposedSpreadsheetView = new TransposedSpreadsheetView(transposedSpreadsheetModel, (int) (studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().getWidth() * 0.80), (int) (studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().getHeight() * 0.70));
+                TransposedSpreadsheetView transposedSpreadsheetView = new TransposedSpreadsheetView(transposedSpreadsheetModel, (int) (parentFrame.getWidth() * 0.80), (int) (parentFrame.getHeight() * 0.70));
                 transposedSpreadsheetView.createGUI();
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(transposedSpreadsheetView);
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().maskOutMouseEvents();
+                parentFrame.showJDialogAsSheet(transposedSpreadsheetView);
+                parentFrame.maskOutMouseEvents();
             }
         });
     }
@@ -1566,7 +1558,7 @@ public class Spreadsheet extends JComponent implements
                 AddMultipleRowsGUI amrGUI = new AddMultipleRowsGUI(Spreadsheet.this);
                 amrGUI.createGUI();
 
-                studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(amrGUI);
+                parentFrame.showJDialogAsSheet(amrGUI);
             }
         });
     }
@@ -1664,6 +1656,29 @@ public class Spreadsheet extends JComponent implements
             }
         }
     }
+
+    public void actionPerformed(ActionEvent actionEvent) {
+
+    }
+
+    public void registerCopyPasteObserver(CopyPasteObserver observer) {
+        if (observer != null) {
+            observers.add(observer);
+        }
+    }
+
+    public void removeCopyPasteObserver(CopyPasteObserver observer) {
+        if (observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    public void notifyObservers(SpreadsheetEvent event) {
+        for (CopyPasteObserver observer : observers) {
+            observer.notifyOfEvent(event);
+        }
+    }
+
 
     /**
      * HeaderListener source partially from http://www.java2s.com/Code/Java/Swing-Components/SortableTableExample.htm, last accessed 09-08-2008

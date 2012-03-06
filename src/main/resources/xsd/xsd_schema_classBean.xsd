@@ -30,6 +30,7 @@
                 <xs:element ref="c:label" maxOccurs="1" minOccurs="0"/>
                 <xs:element ref="c:relations" maxOccurs="1" minOccurs="0"/>
                 <xs:element name="type" type="xs:string" maxOccurs="1" minOccurs="0"/>
+                <xs:element ref="c:definitions" maxOccurs="1" minOccurs="0"/>
             </xs:choice>
         </xs:complexType>
     </xs:element>
@@ -37,6 +38,14 @@
     <xs:element name="fullId" type="xs:string"/>
     <xs:element name="id" type="xs:string"/>
     <xs:element name="label" type="xs:string"/>
+
+    <xs:element name="definitions">
+        <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="string" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <xs:element name="relations">
         <xs:complexType>

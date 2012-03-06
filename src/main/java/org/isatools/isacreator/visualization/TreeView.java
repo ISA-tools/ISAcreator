@@ -55,7 +55,10 @@ import prefuse.action.layout.CollapsedSubtreeLayout;
 import prefuse.action.layout.graph.NodeLinkTreeLayout;
 import prefuse.activity.SlowInSlowOutPacer;
 import prefuse.controls.*;
+import prefuse.data.Graph;
+import prefuse.data.Table;
 import prefuse.data.Tree;
+import prefuse.data.tuple.TupleSet;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.render.EdgeRenderer;
@@ -68,24 +71,30 @@ import prefuse.visual.sort.TreeDepthItemSorter;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.io.File;
 
 
 public class TreeView extends Display {
-    public static final String TREE_CHI = System.getProperty("java.io.tmpdir") + File.separator + "view.xml";
+
+    public static final String NAME_STRING = "name";
     private static final String tree = "tree";
     private static final String treeNodes = "tree.nodes";
     private static final String treeEdges = "tree.edges";
     private LabelRenderer m_nodeRenderer;
     private EdgeRenderer m_edgeRenderer;
-    private int m_orientation = Constants.ORIENT_LEFT_RIGHT;
+    private int m_orientation;
 
-    public TreeView(Tree t, String label, Dimension size) {
+    public TreeView(Tree t, Dimension size) {
+        this(t, size, Constants.ORIENT_LEFT_RIGHT);
+    }
+
+    public TreeView(Tree t, Dimension size, int orientation) {
         super(new Visualization());
+
+        this.m_orientation = orientation;
 
         m_vis.add(tree, t);
 
-        m_nodeRenderer = new LabelRenderer(label);
+        m_nodeRenderer = new LabelRenderer(NAME_STRING);
         m_nodeRenderer.setRenderType(AbstractShapeRenderer.RENDER_TYPE_FILL);
         m_nodeRenderer.setHorizontalAlignment(Constants.LEFT);
         m_nodeRenderer.setRoundedCorner(8, 8);
@@ -95,9 +104,8 @@ public class TreeView extends Display {
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
         m_vis.setRendererFactory(rf);
 
-        int[] colorPalette = new int[]{
-                ColorLib.rgb(51, 51, 51), ColorLib.rgb(51, 51, 51), ColorLib.rgb(141, 198, 63)
-        };
+        int[] colorPalette = new int[]{ColorLib.rgb(51, 51, 51), ColorLib.rgb(51, 51, 51), ColorLib.rgb(51, 51, 51)};
+
         DataColorAction dca = new DataColorAction("tree.nodes", "type", Constants.NOMINAL, VisualItem.TEXTCOLOR, colorPalette);
 
         // colors
@@ -137,8 +145,12 @@ public class TreeView extends Display {
 
         // create the filtering and layout
         ActionList filter = new ActionList();
-        filter.add(new FisheyeTreeFilter(tree, 2));
-        filter.add(new FontAction(treeNodes, FontLib.getFont("Verdana", 16)));
+
+        if (m_orientation == Constants.ORIENT_LEFT_RIGHT) {
+            filter.add(new FisheyeTreeFilter(tree, 2));
+        }
+
+        filter.add(new FontAction(treeNodes, FontLib.getFont("Verdana", 14)));
         filter.add(treeLayout);
         filter.add(subLayout);
         filter.add(dca);
@@ -156,8 +168,6 @@ public class TreeView extends Display {
         animate.add(new RepaintAction());
         m_vis.putAction("animate", animate);
         m_vis.alwaysRunAfter("filter", "animate");
-
-        // ------------------------------------------------
 
         // initialize the display
 

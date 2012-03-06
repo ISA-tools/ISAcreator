@@ -40,8 +40,7 @@ package org.isatools.isacreator.model;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologyselectiontool.OntologySourceManager;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,8 +61,8 @@ public class Investigation extends ISASection {
     public static final String INVESTIGATION_DESCRIPTION_KEY = "Investigation Description";
     public static final String INVESTIGATION_SUBMISSION_DATE_KEY = "Investigation Submission Date";
     public static final String INVESTIGATION_PUBLIC_RELEASE_KEY = "Investigation Public Release Date";
-    public static final String CONFIGURATION_CREATED_WITH = "Comment [Created with configuration]";
-    public static final String CONFIGURATION_LAST_OPENED_WITH = "Comment [Last opened with configuration]";
+    public static final String CONFIGURATION_CREATED_WITH = "Comment [Created With Configuration]";
+    public static final String CONFIGURATION_LAST_OPENED_WITH = "Comment [Last Opened With Configuration]";
 
     private InvestigationDataEntry userInterface;
 
@@ -119,7 +118,7 @@ public class Investigation extends ISASection {
         assays = new HashMap<String, String>();
         contacts = new ArrayList<Contact>();
         publications = new ArrayList<Publication>();
-        OntologySourceManager.newInvestigation(getInvestigationId().equals("") ? "investigation-" + System.currentTimeMillis() : getInvestigationId());
+        OntologyManager.newInvestigation(getInvestigationId().equals("") ? "investigation-" + System.currentTimeMillis() : getInvestigationId());
     }
 
 
@@ -257,6 +256,11 @@ public class Investigation extends ISASection {
     }
 
     public void setLastConfigurationUsed(String configurationName) {
+        if (configurationName.contains("/")) {
+            configurationName = configurationName.substring(configurationName.lastIndexOf("/") + 1);
+        }
+
+        System.out.println("Setting last configuration used to " + configurationName);
         fieldValues.put(CONFIGURATION_LAST_OPENED_WITH, configurationName);
     }
 

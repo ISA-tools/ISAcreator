@@ -42,9 +42,12 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
+import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.TableReferenceObject;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -82,7 +85,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     private String institution;
 
     public MicroarrayCreationAlgorithm(Study study,
-                                       Assay assay, List<TempFactors> factorsToAdd,
+                                       Assay assay, List<PropertyType> factorsToAdd,
                                        Map<Integer, TreatmentReplicate> treatmentGroups,
                                        TableReferenceObject buildingModel, String institution,
                                        String sourceNameFormat, String[] arrayDesigns) {
@@ -144,7 +147,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         microArrayQuestionCont.setOpaque(false);
 
-        StringBuffer text = new StringBuffer("<html><b>" + assay.getMeasurementEndpoint() +
+        StringBuilder text = new StringBuilder("<html><b>" + assay.getMeasurementEndpoint() +
                 "</b> using <b>" + assay.getTechnologyType() + "</b>");
 
         if (!StringUtils.isEmpty(assay.getAssayPlatform())) {
@@ -359,7 +362,6 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
     }
 
 
-    @SuppressWarnings({"ConstantConditions"})
     public void performAssayCentricTask() {
         // run the algorithm using all gathered information!
 
@@ -381,19 +383,18 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         for (String arrayDesign : getSelectedArrayDesigns()) {
             for (int groups = 0; groups < treatmentGroups.size(); groups++) {
                 for (ExtractDetailsCapture extractField : extractDetails) {
-                    for (int subjects = startSubject; subjects <= treatmentGroups.get(groups).getNumReplicates();
-                         subjects++) {
-                        for (int labelNum = 0; labelNum < getLabelCount();
-                             labelNum++) {
-                            for (int i : colsToUse) {
-                                String nextDataToAdd = tableStructure.get(i)[1] == null ? "" : tableStructure.get(i)[1]; // try and insert a template item
+                    for (int subjects = startSubject; subjects <= treatmentGroups.get(groups).getNumReplicates(); subjects++) {
+                        for (int labelNum = 0; labelNum < getLabelCount(); labelNum++) {
+                            for (int columnIndex : colsToUse) {
+                                String nextDataToAdd = tableStructure.get(columnIndex)[1] == null ? "" : tableStructure.get(columnIndex)[1];
+
                                 nextDataToAdd = nextDataToAdd.trim();
 
                                 if (nextDataToAdd.equals("")) {
-                                    if (tableStructure.get(i)[0].toLowerCase()
+                                    if (tableStructure.get(columnIndex)[0].toLowerCase()
                                             .equals("factors")) {
                                         row.append(treatmentGroups.get(groups).getTreatmentGroup());
-                                    } else if (tableStructure.get(i)[0].toLowerCase()
+                                    } else if (tableStructure.get(columnIndex)[0].toLowerCase()
                                             .equals("label")) {
                                         if (!dyeSwapUsed.isSelected()) {
                                             row.append(label1Capture.getLabelName()).append("\t");
@@ -404,6 +405,9 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                                                 row.append(label2Capture.getLabelName()).append("\t");
                                             }
                                         }
+                                    } else if (tableStructure.get(columnIndex)[0].equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
+                                        // we have a protocol. Do two things: set value to it's default value and add it to the study protocols
+                                        row.append(buildingModel.getDefaultValue(columnIndex + 1)).append("\t");
                                     } else {
                                         // just empty row data
                                         row.append(nextDataToAdd).append("\t");
@@ -444,6 +448,13 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
             }
         }
         // add extract statement for reference sample addition.
+
+        TableReferenceObjectWrapper troAdapter = new TableReferenceObjectWrapper(buildingModel);
+        troAdapter.setConstructProtocolsWithDefaultValues(true);
+        List<Protocol> protocols = troAdapter.findProtocols();
+
+        study.getProtocols().addAll(protocols);
+
         assay.setTableReferenceObject(buildingModel);
     }
 }

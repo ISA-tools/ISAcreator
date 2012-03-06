@@ -1,5 +1,8 @@
 #### ISAcreator is a Java desktop application which allows for creation and editing of ISATab files.
 
+<p align="center">
+<img src="http://isatools.files.wordpress.com/2011/09/isacreator1.png" align="center" alt="ISAcreator"/>
+</p>
 
 - General info: <http://isa-tools.org>
 - Tools' overview in this short paper: <http://bioinformatics.oxfordjournals.org/content/26/18/2354.full.pdf+html>
@@ -7,26 +10,29 @@
 - Mainline source code: <https://github.com/ISA-tools/ISAcreator>
 - Twitter: [@isatools](http://twitter.com/isatools)
 - IRC: [irc://irc.freenode.net/#isatab](irc://irc.freenode.net/#isatab)
-- Development blog: [http://isatools.wordpress.com]
+- [Development blog](http://isatools.wordpress.com) 
 
 ## Development
 
-**Get the source:**
-	You should ***fork*** the ISAcreator to your own GitHub "repository". Then clone this forked repository and start developing. When you make changes to the ISAcreator code, we can see the changes you made, review the code and merge with the main ISAcreator repository code base.
-
-**Build dependencies:**
-    These are all managed by Maven <http://maven.apache.org/>. 
-
-
-### Refreshing your code.
-
-A simple `git pull` will suffice!
-
 ### Contributing
 
-The main ISAcreator source tree is hosted on git (a popular [DVCS](http://en.wikipedia.org/wiki/Distributed_revision_control)), thus you should create a fork of the repository in which you perform development. See <http://help.github.com/forking/>.
+You should read this article about Git Flow: <http://scottchacon.com/2011/08/31/github-flow.html>. It's a really useful tutorial on how to use Git for collaborative development.
 
-We prefer that you send a [*pull request* here on GitHub](http://help.github.com/pull-requests/) which will then be merged into the official main line repository. You need to sign the ISAtools CLA to be able to contribute (see below).
+1. Fork it.
+2. Clone your forked repository to your machine
+3. Create a branch (`git checkout -b myisacreator`)
+4. Make your changes
+5. Run the tests (`mvn clean test -Ptest,h2,index_local`)
+6. Commit your changes (`git commit -am "Added something useful"`)
+7. Push to the branch (`git push origin myisacreator`)
+8. Create a [Pull Request](http://help.github.com/pull-requests/) from your branch.
+9. Promote it. Get others to drop in and +1 it.
+
+
+### Refreshing your code against the master repository.
+
+A simple `git pull git@github.com:ISA-tools/ISAcreator.git`
+
 
 #### Contributor License Agreement
 

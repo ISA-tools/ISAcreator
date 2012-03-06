@@ -37,13 +37,17 @@
 
 package org.isatools.isacreator.gui;
 
+import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
+import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.EventObject;
@@ -80,7 +84,7 @@ public class ExtendedJTable extends JTable implements Serializable {
 
 
     public boolean editCellAt(int row, int col, EventObject e) {
-        TableCellEditor editor = getCellEditor(row, col);
+        final TableCellEditor editor = getCellEditor(row, col);
 
         if (editor instanceof OntologyCellEditor || editor instanceof FileSelectCellEditor || editor instanceof DateCellEditor) {
             if (e instanceof MouseEvent && ((MouseEvent) e).getClickCount() == 2) {
@@ -88,10 +92,49 @@ public class ExtendedJTable extends JTable implements Serializable {
             }
         } else {
             super.editCellAt(row, col, e);
+
+            boolean result = super.editCellAt(row, col, e);
+
+            if (editor != null && editor instanceof JTextComponent) {
+                if (e == null) {
+                    ((JTextComponent) editor).selectAll();
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            ((JTextComponent) editor).selectAll();
+                        }
+                    });
+                }
+            }
+
+            return result;
         }
 
 
         return false;
+    }
+
+
+    @Override
+    public void changeSelection(int row, int column, boolean toggle, boolean extend) {
+        super.changeSelection(row, column, toggle, extend);
+        TableCellEditor editor = getCellEditor(row, column);
+        if (editor instanceof DefaultAutoFilterCellEditor) {
+            if (editCellAt(row, column))
+                getEditorComponent().requestFocusInWindow();
+        }
+    }
+
+
+    @Override
+    public Component prepareEditor
+            (TableCellEditor tableCellEditor, int row, int column) {
+
+        Component c = super.prepareEditor(tableCellEditor, row, column);
+        if (c instanceof JTextComponent) {
+            ((JTextField) c).selectAll();
+        }
+        return c;
     }
 
     public RowEditor getRowEditor() {

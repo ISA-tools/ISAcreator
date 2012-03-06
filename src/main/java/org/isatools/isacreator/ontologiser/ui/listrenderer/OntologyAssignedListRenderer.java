@@ -91,9 +91,9 @@ public class OntologyAssignedListRenderer extends JComponent
                     c.setBackground(UIHelper.BG_COLOR);
                     c.setFont(UIHelper.VER_11_BOLD);
                 } else {
-                    c.setForeground(UIHelper.LIGHT_GREEN_COLOR);
+                    c.setForeground(UIHelper.DARK_GREEN_COLOR);
                     c.setBackground(UIHelper.BG_COLOR);
-                    c.setFont(UIHelper.VER_11_BOLD);
+                    c.setFont(UIHelper.VER_11_PLAIN);
                 }
             }
         }
