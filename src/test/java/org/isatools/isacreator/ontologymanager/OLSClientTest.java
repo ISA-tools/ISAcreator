@@ -70,6 +70,10 @@ public class OLSClientTest {
 
         Map<String, String> ontologyNames = client.getOntologyNames();
 
+        for (String key : ontologyNames.keySet()) {
+            System.out.println(key + " -> " + ontologyNames.get(key));
+        }
+
         assertTrue("No ontology names found", ontologyNames.size() > 0);
 
         System.out.println("Found " + ontologyNames.size() + " ontology names\n");
@@ -87,9 +91,9 @@ public class OLSClientTest {
         System.out.println("Found " + matchingTerms.values().size() + " matching terms in " + matchingTerms.keySet().size() + " ontologies \n");
 
         for (OntologySourceRefObject source : matchingTerms.keySet()) {
-            System.out.println(source.getSourceName()  + " (" + source.getSourceVersion() + ")");
+            System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
 
-            for(OntologyTerm term : matchingTerms.get(source)) {
+            for (OntologyTerm term : matchingTerms.get(source)) {
                 System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
             }
         }
@@ -108,9 +112,9 @@ public class OLSClientTest {
         System.out.println("Found " + matchingTerms.values().size() + " matching terms in " + matchingTerms.keySet().size() + " ontologies \n");
 
         for (OntologySourceRefObject source : matchingTerms.keySet()) {
-            System.out.println(source.getSourceName()  + " (" + source.getSourceVersion() + ")");
+            System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
 
-            for(OntologyTerm term : matchingTerms.get(source)) {
+            for (OntologyTerm term : matchingTerms.get(source)) {
                 System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
             }
         }
