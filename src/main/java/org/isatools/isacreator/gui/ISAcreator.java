@@ -70,6 +70,7 @@ import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
+import org.isatools.isacreator.utils.WebUtils;
 import org.isatools.isacreator.validateconvert.ui.OperatingMode;
 import org.isatools.isacreator.validateconvert.ui.ValidateUI;
 import org.jdesktop.fuse.InjectedResource;
@@ -85,6 +86,9 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
@@ -590,9 +594,14 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         manual.setForeground(UIHelper.DARK_GREEN_COLOR);
         manual.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                WebBrowser browser = new WebBrowser("http://isatab.sourceforge.net/ch04.html");
-                browser.createGUI();
-                browser.setLocationRelativeTo(ISAcreator.this);
+                try {
+                    Desktop.getDesktop().browse(new URI("http://isatab.sourceforge.net/isahelp/ch04.html"));
+                } catch (IOException e1) {
+                    log.error("IOException - " + e1.getMessage());
+                } catch (URISyntaxException e1) {
+                    log.error("URISyntaxException - " + e1.getMessage());
+                }
+
             }
         });
         help.add(manual);
@@ -601,15 +610,34 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         JMenuItem contact = new JMenuItem("contact support team",
                 supportIcon);
         contact.setForeground(UIHelper.DARK_GREEN_COLOR);
+        contact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI("http://isatab.sourceforge.net/contact.html"));
+                } catch (IOException e1) {
+                    log.error("IOException - " + e1.getMessage());
+                } catch (URISyntaxException e1) {
+                    log.error("URISyntaxException - " + e1.getMessage());
+                }
+            }
+        });
         help.add(contact);
-        contact.setEnabled(false);
 
-        JMenuItem feedback = new JMenuItem("submit feedback",
+        JMenuItem feedback = new JMenuItem("report a bug",
                 feedbackIcon);
         feedback.setForeground(UIHelper.DARK_GREEN_COLOR);
+        feedback.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI("http://www.github.com/ISA-tools/ISAcreator/issues"));
+                } catch (IOException e1) {
+                    log.error("IOException - " + e1.getMessage());
+                } catch (URISyntaxException e1) {
+                    log.error("URISyntaxException - " + e1.getMessage());
+                }
+            }
+        });
         help.add(feedback);
-        feedback.setEnabled(false);
-
         menuBar.add(help);
 
         return UIHelper.wrapComponentInPanel(menuBar);
