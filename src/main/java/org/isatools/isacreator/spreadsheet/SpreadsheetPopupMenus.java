@@ -679,7 +679,6 @@ public class SpreadsheetPopupMenus {
                 return true;
             }
         }
-
         return false;
     }
 

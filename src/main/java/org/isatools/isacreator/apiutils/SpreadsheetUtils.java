@@ -79,6 +79,19 @@ public class SpreadsheetUtils {
         return columnNamesToIndex;
     }
 
+    public static String[] getColumnNamesAsArray(Spreadsheet targetSheet, Set<String> toIgnore) {
+
+        List<String> columnNames = new ArrayList<String>();
+
+        Map<Integer, String> columnIndexToName = getColumns(targetSheet, toIgnore);
+
+        for (Integer columnIndex : columnIndexToName.keySet()) {
+            columnNames.add(columnIndexToName.get(columnIndex));
+        }
+
+        return columnNames.toArray(new String[columnNames.size()]);
+    }
+
     public static Map<Integer, String> getColumns(Spreadsheet targetSheet, Set<String> toIgnore) {
         int columnCount = targetSheet.getTable().getColumnCount();
 
@@ -168,10 +181,9 @@ public class SpreadsheetUtils {
     public static String[][] getSpreadsheetDataSubset(Spreadsheet targetSheet) {
         // initalise array to be the number of columns -1 to account for Row No. column.
         int rowCount = targetSheet.getTable().getRowCount();
-
-
         return getSpreadsheetDataSubset(targetSheet, rowCount);
     }
+
 
     public static String[][] getSpreadsheetDataSubset(Spreadsheet targetSheet, int numberOfRows) {
         // initalise array to be the number of columns -1 to account for Row No. column.

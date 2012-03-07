@@ -75,7 +75,7 @@ import java.awt.geom.Point2D;
 
 public class TreeView extends Display {
 
-    public static final String NAME_STRING = "name";
+    public static String NAME_STRING = "name";
     private static final String tree = "tree";
     private static final String treeNodes = "tree.nodes";
     private static final String treeEdges = "tree.edges";
@@ -84,17 +84,17 @@ public class TreeView extends Display {
     private int m_orientation;
 
     public TreeView(Tree t, Dimension size) {
-        this(t, size, Constants.ORIENT_LEFT_RIGHT);
+        this(t, size, NAME_STRING, Constants.ORIENT_LEFT_RIGHT);
     }
 
-    public TreeView(Tree t, Dimension size, int orientation) {
+    public TreeView(Tree t, Dimension size, String label, int orientation) {
         super(new Visualization());
 
         this.m_orientation = orientation;
 
         m_vis.add(tree, t);
 
-        m_nodeRenderer = new LabelRenderer(NAME_STRING);
+        m_nodeRenderer = new LabelRenderer(label);
         m_nodeRenderer.setRenderType(AbstractShapeRenderer.RENDER_TYPE_FILL);
         m_nodeRenderer.setHorizontalAlignment(Constants.LEFT);
         m_nodeRenderer.setRoundedCorner(8, 8);

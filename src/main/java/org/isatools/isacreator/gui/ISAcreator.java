@@ -590,6 +590,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         JMenuItem manual = new JMenuItem("user manual",
                 helpIcon);
         manual.setForeground(UIHelper.DARK_GREEN_COLOR);
+
+        manual.setEnabled(Desktop.isDesktopSupported());
+
+
         manual.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -608,6 +612,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         JMenuItem contact = new JMenuItem("contact support team",
                 supportIcon);
         contact.setForeground(UIHelper.DARK_GREEN_COLOR);
+        contact.setEnabled(Desktop.isDesktopSupported());
         contact.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -623,6 +628,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         JMenuItem feedback = new JMenuItem("report a bug",
                 feedbackIcon);
+        feedback.setEnabled(Desktop.isDesktopSupported());
         feedback.setForeground(UIHelper.DARK_GREEN_COLOR);
         feedback.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
