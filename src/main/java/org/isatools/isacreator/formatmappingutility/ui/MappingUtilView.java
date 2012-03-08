@@ -61,6 +61,7 @@ import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.model.Investigation;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
 import org.isatools.isacreator.visualization.TreeView;
@@ -132,16 +133,11 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     public MappingUtilView(final ISAcreatorMenu menuPanels) {
         super();
         this.menuPanels = menuPanels;
-
         ResourceInjector.get("formatmappingutility-package.style").inject(this);
-
-        fileChooser = new JFileChooser("Choose file or directory to load...");
-        fileChooser.setDialogTitle("Choose file or directory to load...");
-        fileChooser.setApproveButtonText("Select for mapping");
-
     }
 
     public void createGUI() {
+        createFileChooser();
 
         menuPanels.getMain().hideGlassPane();
 
@@ -160,6 +156,20 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         // create first pane (select files pane!)
         dataEntryEnvironment = new DataEntryEnvironment(menuPanels.getMain());
         setDataEntryEnvironment(dataEntryEnvironment);
+    }
+
+    private void createFileChooser() {
+        fileChooser = new JFileChooser("Choose file or directory to load...");
+        fileChooser.setDialogTitle("Choose file or directory to load...");
+        fileChooser.setApproveButtonText("Select for mapping");
+        setStartingDirectory();
+    }
+
+    private void setStartingDirectory() {
+        File startingDirectoryFile = new File(ISAcreatorProperties.getProperty("isacreator.mappingFileLocations"));
+        if (!startingDirectoryFile.getAbsolutePath().isEmpty() && startingDirectoryFile.exists()) {
+            fileChooser.setCurrentDirectory(startingDirectoryFile);
+        }
     }
 
     public void changeView() {

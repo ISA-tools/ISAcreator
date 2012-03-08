@@ -38,6 +38,7 @@
 package org.isatools.isacreator.utils;
 
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.io.*;
 import java.util.Properties;
@@ -81,7 +82,13 @@ public class PropertyFileIO {
         return new Properties();
     }
 
-    public static void saveProperties(Properties p, String propertiesFile) {
+    public static void updateISAcreatorProperties(Properties programProperties) {
+        for (String propertyName : programProperties.stringPropertyNames()) {
+            ISAcreatorProperties.setProperty(propertyName, programProperties.get(propertyName).toString());
+        }
+    }
+
+    public static void saveProperties(Properties programProperties, String propertiesFile) {
         try {
 
             File settingsDir = new File(SETTINGS_DIR);
@@ -94,7 +101,7 @@ public class PropertyFileIO {
             }
 
             OutputStream fos = new FileOutputStream(settingsFile);
-            p.store(fos, "settings");
+            programProperties.store(fos, "settings");
             fos.close();
 
         } catch (IOException e) {

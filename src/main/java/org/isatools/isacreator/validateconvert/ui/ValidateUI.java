@@ -1,5 +1,41 @@
 package org.isatools.isacreator.validateconvert.ui;
 
+/**
+ ISAcreator is a component of the ISA software suite (http://www.isa-tools.org)
+
+ License:
+ ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
+
+ EXHIBIT A. CPAL version 1.0
+ ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ you may not use this file except in compliance with the License. You may obtain a
+ copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
+ The License is based on the Mozilla Public License version 1.1 but Sections
+ 14 and 15 have been added to cover use of software over a computer network and
+ provide for limited attribution for the Original Developer. In addition, Exhibit
+ A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ the specific language governing rights and limitations under the License.
+
+ The Original Code is ISAcreator.
+ The Original Developer is the Initial Developer. The Initial Developer of the
+ Original Code is the ISA Team (Eamonn Maguire, eamonnmag@gmail.com;
+ Philippe Rocca-Serra, proccaserra@gmail.com; Susanna-Assunta Sansone, sa.sanson@gmail.com;
+ http://www.isa-tools.org). All portions of the code written by the ISA Team are
+ Copyright (c) 2007-2011 ISA Team. All Rights Reserved.
+
+ EXHIBIT B. Attribution Information
+ Attribution Copyright Notice: Copyright (c) 2008-2011 ISA Team
+ Attribution Phrase: Developed by the ISA Team
+ Attribution URL: http://www.isa-tools.org
+ Graphic Image provided in the Covered Code as file: http://isa-tools.org/licenses/icons/poweredByISAtools.png
+ Display of Attribution Information is required in Larger Works which are defined in the CPAL as a work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+
+ Sponsors:
+ The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
+ */
 
 import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Level;
@@ -106,6 +142,7 @@ public class ValidateUI extends JFrame {
             public void run() {
 
                 System.out.println(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+
                 if (!new File(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB)).exists()) {
                     Container saveISAtabContainer = UIHelper.padComponentVerticalBox(70, new JLabel(saveISAtab));
                     swapContainers(saveISAtabContainer);
@@ -116,7 +153,11 @@ public class ValidateUI extends JFrame {
 
                     GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
-                    if (result == GUIInvokerResult.SUCCESS) {
+                    boolean strictValidationEnabled = Boolean.valueOf(ISAcreatorProperties.getProperty(ISAcreatorProperties.STRICT_VALIDATION));
+                    boolean shouldShowErrors = strictValidationEnabled && getErrorMessages(isatabValidator.getLog()).size() > 0;
+
+                    if (result == GUIInvokerResult.SUCCESS && !shouldShowErrors) {
+
                         Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
                         swapContainers(successfulValidationContainer);
                         if (mode == OperatingMode.CONVERT) {
@@ -135,66 +176,66 @@ public class ValidateUI extends JFrame {
                                             convertUI.getOutputLocation());
                                 }
                             });
-
                             swapContainers(convertUI);
                         }
                     } else {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-
-                                List<TabLoggingEventWrapper> logEvents = isatabValidator.getLog();
-
-                                List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
-
-                                Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
-
-                                for (TabLoggingEventWrapper event : logEvents) {
-
-                                    System.out.println(event.getFormattedMessage());
-                                    String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
-
-                                    if (fileName != null) {
-                                        System.out.println(fileName);
-                                        if (event.getLogEvent().getLevel().toInt() >= Level.INFO_INT) {
-                                            if (!fileToErrors.containsKey(fileName)) {
-                                                fileToErrors.put(fileName, new ArrayList<ErrorMessage>());
-                                            }
-                                            fileToErrors.get(fileName).add(new ErrorMessage(event.getLogEvent().getLevel() == Level.WARN ? ErrorLevel.WARNING : ErrorLevel.ERROR, event.getLogEvent().getMessage().toString()));
-                                        }
-                                    }
-                                }
-
-                                for (String fileName : fileToErrors.keySet()) {
-
-                                    Pair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
-                                            isacreatorEnvironment.getDataEntryEnvironment().getInvestigation());
-
-                                    errors.add(new ISAFileErrorReport(fileName,
-                                            assayAndType.fst != null ? assayAndType.fst.getTechnologyType() : "",
-                                            assayAndType.fst != null ? assayAndType.fst.getMeasurementEndpoint() : "",
-                                            assayAndType.snd, fileToErrors.get(fileName)));
-                                }
-
-                                if (fileToErrors.size() > 0) {
-                                    ErrorReporterView view = new ErrorReporterView(errors);
-                                    view.setPreferredSize(new Dimension(750, 440));
-                                    view.createGUI();
-                                    swapContainers(view);
-                                } else {
-                                    Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
-                                    swapContainers(successfulValidationContainer);
-
-
-                                }
+                                displayValidationErrorsAndWarnings(getErrorMessages(isatabValidator.getLog()));
                             }
                         });
                     }
                 }
-
             }
         });
 
         performer.start();
+    }
+
+    private void displayValidationErrorsAndWarnings(Map<String, List<ErrorMessage>> fileToErrors) {
+        List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
+        for (String fileName : fileToErrors.keySet()) {
+
+            Pair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
+                    isacreatorEnvironment.getDataEntryEnvironment().getInvestigation());
+
+            errors.add(new ISAFileErrorReport(fileName,
+                    assayAndType.fst != null ? assayAndType.fst.getTechnologyType() : "",
+                    assayAndType.fst != null ? assayAndType.fst.getMeasurementEndpoint() : "",
+                    assayAndType.snd, fileToErrors.get(fileName)));
+        }
+
+        if (fileToErrors.size() > 0) {
+            ErrorReporterView view = new ErrorReporterView(errors);
+            view.setPreferredSize(new Dimension(750, 440));
+            view.createGUI();
+            view.add(UIHelper.createLabel("<html>Validation performed using <i>"
+                    + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION) + "</i></html>"),
+                    BorderLayout.SOUTH);
+
+            swapContainers(view);
+        } else {
+            Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
+            swapContainers(successfulValidationContainer);
+        }
+    }
+
+    private Map<String, List<ErrorMessage>> getErrorMessages(List<TabLoggingEventWrapper> logEvents) {
+        Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
+
+        for (TabLoggingEventWrapper event : logEvents) {
+            String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
+
+            if (fileName != null) {
+                if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
+                    if (!fileToErrors.containsKey(fileName)) {
+                        fileToErrors.put(fileName, new ArrayList<ErrorMessage>());
+                    }
+                    fileToErrors.get(fileName).add(new ErrorMessage(event.getLogEvent().getLevel() == Level.WARN ? ErrorLevel.WARNING : ErrorLevel.ERROR, event.getLogEvent().getMessage().toString()));
+                }
+            }
+        }
+        return fileToErrors;
     }
 
     private void convertISAtab(BIIObjectStore store, AllowedConversions conversion,

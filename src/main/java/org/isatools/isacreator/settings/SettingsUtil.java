@@ -73,7 +73,8 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
     private JPanel centralPanel;
     private HTTPProxySettings httpProxy;
     private OntologySettings ontology;
-    private DataLocations dataLocations;
+    private DataLocationSettings dataLocationSettings;
+    private ValidationSettings validationSettings;
 
     private GeneralViewerEditor<Contact> contactEditor;
     private GeneralViewerEditor<Protocol> protocolEditor;
@@ -98,7 +99,6 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
         ResourceInjector.get("settings-package.style").inject(this);
 
         this.menuPanels = menuPanels;
-//		settings = PropertyFileIO.loadSettings(PROPERTIES_FILE);
         if (settings == null) {
             settings = new Properties();
         } else {
@@ -203,13 +203,20 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
                         changeCentralPanel(protocolEditor);
                     } else if (Settings.resolveSetting(settingsOptions.getSelectedValue().toString()) == Settings.DATA_LOCATIONS) {
 
-                        if (dataLocations == null) {
-                            dataLocations = new DataLocations(settings);
+                        if (dataLocationSettings == null) {
+                            dataLocationSettings = new DataLocationSettings(settings);
 
                         }
 
-                        changeCentralPanel(dataLocations);
-                        dataLocations.updateLocations();
+                        changeCentralPanel(dataLocationSettings);
+                        dataLocationSettings.updateLocations();
+                    } else if (Settings.resolveSetting(settingsOptions.getSelectedValue().toString()) == Settings.VALIDATION) {
+
+                        if (validationSettings == null) {
+                            validationSettings = new ValidationSettings(settings);
+
+                        }
+                        changeCentralPanel(validationSettings);
                     }
                 }
             }
@@ -267,10 +274,15 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
             protocolEditor.updateSettings();
         }
 
-        if (dataLocations != null) {
-            dataLocations.updateSettings();
+        if (dataLocationSettings != null) {
+            dataLocationSettings.updateSettings();
         }
 
+        if (validationSettings != null) {
+            validationSettings.updateSettings();
+        }
+
+        PropertyFileIO.updateISAcreatorProperties(settings);
         PropertyFileIO.saveProperties(settings, PROPERTIES_FILE);
         PropertyFileIO.setProxy(settings);
     }
@@ -278,7 +290,8 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
 
     enum Settings {
         HTTP_PROXY("http proxy"), ONTOLOGY("ontologies"),
-        CONTACTS("contacts"), PROTOCOLS("protocols"), DATA_LOCATIONS("program file locations");
+        CONTACTS("contacts"), PROTOCOLS("protocols"), DATA_LOCATIONS("program file locations"),
+        VALIDATION("validation");
         private String name;
 
         Settings(String name) {

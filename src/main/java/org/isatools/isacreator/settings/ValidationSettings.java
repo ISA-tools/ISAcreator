@@ -1,4 +1,4 @@
-package org.isatools.isacreator.validateconvert.ui;
+package org.isatools.isacreator.settings;
 /**
  ISAcreator is a component of the ISA software suite (http://www.isa-tools.org)
 
@@ -36,61 +36,69 @@ package org.isatools.isacreator.validateconvert.ui;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.isatools.errorreporter.html.ErrorMessageWriter;
-import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.util.List;
-
-/**
- * Created by the ISA team
- *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 09/09/2011
- *         Time: 09:56
- */
-public class ConversionErrorUI extends Container {
+import java.util.Properties;
 
 
-    public ConversionErrorUI() {
+public class ValidationSettings extends SettingsScreen {
+
+    private Properties settings;
+
+    private JCheckBox strictValidation;
+
+    public ValidationSettings(Properties settings) {
+        this.settings = settings;
+
         setLayout(new BorderLayout());
+        setOpaque(false);
+        add(createGUI(), BorderLayout.NORTH);
+        setBorder(new TitledBorder(
+                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
+                "validation settings", TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
+                UIHelper.GREY_COLOR));
     }
 
-    public void constructErrorPane(List<ErrorMessage> errorMessages) {
+    private JPanel createGUI() {
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
+        container.setOpaque(false);
 
-        JLabel info = UIHelper.createLabel("Conversion failed with "
-                + errorMessages.size()
-                + (errorMessages.size() > 1 ? " errors" : " error")
-                + ". Here is why:", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR);
+        strictValidation = new JCheckBox("Strict Validation?", Boolean.valueOf(settings.getProperty("strictValidation.isOn")));
+        strictValidation.setHorizontalAlignment(SwingConstants.LEFT);
+        UIHelper.renderComponent(strictValidation, UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, false);
 
-        info.setHorizontalAlignment(SwingConstants.LEFT);
 
-        add(UIHelper.padComponentVerticalBox(30, info), BorderLayout.NORTH);
+        container.add(UIHelper.wrapComponentInPanel(strictValidation));
 
-        ErrorMessageWriter writer = new ErrorMessageWriter();
-        String errorReport = writer.createHTMLRepresentationOfErrors(errorMessages);
+        return container;
+    }
 
-        JEditorPane messagePane = new JEditorPane();
-        messagePane.setContentType("text/html");
-        messagePane.setBackground(org.isatools.errorreporter.ui.utils.UIHelper.BG_COLOR);
-        messagePane.setSelectionColor(org.isatools.errorreporter.ui.utils.UIHelper.LIGHT_GREEN_COLOR);
-        messagePane.setSelectedTextColor(org.isatools.errorreporter.ui.utils.UIHelper.BG_COLOR);
-        messagePane.setEditable(false);
-        messagePane.setBorder(null);
+    @Override
+    protected boolean updateSettings() {
+        try {
+            settings.setProperty("strictValidation.isOn", String.valueOf(strictValidation.isSelected()));
+            return true;
+        } catch (Exception e) {
+            log.error("Problem occurred when trying to update HTTP proxy settings.");
+            return false;
+        }
+    }
 
-        JScrollPane scroller = new JScrollPane(messagePane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroller.setBorder(null);
-        scroller.getViewport().setOpaque(false);
-        scroller.setOpaque(false);
+    @Override
+    protected void performImportLogic() {
+    }
 
-        IAppWidgetFactory.makeIAppScrollPane(scroller);
+    @Override
+    protected void performExportLogic() {
+    }
 
-        messagePane.setText(errorReport);
-
-        add(scroller, BorderLayout.CENTER);
+    @Override
+    protected void performDeletionLogic() {
     }
 }

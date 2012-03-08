@@ -335,6 +335,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 }
             }
 
+            // add all properties into the ISAcreatorProperties file
+            for (String propertyName : programSettings.stringPropertyNames()) {
+                ISAcreatorProperties.setProperty(propertyName, programSettings.get(propertyName).toString());
+            }
+
 
         }
     }
