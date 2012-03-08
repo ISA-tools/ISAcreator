@@ -76,12 +76,12 @@ import java.awt.geom.Point2D;
 public class TreeView extends Display {
 
     public static String NAME_STRING = "name";
-    private static final String tree = "tree";
-    private static final String treeNodes = "tree.nodes";
-    private static final String treeEdges = "tree.edges";
-    private LabelRenderer m_nodeRenderer;
-    private EdgeRenderer m_edgeRenderer;
-    private int m_orientation;
+    protected static final String tree = "tree";
+    protected static final String treeNodes = "tree.nodes";
+    protected static final String treeEdges = "tree.edges";
+    protected LabelRenderer m_nodeRenderer;
+    protected EdgeRenderer m_edgeRenderer;
+    protected int m_orientation;
 
     public TreeView(Tree t, Dimension size) {
         this(t, size, NAME_STRING, Constants.ORIENT_LEFT_RIGHT);
@@ -89,7 +89,10 @@ public class TreeView extends Display {
 
     public TreeView(Tree t, Dimension size, String label, int orientation) {
         super(new Visualization());
+        initialiseTreeView(t, size, label, orientation);
+    }
 
+    public void initialiseTreeView(Tree t, Dimension size, String label, int orientation) {
         this.m_orientation = orientation;
 
         m_vis.add(tree, t);
@@ -136,13 +139,44 @@ public class TreeView extends Display {
         // create the tree layout action
         NodeLinkTreeLayout treeLayout = new NodeLinkTreeLayout(tree,
                 m_orientation, 50, 0, 8);
-        treeLayout.setLayoutAnchor(new Point2D.Double(25, 75));
+        treeLayout.setLayoutAnchor(new Point2D.Double(size.width / 2, 15));
         m_vis.putAction("treeLayout", treeLayout);
 
         CollapsedSubtreeLayout subLayout = new CollapsedSubtreeLayout(tree,
                 m_orientation);
         m_vis.putAction("subLayout", subLayout);
 
+        createAndAddFilter(dca, nodeColor, edgeColor, treeLayout, subLayout);
+        // animated transition
+        createAnimation();
+        // ensure size is reasonable!
+        finaliseVisualizationSteps(size);
+    }
+
+    protected void finaliseVisualizationSteps(Dimension size) {
+        size.width = (size.width < 100) ? 200 : size.width;
+        size.height = (size.height < 100) ? 200 : size.height;
+
+        setSize(size);
+        setItemSorter(new TreeDepthItemSorter());
+        addControlListeners();
+        setOrientation(m_orientation);
+        m_vis.run("filter");
+    }
+
+    protected void createAnimation() {
+        ActionList animate = new ActionList(1000);
+        animate.setPacingFunction(new SlowInSlowOutPacer());
+        animate.add(new QualityControlAnimator());
+        animate.add(new VisibilityAnimator(tree));
+        animate.add(new LocationAnimator(treeNodes));
+        animate.add(new ColorAnimator(treeNodes));
+        animate.add(new RepaintAction());
+        m_vis.putAction("animate", animate);
+        m_vis.alwaysRunAfter("filter", "animate");
+    }
+
+    protected void createAndAddFilter(DataColorAction dca, ItemAction nodeColor, ItemAction edgeColor, NodeLinkTreeLayout treeLayout, CollapsedSubtreeLayout subLayout) {
         // create the filtering and layout
         ActionList filter = new ActionList();
 
@@ -157,37 +191,14 @@ public class TreeView extends Display {
         filter.add(nodeColor);
         filter.add(edgeColor);
         m_vis.putAction("filter", filter);
+    }
 
-        // animated transition
-        ActionList animate = new ActionList(1000);
-        animate.setPacingFunction(new SlowInSlowOutPacer());
-        animate.add(new QualityControlAnimator());
-        animate.add(new VisibilityAnimator(tree));
-        animate.add(new LocationAnimator(treeNodes));
-        animate.add(new ColorAnimator(treeNodes));
-        animate.add(new RepaintAction());
-        m_vis.putAction("animate", animate);
-        m_vis.alwaysRunAfter("filter", "animate");
-
-        // initialize the display
-
-        // ensure size is reasonable!
-        size.width = (size.width < 100) ? 200 : size.width;
-        size.height = (size.height < 100) ? 200 : size.height;
-
-        setSize(size);
-        setItemSorter(new TreeDepthItemSorter());
+    private void addControlListeners() {
         addControlListener(new ZoomToFitControl());
         addControlListener(new ZoomControl());
         addControlListener(new WheelZoomControl());
         addControlListener(new PanControl());
         addControlListener(new FocusControl(1, "filter"));
-
-        // ------------------------------------------------
-
-        // filter graph and perform layout
-        setOrientation(m_orientation);
-        m_vis.run("filter");
     }
 
     public int getOrientation() {
@@ -220,6 +231,7 @@ public class TreeView extends Display {
 
                 break;
 
+
             case Constants.ORIENT_TOP_BOTTOM:
                 m_nodeRenderer.setHorizontalAlignment(Constants.CENTER);
                 m_edgeRenderer.setHorizontalAlignment1(Constants.CENTER);
@@ -248,7 +260,6 @@ public class TreeView extends Display {
         stl.setOrientation(orientation);
     }
 
-
     public static class NodeColorAction extends ColorAction {
         public NodeColorAction(String group) {
             super(group, VisualItem.FILLCOLOR);
@@ -265,6 +276,5 @@ public class TreeView extends Display {
                 return ColorLib.rgba(255, 255, 255, 0);
             }
         }
-    } // end of inner class TreeMapColorAction
-
-} // end of class TreeMap
+    }
+}

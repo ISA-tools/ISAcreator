@@ -40,6 +40,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
+import org.isatools.isacreator.visualization.workflowvisualization.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -254,28 +255,7 @@ public class SpreadsheetPopupMenus {
 
         final TableReferenceObject tro = spreadsheet.getTableReferenceObject();
 
-        if (spreadsheet.getTableReferenceObject().getMissingFields() != null && tro.getMissingFields().size() != 0) {
-            for (final String missingField : tro.getMissingFields().keySet()) {
-                if (!spreadsheet.spreadsheetFunctions.checkColumnExists(missingField)) {
-                    JMenuItem item = new JMenuItem(missingField);
-                    item.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae) {
-                            popup.setVisible(false);
-
-                            spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(tro.getMissingFields().get(missingField));
-
-                            spreadsheet.spreadsheetFunctions.addColumnAfterPosition(missingField, "", -1);
-                            toRemove[0] = missingField;
-
-                        }
-                    });
-                    addColumn.add(item);
-                }
-            }
-            if (toRemove[0] != null) {
-                tro.getMissingFields().remove(toRemove[0]);
-            }
-        }
+        addMissingFields(popup, addColumn, toRemove, tro);
 
         addColumn.add(new JSeparator());
 
@@ -286,16 +266,7 @@ public class SpreadsheetPopupMenus {
             addColumn.add(addParameter);
         }
 
-        if (!columnName.toLowerCase().contains("characteristic") &&
-                !columnName.toLowerCase().contains("unit") &&
-                !columnName.toLowerCase().contains("factor") &&
-                !columnName.toLowerCase().contains("date") &&
-                !columnName.toLowerCase().contains("performer") &&
-                !columnName.toLowerCase().contains("provider") &&
-                !columnName.toLowerCase().contains("comment") &&
-                !columnName.toLowerCase().contains("material type")) {
-            addColumn.add(addProtocol);
-        }
+        addCheckAndAddProtocol(columnName, addColumn, addProtocol);
 
         addColumn.add(new JSeparator());
         addColumn.add(addComment);
@@ -391,10 +362,18 @@ public class SpreadsheetPopupMenus {
         removeHighlight.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 if (spreadsheet.highlightActive) {
-
                     spreadsheet.setRowsToDefaultColor();
                 }
+            }
+        });
 
+        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for assays");
+        viewWorkflowForAssays.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+//                SpreadsheetAnalysis analysis = new TranscriptomicSpreadsheetAnalysis(spreadsheet);
+//                analysis.runAnalysis();
+//                analysis.getGraph().outputGraph();
+                new WorkflowVisualization().createGUI();
             }
         });
 
@@ -430,18 +409,8 @@ public class SpreadsheetPopupMenus {
         popup.add(deleteRow);
 
         popup.add(new JSeparator());
-        String columnLC = columnName.toLowerCase();
-        if (!columnLC.contains("characteristic") &&
-                !columnLC.contains("unit") &&
-                !columnLC.contains("factor") &&
-                !columnLC.contains("date") &&
-                !columnLC.contains("performer") &&
-                !columnLC.contains("provider") &&
-                !columnLC.contains("comment") &&
-                !columnLC.contains("material type")
-                && spreadsheet.getStudyDataEntryEnvironment() != null) {
-            popup.add(addColumn);
-        }
+        checkAndAddIfShouldAddColumn(columnName, popup, addColumn);
+
         if (spreadsheet.hiddenColumns.size() > 0) {
             popup.add(unhideColumns);
         }
@@ -470,7 +439,59 @@ public class SpreadsheetPopupMenus {
             popup.add(removeHighlight);
         }
 
+//        popup.add(new JSeparator());
+//        popup.add(viewWorkflowForAssays);
         popup.show(jc, x, y);
+    }
+
+    private void checkAndAddIfShouldAddColumn(String columnName, JPopupMenu popup, JMenu addColumn) {
+        if (isNotStandardFieldType(columnName)
+                && spreadsheet.getStudyDataEntryEnvironment() != null) {
+            popup.add(addColumn);
+        }
+    }
+
+    private void addCheckAndAddProtocol(String columnName, JMenu addColumn, JMenuItem addProtocol) {
+        if (isNotStandardFieldType(columnName)) {
+            addColumn.add(addProtocol);
+        }
+    }
+
+    private boolean isNotStandardFieldType(String columnName) {
+        columnName = columnName.toLowerCase();
+        return !columnName.contains("characteristic") &&
+                !columnName.contains("unit") &&
+                !columnName.contains("factor") &&
+                !columnName.contains("date") &&
+                !columnName.contains("performer") &&
+                !columnName.contains("provider") &&
+                !columnName.contains("comment") &&
+                !columnName.contains("material type");
+    }
+
+    private void addMissingFields(final JPopupMenu popup, JMenu addColumn, final String[] toRemove, final TableReferenceObject tro) {
+        if (spreadsheet.getTableReferenceObject().getMissingFields() != null && tro.getMissingFields().size() != 0) {
+            for (final String missingField : tro.getMissingFields().keySet()) {
+                if (!spreadsheet.spreadsheetFunctions.checkColumnExists(missingField)) {
+                    JMenuItem item = new JMenuItem(missingField);
+                    item.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae) {
+                            popup.setVisible(false);
+
+                            spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(tro.getMissingFields().get(missingField));
+
+                            spreadsheet.spreadsheetFunctions.addColumnAfterPosition(missingField, "", -1);
+                            toRemove[0] = missingField;
+
+                        }
+                    });
+                    addColumn.add(item);
+                }
+            }
+            if (toRemove[0] != null) {
+                tro.getMissingFields().remove(toRemove[0]);
+            }
+        }
     }
 
     /**
