@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -218,14 +218,11 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
     private void addHeadersToTree() {
         TableReferenceObjectWrapper wrapperForMapper = new TableReferenceObjectWrapper(tableReferenceObject);
-        for (String column : wrapperForMapper.getStdHeaders()) {
-            if (!column.equals(GeneralFieldTypes.UNIT.name) && !column.equals(TableReferenceObject.ROW_NO_TEXT)) {
-                MappingInformation toUse = chooseDisplay(column);
-                MappedElement mn = new MappedElement(column, toUse);
-                mappingRef.add(mn);
-
-                rootNode.add(new DefaultMutableTreeNode(mn));
-            }
+        for (MappedElement mappingField : wrapperForMapper.getStdHeaders()) {
+            MappingInformation toUse = chooseDisplay(mappingField.getFieldName());
+            mappingField.setDisplay(toUse);
+            mappingRef.add(mappingField);
+            rootNode.add(new DefaultMutableTreeNode(mappingField));
         }
     }
 
@@ -264,6 +261,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
 
                             mappingRef.add(count + 1, new MappedElement(newFieldName, toUse));
                             addedFields.add(newFieldName);
+
+
                             reformTree();
                             statusPanel.setVisible(false);
                         }
@@ -287,6 +286,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             if (mn.getFieldName().equals(fieldName)) {
                 return mn;
             }
+
         }
         return null;
     }
@@ -544,6 +544,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
             ISAFieldMapping mapping = mn.getDisplay().createISAFieldMapping();
             if (mapping != null) {
                 fields.put(mn.getFieldName(), mapping);
+
             }
         }
 
