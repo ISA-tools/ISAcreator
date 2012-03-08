@@ -111,7 +111,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     // list of the assays to be defined
     private List<AssaySelection> assaysToBeDefined;
     // map of from the name of the table to the ASO containing information about the Measurement and Technology
-    private Map<String, AssaySelection> tableNameToAssaySelection;
+    private Map<String, AssaySelection> assaySelections;
     // map of from the name of the table to the TableReferenceObject required for definition of the Spreadsheet
     private Map<String, TableReferenceObject> definitions = new HashMap<String, TableReferenceObject>();
     // provides the fields that should have a fixed mapping (e.g. after the study sample definition, the Study Sample
@@ -362,6 +362,10 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         final AssaySelectionUI assaySelection = new AssaySelectionUI(measToAllowedTechnologies);
         assaySelection.createGUI();
 
+        if (preExistingMapping != null) {
+            assaySelection.addAssaysToDefine(preExistingMapping.getPreviousAssaySelections());
+        }
+
         final JLayeredPane finalPanel = getGeneralLayout(selectAssaysUsedHeader, breadcrumb2, fileBeingMapped, assaySelection, getHeight());
 
 
@@ -412,7 +416,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 previousPage.push(new HistoryComponent(finalPanel, listeners));
                 assaysToBeDefined = assaySelection.getAssaysToDefine();
 
-                tableNameToAssaySelection = new HashMap<String, AssaySelection>();
+                assaySelections = new HashMap<String, AssaySelection>();
 
                 Thread loadFileProcess = new Thread(new Runnable() {
                     public void run() {
@@ -577,7 +581,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                             fixedMappings.put("Sample Name", mappingTableGUI.getMappingNodeForField("Sample Name"));
                             definitions.put(MappingObject.STUDY_SAMPLE, populatedTRO);
                         } else {
-                            tableNameToAssaySelection.put(populatedTRO.getTableName(), assaysToBeDefined.get(sequence));
+                            assaySelections.put(populatedTRO.getTableName(), assaysToBeDefined.get(sequence));
                             definitions.put(populatedTRO.getTableName(), populatedTRO);
                         }
 
@@ -815,7 +819,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         if (!savedMappingsFile.getSelectedFilePath().equals("")) {
                             nextButton.setEnabled(false);
                             backButton.setEnabled(false);
-                            mappingCreator.createXMLFile(savedMappingsFile.getSelectedFilePath(), mappingsToSave);
+                            mappingCreator.createXMLFile(savedMappingsFile.getSelectedFilePath(), mappingsToSave, assaysToBeDefined);
                             saveStatusInfo.setText("mappings saved successfully...");
                         } else {
                             saveStatusInfo.setText("please select a file...");
@@ -880,7 +884,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 nextButton.setIcon(next);
                 Thread performMappingLogic = new Thread(new Runnable() {
                     public void run() {
-                        investigation = MappingLogic.createInvestigation(definitions, tableNameToAssaySelection, dataEntryEnvironment);
+                        investigation = MappingLogic.createInvestigation(definitions, assaySelections, dataEntryEnvironment);
                         // now we need to construct the investigation from the defined table reference objects and the
                         investigation.setUserInterface(new InvestigationDataEntry(investigation, dataEntryEnvironment));
 

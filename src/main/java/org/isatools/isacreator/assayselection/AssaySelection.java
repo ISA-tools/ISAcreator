@@ -51,11 +51,11 @@ public class AssaySelection implements Comparable {
     private String platform;
 
 
-    AssaySelection(String measurement, String technology) {
+    public AssaySelection(String measurement, String technology) {
         this(measurement, technology, "");
     }
 
-    AssaySelection(String measurement, String technology, String platform) {
+    public AssaySelection(String measurement, String technology, String platform) {
 
         this.measurement = measurement;
         this.technology = technology;
@@ -85,7 +85,7 @@ public class AssaySelection implements Comparable {
         assayDesc.append("<html>");
         assayDesc.append("<strong>").append(getMeasurement()).append("</strong>");
 
-        if (!getTechnology().equals(AssaySelectionUI.NO_TECHNOLOGY_TEXT)) {
+        if (!getTechnology().equals(AssaySelectionUI.NO_TECHNOLOGY_TEXT) && !getTechnology().isEmpty()) {
             assayDesc.append(" using ");
             assayDesc.append("<strong>").append(getTechnology()).append("</strong>");
         }

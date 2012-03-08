@@ -39,6 +39,7 @@ package org.isatools.isacreator.formatmappingutility.io;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
+import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.formatmappingutility.logic.MappingTypes;
 import org.isatools.isacreator.formatmappingutility.ui.MappingField;
 import org.isatools.isacreator.mapping.schema.*;
@@ -124,6 +125,14 @@ public class MappingXMLLoader {
             }
 
             mappings.addMapping(isaFieldBeingMappedTo, currentMapping);
+        }
+
+        for (AssaysUsedMappings assayUsed : isaFields.getAssaysUsedArray()) {
+            for (AssayUsed assay : assayUsed.getAssayUsedArray()) {
+                mappings.addAssaySelection(new AssaySelection(assay.getMeasurement(),
+                        assay.getTechnology() == null ? "" : assay.getTechnology(),
+                        assay.getPlatform() == null ? "" : assay.getPlatform()));
+            }
         }
 
         return mappings;

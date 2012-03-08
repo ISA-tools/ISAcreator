@@ -8,11 +8,31 @@
 
     <element name="isa-field-mappings" type="isaMap:isaFieldMappings"/>
 
+
     <complexType name="isaFieldMappings">
         <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="isaMap:isa-field"/>
+            <element ref="isaMap:assays-used" maxOccurs="1"/>
         </sequence>
     </complexType>
+
+    <element name="assays-used" type="isaMap:assaysUsedMappings"/>
+
+    <complexType name="assaysUsedMappings">
+        <sequence minOccurs="1" maxOccurs="unbounded">
+            <element name="assayUsed" type="isaMap:assayUsed"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="assayUsed">
+        <sequence>
+            <element name="measurement" type="string" minOccurs="1" maxOccurs="1"/>
+            <element name="technology" type="string" minOccurs="1" maxOccurs="1"/>
+            <element name="platform" type="string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+        <attribute name="column-name" type="string"/>
+    </complexType>
+
 
     <element name="isa-field" type="isaMap:isaField"/>
 

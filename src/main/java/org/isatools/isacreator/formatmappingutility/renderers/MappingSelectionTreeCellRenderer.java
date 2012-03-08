@@ -60,7 +60,7 @@ import java.awt.font.FontRenderContext;
 public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
 
     private JPanel contents;
-    private JLabel icon, remove;
+    private JLabel icon;
     private JLabel text;
 
     @InjectedResource
@@ -74,11 +74,9 @@ public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
         contents.setOpaque(false);
 
         icon = new JLabel();
-        remove = new JLabel();
         text = UIHelper.createLabel("", UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR);
 
         Box iconContainer = Box.createHorizontalBox();
-        iconContainer.add(remove);
         iconContainer.add(Box.createHorizontalStrut(3));
         iconContainer.add(icon);
 
@@ -119,15 +117,6 @@ public class MappingSelectionTreeCellRenderer implements TreeCellRenderer {
         } else {
             icon.setIcon(expanded ? openedNode : closedNode);
         }
-
-        remove.setIcon(selected ? removeNode : null);
-        remove.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                System.out.println("Hello");
-
-            }
-        });
 
         return contents;
     }

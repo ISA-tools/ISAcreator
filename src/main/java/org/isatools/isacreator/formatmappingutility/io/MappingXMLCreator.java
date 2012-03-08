@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.formatmappingutility.io;
 
+import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 
 import java.io.File;
@@ -55,9 +56,9 @@ import java.util.Map;
 
 public class MappingXMLCreator {
 
-    public void createXMLFile(String fileName, Map<String, ISAFieldMapping> mappings) throws FileNotFoundException {
+    public void createXMLFile(String fileName, Map<String, ISAFieldMapping> mappings, List<AssaySelection> assaySelections) throws FileNotFoundException {
 
-        StringBuffer xmlRep = createMappingXML(mappings);
+        StringBuffer xmlRep = createMappingXML(mappings, assaySelections);
 
         File mappingFile = new File(fileName);
 
@@ -71,7 +72,6 @@ public class MappingXMLCreator {
             } else {
                 mappingFile = new File(mappingFile.getAbsolutePath() + ".xml");
             }
-
         }
 
         PrintStream ps = new PrintStream(mappingFile);
@@ -86,7 +86,7 @@ public class MappingXMLCreator {
      * @param mappings - Map containing ISAFieldMappings to be output
      * @return a StringBuffer containing the XML representation of the Mapping
      */
-    private StringBuffer createMappingXML(Map<String, ISAFieldMapping> mappings) {
+    private StringBuffer createMappingXML(Map<String, ISAFieldMapping> mappings, List<AssaySelection> assaySelections) {
         StringBuffer xmlRep = new StringBuffer();
 
         xmlRep.append("<isa-field-mappings xmlns=\"http://www.ebi.ac.uk/bii/isacreator_mapping_configuration#\">");
@@ -117,9 +117,34 @@ public class MappingXMLCreator {
             xmlRep.append("</isa-field>");
         }
 
+        xmlRep.append(createAssayInformation(assaySelections));
+
         xmlRep.append("</isa-field-mappings>");
 
         return xmlRep;
+    }
+
+    private StringBuffer createAssayInformation(List<AssaySelection> assaySelections) {
+        StringBuffer assayXMLRep = new StringBuffer();
+
+        assayXMLRep.append("<assays-used>");
+        for (AssaySelection assaySelection : assaySelections) {
+            assayXMLRep.append("<assayUsed>");
+            assayXMLRep.append("<measurement>").append(assaySelection.getMeasurement()).append("</measurement>");
+
+            if (!assaySelection.getTechnology().isEmpty()) {
+                assayXMLRep.append("<technology>").append(assaySelection.getTechnology()).append("</technology>");
+            }
+
+            if (!assaySelection.getPlatform().isEmpty()) {
+                assayXMLRep.append("<platform>").append(assaySelection.getPlatform()).append("</platform>");
+            }
+
+            assayXMLRep.append("</assayUsed>");
+        }
+        assayXMLRep.append("</assays-used>");
+
+        return assayXMLRep;
     }
 
     private void createRepresentationOfISAField(List<ISAField> mappings, String type, StringBuffer xml) {

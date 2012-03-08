@@ -334,20 +334,43 @@ public class AssaySelectionUI extends JPanel {
         }
     }
 
-    private void addToSelectedAssays(AssaySelection aso) {
+    private void addToSelectedAssays(AssaySelection assaySelection) {
 
         // check to make sure the object doesn't already exist
 
         boolean present = false;
         for (Object o : selectedAssaysList.getItems()) {
-            if (o.toString().compareTo(aso.toString()) == 0) {
+            if (o.toString().compareTo(assaySelection.toString()) == 0) {
                 present = true;
                 break;
             }
         }
 
-        if (!present) {
-            selectedAssaysList.addItem(aso);
+        if (!present && isValidAssay(assaySelection)) {
+            selectedAssaysList.addItem(assaySelection);
+        }
+    }
+
+    /**
+     * Checks to ensure the measurement and technology exists before adding the assayselection.
+     *
+     * @param assaySelection
+     * @return
+     */
+    private boolean isValidAssay(AssaySelection assaySelection) {
+        if (measToAllowedTechnologies.containsKey(assaySelection.getMeasurement())) {
+            if (measToAllowedTechnologies.get(assaySelection.getMeasurement()).size() == 0
+                    || measToAllowedTechnologies.get(assaySelection.getMeasurement()).contains(assaySelection.getTechnology())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void addAssaysToDefine(List<AssaySelection> assaySelections) {
+        for (AssaySelection assaySelection : assaySelections) {
+            addToSelectedAssays(assaySelection);
         }
     }
 

@@ -541,7 +541,6 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     public Map<String, ISAFieldMapping> createMappingRefs() {
         Map<String, ISAFieldMapping> fields = new HashMap<String, ISAFieldMapping>();
         for (MappedElement mn : mappingRef) {
-            // todo accommodate the protocol ref mapping...?)
             ISAFieldMapping mapping = mn.getDisplay().createISAFieldMapping();
             if (mapping != null) {
                 fields.put(mn.getFieldName(), mapping);

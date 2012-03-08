@@ -37,9 +37,12 @@
 
 package org.isatools.isacreator.formatmappingutility.io;
 
+import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.formatmappingutility.ui.MappingField;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,6 +57,7 @@ import java.util.Map;
 public class SavedMappings {
 
     private Map<MappingField, ISAFieldMapping> mappings;
+    private List<AssaySelection> previousAssaySelections;
 
     public SavedMappings() {
         this(new HashMap<MappingField, ISAFieldMapping>());
@@ -61,6 +65,7 @@ public class SavedMappings {
 
     public SavedMappings(Map<MappingField, ISAFieldMapping> mappings) {
         this.mappings = mappings;
+        previousAssaySelections = new ArrayList<AssaySelection>();
     }
 
     public void addMapping(MappingField field, ISAFieldMapping mapTo) {
@@ -78,5 +83,13 @@ public class SavedMappings {
             }
         }
         return null;
+    }
+
+    public void addAssaySelection(AssaySelection assaySelection) {
+        previousAssaySelections.add(assaySelection);
+    }
+
+    public List<AssaySelection> getPreviousAssaySelections() {
+        return previousAssaySelections;
     }
 }
