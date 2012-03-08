@@ -150,10 +150,12 @@ public class ValidateUI extends JFrame {
 
                                 for (TabLoggingEventWrapper event : logEvents) {
 
+                                    System.out.println(event.getFormattedMessage());
                                     String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
 
                                     if (fileName != null) {
-                                        if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
+                                        System.out.println(fileName);
+                                        if (event.getLogEvent().getLevel().toInt() >= Level.INFO_INT) {
                                             if (!fileToErrors.containsKey(fileName)) {
                                                 fileToErrors.put(fileName, new ArrayList<ErrorMessage>());
                                             }
@@ -177,11 +179,12 @@ public class ValidateUI extends JFrame {
                                     ErrorReporterView view = new ErrorReporterView(errors);
                                     view.setPreferredSize(new Dimension(750, 440));
                                     view.createGUI();
-
                                     swapContainers(view);
                                 } else {
                                     Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
                                     swapContainers(successfulValidationContainer);
+
+
                                 }
                             }
                         });
