@@ -1,4 +1,4 @@
-package org.isatools.isacreator.visualization.workflowvisualisation.graph;
+package org.isatools.isacreator.visualization.workflowvisualization.graph;
 
 
 public class GraphCompare {

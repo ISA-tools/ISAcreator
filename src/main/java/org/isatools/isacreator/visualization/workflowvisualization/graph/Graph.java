@@ -1,4 +1,4 @@
-package org.isatools.isacreator.visualization.workflowvisualisation.graph;
+package org.isatools.isacreator.visualization.workflowvisualization.graph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,10 +70,14 @@ public class Graph {
                 System.out.println(n.getName());
 
                 if (node.getInputNode() != null) {
-                    System.out.println("\t input: " + node.getInputNode().getName());
+                    for (Node inputNode : node.getInputNode()) {
+                        System.out.println("\t input: " + inputNode.getName());
+                    }
                 }
                 if (node.getOutputNode() != null) {
-                    System.out.println("\t output: " + node.getOutputNode().getName());
+                    for (Node outputNode : node.getOutputNode()) {
+                        System.out.println("\t output: " + outputNode.getName());
+                    }
                 }
             } else if (n instanceof MaterialNode) {
 
