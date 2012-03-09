@@ -68,6 +68,8 @@ public class FileSelectionPanel extends JPanel {
     private JFileChooser fileChooser;
     private Font textFont;
     private Color textColor;
+    private JLabel selectFileButton;
+    private boolean disableFileSelection = false;
 
 
     public FileSelectionPanel(String text, JFileChooser fileChooser) {
@@ -121,7 +123,7 @@ public class FileSelectionPanel extends JPanel {
 
         fileSelectionUtil.add(fileToUse);
 
-        final JLabel selectFileButton = new JLabel(fileSelect);
+        selectFileButton = new JLabel(fileSelect);
         selectFileButton.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent event) {
@@ -135,15 +137,17 @@ public class FileSelectionPanel extends JPanel {
             public void mousePressed(MouseEvent event) {
                 selectFileButton.setIcon(fileSelect);
 
-                if (operationType == OPEN) {
-                    if (fileChooser.showOpenDialog(getInstance()) == JFileChooser.APPROVE_OPTION
-                            && fileChooser.getSelectedFile() != null) {
-                        fileToUse.setText(fileChooser.getSelectedFile().getPath());
-                    }
-                } else {
-                    if (fileChooser.showSaveDialog(getInstance()) == JFileChooser.APPROVE_OPTION
-                            && fileChooser.getSelectedFile() != null) {
-                        fileToUse.setText(processFilePath(fileChooser.getSelectedFile().getPath()));
+                if (!disableFileSelection) {
+                    if (operationType == OPEN) {
+                        if (fileChooser.showOpenDialog(getInstance()) == JFileChooser.APPROVE_OPTION
+                                && fileChooser.getSelectedFile() != null) {
+                            fileToUse.setText(fileChooser.getSelectedFile().getPath());
+                        }
+                    } else {
+                        if (fileChooser.showSaveDialog(getInstance()) == JFileChooser.APPROVE_OPTION
+                                && fileChooser.getSelectedFile() != null) {
+                            fileToUse.setText(processFilePath(fileChooser.getSelectedFile().getPath()));
+                        }
                     }
                 }
             }
@@ -201,5 +205,13 @@ public class FileSelectionPanel extends JPanel {
         }
 
         return false;
+    }
+
+    public void disableFileSelection(boolean disable) {
+        disableFileSelection = disable;
+        if (selectFileButton != null) {
+            selectFileButton.setEnabled(!disableFileSelection);
+            fileToUse.setEnabled(!disableFileSelection);
+        }
     }
 }

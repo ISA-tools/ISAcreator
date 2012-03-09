@@ -39,6 +39,7 @@ package org.isatools.isacreator.validateconvert.ui;
 
 import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
@@ -49,6 +50,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
@@ -83,6 +85,8 @@ public class ValidateUI extends JFrame {
     private ImageIcon validationSuccess, conversionSuccess, saveISAtab;
 
     private ISAcreator isacreatorEnvironment;
+
+    private static Logger log = Logger.getLogger(ValidateUI.class.getName());
 
     protected static ImageIcon validateISAAnimation = new ImageIcon(ValidateUI.class.getResource("/images/validator/validating.gif"));
     protected static ImageIcon convertISAAnimation = new ImageIcon(ValidateUI.class.getResource("/images/validator/converting.gif"));
@@ -147,6 +151,10 @@ public class ValidateUI extends JFrame {
                     Container saveISAtabContainer = UIHelper.padComponentVerticalBox(70, new JLabel(saveISAtab));
                     swapContainers(saveISAtabContainer);
                 } else {
+                    log.info("Saving current ISAtab file");
+                    ApplicationManager.getCurrentApplicationInstance().saveISATab();
+                    log.info("ISAtab file saved");
+
                     ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
                     final GUIISATABValidator isatabValidator = new GUIISATABValidator();

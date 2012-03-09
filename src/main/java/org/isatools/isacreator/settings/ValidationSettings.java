@@ -47,12 +47,13 @@ import java.util.Properties;
 
 public class ValidationSettings extends SettingsScreen {
 
-    private Properties settings;
+    public static final String STRICT_VALIDATION_IS_ON = "strictValidation.isOn";
 
     private JCheckBox strictValidation;
 
-    public ValidationSettings(Properties settings) {
+    public ValidationSettings(Properties settings, Properties propertiesOverride) {
         this.settings = settings;
+        this.propertiesOverride = propertiesOverride;
 
         setLayout(new BorderLayout());
         setOpaque(false);
@@ -69,10 +70,13 @@ public class ValidationSettings extends SettingsScreen {
         container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
         container.setOpaque(false);
 
-        strictValidation = new JCheckBox("Strict Validation?", Boolean.valueOf(settings.getProperty("strictValidation.isOn")));
+        strictValidation = new JCheckBox("Strict Validation?", Boolean.valueOf(settings.getProperty(STRICT_VALIDATION_IS_ON)));
         strictValidation.setHorizontalAlignment(SwingConstants.LEFT);
         UIHelper.renderComponent(strictValidation, UIHelper.VER_12_BOLD, UIHelper.GREY_COLOR, false);
 
+        if (propertiesOverride.containsKey(STRICT_VALIDATION_IS_ON)) {
+            strictValidation.setEnabled(false);
+        }
 
         container.add(UIHelper.wrapComponentInPanel(strictValidation));
 

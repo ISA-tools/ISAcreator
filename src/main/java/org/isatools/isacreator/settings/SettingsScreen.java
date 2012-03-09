@@ -44,6 +44,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Properties;
 
 /**
  * @author Eamonn Maguire
@@ -63,6 +64,9 @@ public abstract class SettingsScreen extends JPanel {
     static final ImageIcon CONFIRM_DELETION_OVER = new ImageIcon(SettingsScreen.class.getResource("/images/settings/confirm_over.png"));
     static final ImageIcon CANCEL_DELETION = new ImageIcon(SettingsScreen.class.getResource("/images/settings/cancel.png"));
     static final ImageIcon CANCEL_DELETION_OVER = new ImageIcon(SettingsScreen.class.getResource("/images/settings/cancel_over.png"));
+
+    protected Properties settings;
+    protected Properties propertiesOverride;
 
     protected JLabel removeTerm;
 

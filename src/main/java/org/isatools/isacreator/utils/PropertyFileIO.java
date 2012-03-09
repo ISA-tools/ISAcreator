@@ -52,8 +52,25 @@ import java.util.Properties;
 public class PropertyFileIO {
     private static final Logger log = Logger.getLogger(PropertyFileIO.class.getName());
 
-    public static final String SETTINGS_DIR = "Settings";
 
+    public static final String SETTINGS_DIR = "Settings";
+    public static final String DEFAULT_CONFIGS_SETTINGS_PROPERTIES = "/defaultConfigs/defaultsettings.properties";
+
+    private static Properties defaultProperties;
+
+    public static Properties retrieveDefaultSettings() {
+        if (defaultProperties == null) {
+            defaultProperties = new Properties();
+            try {
+                defaultProperties.load(PropertyFileIO.class.getResourceAsStream(DEFAULT_CONFIGS_SETTINGS_PROPERTIES));
+            } catch (IOException e) {
+                log.error("Unable to load default properties file");
+            } catch (Exception e) {
+                log.error("Unexpected exception occurred when trying to read in default properties file");
+            }
+        }
+        return defaultProperties;
+    }
 
     public static Properties loadSettings(String propertiesFile) {
         Properties p = new Properties();
@@ -64,7 +81,7 @@ public class PropertyFileIO {
                 is = new FileInputStream(f);
                 p.load(is);
                 setProxy(p);
-                return p;
+                return overrideWithDefaultProperties(p);
             }
         } catch (IOException e) {
             log.error("problem loading settings properties: " + e.getMessage());
@@ -79,7 +96,15 @@ public class PropertyFileIO {
             }
         }
 
-        return new Properties();
+        return retrieveDefaultSettings();
+    }
+
+    private static Properties overrideWithDefaultProperties(Properties userSettings) {
+        for (String key : retrieveDefaultSettings().stringPropertyNames()) {
+            userSettings.put(key, retrieveDefaultSettings().get(key).toString());
+        }
+
+        return userSettings;
     }
 
     public static void updateISAcreatorProperties(Properties programProperties) {

@@ -54,14 +54,18 @@ import java.util.Properties;
  *         Date: Nov 18, 2010
  */
 public class DataLocationSettings extends SettingsScreen {
-    private Properties settings;
 
+    public static final String ISACREATOR_CONFIGURATION_LOCATION = "isacreator.configurationLocation";
+    public static final String ISACREATOR_ISATAB_LOCATION = "isacreator.isatabLocation";
+    public static final String ISACREATOR_USER_PROFILE_LOCATION = "isacreator.userProfileLocation";
+    public static final String ISACREATOR_MAPPING_FILE_LOCATIONS = "isacreator.mappingFileLocations";
     private FileSelectionPanel userProfileLocation;
     private FileSelectionPanel configurationLocation;
     private FileSelectionPanel isatabLocation;
     private FileSelectionPanel mappingFileLocation;
 
-    public DataLocationSettings(Properties settings) {
+    public DataLocationSettings(Properties settings, Properties propertiesOverride) {
+        this.propertiesOverride = propertiesOverride;
 
         this.settings = settings;
 
@@ -107,19 +111,24 @@ public class DataLocationSettings extends SettingsScreen {
     }
 
     public void updateLocations() {
-        configurationLocation.setText(settings.getProperty("isacreator.configurationLocation"));
-        isatabLocation.setText(settings.getProperty("isacreator.isatabLocation"));
-        userProfileLocation.setText(settings.getProperty("isacreator.userProfileLocation"));
-        mappingFileLocation.setText(settings.getProperty("isacreator.mappingFileLocations"));
+        configurationLocation.setText(settings.getProperty(ISACREATOR_CONFIGURATION_LOCATION));
+        isatabLocation.setText(settings.getProperty(ISACREATOR_ISATAB_LOCATION));
+        userProfileLocation.setText(settings.getProperty(ISACREATOR_USER_PROFILE_LOCATION));
+        mappingFileLocation.setText(settings.getProperty(ISACREATOR_MAPPING_FILE_LOCATIONS));
+
+        configurationLocation.disableFileSelection(propertiesOverride.containsKey(ISACREATOR_CONFIGURATION_LOCATION));
+        isatabLocation.disableFileSelection(propertiesOverride.containsKey(ISACREATOR_ISATAB_LOCATION));
+        userProfileLocation.disableFileSelection(propertiesOverride.containsKey(ISACREATOR_USER_PROFILE_LOCATION));
+        mappingFileLocation.disableFileSelection(propertiesOverride.containsKey(ISACREATOR_MAPPING_FILE_LOCATIONS));
     }
 
     @Override
     protected boolean updateSettings() {
         try {
-            settings.setProperty("isacreator.isatabLocation", isatabLocation.getSelectedFilePath());
-            settings.setProperty("isacreator.configurationLocation", configurationLocation.getSelectedFilePath());
-            settings.setProperty("isacreator.userProfileLocation", userProfileLocation.getSelectedFilePath());
-            settings.setProperty("isacreator.mappingFileLocations", mappingFileLocation.getSelectedFilePath());
+            settings.setProperty(ISACREATOR_ISATAB_LOCATION, isatabLocation.getSelectedFilePath());
+            settings.setProperty(ISACREATOR_CONFIGURATION_LOCATION, configurationLocation.getSelectedFilePath());
+            settings.setProperty(ISACREATOR_USER_PROFILE_LOCATION, userProfileLocation.getSelectedFilePath());
+            settings.setProperty(ISACREATOR_MAPPING_FILE_LOCATIONS, mappingFileLocation.getSelectedFilePath());
 
             // should replace the static var setting with the properties call instead. It's cleaner.
             if (configurationLocation.getSelectedFilePath() != null && !configurationLocation.getSelectedFilePath().equals("")) {
@@ -141,7 +150,7 @@ public class DataLocationSettings extends SettingsScreen {
             }
 
             if (mappingFileLocation.getSelectedFilePath() != null && !mappingFileLocation.getSelectedFilePath().equals("")) {
-                ISAcreatorProperties.setProperty("isacreator.mappingFileLocations", mappingFileLocation.getSelectedFilePath());
+                ISAcreatorProperties.setProperty(ISACREATOR_MAPPING_FILE_LOCATIONS, mappingFileLocation.getSelectedFilePath());
             }
 
 

@@ -77,7 +77,6 @@ public class HTTPProxySettings extends SettingsScreen {
     private JCheckBox useProxyAuthentication;
     private JTextField login;
     private JPasswordField password;
-    private Properties settings;
 
     public HTTPProxySettings(Properties settings) {
 

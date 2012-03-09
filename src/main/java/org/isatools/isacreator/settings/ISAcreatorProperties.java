@@ -39,14 +39,7 @@ package org.isatools.isacreator.settings;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by the ISA team
- *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 17/08/2011
- *         Time: 16:15
- */
+
 public class ISAcreatorProperties {
 
     public static final String CURRENT_CONFIGURATION = "current_configuration";

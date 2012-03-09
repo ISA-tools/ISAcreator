@@ -80,6 +80,7 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
     private GeneralViewerEditor<Protocol> protocolEditor;
 
     private Properties settings;
+    private Properties defaultSettings;
 
     @InjectedResource
     public ImageIcon logo, info;
@@ -95,6 +96,7 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
         super();
 
         this.settings = settings;
+        this.defaultSettings = PropertyFileIO.retrieveDefaultSettings();
 
         ResourceInjector.get("settings-package.style").inject(this);
 
@@ -204,7 +206,7 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
                     } else if (Settings.resolveSetting(settingsOptions.getSelectedValue().toString()) == Settings.DATA_LOCATIONS) {
 
                         if (dataLocationSettings == null) {
-                            dataLocationSettings = new DataLocationSettings(settings);
+                            dataLocationSettings = new DataLocationSettings(settings, defaultSettings);
 
                         }
 
@@ -213,7 +215,7 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
                     } else if (Settings.resolveSetting(settingsOptions.getSelectedValue().toString()) == Settings.VALIDATION) {
 
                         if (validationSettings == null) {
-                            validationSettings = new ValidationSettings(settings);
+                            validationSettings = new ValidationSettings(settings, defaultSettings);
 
                         }
                         changeCentralPanel(validationSettings);

@@ -303,6 +303,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private void loadProgramSettings() {
         programSettings = PropertyFileIO.loadSettings(SettingsUtil.PROPERTIES_FILE);
+
         if (programSettings == null) {
             programSettings = new Properties();
         } else {
@@ -337,6 +338,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             // add all properties into the ISAcreatorProperties file
             for (String propertyName : programSettings.stringPropertyNames()) {
+                System.out.println("Property name: " + propertyName + "= " + programSettings.get(propertyName));
                 ISAcreatorProperties.setProperty(propertyName, programSettings.get(propertyName).toString());
             }
 
@@ -1025,8 +1027,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                             c.get(Calendar.MINUTE));
                 }
 
-                outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
-
+                saveISATab();
 
                 closeWindowTimer.start();
 
@@ -1058,7 +1059,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
                                 ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, baseDirectory);
 
-                                outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
+                                saveISATab();
                                 userProfileIO.saveUserProfiles();
 
                                 hideSheet();
@@ -1130,6 +1131,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 });
             }
         }
+    }
+
+    public void saveISATab() {
+        outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
     }
 
     class ScreenResizeAction extends AbstractAction {
