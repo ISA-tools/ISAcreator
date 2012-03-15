@@ -145,7 +145,7 @@ public class ValidateUI extends JFrame {
         Thread performer = new Thread(new Runnable() {
             public void run() {
 
-                System.out.println(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+                System.out.println("Current ISA-Tab is: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
                 if (!new File(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB)).exists()) {
                     Container saveISAtabContainer = UIHelper.padComponentVerticalBox(70, new JLabel(saveISAtab));
