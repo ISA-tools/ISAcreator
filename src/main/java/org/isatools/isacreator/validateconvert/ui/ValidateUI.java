@@ -145,9 +145,10 @@ public class ValidateUI extends JFrame {
         Thread performer = new Thread(new Runnable() {
             public void run() {
 
-                System.out.println("Current ISA-Tab is: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+                log.info("Current ISA-Tab is: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
                 if (!new File(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB)).exists()) {
+                    log.warn("Current ISA Tab file doesn't exist in the file system...");
                     Container saveISAtabContainer = UIHelper.padComponentVerticalBox(70, new JLabel(saveISAtab));
                     swapContainers(saveISAtabContainer);
                 } else {
@@ -162,6 +163,8 @@ public class ValidateUI extends JFrame {
                     GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
                     boolean strictValidationEnabled = Boolean.valueOf(ISAcreatorProperties.getProperty(ISAcreatorProperties.STRICT_VALIDATION));
+                    log.info("Strict validation on? " + strictValidationEnabled);
+
                     boolean shouldShowErrors = strictValidationEnabled && getErrorMessages(isatabValidator.getLog()).size() > 0;
 
                     if (result == GUIInvokerResult.SUCCESS && !shouldShowErrors) {
@@ -187,6 +190,7 @@ public class ValidateUI extends JFrame {
                             swapContainers(convertUI);
                         }
                     } else {
+                        log.info("Showing errors and warnings...");
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 displayValidationErrorsAndWarnings(getErrorMessages(isatabValidator.getLog()));
