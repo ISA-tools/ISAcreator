@@ -63,10 +63,7 @@ public class FilterableJTree<T, V> extends JTree {
 
     public FilterableJTree() {
         super();
-
-//		setModel(model);
         filterField = new FilterField();
-
         filterField.addPropertyChangeListener("filterEvent", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                 fireUpdateToListeners();
@@ -92,6 +89,10 @@ public class FilterableJTree<T, V> extends JTree {
 
     public FilterField getFilterField() {
         return filterField;
+    }
+
+    public void setFilterField(FilterField filterField) {
+        this.filterField = filterField;
     }
 
     public Set<String> getExpandedTreePaths() {
@@ -136,18 +137,14 @@ public class FilterableJTree<T, V> extends JTree {
 
         public void changedUpdate(DocumentEvent event) {
             ((TreeFilterModel) getModel()).refilter();
-            firePropertyChange("filterEvent", "", "uyt");
         }
 
         public void insertUpdate(DocumentEvent event) {
             ((TreeFilterModel) getModel()).refilterOnFilteredList();
-            firePropertyChange("filterEvent", "", "sdf");
         }
 
         public void removeUpdate(DocumentEvent event) {
             ((TreeFilterModel) getModel()).refilter();
-
-            firePropertyChange("filterEvent", "", "hgf");
         }
     }
 

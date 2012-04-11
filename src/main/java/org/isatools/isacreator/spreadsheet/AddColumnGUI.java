@@ -92,7 +92,7 @@ public class AddColumnGUI extends JDialog {
     private Spreadsheet st;
     private int type;
     private DropDownComponent dropdown;
-    private OntologySelectionTool ost;
+    private static OntologySelectionTool ontologySelectionTool;
 
 
     public AddColumnGUI(Spreadsheet st, int type) {
@@ -233,22 +233,22 @@ public class AddColumnGUI extends JDialog {
      */
     protected DropDownComponent createOntologyDropDown(final JTextField field,
                                                        boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource) {
-        ost = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
-        ost.createGUI();
+        ontologySelectionTool = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
+        ontologySelectionTool.createGUI();
 
-        dropdown = new DropDownComponent(field, ost, DropDownComponent.ONTOLOGY);
-        ost.addPropertyChangeListener("selectedOntology",
+        dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
+        ontologySelectionTool.addPropertyChangeListener("selectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(ost);
+                        dropdown.hidePopup(ontologySelectionTool);
                         field.setText(evt.getNewValue().toString());
                     }
                 });
 
-        ost.addPropertyChangeListener("noSelectedOntology",
+        ontologySelectionTool.addPropertyChangeListener("noSelectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        dropdown.hidePopup(ost);
+                        dropdown.hidePopup(ontologySelectionTool);
                     }
                 });
 
@@ -297,7 +297,7 @@ public class AddColumnGUI extends JDialog {
         unitFieldCont.add(stdFieldLab);
 
         final DropDownComponent ontologyDropDown = createOntologyDropDown(unitField, false,
-                false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("1112", "", UNIT_ONTOLOGY, "Unit Ontology"))));
+                false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "", UNIT_ONTOLOGY, "Unit Ontology"))));
         unitFieldCont.add(ontologyDropDown);
 
         JPanel determineUnitRequired = new JPanel(new GridLayout(1, 2));
@@ -533,6 +533,8 @@ public class AddColumnGUI extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         st.getParentFrame().hideSheet();
+//                        ontologySelectionTool.cleanupReferences();
+                        ontologySelectionTool = null;
                     }
                 });
             }

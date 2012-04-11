@@ -66,7 +66,7 @@ public class TableReferenceObject implements Serializable {
     private String tableName;
     private TableConfiguration tableConfig;
 
-    private ReferenceData data = null;
+    private ReferenceData referenceData = null;
     private Map<Integer, ListOrderedSet<Integer>> columnDependencies = new HashMap<Integer, ListOrderedSet<Integer>>();
 
     private OrderedMap<String, FieldObject> fieldLookup = new ListOrderedMap<String, FieldObject>();
@@ -278,8 +278,8 @@ public class TableReferenceObject implements Serializable {
     }
 
     public void addRowData(String[] headers, String[] rowData) {
-        if (data == null) {
-            data = new ReferenceData();
+        if (referenceData == null) {
+            referenceData = new ReferenceData();
         }
 
         List<String> rowDataModified = new ArrayList<String>();
@@ -324,7 +324,7 @@ public class TableReferenceObject implements Serializable {
             }
         }
 
-        data.addData(rowDataModified);
+        referenceData.addData(rowDataModified);
     }
 
     public DataTypes getClassType(String colName) {
@@ -365,7 +365,7 @@ public class TableReferenceObject implements Serializable {
 
 
     public Object[][] getDataAsArray() {
-        List<List<String>> spreadsheetData = this.data.getData();
+        List<List<String>> spreadsheetData = this.referenceData.getData();
 
         Object[][] ssContents = new Object[spreadsheetData.size() + 1][];
 
@@ -397,7 +397,6 @@ public class TableReferenceObject implements Serializable {
                 return "";
             }
 
-            System.out.println("Field is " + field.getFieldName());
             return field.getDefaultVal() == null ? "" : field.getDefaultVal();
         }
         return "";
@@ -574,8 +573,12 @@ public class TableReferenceObject implements Serializable {
         return null;
     }
 
-    public ReferenceData getData() {
-        return data;
+    public void setReferenceData(ReferenceData referenceData) {
+        this.referenceData = referenceData;
+    }
+
+    public ReferenceData getReferenceData() {
+        return referenceData;
     }
 
     public boolean isRequired(String colName) {

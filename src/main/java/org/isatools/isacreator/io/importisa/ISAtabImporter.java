@@ -83,7 +83,7 @@ public class ISAtabImporter {
         this.constructWithGUIs = constructWithGUIs;
         errors = new ArrayList<ISAFileErrorReport>();
 
-        this.dataEntryEnvironment = new DataEntryEnvironment(isacreator);
+        this.dataEntryEnvironment = new DataEntryEnvironment();
         isacreator.setCurDataEntryPanel(dataEntryEnvironment);
     }
 

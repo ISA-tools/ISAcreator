@@ -63,7 +63,7 @@ public class WorkflowVisualisationTreeView extends TreeView {
         m_vis.putAction("textColor", dataColorAction);
 
         ItemAction edgeColor = new ColorAction(treeEdges,
-                VisualItem.STROKECOLOR, ColorLib.rgba(153, 153, 153, 100));
+                VisualItem.STROKECOLOR, ColorLib.rgba(51, 51, 51, 100));
 
         // quick repaint
         ActionList repaint = new ActionList();
@@ -78,7 +78,7 @@ public class WorkflowVisualisationTreeView extends TreeView {
 
         // create the tree layout action
         NodeLinkTreeLayout treeLayout = new NodeLinkTreeLayout(tree,
-                m_orientation, 70, 0, 8);
+                m_orientation, 80, 70, 8);
         treeLayout.setLayoutAnchor(new Point2D.Double(size.width / 2, 15));
         m_vis.putAction("treeLayout", treeLayout);
 

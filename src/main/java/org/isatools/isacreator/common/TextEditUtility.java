@@ -102,7 +102,6 @@ public class TextEditUtility extends JLabel implements MouseListener {
 
                     }
                 });
-
     }
 
 

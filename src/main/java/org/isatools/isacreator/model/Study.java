@@ -383,11 +383,11 @@ public class Study extends ISASection {
      */
     public void removeFactor(String factorName) {
         for (String key : assays.keySet()) {
-            assays.get(key).getSpreadsheetUI().getTable().getSpreadsheetFunctions()
+            assays.get(key).getSpreadsheetUI().getSpreadsheet().getSpreadsheetFunctions()
                     .removeColumnByName("Factor Value[" + factorName + "]");
         }
 
-        studySampleRecord.getSpreadsheetUI().getTable()
+        studySampleRecord.getSpreadsheetUI().getSpreadsheet()
                 .getSpreadsheetFunctions().removeColumnByName("Factor Value[" + factorName + "]");
 
         Factor toRemove = null;
@@ -460,12 +460,12 @@ public class Study extends ISASection {
         newFactorName = "Factor Value[" + newFactorName + "]";
 
         for (String key : assays.keySet()) {
-            assays.get(key).getSpreadsheetUI().getTable()
+            assays.get(key).getSpreadsheetUI().getSpreadsheet()
                     .getSpreadsheetFunctions().substituteHeaderNames(previousFactorName, newFactorName);
             System.out.print(".");
         }
 
-        studySampleRecord.getSpreadsheetUI().getTable()
+        studySampleRecord.getSpreadsheetUI().getSpreadsheet()
                 .getSpreadsheetFunctions().substituteHeaderNames(previousFactorName,
                 newFactorName);
     }
@@ -479,12 +479,12 @@ public class Study extends ISASection {
     public void replaceProtocols(String previousProtocolName,
                                  String newProtocolName) {
         for (String key : assays.keySet()) {
-            assays.get(key).getSpreadsheetUI().getTable()
+            assays.get(key).getSpreadsheetUI().getSpreadsheet()
                     .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                     previousProtocolName, newProtocolName);
         }
 
-        studySampleRecord.getSpreadsheetUI().getTable()
+        studySampleRecord.getSpreadsheetUI().getSpreadsheet()
                 .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                 previousProtocolName, newProtocolName);
 

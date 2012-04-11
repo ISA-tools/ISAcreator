@@ -158,7 +158,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             for (Study s : inv.getStudies().values()) {
                 List<ArchiveOutputError> missingDataResult;
 
-                if ((missingDataResult = s.getStudySample().getSpreadsheetUI().getTable().checkForCompleteness()).size() > 0) {
+                if ((missingDataResult = s.getStudySample().getSpreadsheetUI().getSpreadsheet().checkForCompleteness()).size() > 0) {
                     log.info("Missing " + missingDataResult.size() + " files in the study sample file...");
 
                     missingData.put(s.getStudySample().getAssayReference(), missingDataResult);
@@ -167,20 +167,19 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 for (Assay a : s.getAssays().values()) {
                     localFiles.put(a.getAssayReference(), new ArrayList<String>());
                     // getFilesDefinedInTable will get all files and directory paths listed in each file column in the table!
-                    for (String file : a.getSpreadsheetUI().getTable().getSpreadsheetFunctions().getFilesDefinedInTable()) {
+                    for (String file : a.getSpreadsheetUI().getSpreadsheet().getSpreadsheetFunctions().getFilesDefinedInTable()) {
                         if (!file.startsWith("ftp") && !file.startsWith("http")) {
 
                             localFiles.get(a.getAssayReference()).add(file);
                         }
                     }
 
-                    if ((missingDataResult = a.getSpreadsheetUI().getTable().checkForCompleteness()).size() > 0) {
+                    if ((missingDataResult = a.getSpreadsheetUI().getSpreadsheet().checkForCompleteness()).size() > 0) {
                         log.info("Missing " + missingDataResult.size() + " files in file " + a.getAssayReference());
                         missingData.put(a.getAssayReference(), missingDataResult);
                     }
 
-                    a.getSpreadsheetUI().getTable()
-                            .changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_RELATIVE);
+                    a.getSpreadsheetUI().getSpreadsheet().changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_RELATIVE);
                 }
             }
 
@@ -203,7 +202,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             // reset file names back to absolute locations.
             for (Study study : inv.getStudies().values()) {
                 for (Assay assay : study.getAssays().values()) {
-                    assay.getSpreadsheetUI().getTable()
+                    assay.getSpreadsheetUI().getSpreadsheet()
                             .changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_ABSOLUTE);
                 }
             }
@@ -400,7 +399,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             e.printStackTrace();
             return false;
         } finally {
-            if(out != null) {
+            if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {

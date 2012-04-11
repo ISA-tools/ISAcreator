@@ -39,9 +39,7 @@ package org.isatools.isacreator.spreadsheet.transposedview;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
-import org.isatools.isacreator.gui.formelements.SubForm;
 import org.isatools.isacreator.gui.formelements.SubFormCellRenderer;
 import org.isatools.isacreator.spreadsheet.CustomRowRenderer;
 import org.jdesktop.fuse.InjectedResource;
@@ -249,13 +247,12 @@ public class TransposedSpreadsheetView extends JDialog {
 
         Box subformContainer = Box.createVerticalBox();
 
-        DataEntryEnvironment dataEntryEnvironment = transposedSpreadsheetModel.getSpreadsheet().getDataEntryEnv();
+//        DataEntryEnvironment dataEntryEnvironment = transposedSpreadsheetModel.getSpreadsheet().getDataEntryEnv();
 
         transposedSpreadsheetSubform = new TransposedSubForm("spreadsheet data", FieldTypes.ROW, transposedSpreadsheetModel.getFields(),
-                transposedSpreadsheetModel.getNumberOfRecords(), width, height, transposedSpreadsheetModel.getData(), dataEntryEnvironment);
+                transposedSpreadsheetModel.getNumberOfRecords(), width, height, transposedSpreadsheetModel.getData(), null);
 
         transposedSpreadsheetSubform.createGUI();
-
         transposedSpreadsheetSubform.addPropertyChangeListener("rowAdded", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                 updateInformation();
@@ -401,6 +398,7 @@ public class TransposedSpreadsheetView extends JDialog {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 transposedSpreadsheetModel.getSpreadsheet().getParentFrame().hideSheet();
+                dispose();
             }
         });
     }

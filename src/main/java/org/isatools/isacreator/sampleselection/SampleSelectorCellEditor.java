@@ -58,9 +58,9 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
     @Override
     protected void updateContent() {
-        if (StudyUtils.shouldRunUpdate(study.getStudyId())) {
+        if (StudyUtils.shouldRunUpdate(getStudyFromSpreadsheet().getStudyId())) {
             try {
-                selector.updateContent(StudyUtils.getStudySampleInformation(study).values());
+                selector.updateContent(StudyUtils.getStudySampleInformation(getStudyFromSpreadsheet()).values());
             } catch (Exception e) {
                 System.out.println("Problem encountered when updating study sample list.");
             }
@@ -75,13 +75,13 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
     private void propagateFactorsToAssay(String selectedSampleName) {
 
-        TableReferenceObject tableReferenceObject = study.getStudySample().getTableReferenceObject();
+        TableReferenceObject tableReferenceObject = getStudyFromSpreadsheet().getStudySample().getTableReferenceObject();
 
         List<FieldObject> recordedFactors = tableReferenceObject.getRecordedFactors();
 
-        Map<String, SampleInformation> allSampleInformation = StudyUtils.getStudySampleInformation(study);
+        Map<String, SampleInformation> allSampleInformation = StudyUtils.getStudySampleInformation(getStudyFromSpreadsheet());
 
-        Spreadsheet studySampleSheet = study.getStudySample().getSpreadsheetUI().getTable();
+        Spreadsheet studySampleSheet = getStudyFromSpreadsheet().getStudySample().getSpreadsheetUI().getSpreadsheet();
 
         Map<TableColumn, TableColumn> studySampleSheetFactors = studySampleSheet.getSpreadsheetFunctions().getFactors();
 
@@ -177,7 +177,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
     public void instantiateSelectorIfRequired() {
         if (selector == null) {
             try {
-                selector = new AutoCompleteUI<SampleInformation>(this, StudyUtils.getStudySampleInformation(study).values(), new SampleSelectionListCellRenderer());
+                selector = new AutoCompleteUI<SampleInformation>(this, StudyUtils.getStudySampleInformation(getStudyFromSpreadsheet()).values(), new SampleSelectionListCellRenderer());
                 selector.createGUI();
                 selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
             } catch (Exception e) {

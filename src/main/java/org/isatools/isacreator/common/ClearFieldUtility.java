@@ -42,52 +42,42 @@ import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-/**
- * ClearFieldUtility
- *
- * @author Eamonn Maguire
- * @date Mar 2, 2010
- */
-
-
-public class ClearFieldUtility extends JLabel implements MouseListener {
+public class ClearFieldUtility extends JLabel {
 
     @InjectedResource
     private ImageIcon clearIcon, clearIconOver;
-    private JTextField toClear;
 
 
-    public ClearFieldUtility(JTextField toClear) {
-        this.toClear = toClear;
+    public ClearFieldUtility(final JTextField toClear) {
 
         ResourceInjector.get("common-package.style").inject(this);
 
         setIcon(clearIcon);
         setToolTipText("<html><b>clear</b> field</html>");
-        addMouseListener(this);
-    }
 
-    public void mouseClicked(MouseEvent mouseEvent) {
-    }
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                setIcon(clearIconOver);
 
-    public void mouseEntered(MouseEvent mouseEvent) {
-        setIcon(clearIconOver);
-    }
+            }
 
-    public void mouseExited(MouseEvent mouseEvent) {
-        setIcon(clearIcon);
-    }
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                setIcon(clearIcon);
+            }
 
-    public void mousePressed(MouseEvent mouseEvent) {
-        setIcon(clearIcon);
-        if (toClear != null) {
-            toClear.setText("");
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                setIcon(clearIcon);
+                if (toClear != null) {
+                    toClear.setText("");
+                }
+            }
         }
-    }
-
-    public void mouseReleased(MouseEvent mouseEvent) {
+        );
     }
 }

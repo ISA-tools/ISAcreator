@@ -61,20 +61,20 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
     }
 
     public void reformPreviousContent() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             reformItems();
         }
     }
 
     public void reformItems() {
-        List<Protocol> protocols = parent.getProtocols();
+        List<Protocol> protocols = dataEntryForm.getProtocols();
 
         for (int record = 1; record <= protocols.size() + 1; record++) {
 
             if (protocols.size() > record - 1) {
                 Map<String, String> fieldList = protocols.get(record - 1).getFieldValues();
 
-                if (record >= dtm.getColumnCount()) {
+                if (record >= defaultTableModel.getColumnCount()) {
                     addColumn();
                 }
 
@@ -82,13 +82,13 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
 
                 for (SubFormField field : fields) {
                     String value = fieldList.get(field.getFieldName());
-                    dtm.setValueAt(value, protocolFieldIndex, record);
+                    defaultTableModel.setValueAt(value, protocolFieldIndex, record);
                     protocolFieldIndex++;
                 }
             }
         }
 
-        dtm.fireTableStructureChanged();
+        defaultTableModel.fireTableStructureChanged();
         updateTables();
 
     }
@@ -103,8 +103,8 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
         String protocolName = tmpProtocol.getProtocolName();
 
         if (!protocolName.equals("")) {
-            parent.getStudy().removeProtocol(protocolName);
-            parent.getStudy().replaceProtocols(protocolName, "");
+            dataEntryForm.getStudy().removeProtocol(protocolName);
+            dataEntryForm.getStudy().replaceProtocols(protocolName, "");
         }
 
         // remove column
@@ -112,13 +112,13 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
     }
 
     public void update() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             updateItems();
         }
     }
 
     public void updateItems() {
-        int cols = dtm.getColumnCount();
+        int cols = defaultTableModel.getColumnCount();
 
         final List<Protocol> newProtocols = new ArrayList<Protocol>();
 
@@ -137,7 +137,7 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
             }
         }
 
-        parent.getStudy().setProtocols(newProtocols);
+        dataEntryForm.getStudy().setProtocols(newProtocols);
     }
 
 }

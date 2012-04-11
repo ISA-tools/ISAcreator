@@ -91,7 +91,9 @@ public class RowEditor {
         }
     }
 
-    public void removeAllListeners() {
+    public void removeAllCellEditors() {
         rowEditors.clear();
     }
+
+
 }

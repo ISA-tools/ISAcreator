@@ -62,8 +62,8 @@ import java.util.EventObject;
  * @author Eamonn Maguire
  */
 public class CustomTable extends JTable {
-    public CustomTable(DefaultTableModel dtm) {
-        super(dtm);
+    public CustomTable(DefaultTableModel defaultTableModel) {
+        super(defaultTableModel);
     }
 
     public boolean editCellAt(int row, int column, EventObject eventObject) {
@@ -154,8 +154,6 @@ public class CustomTable extends JTable {
         Point p = scrollPane.getViewPosition();
         rect.setLocation(rect.x - p.x, rect.y - p.y);
         scrollPane.scrollRectToVisible(rect);
-
-
     }
 
 }

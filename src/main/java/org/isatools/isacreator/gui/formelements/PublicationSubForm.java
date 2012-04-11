@@ -76,13 +76,13 @@ public class PublicationSubForm extends SubForm {
     }
 
     public void reformPreviousContent() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             reformItems();
         }
     }
 
     public void reformItems() {
-        List<Publication> publications = parent.getPublications();
+        List<Publication> publications = dataEntryForm.getPublications();
         for (int record = 1; record < publications.size() + 1; record++) {
 
             Map<String, String> fieldList = publications.get(record - 1).getFieldValues();
@@ -90,7 +90,7 @@ public class PublicationSubForm extends SubForm {
             int publicationFieldIndex = 0;
             for (SubFormField field : fields) {
                 String value = fieldList.get(field.getFieldName());
-                dtm.setValueAt(value, publicationFieldIndex, record);
+                defaultTableModel.setValueAt(value, publicationFieldIndex, record);
                 publicationFieldIndex++;
             }
         }
@@ -98,25 +98,25 @@ public class PublicationSubForm extends SubForm {
 
     protected void removeItem(int itemToRemove) {
         // provide a publication id or a publication title depending on which is available
-        if (parent != null) {
+        if (dataEntryForm != null) {
 
             Map<String, String> record = getRecord(itemToRemove);
 
-            if (parent instanceof StudyDataEntry) {
+            if (dataEntryForm instanceof StudyDataEntry) {
                 Publication tmpPublication = new StudyPublication();
                 tmpPublication.addToFields(record);
-                parent.getStudy().removePublication(tmpPublication.getPubmedId(), tmpPublication.getPublicationTitle());
+                dataEntryForm.getStudy().removePublication(tmpPublication.getPubmedId(), tmpPublication.getPublicationTitle());
             } else {
                 Publication tmpPublication = new InvestigationPublication();
                 tmpPublication.addToFields(record);
-                parent.getInvestigation().removePublication(tmpPublication.getPubmedId(), tmpPublication.getPublicationTitle());
+                dataEntryForm.getInvestigation().removePublication(tmpPublication.getPubmedId(), tmpPublication.getPublicationTitle());
             }
         }
         removeColumn(itemToRemove);
     }
 
     public void updateItems() {
-        int cols = dtm.getColumnCount();
+        int cols = defaultTableModel.getColumnCount();
 
         final List<Publication> newPublications = new ArrayList<Publication>();
 
@@ -124,9 +124,8 @@ public class PublicationSubForm extends SubForm {
 
             Map<String, String> record = getRecord(recordNumber);
 
-            // todo for each record, create a Map of key to values for each record.
             if (!isNullRecord(record)) {
-                if (parent instanceof StudyDataEntry) {
+                if (dataEntryForm instanceof StudyDataEntry) {
                     Publication publication = new StudyPublication();
                     publication.addToFields(record);
 
@@ -146,15 +145,15 @@ public class PublicationSubForm extends SubForm {
             }
         }
 
-        if (parent instanceof StudyDataEntry) {
-            parent.getStudy().setPublications(newPublications);
-        } else if (parent instanceof InvestigationDataEntry) {
-            parent.getInvestigation().setPublications(newPublications);
+        if (dataEntryForm instanceof StudyDataEntry) {
+            dataEntryForm.getStudy().setPublications(newPublications);
+        } else if (dataEntryForm instanceof InvestigationDataEntry) {
+            dataEntryForm.getInvestigation().setPublications(newPublications);
         }
     }
 
     public void update() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             updateItems();
         }
     }
@@ -164,7 +163,7 @@ public class PublicationSubForm extends SubForm {
      * elements in the options panel of the subform.
      */
     public void createCustomOptions() {
-        if (parent != null && fieldType == FieldTypes.PUBLICATION) {
+        if (dataEntryForm != null && fieldType == FieldTypes.PUBLICATION) {
 
             final JLabel selectPublicationLabel = new JLabel(
                     "search for " + fieldType,
@@ -190,7 +189,7 @@ public class PublicationSubForm extends SubForm {
                     if (selectPublicationLabel.isEnabled()) {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                final PublicationLocatorUI publicationLocator = new PublicationLocatorUI(parent);
+                                final PublicationLocatorUI publicationLocator = new PublicationLocatorUI(dataEntryForm);
                                 publicationLocator.createGUI();
                                 publicationLocator.installListeners();
                                 publicationLocator.addPropertyChangeListener("selectedPublication",
@@ -202,12 +201,12 @@ public class PublicationSubForm extends SubForm {
                                                     Publication p = (Publication) evt.getNewValue();
                                                     boolean added;
 
-                                                    if (parent instanceof StudyDataEntry) {
-                                                        added = parent.getStudy().addPublication(p);
+                                                    if (dataEntryForm instanceof StudyDataEntry) {
+                                                        added = dataEntryForm.getStudy().addPublication(p);
                                                     } else {
                                                         //parent is instance of InvestigationDataEntry
                                                         System.out.println("Adding Publication to investigation");
-                                                        added = parent.getInvestigation().addPublication(p);
+                                                        added = dataEntryForm.getInvestigation().addPublication(p);
                                                     }
 
                                                     if (added) {
@@ -234,10 +233,7 @@ public class PublicationSubForm extends SubForm {
                                                 selectPublicationLabel.setEnabled(true);
                                                 publicationLocator.setVisible(false);
                                             }
-                                        }
-
-                                );
-
+                                        });
 
                                 // set up location on screen
                                 int proposedX = (int) selectPublicationLabel.getLocationOnScreen()

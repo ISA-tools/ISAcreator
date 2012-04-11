@@ -56,7 +56,7 @@ public class WorkflowVisualization extends AnimatableJFrame {
     public void createGUI() {
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(440, 600));
+        setPreferredSize(new Dimension(600, 840));
         setBackground(UIHelper.BG_COLOR);
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
         addTitlePane();
@@ -88,8 +88,9 @@ public class WorkflowVisualization extends AnimatableJFrame {
             e.printStackTrace();
         }
 
-        TreeView treeView = new WorkflowVisualisationTreeView(t, new Dimension(400, 600), TreeView.NAME_STRING, 2);
+        TreeView treeView = new WorkflowVisualisationTreeView(t, new Dimension(600, 800), TreeView.NAME_STRING, 2);
         centralPanel.add(treeView);
+//        centralPanel.add(new JLabel(workflow));
         add(centralPanel, BorderLayout.CENTER);
     }
 

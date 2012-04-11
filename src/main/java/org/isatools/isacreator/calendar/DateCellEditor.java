@@ -83,8 +83,7 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
                         setText(evt.getNewValue().toString());
                         stopCellEditing();
                     }
-                }
-        );
+                });
 
         calendar.addPropertyChangeListener("noneSelected",
                 new PropertyChangeListener() {
@@ -92,8 +91,7 @@ public class DateCellEditor extends JTextField implements TableCellEditor {
                         System.out.println("no date selected");
                         cancelCellEditing();
                     }
-                }
-        );
+                });
         setBorder(null);
         listeners = new ArrayList<CellEditorListener>();
     }

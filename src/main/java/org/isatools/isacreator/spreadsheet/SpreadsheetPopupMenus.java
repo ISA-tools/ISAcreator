@@ -370,9 +370,9 @@ public class SpreadsheetPopupMenus {
         JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for assays");
         viewWorkflowForAssays.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-//                SpreadsheetAnalysis analysis = new TranscriptomicSpreadsheetAnalysis(spreadsheet);
-//                analysis.runAnalysis();
-//                analysis.getGraph().outputGraph();
+                SpreadsheetAnalysis analysis = new TranscriptomicSpreadsheetAnalysis(spreadsheet);
+                analysis.runAnalysis();
+                analysis.getGraph().outputGraph();
                 new WorkflowVisualization().createGUI();
             }
         });
@@ -439,8 +439,8 @@ public class SpreadsheetPopupMenus {
             popup.add(removeHighlight);
         }
 
-//        popup.add(new JSeparator());
-//        popup.add(viewWorkflowForAssays);
+        popup.add(new JSeparator());
+        popup.add(viewWorkflowForAssays);
         popup.show(jc, x, y);
     }
 
@@ -765,6 +765,9 @@ public class SpreadsheetPopupMenus {
                 toAddTo.add(factors);
             }
         }
+    }
 
+    public void setSpreadsheet(Spreadsheet spreadsheet) {
+        this.spreadsheet = spreadsheet;
     }
 }

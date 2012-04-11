@@ -178,10 +178,10 @@ public class ViewErrorPane extends JPanel implements TreeSelectionListener {
 
 
                             AssaySpreadsheet sheet = (AssaySpreadsheet) el.getSpreadsheet();
-                            JTable table = sheet.getTable().getTable();
+                            JTable table = sheet.getSpreadsheet().getTable();
 
                             main.getDataEntryEnvironment().setCurrentPage(sheet);
-                            sheet.scrollRectToVisible(sheet.getTable().getTable().getCellRect(el.getRow(), el.getCol(), false));
+                            sheet.scrollRectToVisible(sheet.getSpreadsheet().getTable().getCellRect(el.getRow(), el.getCol(), false));
                             ((CustomTable) table).scrollToCellLocation(el.getRow(), el.getCol());
                             // set cell as selected!
                             table.setColumnSelectionInterval(el.getCol(), el.getCol());

@@ -68,7 +68,7 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
 
     public void reformItems() {
 
-        List<Contact> contacts = parent.getContacts();
+        List<Contact> contacts = dataEntryForm.getContacts();
         for (int record = 1; record < contacts.size() + 1; record++) {
 
             Map<String, String> fieldList = contacts.get(record - 1).getFieldValues();
@@ -78,7 +78,7 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
             for (SubFormField field : fields) {
                 String value = fieldList.get(field.getFieldName());
 
-                dtm.setValueAt(value, contactFieldIndex, record);
+                defaultTableModel.setValueAt(value, contactFieldIndex, record);
                 contactFieldIndex++;
             }
         }
@@ -86,18 +86,18 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
 
     protected void removeItem(int itemToRemove) {
 
-        if (parent != null) {
+        if (dataEntryForm != null) {
 
             Map<String, String> record = getRecord(itemToRemove);
 
-            if (parent instanceof StudyDataEntry) {
+            if (dataEntryForm instanceof StudyDataEntry) {
                 Contact tmpContact = new StudyContact();
                 tmpContact.addToFields(record);
-                parent.getStudy().removeContact(tmpContact.getFirstName(), tmpContact.getLastName(), tmpContact.getEmail());
+                dataEntryForm.getStudy().removeContact(tmpContact.getFirstName(), tmpContact.getLastName(), tmpContact.getEmail());
             } else {
                 Contact tmpContact = new InvestigationContact();
                 tmpContact.addToFields(record);
-                parent.getInvestigation().removeContact(tmpContact.getFirstName(), tmpContact.getLastName().toLowerCase(), tmpContact.getEmail());
+                dataEntryForm.getInvestigation().removeContact(tmpContact.getFirstName(), tmpContact.getLastName().toLowerCase(), tmpContact.getEmail());
             }
         }
         removeColumn(itemToRemove);
@@ -105,7 +105,7 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
 
     public void updateItems() {
 
-        int cols = dtm.getColumnCount();
+        int cols = defaultTableModel.getColumnCount();
 
         final List<Contact> newContacts = new ArrayList<Contact>();
 
@@ -116,7 +116,7 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
             if (!isNullRecord(record)) {
 
 
-                if (parent instanceof StudyDataEntry) {
+                if (dataEntryForm instanceof StudyDataEntry) {
                     Contact contact = new StudyContact();
                     contact.addToFields(record);
 
@@ -133,10 +133,10 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
             }
         }
 
-        if (parent instanceof StudyDataEntry) {
-            parent.getStudy().setContacts(newContacts);
-        } else if (parent instanceof InvestigationDataEntry) {
-            parent.getInvestigation().setContacts(newContacts);
+        if (dataEntryForm instanceof StudyDataEntry) {
+            dataEntryForm.getStudy().setContacts(newContacts);
+        } else if (dataEntryForm instanceof InvestigationDataEntry) {
+            dataEntryForm.getInvestigation().setContacts(newContacts);
         }
     }
 

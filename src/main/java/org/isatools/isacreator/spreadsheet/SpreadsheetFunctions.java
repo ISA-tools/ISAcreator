@@ -76,6 +76,8 @@ import java.util.*;
 public class SpreadsheetFunctions {
 
     private Spreadsheet spreadsheet;
+    private ProtocolSelectorCellEditor protocolSelectorCellEditor;
+    private SampleSelectorCellEditor sampleSelectorCellEditor;
 
     public SpreadsheetFunctions(Spreadsheet spreadsheet) {
         this.spreadsheet = spreadsheet;
@@ -143,7 +145,7 @@ public class SpreadsheetFunctions {
         // if there is a row selected
         if (rowId > -1) {
             String rowRepresentationAsString = getRowAsString(rowId);
-            StringBuffer totalRepresentation = new StringBuffer("");
+            StringBuilder totalRepresentation = new StringBuilder("");
             int numRows = spreadsheet.spreadsheetModel.getRowCount() - rowId;
 
             for (int i = 0; i < numRows; i++) {
@@ -163,7 +165,7 @@ public class SpreadsheetFunctions {
     }
 
     private String getRowAsString(int rowId) {
-        StringBuffer rowRepresentation = new StringBuffer("");
+        StringBuilder rowRepresentation = new StringBuilder("");
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             if (col != spreadsheet.getTable().getColumnCount() - 1) {
                 rowRepresentation.append(spreadsheet.getTable().getValueAt(rowId, col)).append("\t");
@@ -188,8 +190,6 @@ public class SpreadsheetFunctions {
      * in the ISArchive for submission to the index.
      *
      * @return Set of files defined in the spreadsheet
-     *         <p/>
-     *         todo move to spreadsheetutils class
      */
     public Set<String> getFilesDefinedInTable() {
         Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
@@ -814,7 +814,7 @@ public class SpreadsheetFunctions {
         TableColumn newColumn = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
         newColumn.setHeaderValue(headerLabel);
         newColumn.setPreferredWidth(calcColWidths(headerLabel.toString()));
-        newColumn.setHeaderRenderer(spreadsheet.renderer);
+        newColumn.setHeaderRenderer(spreadsheet.columnRenderer);
 
         // add a cell editor (if available to the column)
         addCellEditor(newColumn);
@@ -859,7 +859,7 @@ public class SpreadsheetFunctions {
         TableColumn col = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
         col.setHeaderValue(headerLabel);
         col.setPreferredWidth(calcColWidths(headerLabel.toString()));
-        col.setHeaderRenderer(spreadsheet.renderer);
+        col.setHeaderRenderer(spreadsheet.columnRenderer);
 
         addCellEditor(col);
 
@@ -942,12 +942,21 @@ public class SpreadsheetFunctions {
 
         if (columnName.equals("Sample Name") && !spreadsheet.getSpreadsheetTitle().contains("Sample Definitions")
                 && spreadsheet.getStudyDataEntryEnvironment() != null) {
-            col.setCellEditor(new SampleSelectorCellEditor(spreadsheet));
+
+            if (sampleSelectorCellEditor == null) {
+                sampleSelectorCellEditor = new SampleSelectorCellEditor(spreadsheet);
+            }
+
+            col.setCellEditor(sampleSelectorCellEditor);
+
             return;
         }
 
         if (columnName.equals("Protocol REF") && spreadsheet.getStudyDataEntryEnvironment() != null) {
-            col.setCellEditor(new ProtocolSelectorCellEditor(spreadsheet));
+            if (protocolSelectorCellEditor == null) {
+                protocolSelectorCellEditor = new ProtocolSelectorCellEditor(spreadsheet);
+            }
+            col.setCellEditor(protocolSelectorCellEditor);
             return;
         }
 
@@ -1139,6 +1148,7 @@ public class SpreadsheetFunctions {
                         JOptionPane.OK_OPTION);
                 spreadsheet.optionPane.setIcon(spreadsheet.requiredColumnWarningIcon);
                 UIHelper.applyOptionPaneBackground(spreadsheet.optionPane, UIHelper.BG_COLOR);
+
                 spreadsheet.optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName()
@@ -1147,6 +1157,7 @@ public class SpreadsheetFunctions {
                         }
                     }
                 });
+
                 spreadsheet.getParentFrame().showJDialogAsSheet(spreadsheet.optionPane.createDialog(spreadsheet,
                         "Can not delete"));
             } else {
@@ -1222,6 +1233,20 @@ public class SpreadsheetFunctions {
     protected void putStringOnClipboard(String toPlace) {
         StringSelection stsel = new StringSelection(toPlace);
         spreadsheet.system.setContents(stsel, stsel);
+    }
+
+    protected void cleanReferences() {
+        if (protocolSelectorCellEditor != null) {
+            protocolSelectorCellEditor.setSpreadsheet(null);
+            protocolSelectorCellEditor = null;
+        }
+
+        if (sampleSelectorCellEditor != null) {
+            sampleSelectorCellEditor.setSpreadsheet(null);
+            sampleSelectorCellEditor = null;
+        }
+
+
     }
 
 

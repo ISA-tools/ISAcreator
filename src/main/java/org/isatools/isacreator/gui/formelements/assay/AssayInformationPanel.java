@@ -76,7 +76,7 @@ public class AssayInformationPanel extends JPanel {
         this.assay = assay;
         setLayout(new BorderLayout());
 
-        setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 5));
+        setBorder(UIHelper.GREEN_ROUNDED_BORDER);
 
         addMouseListener(new MouseAdapter() {
             @Override

@@ -47,7 +47,6 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
@@ -101,14 +100,14 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             removeIcon, removeIconOver, selectFromHistoryIcon, selectFromHistoryIconOver, searchIcon, searchIconOver;
 
     protected String title;
-    protected DefaultTableModel dtm;
+    protected DefaultTableModel defaultTableModel;
     protected ExtendedJTable lockedTable;
     protected ExtendedJTable scrollTable;
     private JScrollPane frozenTable;
     protected List<SubFormField> fields;
     protected RowEditor rowEditor = new RowEditor();
     protected FieldTypes fieldType;
-    protected DataEntryForm parent;
+    protected DataEntryForm dataEntryForm;
     protected DataEntryEnvironment dataEntryEnvironment;
 
     private boolean createBorder = true;
@@ -131,6 +130,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     protected JPanel options;
     private boolean showRemoveOption = true;
+    private ExcelAdaptor excelAdaptor;
 
     public SubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dataEntryEnvironment) {
         this(title, fieldType, fields, dataEntryEnvironment, true);
@@ -146,28 +146,30 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     public SubForm(String title, FieldTypes fieldType,
                    List<SubFormField> fields, int initialNoFields, int width,
-                   int height, DataEntryForm parent) {
-        this(title, fieldType, fields, initialNoFields, width, height, parent, true);
+                   int height, DataEntryForm dataEntryForm) {
+        this(title, fieldType, fields, initialNoFields, width, height, dataEntryForm, true);
     }
 
     public SubForm(String title, FieldTypes fieldType,
                    List<SubFormField> fields, int initialNoFields, int width,
-                   int height, DataEntryForm parent, boolean createBorder) {
+                   int height, DataEntryForm dataEntryForm, boolean createBorder) {
         this.title = title;
         this.fieldType = fieldType;
         this.fields = fields;
         this.initialNoFields = initialNoFields;
         this.width = width;
         this.height = height;
-        this.parent = parent;
+        this.dataEntryForm = dataEntryForm;
         this.createBorder = createBorder;
 
         generateAliases();
 
-        if (parent instanceof DataEntryEnvironment) {
-            this.dataEntryEnvironment = (DataEntryEnvironment) parent;
+        if (dataEntryForm instanceof DataEntryEnvironment) {
+            this.dataEntryEnvironment = (DataEntryEnvironment) dataEntryForm;
+        } else if (dataEntryForm instanceof DataEntryForm) {
+            this.dataEntryEnvironment = dataEntryForm.getDataEntryEnvironment();
         } else {
-            this.dataEntryEnvironment = parent.getDataEntryEnvironment();
+            dataEntryEnvironment = null;
         }
     }
 
@@ -200,7 +202,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         if (createBorder) {
             setBorder(new TitledBorder(
-                    new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), title,
+                    UIHelper.GREEN_ROUNDED_BORDER, title,
                     TitledBorder.DEFAULT_JUSTIFICATION,
                     TitledBorder.CENTER,
                     UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
@@ -225,8 +227,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         scrollTable.getTableHeader().setResizingAllowed(true);
 
-        // todo make scrollable...
-
         try {
             lockedTable.setDefaultRenderer(Class.forName("java.lang.Object"),
                     DEFAULT_LOCKED_TABLE_RENDERER);
@@ -246,7 +246,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         UIHelper.renderComponent(scrollTable.getTableHeader(), UIHelper.VER_12_PLAIN, UIHelper.BG_COLOR, new Color(141, 198, 63, 40));
 
-        new ExcelAdaptor(scrollTable, false);
+        excelAdaptor = new ExcelAdaptor(scrollTable, false);
         frozenTable.setViewportView(scrollTable);
         frozenTable.setBorder(em);
 
@@ -323,20 +323,20 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     public String[][] getDataAsArray() {
         java.util.List<String[]> data = new ArrayList<String[]>();
 
-        String[] val = new String[dtm.getRowCount()];
+        String[] val = new String[defaultTableModel.getRowCount()];
 
-        for (int col = 1; col < dtm.getColumnCount(); col++) {
-            for (int row = 0; row < dtm.getRowCount(); row++) {
-                if (dtm.getValueAt(row, col) != null) {
-                    val[row] = dtm.getValueAt(row, col).toString();
+        for (int col = 1; col < defaultTableModel.getColumnCount(); col++) {
+            for (int row = 0; row < defaultTableModel.getRowCount(); row++) {
+                if (defaultTableModel.getValueAt(row, col) != null) {
+                    val[row] = defaultTableModel.getValueAt(row, col).toString();
                 }
             }
 
             data.add(val);
-            val = new String[dtm.getRowCount()];
+            val = new String[defaultTableModel.getRowCount()];
         }
 
-        String[][] finalData = new String[data.size()][dtm.getRowCount()];
+        String[][] finalData = new String[data.size()][defaultTableModel.getRowCount()];
         int dataSize = data.size();
 
         for (int i = 0; i < dataSize; i++) {
@@ -409,16 +409,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
 
-        for (int col = 0; col < dtm.getColumnCount(); col++) {
+        for (int col = 0; col < defaultTableModel.getColumnCount(); col++) {
             String val;
 
             int count = 0;
 
-            for (int row = 0; row < dtm.getRowCount(); row++) {
+            for (int row = 0; row < defaultTableModel.getRowCount(); row++) {
                 String tmpTerm = "";
                 String tmpTermAcc = "";
                 String tmpTermSource = "";
-                val = (dtm.getValueAt(row, col) != null) ? dtm.getValueAt(row, col).toString() : "";
+                val = (defaultTableModel.getValueAt(row, col) != null) ? defaultTableModel.getValueAt(row, col).toString() : "";
                 val = StringProcessing.cleanUpString(val);
 
                 // only check this in the field name column
@@ -439,7 +439,8 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
                 tmpTerm = val;
 
-                if (scrollTable.getCellEditor(row, 0) instanceof OntologyCellEditor || val.contains("Assay Measurement Type") || val.contains("Assay Technology Type") || ontologyRows.contains(row)) {
+                if (scrollTable.getCellEditor(row, 0) instanceof OntologyCellEditor || val.contains("Assay Measurement Type")
+                        || val.contains("Assay Technology Type") || ontologyRows.contains(row)) {
                     ontologyRows.add(row);
                     if (col == 0) {
 
@@ -581,7 +582,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
 
         for (int i = 0; i < scrollTable.getRowCount(); i++) {
-            if (scrollTable.getCellEditor(i, 0) instanceof OntologyCellEditor || dtm.getValueAt(i, 0).toString().contains("Assay Measurement Type") || dtm.getValueAt(i, 0).toString().contains("Assay Technology Type")) {
+            if (scrollTable.getCellEditor(i, 0) instanceof OntologyCellEditor || defaultTableModel.getValueAt(i, 0).toString().contains("Assay Measurement Type") || defaultTableModel.getValueAt(i, 0).toString().contains("Assay Technology Type")) {
                 noOntologyRows++;
             }
         }
@@ -594,7 +595,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     protected void setupTableModel(int initialFieldNo) {
-        dtm = new DefaultTableModel(getRowData(), getColumnNames(initialFieldNo)) {
+        defaultTableModel = new DefaultTableModel(getRowData(), getColumnNames(initialFieldNo)) {
             public Object getValueAt(int row, int col) {
                 if (col == 0) {
                     String fieldName = fields.get(row).toString();
@@ -724,7 +725,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 OntologyTerm ooForSelectedTerm = searchUserHistory(s);
 
                 if (ooForSelectedTerm != null) {
-                    parent.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
+                    dataEntryForm.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
                             "<b>ontology term information</b>" +
                             "<p><term name: >" + ooForSelectedTerm.getOntologyTermName() +
                             "</p>" + "<p><b>source ref: </b> " +
@@ -743,11 +744,11 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 } else if (tce instanceof TextCellEditor) {
                     icon = textEditHelp;
                 }
-                if (parent != null && parent.getDataEntryEnvironment() != null) {
+                if (dataEntryForm != null && dataEntryForm.getDataEntryEnvironment() != null) {
                     if (icon != null) {
-                        parent.getDataEntryEnvironment().setStatusPaneInfo(icon);
+                        dataEntryForm.getDataEntryEnvironment().setStatusPaneInfo(icon);
                     } else {
-                        parent.getDataEntryEnvironment().setStatusPaneInfo("");
+                        dataEntryForm.getDataEntryEnvironment().setStatusPaneInfo("");
                     }
                 }
             }
@@ -798,7 +799,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         add(setupOptionsPanel(), BorderLayout.NORTH);
 
-        add(getFrozenTable(dtm, width, height), BorderLayout.CENTER);
+        add(getFrozenTable(defaultTableModel, width, height), BorderLayout.CENTER);
         reformPreviousContent();
     }
 
@@ -812,7 +813,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         // check to ensure the value isn't 0, if it is, nothing is selected in the table since -1 (value returned by model if
         // no column is selected + 1 = 0!)
-        if ((selectedItem != 0) && (parent != null)) {
+        if ((selectedItem != 0) && (dataEntryForm != null)) {
             String displayText;
             if ((whatIsBeingRemoved == FieldTypes.FACTOR) ||
                     (whatIsBeingRemoved == FieldTypes.PROTOCOL)) {
@@ -840,17 +841,17 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
                         if (lastOptionAnswer == JOptionPane.YES_OPTION) {
                             removeItem(selectedItem);
-                            dataEntryEnvironment.getParentFrame().hideSheet();
+                            ApplicationManager.getCurrentApplicationInstance().hideSheet();
                         } else {
                             // just hide the sheet and cancel further actions!
-                            dataEntryEnvironment.getParentFrame().hideSheet();
+                            ApplicationManager.getCurrentApplicationInstance().hideSheet();
                         }
                     }
                 }
             });
             optionPane.setIcon(confirmRemoveColumn);
             UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-            dataEntryEnvironment.getParentFrame()
+            ApplicationManager.getCurrentApplicationInstance()
                     .showJDialogAsSheet(optionPane.createDialog(this,
                             "Confirm Delete"));
         } else {
@@ -865,15 +866,15 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             return;
         }
 
-        if (dtm.getColumnCount() == 2
-                && curColDelete == (dtm.getColumnCount() - 1)) {
+        if (defaultTableModel.getColumnCount() == 2
+                && curColDelete == (defaultTableModel.getColumnCount() - 1)) {
             clearColumn(curColDelete);
             return;
         } else {
             clearColumn(curColDelete);
         }
 
-        if (fieldType == FieldTypes.ASSAY && (parent != null)
+        if (fieldType == FieldTypes.ASSAY && (dataEntryForm != null)
                 && !uneditableRecords.contains(curColDelete)) {
             clearColumn(curColDelete);
             return;
@@ -916,8 +917,8 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             }
         }
 
-        if (fieldType == FieldTypes.ASSAY && uneditableRecords.contains(dtm.getColumnCount() - 1)) {
-            uneditableRecords.remove(dtm.getColumnCount() - 1);
+        if (fieldType == FieldTypes.ASSAY && uneditableRecords.contains(defaultTableModel.getColumnCount() - 1)) {
+            uneditableRecords.remove(defaultTableModel.getColumnCount() - 1);
         }
 
         // update the model
@@ -926,7 +927,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     protected void checkForSourcePresence(String source) {
-        List<OntologySourceRefObject> definedSources = parent.getDataEntryEnvironment()
+        List<OntologySourceRefObject> definedSources = dataEntryForm.getDataEntryEnvironment()
                 .getOntologySources();
         boolean isPresent = false;
 
@@ -939,7 +940,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         // if it doesn't exist, then add the ontology information to the defined sources
         if (!isPresent) {
 
-            OntologySourceRefObject osro = parent.getDataEntryEnvironment().getParentFrame()
+            OntologySourceRefObject osro = ApplicationManager.getCurrentApplicationInstance()
                     .getCurrentUser()
                     .getOntologySource(source);
 
@@ -947,14 +948,14 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 osro = new OntologySourceRefObject(source, "", OntologyManager.getOntologyVersion(source), OntologyManager.getOntologyDescription(source));
             }
 
-            parent.getDataEntryEnvironment().getOntologySources().add(osro);
+            dataEntryForm.getDataEntryEnvironment().getOntologySources().add(osro);
         }
     }
 
     private void clearColumn(int colindex) {
-        int noRows = dtm.getRowCount();
+        int noRows = defaultTableModel.getRowCount();
         for (int i = 0; i < noRows; i++) {
-            dtm.setValueAt("", i, colindex);
+            defaultTableModel.setValueAt("", i, colindex);
         }
     }
 
@@ -963,7 +964,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         int index = 0;
         for (SubFormField field : fields) {
-            Object value = dtm.getValueAt(index, recordNumber);
+            Object value = defaultTableModel.getValueAt(index, recordNumber);
 
             String fieldName = field.getFieldName();
             if (aliasesToRealNames.containsKey(field.getFieldName())) {
@@ -982,7 +983,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         options.setLayout(new BoxLayout(options, BoxLayout.LINE_AXIS));
         options.setOpaque(false);
 
-        String addRecordString = fieldType == FieldTypes.ASSAY && parent != null ? "create assay" : "add a new " + fieldType + " column";
+        String addRecordString = fieldType == FieldTypes.ASSAY && dataEntryForm != null ? "create assay" : "add a new " + fieldType + " column";
 
         final JLabel addRecord = new JLabel(addRecordString, addRecordIcon, JLabel.LEFT);
 
@@ -1001,7 +1002,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         }
 
         addRecord.setToolTipText(toolTipText);
-        Font fontToUse = fieldType == FieldTypes.ASSAY && parent != null ? UIHelper.VER_12_BOLD : UIHelper.VER_12_PLAIN;
+        Font fontToUse = fieldType == FieldTypes.ASSAY && dataEntryForm != null ? UIHelper.VER_12_BOLD : UIHelper.VER_12_PLAIN;
         UIHelper.renderComponent(addRecord, fontToUse, UIHelper.DARK_GREEN_COLOR, false);
 
         addRecord.addMouseListener(new MouseAdapter() {
@@ -1092,8 +1093,8 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         this.dataEntryEnvironment = dataEntryEnvironment;
     }
 
-    public void setParent(DataEntryForm parent) {
-        this.parent = parent;
+    public void setDataEntryForm(DataEntryForm parent) {
+        this.dataEntryForm = parent;
     }
 
     public RowEditor getRowEditor() {
@@ -1122,5 +1123,30 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
      */
     public abstract void createCustomOptions();
 
+    public void cleanupReferences() {
+        setDataEntryEnvironment(null);
+        for (int rowIndex = 0; rowIndex < scrollTable.getRowCount(); rowIndex++) {
+            if (getRowEditor().getCellEditor(rowIndex) instanceof RowEditor) {
+                OntologyCellEditor editor = (OntologyCellEditor) getRowEditor().getCellEditor(rowIndex);
+                editor.cleanupReferences();
+            }
+        }
+        scrollTable.getParent().removeAll();
+        scrollTable.setModel(new DefaultTableModel());
+        scrollTable = null;
+        lockedTable.getParent().removeAll();
+        lockedTable.setModel(new DefaultTableModel());
+        lockedTable = null;
+        options.removeAll();
+        removeRecord = null;
+        defaultTableModel = null;
+
+        excelAdaptor.setJTable(null);
+        excelAdaptor = null;
+
+        getRowEditor().removeAllCellEditors();
+        setDataEntryForm(null);
+        removeAll();
+    }
 
 }

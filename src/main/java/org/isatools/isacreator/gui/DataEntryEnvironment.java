@@ -82,7 +82,7 @@ import java.util.Map;
  * @author Eamonn Maguire
  */
 public class DataEntryEnvironment extends AbstractDataEntryEnvironment implements
-        TreeSelectionListener, PropertyChangeListener {
+        TreeSelectionListener {
 
     @InjectedResource
     private ImageIcon loading, visualizationIcon, visualizationIconOver, addStudyIcon, addStudyIconOver, removeStudyIcon,
@@ -92,23 +92,20 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     private DefaultMutableTreeNode overviewTreeRoot;
     private DefaultTreeModel overviewTreeModel;
     private Investigation investigation;
-    private JLabel statusInfo;
-    private JLabel visualization, removeStudyButton;
-
+    private JLabel statusInfo, visualization, removeStudyButton, addStudyButton;
     private JTree overviewTree;
-    private ISAcreator isacreatorUI;
+
+    private JPanel navigationPanel;
 
     private Controller newSubmission;
     private DefaultMutableTreeNode lastAddedNode = null;
-
     private DefaultMutableTreeNode selectedNode;
 
-    public DataEntryEnvironment(ISAcreator isacreatorUI) {
+    public DataEntryEnvironment() {
         super();
 
         ResourceInjector.get("gui-package.style").inject(this);
 
-        this.isacreatorUI = isacreatorUI;
         newSubmission = new Controller();
         newSubmission.createGUI();
         newSubmission.addPropertyChangeListener("addNewStudy", new PropertyChangeListener() {
@@ -131,7 +128,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                           String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-        TableReferenceObject tro = isacreatorUI.selectTROForUserSelection(measurementEndpoint,
+        TableReferenceObject tro = getParentFrame().selectTROForUserSelection(measurementEndpoint,
                 techType);
 
         if (tro != null) {
@@ -163,19 +160,26 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                         "Problem occurred when attempting to add an Assay... " +
                                 "\n Please ensure assay names for a study are unique, \n and that you have entered text in the assay name field!",
                         JOptionPane.OK_OPTION);
-                optionPane.addPropertyChangeListener(this);
-                getParentFrame()
-                        .showJDialogAsSheet(optionPane.createDialog(this,
-                                "Duplicate Assay Name Detected"));
+                optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                        getParentFrame().hideSheet();
+                    }
+                });
+                getParentFrame().showJDialogAsSheet(optionPane.createDialog(ApplicationManager.getCurrentApplicationInstance(),
+                        "Duplicate Assay Name Detected"));
             }
         } else {
             JOptionPane optionPane = new JOptionPane(
                     "An assay definition with the features you have selected doesn't exist... " +
                             "\n Please ensure that the assay definition you have entered is correct!",
                     JOptionPane.OK_OPTION);
-            optionPane.addPropertyChangeListener(this);
+            optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                    getParentFrame().hideSheet();
+                }
+            });
             getParentFrame()
-                    .showJDialogAsSheet(optionPane.createDialog(this,
+                    .showJDialogAsSheet(optionPane.createDialog(ApplicationManager.getCurrentApplicationInstance(),
                             "Assay definition does not exist"));
         }
 
@@ -244,7 +248,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public boolean addStudy(String studyName) {
-        TableReferenceObject tro = isacreatorUI.selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
+        TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
 
         if (tro != null) {
             Study newStudy = new Study(studyName);
@@ -277,7 +281,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             public void run() {
                 AddStudyDialog studyEntry = new AddStudyDialog(DataEntryEnvironment.this, "Study");
                 studyEntry.createGUI();
-                isacreatorUI.showJDialogAsSheet(studyEntry);
+                getParentFrame().showJDialogAsSheet(studyEntry);
             }
         });
 
@@ -335,13 +339,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
      */
     public boolean checkForDuplicateName(String nodeName, String type) {
         if (overviewTreeModel.getRoot() != null) {
-
             Enumeration enumerate = ((DefaultMutableTreeNode) overviewTreeModel.getRoot()).breadthFirstEnumeration();
-
             while (enumerate.hasMoreElements()) {
-
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumerate.nextElement();
-
                 if (type.equals("Study")) {
                     if (node.getAllowsChildren() && node.toString().equals(nodeName)) {
                         return true;
@@ -358,7 +358,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
 
     public void createGUI() {
-        setSize(isacreatorUI.getSize());
+        setSize(ApplicationManager.getCurrentApplicationInstance().getSize());
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
         this.investigation = new Investigation("Investigation", "");
@@ -373,7 +373,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
     public void createGUIFromInvestigatio(Investigation inv) {
         // investigation should have all the studies, assays, etc. in place, ready to be added to the panel
-        setSize(isacreatorUI.getSize());
+        setSize(ApplicationManager.getCurrentApplicationInstance().getSize());
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
         // change this!
@@ -395,14 +395,14 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
 
     private JPanel createNavPanel(Investigation inv) {
-        JPanel navPanel = new JPanel(new BorderLayout());
-        navPanel.setBackground(UIHelper.DARK_GREEN_COLOR);
-        navPanel.setBorder(null);
+        navigationPanel = new JPanel(new BorderLayout());
+        navigationPanel.setBackground(UIHelper.DARK_GREEN_COLOR);
+        navigationPanel.setBorder(null);
 
         JLabel navPanelHeader = new JLabel(navigationPanelHeader,
                 JLabel.LEFT);
         navPanelHeader.setBackground(UIHelper.DARK_GREEN_COLOR);
-        navPanel.add(navPanelHeader, BorderLayout.NORTH);
+        navigationPanel.add(navPanelHeader, BorderLayout.NORTH);
 
         if (inv.getUserInterface() == null) {
             investigation.setUserInterface(new InvestigationDataEntry(investigation, DataEntryEnvironment.this));
@@ -437,36 +437,34 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         IAppWidgetFactory.makeIAppScrollPane(treeScroll);
 
-        navPanel.add(treeScroll, BorderLayout.CENTER);
+        navigationPanel.add(treeScroll, BorderLayout.CENTER);
 
         Box buttonBox = Box.createHorizontalBox();
         buttonBox.setOpaque(true);
         buttonBox.setBackground(UIHelper.BG_COLOR);
 
-
-        JLabel addStudyButton = new JLabel(addStudyIcon);
+        addStudyButton = new JLabel(addStudyIcon);
         addStudyButton.setToolTipText("<html>Add a new Study</html>");
         addStudyButton.setOpaque(false);
 
         addStudyButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                ((JLabel) mouseEvent.getSource()).setIcon(addStudyIconOver);
+                addStudyButton.setIcon(addStudyIconOver);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                ((JLabel) mouseEvent.getSource()).setIcon(addStudyIcon);
+                addStudyButton.setIcon(addStudyIcon);
             }
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                ((JLabel) mouseEvent.getSource()).setIcon(addStudyIcon);
+                addStudyButton.setIcon(addStudyIcon);
                 closeEditors();
                 addStudyToTree();
             }
         });
-
 
         removeStudyButton = new JLabel(removeStudyIconInactive);
         removeStudyButton.setToolTipText("<html>Remove the selected study</html>");
@@ -497,8 +495,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             }
         });
 
-
-        //buttonPanel.add(Box.createHorizontalStrut(5));
         visualization = new JLabel(visualizationIcon);
         visualization.setToolTipText("<html>Visualize the submission</html>");
         visualization.setOpaque(false);
@@ -520,10 +516,12 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                                 JOptionPane.OK_OPTION);
                         UIHelper.renderComponent(optionPane, UIHelper.VER_11_PLAIN, UIHelper.GREY_COLOR, UIHelper.BG_COLOR);
                         optionPane.setIcon(warning_reducedFunctionality);
-                        optionPane.addPropertyChangeListener(this);
-                        getParentFrame()
-                                .showJDialogAsSheet(optionPane.createDialog(DataEntryEnvironment.this,
-                                        "Reduced Functionality"));
+                        optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                                getParentFrame().hideSheet();
+                            }
+                        });
+                        getParentFrame().showJDialogAsSheet(optionPane.createDialog(ApplicationManager.getCurrentApplicationInstance(), "Reduced Functionality"));
                     }
                 });
 
@@ -544,21 +542,19 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         buttonBox.add(removeStudyButton);
         buttonBox.add(visualization);
 
-        navPanel.add(buttonBox, BorderLayout.SOUTH);
+        navigationPanel.add(buttonBox, BorderLayout.SOUTH);
 
         overviewTree.setSelectionRow(0);
 
-        return navPanel;
+        return navigationPanel;
     }
 
     private DefaultMutableTreeNode createStudyNode(Investigation inv, Study s) {
         if (s.getUserInterface() == null) {
-
             s.setUI(new StudyDataEntry(DataEntryEnvironment.this, s));
         }
 
         DefaultMutableTreeNode studyNode = new DefaultMutableTreeNode(s);
-
         DefaultMutableTreeNode studySampleNode = new DefaultMutableTreeNode(s.getStudySample());
 
         for (Assay a : s.getAssays().values()) {
@@ -581,7 +577,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public ISAcreator getParentFrame() {
-        return isacreatorUI;
+        return ApplicationManager.getCurrentApplicationInstance();
     }
 
     private void navigateToPath(DefaultMutableTreeNode nodeToGo) {
@@ -591,11 +587,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         overviewTree.setSelectionPath(pathToFollow);
     }
 
-    public void propertyChange(PropertyChangeEvent event) {
-        if (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
-            getParentFrame().hideSheet();
-        }
-    }
 
     /**
      * Removes a node from tree
@@ -646,21 +637,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             .toString());
 
                     if (answer == JOptionPane.OK_OPTION) {
-                        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-
-                        if ((selectedNode != null) &&
-                                selectedNode.getUserObject() instanceof Study) {
-
-                            Study toRemove = (Study) selectedNode.getUserObject();
-
-                            investigation.getStudies()
-                                    .remove(toRemove.getStudyId());
-
-                            overviewTreeModel.setRoot(buildTreeFromInvestigation(
-                                    investigation));
-                            navigateToPath((DefaultMutableTreeNode) overviewTreeModel.getRoot());
-                        }
-
+                        removeStudyFromTree();
                         getParentFrame().hideSheet();
                     } else {
                         getParentFrame().hideSheet();
@@ -668,9 +645,18 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 }
             }
         });
-        getParentFrame()
-                .showJDialogAsSheet(confirmStudyRemoval.createDialog(this,
-                        "Confirm study removal"));
+        getParentFrame().showJDialogAsSheet(confirmStudyRemoval.createDialog(ApplicationManager.getCurrentApplicationInstance(), "Confirm study removal"));
+    }
+
+    private void removeStudyFromTree() {
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
+
+        if ((selectedNode != null) && selectedNode.getUserObject() instanceof Study) {
+            Study toRemove = (Study) selectedNode.getUserObject();
+            investigation.getStudies().remove(toRemove.getStudyId());
+            overviewTreeModel.setRoot(buildTreeFromInvestigation(investigation));
+            navigateToPath((DefaultMutableTreeNode) overviewTreeModel.getRoot());
+        }
     }
 
 
@@ -742,7 +728,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public void valueChanged(TreeSelectionEvent event) {
-        selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
+        if (overviewTree != null) {
+            selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
+        }
 
         if (selectedNode == null) {
             return;
@@ -776,7 +764,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             Assay assay = (Assay) nodeInfo;
 
             if (currentPage instanceof AssaySpreadsheet) {
-                Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
+                Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getSpreadsheet();
                 if (spreadsheet.getSpreadsheetTitle().contains("Sample Definition")) {
                     StudyUtils.studySampleFileModified(getParentStudy(selectedNode), true);
                 }
@@ -799,15 +787,15 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             if (needToSubstitute(termsToBeReplaced)) {
                 Map<String, String[]> termsToBeReplacedWith = curStudyEntry.getStudy().getTermsToReplaceWith();
 
-                final TermSubstitutionGUI tsgui = new TermSubstitutionGUI(termsToBeReplaced, termsToBeReplacedWith);
+                final TermSubstitutionGUI termSubstitutionGUI = new TermSubstitutionGUI(termsToBeReplaced, termsToBeReplacedWith);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        tsgui.createGUI();
-                        isacreatorUI.setGlassPanelContents(tsgui);
+                        termSubstitutionGUI.createGUI();
+                        getParentFrame().setGlassPanelContents(termSubstitutionGUI);
                     }
                 });
 
-                tsgui.addPropertyChangeListener("substitutionComplete", new PropertyChangeListener() {
+                termSubstitutionGUI.addPropertyChangeListener("substitutionComplete", new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {
                         Map<String, Map<String, String>> result = (Map<String, Map<String, String>>) event.getNewValue();
 
@@ -837,7 +825,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             }
                         }
                         curStudyEntry.getStudy().clearTermReplacementHistory();
-                        isacreatorUI.hideGlassPane();
+                        getParentFrame().hideGlassPane();
                     }
                 });
             }
@@ -845,7 +833,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     private Study getParentStudy(DefaultMutableTreeNode node) {
-        System.out.println("Node parent is " + node.getParent());
         if (((DefaultMutableTreeNode) node.getParent()).getUserObject() instanceof Study) {
             return (Study) ((DefaultMutableTreeNode) node.getParent()).getUserObject();
         } else {
@@ -857,18 +844,16 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         for (String category : terms.keySet()) {
             String[] toCheck = terms.get(category);
-
             if (toCheck != null && toCheck.length > 0) {
                 return !CollectionUtils.isNullRecord(toCheck);
             }
         }
-
         return false;
     }
 
     public void closeEditors() {
         if (currentPage instanceof AssaySpreadsheet) {
-            Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getTable();
+            Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getSpreadsheet();
             SpreadsheetUtils.stopCellEditingInTable(spreadsheet.getTable());
         }
     }
@@ -877,12 +862,24 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         System.out.println("REMOVING REFERENCES");
         System.out.println(investigation);
 
+        removeAll();
+
         if (investigation != null) {
+            System.out.println("Removing everything from memory");
             investigation.getUserInterface().removeReferences();
             investigation = null;
+            currentPage = null;
+            newSubmission = null;
+            overviewTree.getParent().removeAll();
+            overviewTree.removeTreeSelectionListener(this);
+            overviewTree.setUI(null);
+            navigationPanel.removeAll();
+            navigationPanel = null;
+            overviewTree = null;
+            overviewTreeRoot = null;
+            overviewTreeModel.setRoot(null);
+            overviewTreeModel = null;
         }
-
-
     }
 
 }

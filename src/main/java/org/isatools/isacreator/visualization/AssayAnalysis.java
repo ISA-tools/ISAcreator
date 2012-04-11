@@ -67,7 +67,7 @@ public class AssayAnalysis {
     }
 
     private Spreadsheet getAssayContent() {
-        return a.getSpreadsheetUI().getTable();
+        return a.getSpreadsheetUI().getSpreadsheet();
     }
 
     public Map<String, List<Object>> performTreatmentGroupAnalysis() {

@@ -38,7 +38,6 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.SystemProperties;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
@@ -57,9 +56,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * ImportFilesMenu provides the interface to allow users to import previously saved ISATAB

@@ -134,7 +134,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         currentUser = mainMenu.getMain().getCurrentUser();
         this.mainMenu = mainMenu;
 
-        dep = new DataEntryEnvironment(mainMenu.getMain());
+        dep = new DataEntryEnvironment();
         setDataEntryEnvironment(dep);
         this.mainMenu.getMain().setCurDataEntryPanel(dep);
 

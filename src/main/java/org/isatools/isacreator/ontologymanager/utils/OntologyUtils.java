@@ -21,11 +21,20 @@ import org.isatools.isacreator.utils.StringProcessing;
 public class OntologyUtils {
 
     public static OntologyPortal getSourceOntologyPortal(Ontology ontology) {
-        return getSourceOntologyPortal(ontology.getOntologyVersion());
+        return getSourceOntologyPortalByVersionAndId(ontology);
     }
 
-    public static OntologyPortal getSourceOntologyPortal(String version) {
-        return version.length() > 5 ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
+    public static OntologyPortal getSourceOntologyPortalByVersionAndId(Ontology ontology) {
+        return checkVersion(ontology.getOntologyVersion()) || ontology.getOntologyID().equals("")
+                ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
+    }
+
+    public static OntologyPortal getSourceOntologyPortalByVersion(String version) {
+        return checkVersion(version) ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
+    }
+
+    private static boolean checkVersion(String version) {
+        return version.length() > 5;
     }
 
     public static String getModifiedBranchIdentifier(String branchIdentifier, String splitOn) {
@@ -55,7 +64,7 @@ public class OntologyUtils {
                 ontology.getOntologyAbbreviation(), "", ontology.getOntologyVersion(), ontology.getOntologyDisplayLabel());
 
         converted.setSourceFile(
-                OntologyUtils.getSourceOntologyPortal(converted.getSourceVersion()) == OntologyPortal.BIOPORTAL
+                OntologyUtils.getSourceOntologyPortalByVersion(converted.getSourceVersion()) == OntologyPortal.BIOPORTAL
                         ? BioPortalClient.DIRECT_ONTOLOGY_URL + converted.getSourceVersion()
                         : OLSClient.DIRECT_ONTOLOGY_URL + converted.getSourceName());
 

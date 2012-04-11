@@ -46,14 +46,14 @@ import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.EventObject;
+import java.util.*;
+import java.util.List;
 
 
 public class TextCellEditor extends JTextField implements TableCellEditor {
 
+    protected transient List<CellEditorListener> listeners;
     protected String originalValue;
-    protected transient ArrayList<CellEditorListener> listeners;
     private TextEditor textEditor;
     private int curCol = -1;
     private int curRow = -1;
@@ -63,9 +63,7 @@ public class TextCellEditor extends JTextField implements TableCellEditor {
         super();
 
         textEditor = new TextEditor();
-
         textEditor.createGUI();
-
         textEditor.addPropertyChangeListener("enteredText",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {

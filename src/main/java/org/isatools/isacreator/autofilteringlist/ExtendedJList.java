@@ -85,10 +85,6 @@ public class ExtendedJList extends JList implements ListSelectionListener, Filte
         filterField.registerObserver(this);
     }
 
-    private void fireUpdateToListeners() {
-        firePropertyChange("update", "", "none");
-    }
-
     /**
      * Add an item to the JList
      *
@@ -332,5 +328,13 @@ public class ExtendedJList extends JList implements ListSelectionListener, Filte
         } else if (observation.equals(FilterSubject.REMOVE)) {
             ((ListFilterModel) getModel()).refilter();
         }
+    }
+
+    public void cleanReferences() {
+        removeListSelectionListener(this);
+        setCellRenderer(null);
+        setModel(null);
+        filterField.unregisterAllObservers();
+        filterField = null;
     }
 }

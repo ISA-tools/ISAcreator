@@ -204,7 +204,7 @@ public class HistoricalSelectionGUI extends JFrame implements MouseListener, Win
         // first panel is for the historical items
         JPanel historicalItemsPanel = new JPanel(new BorderLayout());
         historicalItemsPanel.setBackground(UIHelper.BG_COLOR);
-        historicalItemsPanel.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6),
+        historicalItemsPanel.setBorder(new TitledBorder(UIHelper.GREEN_ROUNDED_BORDER,
                 "selection history", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
@@ -270,7 +270,7 @@ public class HistoricalSelectionGUI extends JFrame implements MouseListener, Win
         //create next panel for selected terms
         JPanel selectedItemsPanel = new JPanel(new BorderLayout());
         selectedItemsPanel.setBackground(UIHelper.BG_COLOR);
-        selectedItemsPanel.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), "selected terms", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
+        selectedItemsPanel.setBorder(new TitledBorder(UIHelper.GREEN_ROUNDED_BORDER, "selected terms", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
         selectedTerms = new CustomListModel();
 

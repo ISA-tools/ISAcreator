@@ -58,23 +58,23 @@ public class AddStudyDialog extends JDialog {
     private ImageIcon addStudyHeader, addStudyButton, addStudyButtonOver,
             closeButton, closeButtonOver;
 
-    private DataEntryEnvironment dep;
+    private DataEntryEnvironment dataEntryEnvironment;
     private JLabel add;
     private JLabel close;
     private JLabel status;
     private JTextField name;
     private String type;
 
-    public AddStudyDialog(DataEntryEnvironment dep, String type) {
+    public AddStudyDialog(DataEntryEnvironment dataEntryEnvironment, String type) {
         this.type = type;
-        this.dep = dep;
+        this.dataEntryEnvironment = dataEntryEnvironment;
 
         ResourceInjector.get("gui-package.style").inject(this);
     }
 
     private void addStudy() {
-        if (!dep.checkForDuplicateName(name.getText(), "Study")) {
-            if (dep.addStudy(name.getText())) {
+        if (!dataEntryEnvironment.checkForDuplicateName(name.getText(), "Study")) {
+            if (dataEntryEnvironment.addStudy(name.getText())) {
                 status.setVisible(false);
                 hideMe();
             } else {
@@ -136,7 +136,7 @@ public class AddStudyDialog extends JDialog {
     private void hideMe() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                dep.getParentFrame().hideSheet();
+                ApplicationManager.getCurrentApplicationInstance().hideSheet();
                 dispose();
             }
         });
@@ -197,9 +197,5 @@ public class AddStudyDialog extends JDialog {
         container.add(buttonCont, BorderLayout.SOUTH);
 
         return container;
-    }
-
-    public boolean returnTrue() {
-        return true;
     }
 }

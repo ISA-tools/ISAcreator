@@ -42,7 +42,6 @@ import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -70,7 +69,6 @@ public class Controller extends JPanel {
             isatabAnatomyTabIconOver, isacreatorAnatomyTabIcon, isacreatorAnatomyTabIconOver;
 
     private JLabel addStudyTab, isatabAnatomyTab, isacreatorAnatomyTab;
-
 
 
     private JPanel swappableContainer;
@@ -111,7 +109,7 @@ public class Controller extends JPanel {
     }
 
     private void createTabPanel() {
-        JPanel container = new JPanel(new GridLayout(1,3));
+        JPanel container = new JPanel(new GridLayout(1, 3));
         container.setSize(350, 40);
         container.setBackground(UIHelper.BG_COLOR);
 

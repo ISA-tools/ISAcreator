@@ -46,7 +46,7 @@ public class TableReferenceObjectWrapper {
             if (!sortedField.isHidden()) {
                 if (sortedField.getFieldName().equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
                     elements.add(new MappedElement(sortedField.getFieldName() + " (" + sortedField.getDefaultVal() + ")", null, sortedField.isRequired()));
-                } else if(!sortedField.getFieldName().equals(GeneralFieldTypes.UNIT.name)){
+                } else if (!sortedField.getFieldName().equals(GeneralFieldTypes.UNIT.name)) {
                     elements.add(new MappedElement(sortedField.getFieldName(), null, sortedField.isRequired()));
                 }
             }
@@ -122,7 +122,7 @@ public class TableReferenceObjectWrapper {
     }
 
     private void constructProtocols(List<Protocol> protocols, FieldObject protocolField, String parameters) {
-        Set<String> protocolNames = tableReferenceObject.getData().getDataInColumn(protocolField.getColNo());
+        Set<String> protocolNames = tableReferenceObject.getReferenceData().getDataInColumn(protocolField.getColNo());
 
         System.out.println("Adding protocol, " + protocolField.getDefaultVal());
 

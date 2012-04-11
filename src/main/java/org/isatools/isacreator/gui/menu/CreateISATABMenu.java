@@ -203,7 +203,7 @@ public class CreateISATABMenu extends MenuUIComponent {
             public void run() {
                 createManual.setIcon(createManuallyButton);
 
-                DataEntryEnvironment dataEntryEnvironment = new DataEntryEnvironment(menu.getMain());
+                DataEntryEnvironment dataEntryEnvironment = new DataEntryEnvironment();
                 dataEntryEnvironment.createGUI();
 
                 dataEntryEnvironment.getInvestigation().setLastConfigurationUsed(menu.getMain().getLoadedConfiguration());

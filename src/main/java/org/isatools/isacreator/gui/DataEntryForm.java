@@ -47,7 +47,6 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedCancelledEvent;
@@ -98,9 +97,10 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
         DropDownComponent dropdown = new DropDownComponent(field, calendar, DropDownComponent.CALENDAR);
 
-        calendar.addPropertyChangeListener("selectedDate", new DateChangedEvent(calendar, dropdown, field));
-
-        calendar.addPropertyChangeListener("noneSelected", new DateChangedCancelledEvent(calendar, dropdown));
+        calendar.addPropertyChangeListener("selectedDate",
+                new DateChangedEvent(calendar, dropdown, field));
+        calendar.addPropertyChangeListener("noneSelected",
+                new DateChangedCancelledEvent(calendar, dropdown));
 
         return dropdown;
     }
@@ -115,15 +115,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public JPanel createFieldPanel(int rows, int columns) {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(rows, columns));
-
         panel.setOpaque(false);
-
         return panel;
     }
 
     public void setDataEntryEnvironment(DataEntryEnvironment dataEntryEnvironment) {
         this.dataEntryEnvironment = dataEntryEnvironment;
-
     }
 
     /**
@@ -180,10 +177,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
      */
     protected void finalisePane() {
         setVisible(true);
-    }
-
-    protected ISAcreator getISAcreatorEnvironment() {
-        return dataEntryEnvironment.getParentFrame();
     }
 
     public DataEntryEnvironment getDataEntryEnvironment() {
@@ -325,9 +318,8 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         ((JTextArea) textComponent).setWrapStyleWord(true);
                         ((JTextArea) textComponent).setLineWrap(true);
                         textComponent.setBackground(UIHelper.BG_COLOR);
-                        textComponent.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 8));
+                        textComponent.setBorder(UIHelper.GREEN_ROUNDED_BORDER);
                     } else {
-                        // todo should add in the option to have a combobox...
                         textComponent = new RoundedJTextField(10);
                     }
 

@@ -208,5 +208,11 @@ public class Assay extends ISASection implements StudySubData {
         return getValue(ASSAY_REFERENCE);
     }
 
+    public void removeReferences() {
+        getSpreadsheetUI().setDataEntryEnvironment(null);
+        getSpreadsheetUI().getSpreadsheet().removeReferences();
+        getSpreadsheetUI().setSpreadsheet(null);
+        setSpreadsheet(null);
+    }
 
 }

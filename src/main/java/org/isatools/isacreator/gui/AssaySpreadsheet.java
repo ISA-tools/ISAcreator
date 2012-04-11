@@ -49,7 +49,7 @@ import java.awt.*;
  * @date Jun 10, 2008
  */
 public class AssaySpreadsheet extends DataEntryForm {
-    private Spreadsheet table;
+    private Spreadsheet spreadsheet;
 
 
     /**
@@ -70,8 +70,8 @@ public class AssaySpreadsheet extends DataEntryForm {
 
         String title = constructTitleString(measurementType, technologyType);
 
-        table = new Spreadsheet(tableReferenceObject, studyDataEntry, title, this);
-        add(table, BorderLayout.CENTER);
+        spreadsheet = new Spreadsheet(tableReferenceObject, studyDataEntry, title, this);
+        add(spreadsheet, BorderLayout.CENTER);
         finalisePane();
     }
 
@@ -96,11 +96,11 @@ public class AssaySpreadsheet extends DataEntryForm {
      *
      * @return Spreadsheet
      */
-    public Spreadsheet getTable() {
-        return table;
+    public Spreadsheet getSpreadsheet() {
+        return spreadsheet;
     }
 
-    public void setTable(Spreadsheet table) {
-        this.table = table;
+    public void setSpreadsheet(Spreadsheet spreadsheet) {
+        this.spreadsheet = spreadsheet;
     }
 }

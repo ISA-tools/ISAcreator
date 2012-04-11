@@ -79,18 +79,18 @@ public class AssaySubForm extends SubForm implements Serializable {
      */
     public boolean doAddColumn(DefaultTableModel model, TableColumn col) {
 
-        if (fieldType == FieldTypes.ASSAY && (parent != null)) {
+        if (fieldType == FieldTypes.ASSAY && (dataEntryForm != null)) {
             // if adding the assay was successful, then stop the column from being edited
-            int colToCheck = dtm.getColumnCount() - 1;
+            int colToCheck = defaultTableModel.getColumnCount() - 1;
 
             Map<String, String> record = getRecord(colToCheck);
 
             Assay tmpAssay = new Assay();
             tmpAssay.addToFields(record);
 
-            if (dtm.getValueAt(1, colToCheck) == null ||
-                    dtm.getValueAt(1, colToCheck).toString().equals(AutoFilterComboCellEditor.BLANK_VALUE)) {
-                dtm.setValueAt("", 1, colToCheck);
+            if (defaultTableModel.getValueAt(1, colToCheck) == null ||
+                    defaultTableModel.getValueAt(1, colToCheck).toString().equals(AutoFilterComboCellEditor.BLANK_VALUE)) {
+                defaultTableModel.setValueAt("", 1, colToCheck);
             }
 
             if (!tmpAssay.getMeasurementEndpoint().equals("") &&
@@ -111,13 +111,13 @@ public class AssaySubForm extends SubForm implements Serializable {
 
                 tmpAssay.setAssayReference(assayName);
 
-                if (parent.getDataEntryEnvironment()
+                if (dataEntryForm.getDataEntryEnvironment()
                         .addAssay(tmpAssay.getMeasurementEndpoint(),
                                 tmpAssay.getTechnologyType(),
                                 tmpAssay.getAssayPlatform(),
                                 tmpAssay.getAssayReference()) != null) {
                     // set previous column to be uneditable
-                    uneditableRecords.add(dtm.getColumnCount() - 1);
+                    uneditableRecords.add(defaultTableModel.getColumnCount() - 1);
                     scrollTable.addColumn(col);
                     model.addColumn(fieldType);
                     model.fireTableStructureChanged();
@@ -138,11 +138,11 @@ public class AssaySubForm extends SubForm implements Serializable {
                     public void propertyChange(PropertyChangeEvent event) {
                         if (event.getPropertyName()
                                 .equals(JOptionPane.VALUE_PROPERTY)) {
-                            parent.getDataEntryEnvironment().getParentFrame().hideSheet();
+                            dataEntryForm.getDataEntryEnvironment().getParentFrame().hideSheet();
                         }
                     }
                 });
-                parent.getDataEntryEnvironment().getParentFrame()
+                dataEntryForm.getDataEntryEnvironment().getParentFrame()
                         .showJDialogAsSheet(optionPane.createDialog(this,
                                 "All fields not completed"));
             }
@@ -154,15 +154,15 @@ public class AssaySubForm extends SubForm implements Serializable {
     }
 
     public void reformPreviousContent() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             reformItems();
         }
     }
 
     public void reformItems() {
 
-        if (parent != null) {
-            Map<String, Assay> assays = parent.getAssays();
+        if (dataEntryForm != null) {
+            Map<String, Assay> assays = dataEntryForm.getAssays();
 
             int colCount = 1;
 
@@ -174,7 +174,7 @@ public class AssaySubForm extends SubForm implements Serializable {
                     int contactFieldIndex = 0;
                     for (SubFormField field : fields) {
                         String value = fieldList.get(field.getFieldName());
-                        dtm.setValueAt(value, contactFieldIndex, colCount);
+                        defaultTableModel.setValueAt(value, contactFieldIndex, colCount);
                         contactFieldIndex++;
                     }
 
@@ -195,7 +195,7 @@ public class AssaySubForm extends SubForm implements Serializable {
 
         if (!tmpAssay.getAssayReference().equals("")) {
             // remove factor from assays
-            parent.removeAssay(tmpAssay.getAssayReference());
+            dataEntryForm.removeAssay(tmpAssay.getAssayReference());
         }
         // remove column
         removeColumn(assayToRemove);

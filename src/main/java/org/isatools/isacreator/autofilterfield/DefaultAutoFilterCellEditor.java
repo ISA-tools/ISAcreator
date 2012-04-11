@@ -33,7 +33,6 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
     protected JTable currentTable;
     protected int currentRow;
     protected int currentColumn;
-    protected Study study;
 
     protected Spreadsheet spreadsheet;
 
@@ -42,7 +41,6 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
         super();
 
         this.spreadsheet = spreadsheet;
-        this.study = spreadsheet.getStudyDataEntryEnvironment().getStudy();
 
         listeners = new ArrayList<CellEditorListener>();
 
@@ -62,6 +60,10 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
      */
     public void addCellEditorListener(CellEditorListener cel) {
         listeners.add(cel);
+    }
+
+    public Study getStudyFromSpreadsheet() {
+        return spreadsheet.getStudyDataEntryEnvironment().getStudy();
     }
 
     /**
@@ -326,5 +328,9 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
     }
 
     public abstract void performAdditionalTasks();
+
+    public void setSpreadsheet(Spreadsheet spreadsheet) {
+        this.spreadsheet = spreadsheet;
+    }
 
 }

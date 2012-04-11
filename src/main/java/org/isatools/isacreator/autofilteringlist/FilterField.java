@@ -47,4 +47,8 @@ public class FilterField extends JTextField implements DocumentListener, FilterS
             observer.notifyOfSelection(observation);
         }
     }
+
+    public void unregisterAllObservers() {
+        observers.clear();
+    }
 }

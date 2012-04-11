@@ -123,7 +123,7 @@ public class TextEditingComponent extends JPanel implements DocumentListener {
         UIHelper.renderComponent(textEntryArea, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, UIHelper.BG_COLOR);
 
         JScrollPane textScroller = new JScrollPane(textEntryArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        textScroller.setBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 4));
+        textScroller.setBorder(UIHelper.GREEN_ROUNDED_BORDER);
         textScroller.getViewport().setBackground(UIHelper.BG_COLOR);
         textScroller.setPreferredSize(new Dimension(400, 180));
 

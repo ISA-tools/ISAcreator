@@ -42,6 +42,7 @@ import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.assayselection.AssaySelectionDialog;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.WeakPropertyChangeListener;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
@@ -79,18 +80,23 @@ public class StudyDataEntry extends DataEntryForm {
     @InjectedResource
     private ImageIcon panelHeader, addRecordIcon, addRecordIconOver;
 
+    private JLabel addRecord;
+
     private Study study;
+
+    private JPanel assayContainer;
+    private AssaySelectionDialog assaySelectionUI;
+
     private SubForm studyDesignSubform;
     private SubForm studyPublicationsSubForm;
-    private JPanel assayContainer;
     private SubForm contactSubForm;
     private SubForm factorSubForm;
     private SubForm protocolSubForm;
 
-    private AssaySelectionDialog assaySelectionUI;
-
-    private final RemoveAssayListener removeAssayListener = new RemoveAssayListener();
-    private final ViewAssayListener viewAssayListener = new ViewAssayListener();
+    private RemoveAssayListener removeAssayListener = new RemoveAssayListener();
+    private ViewAssayListener viewAssayListener = new ViewAssayListener();
+    private AddAssayListener addAssayListener = new AddAssayListener();
+    private JPanel fieldContainer;
 
 
     /**
@@ -101,11 +107,8 @@ public class StudyDataEntry extends DataEntryForm {
      */
     public StudyDataEntry(DataEntryEnvironment dataEntryEnvironment, Study study) {
         super(dataEntryEnvironment);
-
         ResourceInjector.get("gui-package.style").inject(this);
-
         this.study = study;
-
         createGUI();
     }
 
@@ -114,10 +117,7 @@ public class StudyDataEntry extends DataEntryForm {
                 getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
 
         assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
-
-
         generateAliases(study.getFieldValues().keySet());
-
         instantiatePane();
         createFields();
         finalisePane();
@@ -127,8 +127,8 @@ public class StudyDataEntry extends DataEntryForm {
      * Create the overall input for the study form
      */
     public void createFields() {
-        JPanel container = new JPanel(new BorderLayout());
-        container.setBackground(UIHelper.BG_COLOR);
+        fieldContainer = new JPanel(new BorderLayout());
+        fieldContainer.setBackground(UIHelper.BG_COLOR);
 
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.setBackground(UIHelper.BG_COLOR);
@@ -137,7 +137,8 @@ public class StudyDataEntry extends DataEntryForm {
         northPanel.add(header, BorderLayout.NORTH);
 
         if (study.getReferenceObject() == null) {
-            TableReferenceObject tro = getISAcreatorEnvironment().selectTROForUserSelection(MappingObject.INVESTIGATION);
+            TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance()
+                    .selectTROForUserSelection(MappingObject.INVESTIGATION);
 
             DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
             referenceObject.setFieldDefinition(tro.getTableFields().getFields());
@@ -145,16 +146,13 @@ public class StudyDataEntry extends DataEntryForm {
             study.setReferenceObject(referenceObject);
         }
 
-        container.add(northPanel, BorderLayout.NORTH);
-        container.add(createStudyDesc(), BorderLayout.CENTER);
-
-        JPanel subforms = new JPanel();
-        subforms.setLayout(new BoxLayout(subforms, BoxLayout.PAGE_AXIS));
+        fieldContainer.add(northPanel, BorderLayout.NORTH);
+        fieldContainer.add(createStudyDesc(), BorderLayout.CENTER);
 
         Box subPanel = Box.createVerticalBox();
         subPanel.add(Box.createVerticalStrut(20));
 
-        subPanel.add(createStudyAssaysSubForm());
+        subPanel.add(createStudyAssaySection());
         subPanel.add(Box.createVerticalStrut(20));
 
         subPanel.add(createStudyDesignSubForm());
@@ -172,9 +170,9 @@ public class StudyDataEntry extends DataEntryForm {
         subPanel.add(createStudyContactsSubForm());
         subPanel.add(Box.createVerticalStrut(20));
 
-        container.add(subPanel, BorderLayout.SOUTH);
+        fieldContainer.add(subPanel, BorderLayout.SOUTH);
 
-        JScrollPane containerScroller = new JScrollPane(container,
+        JScrollPane containerScroller = new JScrollPane(fieldContainer,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         containerScroller.setBorder(null);
@@ -185,11 +183,11 @@ public class StudyDataEntry extends DataEntryForm {
     }
 
     /**
-     * Create the Assay definition subform.
+     * Create the Assay definition section.
      *
-     * @return - JPanel containing the subform required for definition of the Assay.
+     * @return - JPanel containing the UI elements required for definition of the Assay.
      */
-    private Container createStudyAssaysSubForm() {
+    private Container createStudyAssaySection() {
 
         assayContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         assayContainer.setBackground(UIHelper.BG_COLOR);
@@ -204,12 +202,12 @@ public class StudyDataEntry extends DataEntryForm {
         JPanel container = new JPanel(new BorderLayout());
         container.setPreferredSize(new Dimension(300, 180));
         container.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), InvestigationFileSection.STUDY_ASSAYS.toString(),
+                UIHelper.GREEN_ROUNDED_BORDER, InvestigationFileSection.STUDY_ASSAYS.toString(),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
-        final JLabel addRecord = new JLabel("add new assay(s)", addRecordIcon, JLabel.LEFT);
+        addRecord = new JLabel("add new assay(s)", addRecordIcon, JLabel.LEFT);
         UIHelper.renderComponent(addRecord, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         addRecord.addMouseListener(new MouseAdapter() {
@@ -220,33 +218,13 @@ public class StudyDataEntry extends DataEntryForm {
                         Map<String, List<String>> measToAllowedTechnologies =
                                 getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
 
-                        assaySelectionUI = new AssaySelectionDialog(getISAcreatorEnvironment(), measToAllowedTechnologies);
+                        assaySelectionUI = new AssaySelectionDialog(ApplicationManager.getCurrentApplicationInstance(), measToAllowedTechnologies);
                         assaySelectionUI.createGUI();
 
-                        getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(assaySelectionUI);
+                        ApplicationManager.getCurrentApplicationInstance().showJDialogAsSheet(assaySelectionUI);
                         addRecord.setIcon(addRecordIcon);
 
-                        assaySelectionUI.addPropertyChangeListener("assaysChosen", new PropertyChangeListener() {
-                            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                                List<AssaySelection> selectedAssays = assaySelectionUI.getSelectedAssays();
-
-                                for (AssaySelection assay : selectedAssays) {
-
-                                    String assayRef = StudyUtils.generateAssayReference(study, assay.getMeasurement(), assay.getTechnology());
-
-                                    Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), assayRef);
-
-                                    AssayInformationPanel informationPanel = new AssayInformationPanel(addedAssay);
-                                    informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
-                                    informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
-
-                                    assayContainer.add(informationPanel);
-                                    assayContainer.repaint();
-                                }
-                            }
-                        });
-
-
+                        assaySelectionUI.addPropertyChangeListener("assaysChosen", new WeakPropertyChangeListener(addAssayListener));
                     }
                 });
             }
@@ -272,8 +250,8 @@ public class StudyDataEntry extends DataEntryForm {
 
         for (Assay assay : study.getAssays().values()) {
             AssayInformationPanel informationPanel = new AssayInformationPanel(assay);
-            informationPanel.addPropertyChangeListener("removeAssay", removeAssayListener);
-            informationPanel.addPropertyChangeListener("viewAssay", viewAssayListener);
+            informationPanel.addPropertyChangeListener("removeAssay", new WeakPropertyChangeListener(removeAssayListener));
+            informationPanel.addPropertyChangeListener("viewAssay", new WeakPropertyChangeListener(viewAssayListener));
             assayContainer.add(informationPanel);
         }
     }
@@ -327,7 +305,7 @@ public class StudyDataEntry extends DataEntryForm {
         studyDesc.setLayout(new BoxLayout(studyDesc, BoxLayout.PAGE_AXIS));
         UIHelper.renderComponent(studyDesc, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
         studyDesc.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), "study description",
+                UIHelper.GREEN_ROUNDED_BORDER, "study description",
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
@@ -518,16 +496,14 @@ public class StudyDataEntry extends DataEntryForm {
     public String toString() {
         update();
 
-        StringBuffer output = new StringBuffer();
+        StringBuilder output = new StringBuilder();
         output.append(InvestigationFileSection.STUDY_SECTION).append("\n");
 
         Map<Integer, Map<String, String>> ontologyTerms = IOUtils.getOntologyTerms(study.getFieldValues().keySet());
 
         // now, do ontology processing
         for (int fieldHashCode : ontologyTerms.keySet()) {
-
             Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
-
             Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, study.getFieldValues());
             study.getFieldValues().put(ontologyField.get(IOUtils.TERM), processedOntologyField.get(ontologyField.get(IOUtils.TERM)));
             study.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION), processedOntologyField.get(ontologyField.get(IOUtils.ACCESSION)));
@@ -554,18 +530,13 @@ public class StudyDataEntry extends DataEntryForm {
      * update method to save all changes in view to the model (Study object)
      */
     public void update() {
-
         for (String fieldName : fieldDefinitions.keySet()) {
-
             String tmpFieldName = fieldName;
-
             if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
-
             study.getFieldValues().put(tmpFieldName, fieldDefinitions.get(fieldName).getText());
         }
-
 
         studyDesignSubform.update();
         studyPublicationsSubForm.update();
@@ -588,55 +559,62 @@ public class StudyDataEntry extends DataEntryForm {
     }
 
     public void removeReferences() {
-
         setDataEntryEnvironment(null);
 
-        studyDesignSubform.setDataEntryEnvironment(null);
-        studyDesignSubform.getRowEditor().removeAllListeners();
-        studyDesignSubform.setParent(null);
+        studyDesignSubform.cleanupReferences();
         studyDesignSubform = null;
 
-        studyPublicationsSubForm.setDataEntryEnvironment(null);
-        studyPublicationsSubForm.getRowEditor().removeAllListeners();
-        studyPublicationsSubForm.setParent(null);
+        studyPublicationsSubForm.cleanupReferences();
         studyPublicationsSubForm = null;
 
-        factorSubForm.setDataEntryEnvironment(null);
-        factorSubForm.getRowEditor().removeAllListeners();
-        factorSubForm.setParent(null);
+        factorSubForm.cleanupReferences();
         factorSubForm = null;
 
-        contactSubForm.setDataEntryEnvironment(null);
-        contactSubForm.getRowEditor().removeAllListeners();
-        contactSubForm.setParent(null);
+        contactSubForm.cleanupReferences();
         contactSubForm = null;
 
-        protocolSubForm.setDataEntryEnvironment(null);
-        protocolSubForm.getRowEditor().removeAllListeners();
-        protocolSubForm.setParent(null);
+        protocolSubForm.cleanupReferences();
         protocolSubForm = null;
+
+        addRecord.getParent().removeAll();
+        addRecord.removeMouseListener(addRecord.getMouseListeners()[0]);
+        addRecord = null;
+
+        assayContainer.getParent().removeAll();
+        assayContainer.removeAll();
+        assayContainer = null;
+
+        assaySelectionUI.removePropertyChangeListener("assaysChosen", new WeakPropertyChangeListener(addAssayListener));
+        assaySelectionUI.removeAll();
+        assaySelectionUI = null;
+
+        addAssayListener = null;
+        viewAssayListener = null;
+        removeAssayListener = null;
 
         study.getStudySample().getSpreadsheetUI().setDataEntryEnvironment(null);
 
-        for (String a : study.getAssays().keySet()) {
-            Assay tmpAssay = study.getAssays().get(a);
-            tmpAssay.getSpreadsheetUI().setDataEntryEnvironment(null);
-            tmpAssay.getSpreadsheetUI().getTable().getTable().setCellEditor(null);
-            tmpAssay.getSpreadsheetUI().setTable(null);
-            tmpAssay.setSpreadsheet(null);
+        for (String assayReference : study.getAssays().keySet()) {
+            Assay assay = study.getAssays().get(assayReference);
+            assay.removeReferences();
         }
 
+        study.getAssays().clear();
 
+        study.getStudySample().removeReferences();
         setDataEntryEnvironment(null);
-
         study.setAssays(null);
-
         study.getUserInterface().removeAll();
         study.setUI(null);
         study.setStudySamples(null);
         study = null;
+
+        fieldContainer.removeAll();
+
+
         removeAll();
     }
+
 
     class RemoveAssayListener implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
@@ -668,7 +646,6 @@ public class StudyDataEntry extends DataEntryForm {
                         }
                     }
                 });
-
                 UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
                 getDataEntryEnvironment().getParentFrame().showJDialogAsSheet(optionPane.createDialog(StudyDataEntry.this, "Confirm Delete"));
             }
@@ -680,10 +657,30 @@ public class StudyDataEntry extends DataEntryForm {
         public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
             if (propertyChangeEvent.getNewValue() instanceof AssayInformationPanel) {
                 final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
-
                 getDataEntryEnvironment().selectAssayInTree(panel.getAssay());
             }
 
+        }
+    }
+
+    class AddAssayListener implements PropertyChangeListener {
+
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            List<AssaySelection> selectedAssays = assaySelectionUI.getSelectedAssays();
+
+            for (AssaySelection assay : selectedAssays) {
+
+                String assayRef = StudyUtils.generateAssayReference(study, assay.getMeasurement(), assay.getTechnology());
+
+                Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), assayRef);
+
+                AssayInformationPanel informationPanel = new AssayInformationPanel(addedAssay);
+                informationPanel.addPropertyChangeListener("removeAssay", new WeakPropertyChangeListener(removeAssayListener));
+                informationPanel.addPropertyChangeListener("viewAssay", new WeakPropertyChangeListener(viewAssayListener));
+
+                assayContainer.add(informationPanel);
+                assayContainer.repaint();
+            }
         }
     }
 

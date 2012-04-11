@@ -38,25 +38,14 @@
 package org.isatools.isacreator.optionselector;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
-import org.isatools.isacreator.common.UIHelper;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-/**
- * OptionGroup
- *
- * @author eamonnmaguire
- * @date Jun 1, 2010
- */
 
 
 public class OptionGroup<T> extends JPanel implements MouseListener {

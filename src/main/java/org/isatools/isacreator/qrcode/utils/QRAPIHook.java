@@ -75,16 +75,16 @@ public class QRAPIHook {
     public void generateDataFromEnvironment() {
         Study study = getInvestigation().getStudies().get(studyId);
 
-        subData = SpreadsheetUtils.getSpreadsheetDataSubset(study.getStudySample().getSpreadsheetUI().getTable(), 4);
+        subData = SpreadsheetUtils.getSpreadsheetDataSubset(study.getStudySample().getSpreadsheetUI().getSpreadsheet(), 4);
 
         Map<Integer, String> columnIndexToName = SpreadsheetUtils.getColumns(
-                study.getStudySample().getSpreadsheetUI().getTable(), new HashSet<String>());
+                study.getStudySample().getSpreadsheetUI().getSpreadsheet(), new HashSet<String>());
 
         columnNames = columnIndexToName.values().toArray(new String[columnIndexToName.values().size()]);
 
         sampleNameIndex = getSampleNameIndex(columnIndexToName);
         if (sampleNameIndex != -1) {
-            sampleNames = SpreadsheetUtils.getDataInColumn(study.getStudySample().getSpreadsheetUI().getTable(), 2);
+            sampleNames = SpreadsheetUtils.getDataInColumn(study.getStudySample().getSpreadsheetUI().getSpreadsheet(), 2);
         } else {
             sampleNames = new HashSet<String>();
         }
@@ -117,7 +117,7 @@ public class QRAPIHook {
         }
 
         Study study = getInvestigation().getStudies().get(studyId);
-        String[][] data = SpreadsheetUtils.getSpreadsheetDataSubset(study.getStudySample().getSpreadsheetUI().getTable());
+        String[][] data = SpreadsheetUtils.getSpreadsheetDataSubset(study.getStudySample().getSpreadsheetUI().getSpreadsheet());
 
         for (String[] aData : data) {
             sampleNameToEncoding.put(aData[sampleNameIndex - 1],

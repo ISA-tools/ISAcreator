@@ -40,7 +40,6 @@ package org.isatools.isacreator.gui;
 import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
-import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 
 import javax.swing.*;

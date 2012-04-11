@@ -57,10 +57,18 @@ import java.util.Map;
  * @author Eamonn Maguire
  */
 public class OntologyCellEditor extends JTextField implements TableCellEditor {
-    protected transient List<CellEditorListener> listeners;
 
-    private OntologySelectionTool ontologyTool;
+    protected transient List<CellEditorListener> listeners;
+    private boolean allowsMultipleTerms, forceOntologySelection;
+    private Map<String, RecommendedOntology> recommendedOntologyMap;
     protected String originalValue;
+
+    private static OntologySelectionTool ontologyTool;
+
+    static {
+        ontologyTool = new OntologySelectionTool();
+        ontologyTool.createGUI();
+    }
 
     /**
      * OntologyCellEditor constructor.
@@ -70,18 +78,20 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
      */
     public OntologyCellEditor(final boolean allowsMultipleTerms, final boolean forceOntologySelection, Map<String, RecommendedOntology> recommendedSource) {
         super();
-        ontologyTool = new OntologySelectionTool(allowsMultipleTerms, forceOntologySelection,
-                recommendedSource);
-        ontologyTool.createGUI();
+        this.allowsMultipleTerms = allowsMultipleTerms;
+        this.forceOntologySelection = forceOntologySelection;
+        this.recommendedOntologyMap = recommendedSource;
+
         // OntologySelectionTool doesn't directly interact with the CellEditor. Instead, a PropertyChange event is
         // fired, and it is here where we listen to the event and deal with it.
         ontologyTool.addPropertyChangeListener("selectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        setText(ontologyTool.getSelectedTerm());
+                        setCellValue();
                         stopCellEditing();
                     }
                 });
+
         ontologyTool.addPropertyChangeListener("noSelectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
@@ -91,6 +101,10 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
 
         setBorder(null);
         listeners = new ArrayList<CellEditorListener>();
+    }
+
+    private void setCellValue() {
+        setText(ontologyTool.getSelectedTerm());
     }
 
     /**
@@ -157,9 +171,7 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
      * @param column     - the column identifier for the cell
      * @return The editing component. A OntologyCellEditor.
      */
-    public Component getTableCellEditorComponent(JTable table, Object value,
-                                                 boolean isSelected, int row, int column) {
-
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
 
@@ -192,13 +204,16 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
             proposedY = proposedY - difference;
         }
 
+        // Set ontology tool parameters
+        ontologyTool.setRecommendedOntologies(recommendedOntologyMap);
+        ontologyTool.setForceOntologySelection(forceOntologySelection);
+        ontologyTool.setMultipleTermsAllowed(allowsMultipleTerms);
+
         ontologyTool.updatehistory();
         ontologyTool.addNotify();
         ontologyTool.setLocation(proposedX, proposedY);
         ontologyTool.makeVisible();
-
         ontologyTool.loadRecommendedOntologiesIfAllowed();
-
         return this;
     }
 
@@ -240,8 +255,14 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
         fireEditingStopped();
         ontologyTool.setVisible(false);
         ontologyTool.updatehistory();
-        setText(ontologyTool.getSelectedTerm());
+        setCellValue();
 
         return true;
+    }
+
+    public void cleanupReferences() {
+        listeners.clear();
+        listeners = new ArrayList<CellEditorListener>();
+//        removeAll();
     }
 }

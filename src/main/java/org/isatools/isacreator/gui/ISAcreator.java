@@ -262,7 +262,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
 
-        setupAboutPanel();
+//        setupAboutPanel();
         // check that java version is supported!
         if (!checkSystemRequirements()) {
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
@@ -589,6 +589,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         about.setForeground(UIHelper.DARK_GREEN_COLOR);
         about.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if (aboutPanel == null) {
+                    setupAboutPanel();
+                }
                 setGlassPanelContents(aboutPanel);
             }
         });
@@ -779,21 +782,20 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             OntologyManager.clearReferencedOntologySources();
 
-            curDataEntryEnvironment.removeReferences();
-            curDataEntryEnvironment = null;
 
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Problem occurred when saving user profiles.");
         }
 
+        curDataEntryEnvironment.removeReferences();
+        curDataEntryEnvironment = null;
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-
                 isacreatorMenu.showGUI(ISAcreatorMenu.SHOW_MAIN);
                 isacreatorMenu.startAnimation();
                 setCurrentPage(isacreatorMenu);
-
             }
         });
     }

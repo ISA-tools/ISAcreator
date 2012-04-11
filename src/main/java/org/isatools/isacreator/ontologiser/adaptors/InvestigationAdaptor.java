@@ -72,11 +72,11 @@ public class InvestigationAdaptor implements ContentAdaptor {
             Study study = investigation.getStudies().get(studyAccession);
 
             System.out.println("Replacing terms in " + studyAccession);
-            SpreadsheetUtils.replaceFreeTextWithOntologyTerms(study.getStudySample().getSpreadsheetUI().getTable(), mappingsForReplacement);
+            SpreadsheetUtils.replaceFreeTextWithOntologyTerms(study.getStudySample().getSpreadsheetUI().getSpreadsheet(), mappingsForReplacement);
 
             for (Assay assay : study.getAssays().values()) {
                 System.out.println("Replacing terms in " + assay.getAssayReference());
-                SpreadsheetUtils.replaceFreeTextWithOntologyTerms(assay.getSpreadsheetUI().getTable(), mappingsForReplacement);
+                SpreadsheetUtils.replaceFreeTextWithOntologyTerms(assay.getSpreadsheetUI().getSpreadsheet(), mappingsForReplacement);
             }
         }
     }

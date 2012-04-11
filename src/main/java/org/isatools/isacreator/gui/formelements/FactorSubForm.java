@@ -62,23 +62,23 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
     }
 
     public void reformPreviousContent() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             reformItems();
         }
     }
 
     public void reformItems() {
 
-        if (parent != null && parent.getFactors() != null) {
+        if (dataEntryForm != null && dataEntryForm.getFactors() != null) {
 
-            List<Factor> factors = parent.getFactors();
+            List<Factor> factors = dataEntryForm.getFactors();
 
             for (int record = 1; record < factors.size() + 1; record++) {
 
                 if (factors.size() > record - 1) {
                     Map<String, String> fieldList = factors.get(record - 1).getFieldValues();
 
-                    if (record >= dtm.getColumnCount()) {
+                    if (record >= defaultTableModel.getColumnCount()) {
                         addColumn();
                     }
 
@@ -86,33 +86,33 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
 
                     for (SubFormField field : fields) {
                         String value = fieldList.get(field.getFieldName());
-                        dtm.setValueAt(value, factorFieldIndex, record);
+                        defaultTableModel.setValueAt(value, factorFieldIndex, record);
                         factorFieldIndex++;
                     }
                 }
             }
 
-            dtm.fireTableStructureChanged();
+            defaultTableModel.fireTableStructureChanged();
             updateTables();
         }
 
     }
 
     protected void removeItem(int itemToRemove) {
-        if (parent != null && parent.getStudy() != null) {
+        if (dataEntryForm != null && dataEntryForm.getStudy() != null) {
 
             Map<String, String> record = getRecord(itemToRemove);
 
             Factor tmpFactor = new Factor();
             tmpFactor.addToFields(record);
-            parent.getStudy().removeFactor(tmpFactor.getFactorName());
+            dataEntryForm.getStudy().removeFactor(tmpFactor.getFactorName());
 
         }
         removeColumn(itemToRemove);
     }
 
     public void updateItems() {
-        int cols = dtm.getColumnCount();
+        int cols = defaultTableModel.getColumnCount();
 
         List<Factor> newFactors = new ArrayList<Factor>();
 
@@ -130,13 +130,13 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
             }
         }
 
-        if (parent.getStudy() != null) {
-            parent.getStudy().setFactors(newFactors);
+        if (dataEntryForm.getStudy() != null) {
+            dataEntryForm.getStudy().setFactors(newFactors);
         }
     }
 
     public void update() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             updateItems();
         }
     }

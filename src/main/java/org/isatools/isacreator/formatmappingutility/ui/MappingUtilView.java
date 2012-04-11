@@ -154,7 +154,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         setOpaque(false);
 
         // create first pane (select files pane!)
-        dataEntryEnvironment = new DataEntryEnvironment(menuPanels.getMain());
+        dataEntryEnvironment = new DataEntryEnvironment();
         setDataEntryEnvironment(dataEntryEnvironment);
     }
 

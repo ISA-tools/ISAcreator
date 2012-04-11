@@ -35,10 +35,10 @@ public class InvestigationUtils {
             Study study = studies.get(studyId);
 
             result.put(study.getStudySample(),
-                    SpreadsheetUtils.getFreetextInSpreadsheet(study.getStudySample().getSpreadsheetUI().getTable()));
+                    SpreadsheetUtils.getFreetextInSpreadsheet(study.getStudySample().getSpreadsheetUI().getSpreadsheet()));
 
             for (Assay assay : study.getAssays().values()) {
-                result.put(assay, SpreadsheetUtils.getFreetextInSpreadsheet(assay.getSpreadsheetUI().getTable()));
+                result.put(assay, SpreadsheetUtils.getFreetextInSpreadsheet(assay.getSpreadsheetUI().getSpreadsheet()));
             }
         }
 

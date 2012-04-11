@@ -38,18 +38,15 @@
 
 package org.isatools.isacreator.common;
 
-import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.MouseListener;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Vector;
@@ -83,6 +80,10 @@ public class UIHelper {
     public static final Border STD_ETCHED_BORDER = new LineBorder(UIHelper.DARK_GREEN_COLOR, 1, true);
 
     public static final Border EMPTY_BORDER = new EmptyBorder(0, 0, 0, 0);
+    public static final RoundedBorder GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6);
+    public static final RoundedBorder GREY_ROUNDED_BORDER = new RoundedBorder(UIHelper.GREY_COLOR, 6);
+    public static final RoundedBorder DARK_GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 6);
+
     public static final ImageIcon OK_BUTTON = new ImageIcon(UIHelper.class.getResource("/images/common/ok.png"));
     public static final ImageIcon OK_BUTTON_OVER = new ImageIcon(UIHelper.class.getResource("/images/common/ok_over.png"));
     public static final ImageIcon CLOSE_BUTTON = new ImageIcon(UIHelper.class.getResource("/images/common/close.png"));
@@ -336,5 +337,26 @@ public class UIHelper {
         container.add(componentToAdd);
 
         return container;
+    }
+
+    public static void removeMouseListenersFromComponent(Component... components) {
+        for (Component component : components) {
+            for (MouseListener mouseListener : component.getMouseListeners()) {
+                component.removeMouseListener(mouseListener);
+            }
+        }
+    }
+
+
+    public static void removeAllComponents(Container container) {
+        for (Component component : container.getComponents()) {
+
+            if (component instanceof Container) {
+                for (Component innerComponent : ((Container) component).getComponents()) {
+                    ((Container) innerComponent).removeAll();
+                }
+            }
+        }
+        container.removeAll();
     }
 }

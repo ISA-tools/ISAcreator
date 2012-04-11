@@ -46,6 +46,7 @@ import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
@@ -794,11 +795,11 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
 
-                        DataEntryEnvironment dep = new DataEntryEnvironment(getISAcreatorEnvironment());
+                        DataEntryEnvironment dep = new DataEntryEnvironment();
 
-                        getISAcreatorEnvironment().setCurDataEntryPanel(dep);
+                        ApplicationManager.getCurrentApplicationInstance().setCurDataEntryPanel(dep);
                         dep.createGUIFromInvestigatio(inv1);
-                        getISAcreatorEnvironment().setCurrentPage(dep);
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(dep);
                     }
                 });
             }

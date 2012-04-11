@@ -46,4 +46,8 @@ public class CopyPasteAdaptor implements ActionListener {
             spreadsheet.getSpreadsheetFunctions().paste(startRow, startCol, true);
         }
     }
+
+    public void setSpreadsheet(Spreadsheet spreadsheet) {
+        this.spreadsheet = spreadsheet;
+    }
 }

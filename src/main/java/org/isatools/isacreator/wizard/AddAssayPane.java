@@ -82,20 +82,20 @@ public class AddAssayPane extends JPanel {
     private Study study;
     private List<PropertyType> factorsToAdd;
     private Map<Integer, TreatmentReplicate> treatmentGroups;
-    private DataEntryEnvironment dep;
+    private DataEntryEnvironment dataEntryEnvironment;
     private ListOrderedMap<String, GeneratedSampleDetails> sampleNameValues;
-    private AbstractDataEntryEnvironment dew;
+    private AbstractDataEntryEnvironment abstractDataEntryEnvironment;
     private UserProfile up;
     private MouseListener[] listeners;
 
-    public AddAssayPane(AbstractDataEntryEnvironment dew, Study study, List<PropertyType> factorsToAdd,
+    public AddAssayPane(AbstractDataEntryEnvironment abstractDataEntryEnvironment, Study study, List<PropertyType> factorsToAdd,
                         Map<Integer, TreatmentReplicate> treatmentGroups, DataEntryEnvironment dep, UserProfile up) {
-        this.dew = dew;
+        this.abstractDataEntryEnvironment = abstractDataEntryEnvironment;
         this.up = up;
         this.study = study;
         this.factorsToAdd = factorsToAdd;
         this.treatmentGroups = treatmentGroups;
-        this.dep = dep;
+        this.dataEntryEnvironment = dataEntryEnvironment;
         assaysToDefine = study.getAssays().values();
 
         algorithmsToRun = new ArrayList<CreationAlgorithm>();
@@ -122,21 +122,21 @@ public class AddAssayPane extends JPanel {
         centerPanel.setOpaque(false);
         centerPanel.add(Box.createVerticalStrut(15));
 
-        String sourceNameFormat = dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
+        String sourceNameFormat = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
 
         String[] arrayDesigns = retrieveArrayDesigns();
 
         for (Assay a : assaysToDefine) {
             if (a.getTechnologyType().equalsIgnoreCase("dna microarray")) {
                 MicroarrayCreationAlgorithm maAlg = new MicroarrayCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(dep.getParentFrame().selectTROForUserSelection(
+                        new TableReferenceObject(dataEntryEnvironment.getParentFrame().selectTROForUserSelection(
                                 a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat, arrayDesigns);
                 algorithmsToRun.add(maAlg);
                 centerPanel.add(maAlg);
             } else {
                 GeneralCreationAlgorithm gca = new GeneralCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(dep.getParentFrame().selectTROForUserSelection(a.getMeasurementEndpoint(),
+                        new TableReferenceObject(dataEntryEnvironment.getParentFrame().selectTROForUserSelection(a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat);
                 algorithmsToRun.add(gca);
                 centerPanel.add(gca);
@@ -154,29 +154,29 @@ public class AddAssayPane extends JPanel {
         IAppWidgetFactory.makeIAppScrollPane(assayScroller);
 
 
-        return dew.getGeneralLayout(new ImageIcon(
+        return abstractDataEntryEnvironment.getGeneralLayout(new ImageIcon(
                 getClass().getResource("/images/wizard/defineassay.png")), new ImageIcon(getClass()
                 .getResource("/images/wizard/BC_4.png")), "Please provide some information about these assays...", assayScroller, getHeight());
     }
 
 
     public void createSouthPanel() {
-        AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
+        abstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
         listeners[0] = new MouseAdapter() {
             public void mousePressed(MouseEvent event) {
                 firePropertyChange("canceledAssayCreation", "cancelling", "assaydef");
             }
 
             public void mouseEntered(MouseEvent event) {
-                AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.backOver);
+                abstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.backOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                AbstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
+                abstractDataEntryEnvironment.backButton.setIcon(AbstractDataEntryEnvironment.back);
             }
         };
 
-        dew.assignListenerToLabel(AbstractDataEntryEnvironment.backButton, listeners[0]);
+        abstractDataEntryEnvironment.assignListenerToLabel(abstractDataEntryEnvironment.backButton, listeners[0]);
 
         listeners[1] = new MouseAdapter() {
 
@@ -196,15 +196,15 @@ public class AddAssayPane extends JPanel {
             }
 
             public void mouseEntered(MouseEvent event) {
-                AbstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.nextOver);
+                abstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.nextOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                AbstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.next);
+                abstractDataEntryEnvironment.nextButton.setIcon(AbstractDataEntryEnvironment.next);
             }
         };
 
-        dew.assignListenerToLabel(AbstractDataEntryEnvironment.nextButton, listeners[1]);
+        abstractDataEntryEnvironment.assignListenerToLabel(abstractDataEntryEnvironment.nextButton, listeners[1]);
     }
 
     public ListOrderedMap<String, GeneratedSampleDetails> getSampleNameValues() {

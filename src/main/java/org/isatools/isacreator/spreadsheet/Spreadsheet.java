@@ -55,6 +55,7 @@ import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.model.ReferenceData;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
@@ -68,6 +69,7 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -99,6 +101,7 @@ public class Spreadsheet extends JComponent implements
     public static final int MAX_ROWS = 32000;
     public static FileSelectCellEditor fileSelectEditor;
     private static EmptyBorder emtpyBorder = new EmptyBorder(1, 1, 1, 1);
+
     protected static DateCellEditor dateEditor;
 
     public static final int SWITCH_ABSOLUTE = 0;
@@ -115,7 +118,6 @@ public class Spreadsheet extends JComponent implements
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
         ResourceInjector.get("spreadsheet-package.style").load(
                 Spreadsheet.class.getResource("/dependency-injections/spreadsheet-package.properties"));
-
     }
 
     @InjectedResource
@@ -139,7 +141,7 @@ public class Spreadsheet extends JComponent implements
 
 
     private TableGroupInfo tableGroupInformation;
-    protected SpreadsheetColumnRenderer renderer = new SpreadsheetColumnRenderer();
+    protected SpreadsheetColumnRenderer columnRenderer = new SpreadsheetColumnRenderer();
     protected SpreadsheetModel spreadsheetModel;
     private AnimatableJFrame parentFrame;
     private StudyDataEntry studyDataEntryEnvironment;
@@ -159,6 +161,7 @@ public class Spreadsheet extends JComponent implements
     protected boolean highlightActive = false;
     private TableConsistencyChecker tableConsistencyChecker;
 
+    private CopyPasteAdaptor copyPasteAdaptor;
     private SpreadsheetPopupMenus spreadsheetPopups;
     private JPanel spreadsheetFunctionPanel;
 
@@ -300,8 +303,8 @@ public class Spreadsheet extends JComponent implements
 
         spreadsheetModel.setTable(table);
 
-        if (tableReferenceObject.getData() != null) {
-            populateTable(tableReferenceObject.getData());
+        if (tableReferenceObject.getReferenceData() != null) {
+            populateTable(tableReferenceObject.getReferenceData());
             rebuildDependencies(tableReferenceObject.getColumnDependencies());
         } else {
             // populate table with some empty fields.
@@ -339,7 +342,7 @@ public class Spreadsheet extends JComponent implements
         table.setAutoscrolls(true);
 
         // assign copy/paste listener
-        new CopyPasteAdaptor(this);
+        copyPasteAdaptor = new CopyPasteAdaptor(this);
 
         JScrollPane pane = new JScrollPane(table,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -359,23 +362,6 @@ public class Spreadsheet extends JComponent implements
 
     public SpreadsheetFunctions getSpreadsheetFunctions() {
         return spreadsheetFunctions;
-    }
-
-    public String getAssignedUnitForColumn(int columnIndex, int rowNo) {
-
-        int[] convertedColumnIndex = Utils.convertSelectedColumnsToModelIndices(table, new int[]{columnIndex});
-
-        Set<Integer> dependentColumns = tableReferenceObject.getColumnDependencies().get(convertedColumnIndex[0]);
-
-        String value = "";
-        if (dependentColumns != null) {
-            for (int column : dependentColumns) {
-                value += getTableModel().getValueAt(rowNo, column);
-            }
-        }
-
-
-        return value;
     }
 
     public String getSpreadsheetTitle() {
@@ -704,7 +690,6 @@ public class Spreadsheet extends JComponent implements
                         }
                     });
                     parentFrame.showJDialogAsSheet(copyColDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Column?"));
-
                 }
             }
         });
@@ -748,8 +733,7 @@ public class Spreadsheet extends JComponent implements
                         }
                     }
                 });
-                parentFrame.showJDialogAsSheet(
-                        copyRowDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Row Down?"));
+                parentFrame.showJDialogAsSheet(copyRowDownConfirmationPane.createDialog(Spreadsheet.this, "Copy Row Down?"));
             }
         });
 
@@ -1044,6 +1028,10 @@ public class Spreadsheet extends JComponent implements
      */
     public StudyDataEntry getStudyDataEntryEnvironment() {
         return studyDataEntryEnvironment;
+    }
+
+    public void setStudyDataEntryEnvironment(StudyDataEntry studyDataEntryEnvironment) {
+        this.studyDataEntryEnvironment = studyDataEntryEnvironment;
     }
 
     /**
@@ -1374,8 +1362,7 @@ public class Spreadsheet extends JComponent implements
                     if (tc != null) {
                         try {
                             table.getTableHeader()
-                                    .setToolTipText(tableReferenceObject.getFieldByName(
-                                            tc.getHeaderValue().toString()).getDescription());
+                                    .setToolTipText(getFieldDescription(tc));
                         } catch (Exception e) {
                             // ignore this error
                         }
@@ -1426,13 +1413,12 @@ public class Spreadsheet extends JComponent implements
         String previousColumnName = null;
         for (int columnIndex = 0; columnIndex < tableReferenceObject.getHeaders().size(); columnIndex++) {
             if (!model.getColumn(columnIndex).getHeaderValue().toString().equals(TableReferenceObject.ROW_NO_TEXT)) {
-                model.getColumn(columnIndex).setHeaderRenderer(renderer);
+                model.getColumn(columnIndex).setHeaderRenderer(columnRenderer);
                 model.getColumn(columnIndex)
                         .setPreferredWidth(spreadsheetFunctions.calcColWidths(
                                 model.getColumn(columnIndex).getHeaderValue().toString()));
                 // add appropriate cell editor for cell.
                 spreadsheetFunctions.addCellEditor(model.getColumn(columnIndex), previousColumnName);
-
                 previousColumnName = model.getColumn(columnIndex).getHeaderValue().toString();
             } else {
                 model.getColumn(columnIndex).setHeaderRenderer(new RowNumberCellRenderer());
@@ -1445,9 +1431,14 @@ public class Spreadsheet extends JComponent implements
 
         header.setBackground(UIHelper.BG_COLOR);
 
-        header.addMouseListener(new HeaderListener(header, renderer));
+        header.addMouseListener(new HeaderListener(header, columnRenderer));
 
         table.addNotify();
+    }
+
+    private String getFieldDescription(TableColumn tc) {
+        return tableReferenceObject.getFieldByName(
+                tc.getHeaderValue().toString()).getDescription();
     }
 
     /**
@@ -1679,7 +1670,6 @@ public class Spreadsheet extends JComponent implements
         }
     }
 
-
     /**
      * HeaderListener source partially from http://www.java2s.com/Code/Java/Swing-Components/SortableTableExample.htm, last accessed 09-08-2008
      * Class listens for user interaction with the header. if there's a double click event on a column in the header,
@@ -1709,7 +1699,6 @@ public class Spreadsheet extends JComponent implements
                     int sortCol = header.getTable()
                             .convertColumnIndexToModel(col);
 
-
                     renderer.setSelectedColumn(col);
                     header.repaint();
 
@@ -1721,7 +1710,6 @@ public class Spreadsheet extends JComponent implements
                     isAscent = SpreadsheetColumnRenderer.DOWN == renderer.getState(col);
 
                     // check conversion tool to make sure it's spitting out the right values. -1 IS BEING RETURNED AS A CONVERTED INDEX FOR COL 20 IN GRIFFIN EXAMPLE!!!
-                    log.info("starting sort of " + sortCol);
                     SpreadsheetCellRange affectedRange = new SpreadsheetCellRange(Utils.getArrayOfVals(0, table.getRowCount() - 1), Utils.convertSelectedColumnsToModelIndices(table, Utils.getArrayOfVals(1, table.getColumnCount() - 1)));
                     spreadsheetHistory.add(affectedRange);
                     setRowsToDefaultColor();
@@ -1735,7 +1723,49 @@ public class Spreadsheet extends JComponent implements
                 }
             }
         }
+    }
 
+    public void removeReferences() {
+        setStudyDataEntryEnvironment(null);
+        assayDataEntryEnvironment = null;
+        spreadsheetFunctions.cleanReferences();
+        spreadsheetPopups.setSpreadsheet(null);
+        spreadsheetFunctions = null;
+        copyPasteAdaptor.setSpreadsheet(null);
+        copyPasteAdaptor = null;
+        spreadsheetHistory.setTableModel(null);
+        spreadsheetModel = null;
+
+
+        // first we remove all current cell editors
+        Enumeration<TableColumn> tableColumnEnum = table.getColumnModel().getColumns();
+        while (tableColumnEnum.hasMoreElements()) {
+            TableColumn column = tableColumnEnum.nextElement();
+
+            CellEditor editor = column.getCellEditor();
+            if (editor instanceof OntologyCellEditor) {
+                OntologyCellEditor ontologyCellEditor = (OntologyCellEditor) editor;
+                ontologyCellEditor.cleanupReferences();
+            }
+            editor = null;
+            column.setCellEditor(null);
+        }
+
+        table.getTableHeader().setTable(null);
+        table.getColumnModel().getColumn(0).setCellRenderer(null);
+        table.setModel(new DefaultTableModel());
+        table.removeMouseListener(this);
+        table.getSelectionModel().removeListSelectionListener(this);
+        table.getColumnModel().getSelectionModel().removeListSelectionListener(this);
+        table.getParent().removeAll();
+        table.removeAll();
+        table = null;
+
+        rows.clear();
+        tableReferenceObject.setReferenceData(null);
+
+        getParent().removeAll();
+        removeAll();
     }
 
 }

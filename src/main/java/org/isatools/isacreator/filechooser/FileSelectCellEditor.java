@@ -46,6 +46,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 
 
 /**
@@ -54,7 +55,7 @@ import java.util.EventObject;
  * @author Eamonn Maguire
  */
 public class FileSelectCellEditor extends JTextField implements TableCellEditor {
-    protected transient ArrayList<CellEditorListener> listeners;
+    protected transient List<CellEditorListener> listeners;
     private FileChooserUI fileChooserUI;
     private JTable curTable;
     protected String originalValue;

@@ -45,7 +45,6 @@ import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -333,7 +332,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
                                 }
                             });
                             remoteConnector.start();
-
                         }
 
                     }
@@ -365,7 +363,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         JPanel selectionContainer = new JPanel(new BorderLayout());
         selectionContainer.setBackground(UIHelper.BG_COLOR);
         selectionContainer.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6),
+                UIHelper.GREEN_ROUNDED_BORDER,
                 "selection(s)", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
@@ -636,7 +634,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         JPanel treeContainer = new JPanel(new BorderLayout());
         treeContainer.setBackground(UIHelper.BG_COLOR);
         treeContainer.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6),
+                UIHelper.GREEN_ROUNDED_BORDER,
                 "navigation", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));

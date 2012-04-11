@@ -69,9 +69,7 @@ public class CalendarGUI extends JFrame implements ActionListener {
     @InjectedResource
     private ImageIcon closeIcon, closeIconOver, okIcon, okIconOver;
 
-    private Calendar calendar;
-    private Color stdCol = UIHelper.DARK_GREEN_COLOR;
-    private Font stdFont = UIHelper.VER_10_BOLD;
+    private static Calendar calendar;
     private JComboBox months;
     private JComboBox years;
 
@@ -93,7 +91,7 @@ public class CalendarGUI extends JFrame implements ActionListener {
      * this method is called, no painting is done.
      */
     public void createGUI() {
-        EventQueue.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 instantiateFrame();
             }
@@ -206,8 +204,7 @@ public class CalendarGUI extends JFrame implements ActionListener {
                 day.setEditable(false);
                 day.setEnabled(false);
                 day.setDisabledTextColor(UIHelper.BG_COLOR);
-                day.setFont(stdFont);
-                day.setBackground(stdCol);
+                UIHelper.renderComponent(day, UIHelper.VER_10_BOLD, UIHelper.BG_COLOR, UIHelper.DARK_GREEN_COLOR);
                 day.setBorder(null);
                 dayArray[j][i] = day;
 
@@ -354,7 +351,7 @@ public class CalendarGUI extends JFrame implements ActionListener {
                         dayArray[x][y].setForeground(UIHelper.BG_COLOR);
                     } else {
                         if (!dayArray[x][y].getText().equals("")) {
-                            dayArray[x][y].setBackground(stdCol);
+                            dayArray[x][y].setBackground(UIHelper.DARK_GREEN_COLOR);
                             dayArray[x][y].setForeground(UIHelper.BG_COLOR);
                         } else {
                             dayArray[x][y].setBackground(UIHelper.BG_COLOR);
@@ -384,7 +381,7 @@ public class CalendarGUI extends JFrame implements ActionListener {
                 selectedDay.setBackground(Color.GRAY);
 
             } else {
-                selectedDay.setBackground(stdCol);
+                selectedDay.setBackground(UIHelper.DARK_GREEN_COLOR);
                 selectedDay.setForeground(UIHelper.LIGHT_GREEN_COLOR);
 
             }
@@ -411,7 +408,7 @@ public class CalendarGUI extends JFrame implements ActionListener {
      * @param jc - JComboBox to set up
      */
     private void setupCombo(JComboBox jc) {
-        jc.setFont(stdFont);
+        jc.setFont(UIHelper.VER_10_BOLD);
         jc.setForeground(UIHelper.DARK_GREEN_COLOR);
         jc.setBackground(UIHelper.BG_COLOR);
     }

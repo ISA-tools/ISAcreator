@@ -74,9 +74,9 @@ public class FooterPanel extends JComponent {
         instantiateComponent();
         installListeners();
 
-        this.container.getContentPane().addMouseListener(new MouseAdapter() {
+        getContainer().getContentPane().addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                resizing = container.getCursor().equals(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+                resizing = getContainer().getCursor().equals(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
                 if (!e.isMetaDown()) {
                     point.x = e.getX();
                     point.y = e.getY();
@@ -87,15 +87,16 @@ public class FooterPanel extends JComponent {
 
     private void installListeners() {
 
-        container.getContentPane().addMouseMotionListener(new MouseMotionAdapter() {
+        getContainer().getContentPane().addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 if (resizing) {
-                    container.setSize(container.getWidth() + e.getX() - point.x, container.getHeight() + e.getY() - point.y);
+                    getContainer().setSize(getContainer().getWidth() + e.getX() - point.x,
+                            getContainer().getHeight() + e.getY() - point.y);
                     point.x = e.getX();
                     point.y = e.getY();
                 } else if (!e.isMetaDown()) {
-                    Point p = container.getLocation();
-                    container.setLocation(p.x + e.getX() - point.x,
+                    Point p = getContainer().getLocation();
+                    getContainer().setLocation(p.x + e.getX() - point.x,
                             p.y + e.getY() - point.y);
                 }
             }
@@ -104,19 +105,23 @@ public class FooterPanel extends JComponent {
 
                 Point cursorLocation = MouseInfo.getPointerInfo().getLocation();
                 if (checkIfMouseIsInBounds(cursorLocation)) {
-                    container.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+                    getContainer().setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
                 } else {
-                    container.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    getContainer().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
             }
         });
 
-        container.getContentPane().addMouseListener(new MouseAdapter() {
+        getContainer().getContentPane().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                container.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                getContainer().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         });
+    }
+
+    public JFrame getContainer() {
+        return container;
     }
 
     /**
@@ -128,8 +133,8 @@ public class FooterPanel extends JComponent {
      */
     private boolean checkIfMouseIsInBounds(Point mouseLocation) {
         try {
-            Point containerLocation = container.getLocationOnScreen();
-            Dimension containerSize = container.getSize();
+            Point containerLocation = getContainer().getLocationOnScreen();
+            Dimension containerSize = getContainer().getSize();
             Rectangle bounds = new Rectangle((containerLocation.x + containerSize.width) - mouseTargetArea.width, (containerLocation.y + containerSize.height) - mouseTargetArea.height,
                     mouseTargetArea.width, mouseTargetArea.height);
             return bounds.contains(mouseLocation);
@@ -159,5 +164,10 @@ public class FooterPanel extends JComponent {
                 GridBagConstraints.NONE,
                 new Insets(1, 0, 0, 2),
                 0, 0));
+    }
+
+    public void cleanupReferences() {
+        this.container = null;
+        removeAll();
     }
 }

@@ -137,7 +137,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         listPane.add(filterFieldPane, BorderLayout.SOUTH);
 
         listPane.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), getBorderTitle(),
+                UIHelper.GREEN_ROUNDED_BORDER, getBorderTitle(),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));

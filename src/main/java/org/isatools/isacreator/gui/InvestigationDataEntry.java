@@ -40,7 +40,6 @@ package org.isatools.isacreator.gui;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
@@ -98,7 +97,7 @@ public class InvestigationDataEntry extends DataEntryForm {
         invDescPanel.setLayout(new BoxLayout(invDescPanel, BoxLayout.PAGE_AXIS));
         UIHelper.renderComponent(invDescPanel, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
         invDescPanel.setBorder(new TitledBorder(
-                new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), "investigation description",
+                UIHelper.GREEN_ROUNDED_BORDER, "investigation description",
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
@@ -109,8 +108,8 @@ public class InvestigationDataEntry extends DataEntryForm {
         fields.add(Box.createVerticalStrut(5));
 
         if (investigation.getReferenceObject() == null) {
-            TableReferenceObject tro = getISAcreatorEnvironment().selectTROForUserSelection(MappingObject.INVESTIGATION);
-
+            TableReferenceObject tro =
+                    ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.INVESTIGATION);
             DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
             referenceObject.setFieldDefinition(tro.getTableFields().getFields());
 
@@ -120,15 +119,11 @@ public class InvestigationDataEntry extends DataEntryForm {
         addFieldsToPanel(invDescPanel, InvestigationFileSection.INVESTIGATION_SECTION, investigation.getFieldValues(), investigation.getReferenceObject());
 
         fields.add(invDescPanel);
-
         fields.add(Box.createVerticalStrut(20));
-
         fields.add(createInvestigationPublicationSubForm());
         fields.add(Box.createVerticalStrut(20));
-
         fields.add(createInvestigationContactsSubForm());
         fields.add(Box.createVerticalStrut(20));
-
         fields.add(Box.createGlue());
 
         JPanel northPanel = new JPanel(new BorderLayout());
@@ -170,9 +165,7 @@ public class InvestigationDataEntry extends DataEntryForm {
             }
         }
 
-        int numColsToAdd = (investigation.getContacts().size() == 0) ? 4
-                : investigation.getContacts()
-                .size();
+        int numColsToAdd = (investigation.getContacts().size() == 0) ? 4 : investigation.getContacts().size();
 
         contactsSubform = new ContactSubForm(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), FieldTypes.CONTACT,
                 contactFields, numColsToAdd, 300, 195, this);
@@ -209,28 +202,23 @@ public class InvestigationDataEntry extends DataEntryForm {
 
     public String toString() {
         update();
-
         StringBuilder output = new StringBuilder();
         output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
-
         Set<String> ontologyFields = IOUtils.filterFields(investigation.getFieldValues().keySet(), IOUtils.ACCESSION, IOUtils.SOURCE_REF);
-
         Map<Integer, Map<String, String>> ontologyTerms = IOUtils.getOntologyTerms(investigation.getFieldValues().keySet());
         // now, do ontology processing
         for (String fieldName : ontologyFields) {
-
             int fieldHashCode = fieldName.substring(0, fieldName.toLowerCase().indexOf("term")).trim().hashCode();
-
-
             if (ontologyTerms.containsKey(fieldHashCode)) {
-
                 Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
-
                 Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, investigation.getFieldValues());
 
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM), processedOntologyField.get(processedOntologyField.get(IOUtils.TERM)));
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION), processedOntologyField.get(processedOntologyField.get(IOUtils.ACCESSION)));
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF), processedOntologyField.get(processedOntologyField.get(IOUtils.SOURCE_REF)));
+                investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM),
+                        processedOntologyField.get(processedOntologyField.get(IOUtils.TERM)));
+                investigation.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION),
+                        processedOntologyField.get(processedOntologyField.get(IOUtils.ACCESSION)));
+                investigation.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF),
+                        processedOntologyField.get(processedOntologyField.get(IOUtils.SOURCE_REF)));
             }
         }
 
@@ -243,7 +231,8 @@ public class InvestigationDataEntry extends DataEntryForm {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
 
-            output.append(tmpFieldName).append("\t\"").append((StringProcessing.cleanUpString(investigation.getFieldValues().get(tmpFieldName)))).append("\"\n");
+            output.append(tmpFieldName).append("\t\"").append((StringProcessing.cleanUpString(
+                    investigation.getFieldValues().get(tmpFieldName)))).append("\"\n");
         }
 
         output.append(publicationsSubForm.toString());
@@ -267,32 +256,26 @@ public class InvestigationDataEntry extends DataEntryForm {
     }
 
     public void update() {
-
         for (String fieldName : fieldDefinitions.keySet()) {
-
             String tmpFieldName = fieldName;
-
             if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
-
             investigation.getFieldValues().put(tmpFieldName, fieldDefinitions.get(fieldName).getText());
         }
-
         publicationsSubForm.update();
         contactsSubform.update();
     }
 
     public void removeReferences() {
 
-        publicationsSubForm.setDataEntryEnvironment(null);
-        publicationsSubForm.setParent(null);
+        publicationsSubForm.cleanupReferences();
         publicationsSubForm = null;
 
-        contactsSubform.setDataEntryEnvironment(null);
-        contactsSubform.setParent(null);
+        contactsSubform.cleanupReferences();
         contactsSubform = null;
 
+        getDataEntryEnvironment().removeAll();
         setDataEntryEnvironment(null);
 
         for (String s : investigation.getStudies().keySet()) {

@@ -77,7 +77,7 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
      * elements in the options panel of the subform.
      */
     public void createCustomOptions() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             final JLabel selectFromHistory = new JLabel(
                     "select from previous " + fieldType + "s...",
                     selectFromHistoryIcon,
@@ -129,10 +129,10 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                                                     .indexOf(":")));
                                                         }
 
-                                                        if (parent.getStudy()
-                                                                .addFactor((Factor) f) && !(parent.getStudy()
+                                                        if (dataEntryForm.getStudy()
+                                                                .addFactor((Factor) f) && !(dataEntryForm.getStudy()
                                                                 .getFactors()
-                                                                .size() < (dtm.getColumnCount() -
+                                                                .size() < (defaultTableModel.getColumnCount() -
                                                                 1))) {
                                                             addColumn();
                                                             updateTables();
@@ -162,10 +162,10 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                                                     .indexOf(":")));
                                                         }
 
-                                                        if (parent.getStudy()
-                                                                .addProtocol((Protocol) p) && !(parent.getStudy()
+                                                        if (dataEntryForm.getStudy()
+                                                                .addProtocol((Protocol) p) && !(dataEntryForm.getStudy()
                                                                 .getProtocols()
-                                                                .size() < (dtm.getColumnCount() -
+                                                                .size() < (defaultTableModel.getColumnCount() -
                                                                 1))) {
                                                             addColumn();
                                                             updateTables();
@@ -187,14 +187,14 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                         // add contacts to study
                                                         List<Contact> contacts;
                                                         boolean added;
-                                                        if (parent instanceof StudyDataEntry) {
-                                                            added = parent.getStudy().addContact((StudyContact) c);
-                                                            contacts = parent.getStudy().getContacts();
+                                                        if (dataEntryForm instanceof StudyDataEntry) {
+                                                            added = dataEntryForm.getStudy().addContact((StudyContact) c);
+                                                            contacts = dataEntryForm.getStudy().getContacts();
 
                                                         } else {
                                                             //parent is instance of InvestigationDataEntry
-                                                            added = parent.getInvestigation().addContact((Contact) c);
-                                                            contacts = parent.getInvestigation().getContacts();
+                                                            added = dataEntryForm.getInvestigation().addContact((Contact) c);
+                                                            contacts = dataEntryForm.getInvestigation().getContacts();
                                                         }
 
                                                         if (added) {
@@ -208,7 +208,7 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                                                                                         .indexOf(":")));
                                                             }
 
-                                                            if (!(contacts.size() < (dtm.getColumnCount() - 1))) {
+                                                            if (!(contacts.size() < (defaultTableModel.getColumnCount() - 1))) {
                                                                 addColumn();
                                                                 updateTables();
                                                             }
@@ -262,8 +262,6 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
                         }
 
                         selectPrevious.createGUI(proposedX, proposedY);
-
-
                     }
                 }
             });

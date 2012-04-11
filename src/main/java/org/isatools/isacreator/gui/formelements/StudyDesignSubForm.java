@@ -61,13 +61,13 @@ public class StudyDesignSubForm extends SubForm {
     }
 
     public void reformPreviousContent() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             reformItems();
         }
     }
 
     public void reformItems() {
-        List<StudyDesign> designs = parent.getDesigns();
+        List<StudyDesign> designs = dataEntryForm.getDesigns();
 
         for (int record = 1; record < designs.size() + 1; record++) {
 
@@ -76,7 +76,7 @@ public class StudyDesignSubForm extends SubForm {
             int contactFieldIndex = 0;
             for (SubFormField field : fields) {
                 String value = fieldList.get(field.getFieldName());
-                dtm.setValueAt(value, contactFieldIndex, record);
+                defaultTableModel.setValueAt(value, contactFieldIndex, record);
                 contactFieldIndex++;
             }
         }
@@ -87,7 +87,7 @@ public class StudyDesignSubForm extends SubForm {
     }
 
     public void updateItems() {
-        int cols = dtm.getColumnCount();
+        int cols = defaultTableModel.getColumnCount();
 
         List<StudyDesign> newStudyDesigns = new ArrayList<StudyDesign>();
 
@@ -106,11 +106,11 @@ public class StudyDesignSubForm extends SubForm {
             }
         }
 
-        parent.getStudy().setStudyDesigns(newStudyDesigns);
+        dataEntryForm.getStudy().setStudyDesigns(newStudyDesigns);
     }
 
     public void update() {
-        if (parent != null) {
+        if (dataEntryForm != null) {
             updateItems();
         }
     }

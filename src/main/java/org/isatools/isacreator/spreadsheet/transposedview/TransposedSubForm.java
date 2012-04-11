@@ -38,7 +38,6 @@
 package org.isatools.isacreator.spreadsheet.transposedview;
 
 import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.gui.formelements.SubForm;
 import org.isatools.isacreator.gui.formelements.SubFormField;
@@ -82,7 +81,7 @@ public class TransposedSubForm extends SubForm {
 
             for (int col = 0; col < data[row].length; col++) {
                 // add 1 to the row number since the table has the first row as the field names.
-                dtm.setValueAt(data[row][col], col, row + 1);
+                defaultTableModel.setValueAt(data[row][col], col, row + 1);
             }
         }
     }

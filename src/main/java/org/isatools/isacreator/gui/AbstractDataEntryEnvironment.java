@@ -51,8 +51,7 @@ import java.awt.event.MouseListener;
 public abstract class AbstractDataEntryEnvironment extends DataEntryForm {
 
     protected Component currentPage = null;
-    public static JLabel backButton;
-    public static JLabel nextButton;
+    public JLabel backButton, nextButton;
 
     private JLabel infoLabel;
 

@@ -70,7 +70,7 @@ public class StudyUtils {
      * @return - Map<String, Map<String, String>> -> Sample Name - other Key, Value pairs describing the sample
      */
     public static Map<String, SampleInformation> getStudySampleInformation(final Study study) {
-        final Spreadsheet studySampleSpreadsheet = study.getStudySample().getSpreadsheetUI().getTable();
+        final Spreadsheet studySampleSpreadsheet = study.getStudySample().getSpreadsheetUI().getSpreadsheet();
 
         if (studySampleInformation.get(study.getStudyId()) == null || studySampleFileModifiedFlag.get(study.getStudyId())) {
 

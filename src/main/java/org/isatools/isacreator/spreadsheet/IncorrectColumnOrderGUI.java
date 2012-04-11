@@ -93,7 +93,7 @@ public class IncorrectColumnOrderGUI extends JFrame {
         add(titlePanel, BorderLayout.NORTH);
         titlePanel.installListeners();
 
-        ((JComponent) getContentPane()).setBorder(new RoundedBorder(UIHelper.GREY_COLOR, 7));
+        ((JComponent) getContentPane()).setBorder(UIHelper.GREY_ROUNDED_BORDER);
 
         pack();
         setVisible(true);

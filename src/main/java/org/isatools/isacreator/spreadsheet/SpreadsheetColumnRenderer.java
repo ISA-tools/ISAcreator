@@ -118,7 +118,6 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
         }
 
         text.setFont(isSelected ? UIHelper.VER_11_BOLD : UIHelper.VER_11_PLAIN);
-
         text.setText(value.toString());
 
         return this;

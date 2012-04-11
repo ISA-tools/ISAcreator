@@ -50,8 +50,6 @@ import org.isatools.isacreator.settings.SettingsUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
 /**
@@ -101,7 +99,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         createProfileGUI = new CreateProfile(this);
         importISA = new ImportFilesMenu(this);
         importConfiguration = new ImportConfiguration(this);
-        mergeStudies = new MergeFilesUI(this);
+//        mergeStudies = new MergeFilesUI(this);
 
         if (isacreator.getMode() == Mode.NORMAL_MODE)
             settings = new SettingsUtil(this, ISAcreator.getProgramSettings());
@@ -158,18 +156,18 @@ public class ISAcreatorMenu extends JLayeredPane {
 
 
     public void startAnimation() {
-        final Timer[] timer = new Timer[1];
-        timer[0] = new Timer(125, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (isShowing()) {
-                    generic.animate();
-                    generic.repaint();
-                } else {
-                    timer[0].stop();
-                }
-            }
-        });
-        timer[0].start();
+//        final Timer[] timer = new Timer[1];
+//        timer[0] = new Timer(125, new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//                if (isShowing()) {
+//                    generic.animate();
+//                    generic.repaint();
+//                } else {
+//                    timer[0].stop();
+//                }
+//            }
+//        });
+//        timer[0].start();
     }
 
     public void changeView(Component panel) {
@@ -282,6 +280,9 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     public MergeFilesUI getMergeStudiesGUI() {
+        if (mergeStudies == null) {
+            mergeStudies = new MergeFilesUI(this);
+        }
         return mergeStudies;
     }
 

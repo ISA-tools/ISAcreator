@@ -45,6 +45,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 /**
  * @author Eamonn Maguire
@@ -65,6 +66,7 @@ public class HUDTitleBar extends JComponent {
     private Image closeOver = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-over.png")).getImage();
     private Image closePressed = new ImageIcon(getClass().getResource("/images/titlepanel/title-close-pressed.png")).getImage();
     private boolean dispose;
+    private MouseInputAdapter handler;
 
     public HUDTitleBar(Image activeImage, Image inactiveImage) {
         this(activeImage, inactiveImage, true);
@@ -80,12 +82,22 @@ public class HUDTitleBar extends JComponent {
     }
 
     public void installListeners() {
-        MouseInputAdapter handler = new DraggablePaneMouseInputHandler(this);
+        handler = new DraggablePaneMouseInputHandler(this);
         Window window = SwingUtilities.getWindowAncestor(this);
         window.addMouseListener(handler);
         window.addMouseMotionListener(handler);
 
         window.addWindowListener(new WindowHandler());
+    }
+
+    public void removeListeners() {
+        Window window = SwingUtilities.getWindowAncestor(this);
+        window.removeMouseListener(handler);
+        window.removeMouseMotionListener(handler);
+
+        for (WindowListener windowListener : window.getWindowListeners()) {
+            window.removeWindowListener(windowListener);
+        }
     }
 
     private void createButtons() {

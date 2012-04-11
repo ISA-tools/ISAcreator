@@ -54,8 +54,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by the ISA team
@@ -104,76 +106,81 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     }
 
     private void initiateOntologyVisualization() {
-        browser.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        tree.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         // instead of visualising just one ontology, we need to visualise all that have been selected to browse on, if they have branches
         // specified...or maybe should allow to browse the whole ontology as well.
 
-        for (String ontology : ontologies.keySet()) {
-            System.out.println("Adding " + ontology + " to tree");
+        try {
+            for (String ontology : ontologies.keySet()) {
+                System.out.println("Adding " + ontology + " to tree");
 
-            RecommendedOntology recommendedOntology = ontologies.get(ontology);
+                RecommendedOntology recommendedOntology = ontologies.get(ontology);
 
-            System.out.println("initialising ontology visualisation for " + recommendedOntology.getOntology().getOntologyDisplayLabel());
+                System.out.println("initialising ontology visualisation for " + recommendedOntology.getOntology().getOntologyDisplayLabel());
 
-            System.out.println("Ontology version is: " + recommendedOntology.getOntology().getOntologyVersion());
-            // if ontology has no branch specified, query the whole ontology.
-            Map<String, OntologyTerm> rootTerms;
+                System.out.println("Ontology version is: " + recommendedOntology.getOntology().getOntologyVersion());
+                // if ontology has no branch specified, query the whole ontology.
+                Map<String, OntologyTerm> rootTerms;
 
-            String nodeLabel = recommendedOntology.getOntology().getOntologyDisplayLabel();
+                String nodeLabel = recommendedOntology.getOntology().getOntologyDisplayLabel();
 
-            OntologyService service = getCorrectOntologyService(recommendedOntology.getOntology());
+                OntologyService service = getCorrectOntologyService(recommendedOntology.getOntology());
 
 
-            if (recommendedOntology.getBranchToSearchUnder() != null) {
+                if (recommendedOntology.getBranchToSearchUnder() != null) {
 
-                nodeLabel += " under " + recommendedOntology.getBranchToSearchUnder().getBranchName();
+                    nodeLabel += " under " + recommendedOntology.getBranchToSearchUnder().getBranchName();
 
-                String branchIdentifier = recommendedOntology.getBranchToSearchUnder().getBranchIdentifier();
+                    String branchIdentifier = recommendedOntology.getBranchToSearchUnder().getBranchIdentifier();
 
-                if (StringProcessing.isURL(branchIdentifier)) {
-                    branchIdentifier = OntologyUtils.getModifiedBranchIdentifier(branchIdentifier, "#");
-                }
+                    if (StringProcessing.isURL(branchIdentifier)) {
+                        branchIdentifier = OntologyUtils.getModifiedBranchIdentifier(branchIdentifier, "#");
+                    }
 
-                System.out.println("Going to search for " + branchIdentifier + " in " + recommendedOntology.getOntology().getOntologyDisplayLabel());
+                    System.out.println("Going to search for " + branchIdentifier + " in " + recommendedOntology.getOntology().getOntologyDisplayLabel());
 
-                rootTerms = service.getTermChildren(branchIdentifier, getCorrectQueryString(service, recommendedOntology.getOntology()));
+                    rootTerms = service.getTermChildren(branchIdentifier, getCorrectQueryString(service, recommendedOntology.getOntology()));
 
-            } else {
-                rootTerms = service.getOntologyRoots(
-                        getCorrectQueryString(service, recommendedOntology.getOntology()));
-
-            }
-
-            DefaultMutableTreeNode ontologyNode = new DefaultMutableTreeNode(nodeLabel);
-
-            rootNode.add(ontologyNode);
-
-            boolean addedTerms = false;
-            // update the tree
-            for (String termId : rootTerms.keySet()) {
-                if (termId != null && !termId.equalsIgnoreCase("")) {
-                    addedTerms = true;
-                    addTermToTree(ontologyNode, rootTerms.get(termId), recommendedOntology.getOntology());
-                }
-            }
-
-            if (recommendedOntology.getOntology().getOntologyAbbreviation().equalsIgnoreCase("newt")) {
-                addInformationToTree(ontologyNode, "NEWT cannot be loaded from the Ontology lookup service");
-            }
-
-            if (!addedTerms) {
-                if (service instanceof BioPortalClient) {
-                    addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " (version "
-                            + recommendedOntology.getOntology().getOntologyVersion() + ") from BioPortal!");
                 } else {
-                    addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " from OLS");
+                    rootTerms = service.getOntologyRoots(
+                            getCorrectQueryString(service, recommendedOntology.getOntology()));
+
+                }
+
+                DefaultMutableTreeNode ontologyNode = new DefaultMutableTreeNode(nodeLabel);
+
+                rootNode.add(ontologyNode);
+
+                boolean addedTerms = false;
+                // update the tree
+                for (String termId : rootTerms.keySet()) {
+                    if (termId != null && !termId.equalsIgnoreCase("")) {
+                        addedTerms = true;
+                        addTermToTree(ontologyNode, rootTerms.get(termId), recommendedOntology.getOntology());
+                    }
+                }
+
+                if (recommendedOntology.getOntology().getOntologyAbbreviation().equalsIgnoreCase("newt")) {
+                    addInformationToTree(ontologyNode, "NEWT cannot be loaded from the Ontology lookup service");
+                }
+
+                if (!addedTerms) {
+                    if (service instanceof BioPortalClient) {
+                        addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " (version "
+                                + recommendedOntology.getOntology().getOntologyVersion() + ") from BioPortal!");
+                    } else {
+                        addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " from OLS");
+                    }
                 }
             }
+            updateTree();
+        } catch (Exception e) {
+            addInformationToTree(rootNode, "No connection available...!");
+            updateTree();
+        } finally {
+            browser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
-
-        updateTree();
-        browser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     private OntologyService getCorrectOntologyService(Ontology ontology) {
@@ -381,5 +388,9 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
                 observers.remove(observer);
             }
         }
+    }
+
+    public void setBrowser(Container browser) {
+        this.browser = browser;
     }
 }

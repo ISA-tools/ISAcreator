@@ -23,8 +23,8 @@ public class ProtocolSelectorCellEditor extends DefaultAutoFilterCellEditor<Prot
 
     @Override
     protected void updateContent() {
-        if (StudyUtils.isModified(study.getStudyId())) {
-            selector.updateContent(study.getProtocols());
+        if (StudyUtils.isModified(getStudyFromSpreadsheet().getStudyId())) {
+            selector.updateContent(getStudyFromSpreadsheet().getProtocols());
         }
     }
 
@@ -35,7 +35,7 @@ public class ProtocolSelectorCellEditor extends DefaultAutoFilterCellEditor<Prot
 
     public void instantiateSelectorIfRequired() {
         if (selector == null) {
-            selector = new AutoCompleteUI<Protocol>(this, study.getProtocols(), new ProtocolSelectorListCellRenderer());
+            selector = new AutoCompleteUI<Protocol>(this, getStudyFromSpreadsheet().getProtocols(), new ProtocolSelectorListCellRenderer());
             selector.createGUI();
             selector.setLocation(calculateDisplayLocation(currentTable, currentRow, currentColumn));
         }
