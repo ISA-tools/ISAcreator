@@ -257,10 +257,7 @@ public class IncomingFileBrowser extends JFrame {
                     g2d.fillRoundRect(x, y + 4, tileWidth, height - 7, 3, 2);
                 }
                 x += tileWidth + 1;
-
-
             }
-
             graphics.dispose();
         }
     }
@@ -405,7 +402,6 @@ public class IncomingFileBrowser extends JFrame {
             rect.setLocation(rect.x - p.x, rect.y - p.y);
             scrollPane.scrollRectToVisible(rect);
         }
-
 
         public void valueChanged(ListSelectionEvent listSelectionEvent) {
             updateLabel();
