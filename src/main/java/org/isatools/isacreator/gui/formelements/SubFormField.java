@@ -66,6 +66,7 @@ public class SubFormField implements Serializable {
     private Map<String, RecommendedOntology> recommendedOntologyType = null;
     private String[] listValues;
     private int dataType;
+    private boolean required;
 
 
     public SubFormField(String fieldName, int dataType) {
@@ -87,6 +88,9 @@ public class SubFormField implements Serializable {
         this.recommendedOntologyType = recommendedOntologyType;
     }
 
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
 
     public int getDataType() {
         return dataType;

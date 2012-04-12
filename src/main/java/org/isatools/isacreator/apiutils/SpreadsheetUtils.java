@@ -304,4 +304,10 @@ public class SpreadsheetUtils {
             }
         }
     }
+
+    public static boolean isFactorParameterOrCharacteristic(String columnName) {
+        return (columnName.contains("Characteristics") ||
+                columnName.contains("Factor") ||
+                columnName.equals("Parameter Value"));
+    }
 }

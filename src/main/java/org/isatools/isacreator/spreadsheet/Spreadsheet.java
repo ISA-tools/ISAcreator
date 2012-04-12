@@ -41,6 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputError;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.UIHelper;
@@ -87,8 +88,6 @@ import java.util.List;
  * Spreadsheet class.
  * Provides the functionality of a spreadsheet including the JTable, Listeners, Addition of Cell Editors, and so forth. Spreadsheet
  * is created automatically from Table Reference Objects created by the ISAcreator configuration tool!
- * <p/>
- * // todo clean up and separate functionality into separate classes.
  *
  * @author Eamonn Maguire
  */
@@ -110,7 +109,6 @@ public class Spreadsheet extends JComponent implements
     protected static final int DELETING_COLUMN = 3;
     protected static final int DELETING_ROW = 4;
     protected static final int INITIAL_ROWS = 50;
-
 
     static {
         dateEditor = new DateCellEditor();
@@ -472,17 +470,15 @@ public class Spreadsheet extends JComponent implements
 
         List<ArchiveOutputError> archiveOutputErrors = new ArrayList<ArchiveOutputError>();
 
+        boolean lastTermRequired = false;
         while (columns.hasMoreElements()) {
             TableColumn tc = columns.nextElement();
             int columnViewIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
-            if (tableReferenceObject.isRequired(tc.getHeaderValue().toString())) {
+            if (tableReferenceObject.isRequired(tc.getHeaderValue().toString()) || (tc.getHeaderValue().toString().equals("Unit") && lastTermRequired)) {
+                lastTermRequired = SpreadsheetUtils.isFactorParameterOrCharacteristic(tc.getHeaderValue().toString());
                 for (int row = 0; row < spreadsheetModel.getRowCount(); row++) {
-
-
                     Object cellObj = table.getValueAt(row, columnViewIndex);
-
                     String value = (cellObj == null) ? "" : cellObj.toString().trim();
-
                     if (value.equals("")) {
                         // a required value has not been filled! therefore report the index of the row and column as well as the calling]
                         // location and message!
@@ -1315,8 +1311,7 @@ public class Spreadsheet extends JComponent implements
      * @param l The listener to add
      */
     public void addUndoableEditListener
-    (UndoableEditListener
-             l) {
+    (UndoableEditListener l) {
         spreadsheetHistory.addUndoableEditListener(l);
     }
 
@@ -1407,7 +1402,6 @@ public class Spreadsheet extends JComponent implements
         };
 
         table.getActionMap().put(im.get(tab), newTabAction);
-
         TableColumnModel model = table.getColumnModel();
 
         String previousColumnName = null;
@@ -1423,17 +1417,33 @@ public class Spreadsheet extends JComponent implements
             } else {
                 model.getColumn(columnIndex).setHeaderRenderer(new RowNumberCellRenderer());
             }
-
-
         }
 
+        renderRequiredFields();
+
         JTableHeader header = table.getTableHeader();
-
         header.setBackground(UIHelper.BG_COLOR);
-
         header.addMouseListener(new HeaderListener(header, columnRenderer));
 
         table.addNotify();
+    }
+
+    private void renderRequiredFields() {
+        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
+
+        boolean lastTermRequired = false;
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+            int columnViewIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
+            if (tableReferenceObject.isRequired(tc.getHeaderValue().toString())) {
+                if (tc.getHeaderValue().toString().equals("Unit") && lastTermRequired) {
+                    columnRenderer.setIsRequired(columnViewIndex);
+                } else {
+                    columnRenderer.setIsRequired(columnViewIndex);
+                    lastTermRequired = SpreadsheetUtils.isFactorParameterOrCharacteristic(tc.getHeaderValue().toString());
+                }
+            }
+        }
     }
 
     private String getFieldDescription(TableColumn tc) {
@@ -1522,7 +1532,6 @@ public class Spreadsheet extends JComponent implements
         });
     }
 
-
     /**
      * Displays the Transposed Spreadsheet UI
      */
@@ -1554,15 +1563,11 @@ public class Spreadsheet extends JComponent implements
         });
     }
 
-
     public void columnAdded(TableColumnModelEvent event) {
-
-
         undoManager.discardAllEdits();
     }
 
     public void columnMarginChanged(ChangeEvent event) {
-
     }
 
     public void columnMoved(TableColumnModelEvent event) {
@@ -1576,7 +1581,6 @@ public class Spreadsheet extends JComponent implements
     }
 
     public void columnSelectionChanged(ListSelectionEvent event) {
-
     }
 
     /**

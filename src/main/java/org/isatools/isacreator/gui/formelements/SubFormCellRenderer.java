@@ -43,7 +43,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * SubFormCellRenderer
@@ -60,13 +62,11 @@ public class SubFormCellRenderer extends DefaultTableCellRenderer {
     private Color defaultFontColor;
     private Color bgColor;
 
-
     /**
      * Creates a SharpCellRenderer.
      */
     public SubFormCellRenderer(Font defaultFont, Color defaultFontColor, Color bgColor) {
         this(defaultFont, defaultFontColor, bgColor, new HashMap<Integer, Color>());
-
     }
 
     public SubFormCellRenderer(Font defaultFont, Color defaultFontColor, Color bgColor, Map<Integer, Color> columnColors) {
@@ -98,7 +98,6 @@ public class SubFormCellRenderer extends DefaultTableCellRenderer {
 
         setFont(defaultFont);
         setText(value == null ? "" : value.toString());
-
         return this;
     }
 }

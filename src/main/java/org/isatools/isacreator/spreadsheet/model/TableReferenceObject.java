@@ -586,6 +586,13 @@ public class TableReferenceObject implements Serializable {
                 fieldLookup.get(colName).isRequired();
     }
 
+    public boolean isRequired(int columnIndex) {
+        if (fieldIndexLookup.containsKey(columnIndex)) {
+            return fieldIndexLookup.get(columnIndex).isRequired();
+        }
+        return false;
+    }
+
     public void setPreDefinedHeaders(Vector<String> preDefinedHeaders) {
         this.preDefinedHeaders = preDefinedHeaders;
     }

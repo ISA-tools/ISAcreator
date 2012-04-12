@@ -162,12 +162,10 @@ public class IncomingFileBrowser extends JFrame {
 
         filterableList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-//                String column = propertyChangeEvent.getNewValue().toString();
                 ColumnObject column = (ColumnObject) propertyChangeEvent.getNewValue();
                 st.scrollToColumnIndex(column.getColumnNumber());
             }
         });
-
         pack();
     }
 
@@ -299,7 +297,6 @@ public class IncomingFileBrowser extends JFrame {
             table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             table.getTableHeader().setReorderingAllowed(false);
             table.getColumnModel().getSelectionModel().addListSelectionListener(this);
-
             table.setToolTipText("<html><strong>summary of incoming table</strong>" +
                     "<p>here we only show the columns which appear within the incoming file as well as</p>" +
                     "<p>the first 4 rows of data in the table...</p></html>");
@@ -315,7 +312,6 @@ public class IncomingFileBrowser extends JFrame {
             } catch (ClassNotFoundException e) {
                 // ignore
             }
-
 
             tableScroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             tableScroller.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 7), "select column directly from table",
@@ -364,18 +360,15 @@ public class IncomingFileBrowser extends JFrame {
                     UIHelper.GREY_COLOR));
 
             infoPanel.setVisible(false);
-
             add(infoPanel, BorderLayout.SOUTH);
         }
 
         public void updateLabel() {
-
             if (table.getSelectedColumn() != -1) {
-                infoLabel.setText("<html>" +
-                        "<body>" +
-                        "you have selected column with name <font color=\"#8DC63F\"><strong>" + table.getColumnName(table.getSelectedColumn()) + "</strong></font>" +
-                        "</body>" +
-                        "</html>");
+                infoLabel.setText("<html>" + "<body>" +
+                        "you have selected column with name <font color=\"#8DC63F\"><strong>"
+                        + table.getColumnName(table.getSelectedColumn()) + "</strong></font>" +
+                        "</body>" + "</html>");
                 infoPanel.setVisible(true);
             } else {
                 infoLabel.setText("");
@@ -384,7 +377,6 @@ public class IncomingFileBrowser extends JFrame {
         }
 
         public void scrollToColumnLocation(String colName) {
-
             for (ColumnObject co : columns) {
                 if (colName.equals(co.getColumnName())) {
                     int colidx = co.getColumnNumber();

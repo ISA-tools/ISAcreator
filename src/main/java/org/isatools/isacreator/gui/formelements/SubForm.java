@@ -94,7 +94,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     private static final SubFormCellRenderer DEFAULT_LOCKED_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, new Color(141, 198, 63, 40));
     private static final SubFormCellRenderer DEFAULT_SCROLL_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, null);
 
-
     @InjectedResource
     protected ImageIcon ontologyLookupHelp, textEditHelp, confirmRemoveColumn, addRecordIcon, addRecordIconOver,
             removeIcon, removeIconOver, selectFromHistoryIcon, selectFromHistoryIconOver, searchIcon, searchIconOver;
@@ -1082,8 +1081,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                     rendererToUse = DEFAULT_LOCKED_TABLE_RENDERER;
                 }
             }
-            table.setDefaultRenderer(Class.forName("java.lang.Object"),
-                    rendererToUse);
+            table.setDefaultRenderer(Class.forName("java.lang.Object"), rendererToUse);
         } catch (ClassNotFoundException e) {
             log.error("Problem occurred when changing TableRenderer : " + e.getMessage());
         }

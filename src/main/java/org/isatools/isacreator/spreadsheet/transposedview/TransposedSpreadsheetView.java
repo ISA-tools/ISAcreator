@@ -74,13 +74,11 @@ public class TransposedSpreadsheetView extends JDialog {
             highlightOnIcon, highlightOnOver, highlightOffIcon, highlightOffOver, goToRecord, goToRecordOver, go, goOver;
 
     private TransposedSpreadsheetModel transposedSpreadsheetModel;
-    private int width;
-    private int height;
     private TransposedSubForm transposedSpreadsheetSubform;
     private ConfirmationDialog confirmChoice;
-
+    private int width;
+    private int height;
     private JLabel information;
-
     private boolean isHighlighted = false;
 
 
@@ -246,8 +244,6 @@ public class TransposedSpreadsheetView extends JDialog {
     private Container createTransposedView() {
 
         Box subformContainer = Box.createVerticalBox();
-
-//        DataEntryEnvironment dataEntryEnvironment = transposedSpreadsheetModel.getSpreadsheet().getDataEntryEnv();
 
         transposedSpreadsheetSubform = new TransposedSubForm("spreadsheet data", FieldTypes.ROW, transposedSpreadsheetModel.getFields(),
                 transposedSpreadsheetModel.getNumberOfRecords(), width, height, transposedSpreadsheetModel.getData(), null);

@@ -69,12 +69,10 @@ public class SpreadsheetConverter {
             materialTypeColor, sampleNameColor, defaultColor;
 
     private Spreadsheet sheet;
-
     private Map<Integer, Color> rowToColour;
 
     public SpreadsheetConverter(Spreadsheet sheet) {
         ResourceInjector.get("spreadsheet-package.style").inject(this);
-
         this.sheet = sheet;
         rowToColour = new HashMap<Integer, Color>();
     }
@@ -85,38 +83,36 @@ public class SpreadsheetConverter {
         TableDataStructureCreator tableModel = new TableDataStructureCreator(sheet);
 
         model.setData(tableModel.getDataMatrix());
-
         model.setFields(generateFieldCharacteristics());
-
         model.setRowToColour(rowToColour);
-
         return model;
     }
 
     private List<SubFormField> generateFieldCharacteristics() {
         int columnCount = sheet.getTable().getColumnCount();
-
         List<SubFormField> fields = new ArrayList<SubFormField>();
 
         for (int column = 1; column < columnCount; column++) {
             String colName = sheet.getTable().getColumnName(column);
-
             rowToColour.put(column - 1, getColorForValue(colName));
 
             DataTypes dt = sheet.getTableReferenceObject().getColumnType(colName);
             boolean acceptsFiles = sheet.getTableReferenceObject().acceptsFileLocations(colName);
+            boolean required = sheet.getTableReferenceObject().isRequired(colName);
 
             int fieldType = resolveDataTypeForSubform(dt, acceptsFiles);
-
             if (fieldType == SubFormField.SINGLE_ONTOLOGY_SELECT || fieldType == SubFormField.MULTIPLE_ONTOLOGY_SELECT) {
                 Map<String, RecommendedOntology> recommendedOntologyMap = sheet.getTableReferenceObject().getRecommendedSource(colName);
                 if (recommendedOntologyMap != null) {
-                    fields.add(new SubFormField(colName, fieldType, recommendedOntologyMap));
+                    SubFormField field = new SubFormField(colName, fieldType, recommendedOntologyMap);
+                    field.setRequired(required);
+                    fields.add(field);
                 } else {
-                    fields.add(new SubFormField(colName, fieldType));
+                    SubFormField field = new SubFormField(colName, fieldType);
+                    field.setRequired(required);
+                    fields.add(field);
                 }
             } else {
-
                 String[] list = sheet.getTableReferenceObject().getListItems(colName);
                 if (sheet.getStudyDataEntryEnvironment() != null) {
                     if (colName.startsWith("Protocol")) {
@@ -124,13 +120,16 @@ public class SpreadsheetConverter {
                     }
                 }
                 if (list != null) {
-                    fields.add(new SubFormField(colName, fieldType, list));
+                    SubFormField field = new SubFormField(colName, fieldType, list);
+                    field.setRequired(required);
+                    fields.add(field);
                 } else {
-                    fields.add(new SubFormField(colName, fieldType));
+                    SubFormField field = new SubFormField(colName, fieldType);
+                    field.setRequired(required);
+                    fields.add(field);
                 }
             }
         }
-
         return fields;
     }
 

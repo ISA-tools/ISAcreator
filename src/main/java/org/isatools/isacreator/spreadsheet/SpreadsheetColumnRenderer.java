@@ -44,8 +44,10 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * SpreadsheetColumnRenderer
@@ -62,6 +64,7 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
     public static final int UP = 2;
 
     private Map<Integer, Integer> state;
+    private Set<Integer> isRequired;
 
     private JLabel text;
     private JLabel sortIndicator;
@@ -73,6 +76,7 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
         setBackground(UIHelper.BG_COLOR);
 
         state = new Hashtable<Integer, Integer>();
+        isRequired = new HashSet<Integer>();
 
         instantiatePanel();
     }
@@ -83,6 +87,10 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
         sortIndicator = new JLabel(normal);
         add(UIHelper.wrapComponentInPanel(sortIndicator), BorderLayout.WEST);
         add(UIHelper.wrapComponentInPanel(new JLabel(endColumnIcon)), BorderLayout.EAST);
+    }
+
+    public void setIsRequired(int columnIndex) {
+        isRequired.add(columnIndex);
     }
 
     public int getState(int col) {
@@ -98,15 +106,12 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
                 retValue = UP;
             }
         }
-
         return retValue;
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                    boolean hasFocus, int rowIndex, int vColIndex) {
-
         Integer obj = state.get(vColIndex);
-
         if (obj != null) {
             if (obj == DOWN) {
                 sortIndicator.setIcon(upArrow);
@@ -117,9 +122,9 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
             sortIndicator.setIcon(normal);
         }
 
+        text.setForeground(isRequired.contains(vColIndex) ? UIHelper.RED_COLOR : UIHelper.DARK_GREEN_COLOR);
         text.setFont(isSelected ? UIHelper.VER_11_BOLD : UIHelper.VER_11_PLAIN);
         text.setText(value.toString());
-
         return this;
     }
 
