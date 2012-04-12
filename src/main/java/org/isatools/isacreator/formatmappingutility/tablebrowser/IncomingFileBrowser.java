@@ -43,6 +43,7 @@ import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.CustomTableHeaderRenderer;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -119,7 +120,7 @@ public class IncomingFileBrowser extends JFrame {
         JPanel filteredListContainer = new JPanel(new BorderLayout());
         filteredListContainer.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 7), "filter column", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR));
 
-        filterableList = new ExtendedJList(new ColumnFilterRenderer());
+        filterableList = new ExtendedJList(new SingleSelectionListCellRenderer());
 
         ch = new ColumnHighlighter(400, 25);
 
@@ -161,11 +162,11 @@ public class IncomingFileBrowser extends JFrame {
 
         filterableList.addPropertyChangeListener("itemSelected", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                String column = propertyChangeEvent.getNewValue().toString();
-                st.scrollToColumnLocation(column);
+//                String column = propertyChangeEvent.getNewValue().toString();
+                ColumnObject column = (ColumnObject) propertyChangeEvent.getNewValue();
+                st.scrollToColumnIndex(column.getColumnNumber());
             }
         });
-
 
         pack();
     }
@@ -386,20 +387,23 @@ public class IncomingFileBrowser extends JFrame {
         }
 
         public void scrollToColumnLocation(String colName) {
-            int colidx;
+
             for (ColumnObject co : columns) {
                 if (colName.equals(co.getColumnName())) {
-                    colidx = co.getColumnNumber();
-                    table.setColumnSelectionInterval(colidx, colidx);
-
-                    JViewport scrollPane = tableScroller.getViewport();
-                    Rectangle rect = table.getCellRect(1, colidx, true);
-                    Point p = scrollPane.getViewPosition();
-                    rect.setLocation(rect.x - p.x, rect.y - p.y);
-                    scrollPane.scrollRectToVisible(rect);
-                    return;
+                    int colidx = co.getColumnNumber();
+                    scrollToColumnIndex(colidx);
                 }
             }
+        }
+
+        private void scrollToColumnIndex(int colidx) {
+            table.setColumnSelectionInterval(colidx, colidx);
+
+            JViewport scrollPane = tableScroller.getViewport();
+            Rectangle rect = table.getCellRect(1, colidx, true);
+            Point p = scrollPane.getViewPosition();
+            rect.setLocation(rect.x - p.x, rect.y - p.y);
+            scrollPane.scrollRectToVisible(rect);
         }
 
 
