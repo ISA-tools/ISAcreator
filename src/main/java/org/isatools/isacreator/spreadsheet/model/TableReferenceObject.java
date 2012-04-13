@@ -582,15 +582,11 @@ public class TableReferenceObject implements Serializable {
     }
 
     public boolean isRequired(String colName) {
-        return colName.equals(ROW_NO_TEXT) ||
-                fieldLookup.get(colName).isRequired();
+        return colName.equals(ROW_NO_TEXT) || fieldLookup.get(colName).isRequired();
     }
 
     public boolean isRequired(int columnIndex) {
-        if (fieldIndexLookup.containsKey(columnIndex)) {
-            return fieldIndexLookup.get(columnIndex).isRequired();
-        }
-        return false;
+        return fieldIndexLookup.containsKey(columnIndex) && fieldIndexLookup.get(columnIndex).isRequired();
     }
 
     public void setPreDefinedHeaders(Vector<String> preDefinedHeaders) {

@@ -42,14 +42,35 @@ import org.isatools.isacreator.common.UIHelper;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SpreadsheetCellRenderer extends DefaultTableCellRenderer {
+
+    private Set<Integer> requiredIndices;
 
     /**
      * Creates a SpreadsheetCellRenderer.
      */
     public SpreadsheetCellRenderer() {
+        this(new HashSet<Integer>());
+    }
+
+    public SpreadsheetCellRenderer(Set<Integer> requiredIndices) {
         super();
+        this.requiredIndices = requiredIndices;
+    }
+
+    public Set<Integer> getRequiredIndices() {
+        return requiredIndices;
+    }
+
+    public void addRequiredIndex(int index) {
+        requiredIndices.add(index);
+    }
+
+    public void setRequiredIndices(Set<Integer> requiredIndices) {
+        this.requiredIndices = requiredIndices;
     }
 
     /**
@@ -74,6 +95,10 @@ public class SpreadsheetCellRenderer extends DefaultTableCellRenderer {
             super.setBackground(row % 2 == 0 ? new Color(141, 198, 63, 40) : UIHelper.BG_COLOR);
         }
 
+        if (requiredIndices.contains(column)) {
+            super.setBackground(UIHelper.TRANSPARENT_RED_COLOR);
+        }
+
         setFont(UIHelper.VER_11_PLAIN);
 
         if (hasFocus) {
@@ -86,7 +111,6 @@ public class SpreadsheetCellRenderer extends DefaultTableCellRenderer {
             setBorder(noFocusBorder);
         }
 
-        /* this method has been changed for formula feature */
         setValue(value, isSelected, hasFocus, row, column);
 
         //DefaulTableCellRenderer code

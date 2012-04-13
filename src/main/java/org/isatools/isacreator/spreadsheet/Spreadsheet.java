@@ -757,7 +757,7 @@ public class Spreadsheet extends JComponent implements
 
                     spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                    spreadsheetFunctions.addColumnAfterPosition("Protocol REF", null, -1);
+                    spreadsheetFunctions.addColumnAfterPosition("Protocol REF", null, fo.isRequired(), -1);
                 }
             }
         });
@@ -1419,31 +1419,11 @@ public class Spreadsheet extends JComponent implements
             }
         }
 
-        renderRequiredFields();
-
         JTableHeader header = table.getTableHeader();
         header.setBackground(UIHelper.BG_COLOR);
         header.addMouseListener(new HeaderListener(header, columnRenderer));
 
         table.addNotify();
-    }
-
-    private void renderRequiredFields() {
-        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-        boolean lastTermRequired = false;
-        while (columns.hasMoreElements()) {
-            TableColumn tc = columns.nextElement();
-            int columnViewIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
-            if (tableReferenceObject.isRequired(tc.getHeaderValue().toString())) {
-                if (tc.getHeaderValue().toString().equals("Unit") && lastTermRequired) {
-                    columnRenderer.setIsRequired(columnViewIndex);
-                } else {
-                    columnRenderer.setIsRequired(columnViewIndex);
-                    lastTermRequired = SpreadsheetUtils.isFactorParameterOrCharacteristic(tc.getHeaderValue().toString());
-                }
-            }
-        }
     }
 
     private String getFieldDescription(TableColumn tc) {
@@ -1674,6 +1654,38 @@ public class Spreadsheet extends JComponent implements
         }
     }
 
+    public void highlightRequiredFields() {
+        try {
+            Set<Integer> requiredIndexes = getRequiredFieldIndices();
+            table.setDefaultRenderer(Class.forName("java.lang.Object"), new SpreadsheetCellRenderer(requiredIndexes));
+            table.repaint();
+            highlightActive = true;
+        } catch (ClassNotFoundException e) {
+            // ignore
+        }
+    }
+
+    private Set<Integer> getRequiredFieldIndices() {
+        Set<Integer> indices = new HashSet<Integer>();
+        Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
+        boolean lastTermRequired = false;
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+            if (!tc.getHeaderValue().toString().equalsIgnoreCase(TableReferenceObject.ROW_NO_TEXT)) {
+                int columnViewIndex = Utils.convertModelIndexToView(table, tc.getModelIndex());
+                if (tableReferenceObject.isRequired(tc.getHeaderValue().toString())) {
+                    if (tc.getHeaderValue().toString().equals("Unit") && lastTermRequired) {
+                        indices.add(columnViewIndex);
+                    } else {
+                        indices.add(columnViewIndex);
+                        lastTermRequired = SpreadsheetUtils.isFactorParameterOrCharacteristic(tc.getHeaderValue().toString());
+                    }
+                }
+            }
+        }
+        return indices;
+    }
+
     /**
      * HeaderListener source partially from http://www.java2s.com/Code/Java/Swing-Components/SortableTableExample.htm, last accessed 09-08-2008
      * Class listens for user interaction with the header. if there's a double click event on a column in the header,
@@ -1699,28 +1711,19 @@ public class Spreadsheet extends JComponent implements
                 spreadsheetPopups.popupMenu(header, e.getX(), e.getY(), columnName);
             } else {
                 if (e.getClickCount() == 2) {
-
-                    int sortCol = header.getTable()
-                            .convertColumnIndexToModel(col);
-
+                    int sortCol = header.getTable().convertColumnIndexToModel(col);
                     renderer.setSelectedColumn(col);
                     header.repaint();
-
                     if (header.getTable().isEditing()) {
                         header.getTable().getCellEditor().stopCellEditing();
                     }
-
                     boolean isAscent;
                     isAscent = SpreadsheetColumnRenderer.DOWN == renderer.getState(col);
-
                     // check conversion tool to make sure it's spitting out the right values. -1 IS BEING RETURNED AS A CONVERTED INDEX FOR COL 20 IN GRIFFIN EXAMPLE!!!
                     SpreadsheetCellRange affectedRange = new SpreadsheetCellRange(Utils.getArrayOfVals(0, table.getRowCount() - 1), Utils.convertSelectedColumnsToModelIndices(table, Utils.getArrayOfVals(1, table.getColumnCount() - 1)));
                     spreadsheetHistory.add(affectedRange);
                     setRowsToDefaultColor();
-
-                    ((SpreadsheetModel) header.getTable().getModel()).sort(affectedRange, sortCol, sortCol,
-                            isAscent, false);
-
+                    ((SpreadsheetModel) header.getTable().getModel()).sort(affectedRange, sortCol, sortCol, isAscent, false);
                 } else {
                     table.setColumnSelectionInterval(col, col);
                     table.setRowSelectionInterval(0, table.getRowCount() - 1);
@@ -1739,7 +1742,6 @@ public class Spreadsheet extends JComponent implements
         copyPasteAdaptor = null;
         spreadsheetHistory.setTableModel(null);
         spreadsheetModel = null;
-
 
         // first we remove all current cell editors
         Enumeration<TableColumn> tableColumnEnum = table.getColumnModel().getColumns();

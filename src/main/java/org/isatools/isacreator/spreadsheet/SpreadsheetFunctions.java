@@ -809,7 +809,7 @@ public class SpreadsheetFunctions {
      *
      * @param headerLabel - name of column to be added
      */
-    public TableColumn addColumn(Object headerLabel) {
+    public TableColumn addColumn(Object headerLabel, boolean required) {
         SpreadsheetModel model = (SpreadsheetModel) spreadsheet.getTable().getModel();
         TableColumn newColumn = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
         newColumn.setHeaderValue(headerLabel);
@@ -823,6 +823,8 @@ public class SpreadsheetFunctions {
         model.addColumn(headerLabel.toString());
 
         spreadsheet.getTable().addColumn(newColumn);
+
+        addFieldToRequiredCellRendererIfVisible(required, newColumn.getModelIndex());
 
         model.fireTableStructureChanged();
         model.fireTableDataChanged();
@@ -846,8 +848,7 @@ public class SpreadsheetFunctions {
      * @param fixedVal                - initial value to populate column with, if any.
      * @param currentlySelectedColumn - place in table to add the column after.
      */
-    public TableColumn addColumnAfterPosition(Object headerLabel, String fixedVal,
-                                              int currentlySelectedColumn) {
+    public TableColumn addColumnAfterPosition(Object headerLabel, String fixedVal, boolean required, int currentlySelectedColumn) {
 
         if (currentlySelectedColumn == -1) {
             currentlySelectedColumn = (spreadsheet.getTable().getSelectedColumn() == -1)
@@ -856,10 +857,14 @@ public class SpreadsheetFunctions {
 
         SpreadsheetModel model = (SpreadsheetModel) spreadsheet.getTable().getModel();
 
-        TableColumn col = new TableColumn(spreadsheet.getTable().getModel().getColumnCount());
+        int columnCount = spreadsheet.getTable().getModel().getColumnCount();
+
+        TableColumn col = new TableColumn(columnCount);
         col.setHeaderValue(headerLabel);
         col.setPreferredWidth(calcColWidths(headerLabel.toString()));
         col.setHeaderRenderer(spreadsheet.columnRenderer);
+
+        addFieldToRequiredCellRendererIfVisible(required, columnCount);
 
         addCellEditor(col);
 
@@ -880,17 +885,7 @@ public class SpreadsheetFunctions {
             spreadsheet.getTable().getColumnModel().moveColumn(i - 1, i);
         }
 
-
-        if (headerLabel.toString().equals("Unit")) {
-            addColumnToDependencies(spreadsheet.getTable().getColumnModel()
-                    .getColumn(spreadsheet.previouslyAddedCharacteristicPosition),
-                    col);
-        } else if (headerLabel.toString().contains("Parameter")) {
-            addColumnToDependencies(spreadsheet.getTable().getColumnModel()
-                    .getColumn(currentlySelectedColumn),
-                    col);
-        }
-
+        addDependentColumn(headerLabel, currentlySelectedColumn, col);
 
         if (headerLabel.toString().contains("Characteristics") ||
                 headerLabel.toString().contains("Factor") ||
@@ -898,15 +893,39 @@ public class SpreadsheetFunctions {
             spreadsheet.previouslyAddedCharacteristicPosition = stopValue;
         }
 
-        fixedVal = fixedVal == null ? "" : fixedVal;
-        if (fixedVal != null && spreadsheet.getTable().getRowCount() > 0) {
-            spreadsheet.getTable().setValueAt(fixedVal, 0, stopValue);
-            copyColumnDownwards(0, stopValue);
-        }
+        propagateDefaultValue(fixedVal, stopValue);
 
         spreadsheet.getTable().addNotify();
 
         return col;
+    }
+
+    private void addFieldToRequiredCellRendererIfVisible(boolean required, int columnCount) {
+        if (required && spreadsheet.highlightActive) {
+            try {
+                if (spreadsheet.getTable().getDefaultRenderer(Class.forName("java.lang.Object")) instanceof SpreadsheetCellRenderer) {
+                    ((SpreadsheetCellRenderer) spreadsheet.getTable().getDefaultRenderer(Class.forName("java.lang.Object"))).addRequiredIndex(columnCount);
+                }
+            } catch (ClassNotFoundException e) {
+                // ignore error
+            }
+        }
+    }
+
+    private void propagateDefaultValue(String fixedVal, int stopValue) {
+        fixedVal = fixedVal == null ? "" : fixedVal;
+        if (!fixedVal.equals("") && spreadsheet.getTable().getRowCount() > 0) {
+            spreadsheet.getTable().setValueAt(fixedVal, 0, stopValue);
+            copyColumnDownwards(0, stopValue);
+        }
+    }
+
+    private void addDependentColumn(Object headerLabel, int currentlySelectedColumn, TableColumn col) {
+        if (headerLabel.toString().equals("Unit")) {
+            addColumnToDependencies(spreadsheet.getTable().getColumnModel().getColumn(spreadsheet.previouslyAddedCharacteristicPosition), col);
+        } else if (headerLabel.toString().contains("Parameter")) {
+            addColumnToDependencies(spreadsheet.getTable().getColumnModel().getColumn(currentlySelectedColumn), col);
+        }
     }
 
     protected void addCellEditor(TableColumn col) {

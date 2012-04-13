@@ -113,7 +113,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
                 spreadsheet.getSpreadsheetFunctions().addFieldToReferenceObject(newFactor);
 
-                factorColumn = spreadsheet.getSpreadsheetFunctions().addColumn(newFactor.getFieldName());
+                factorColumn = spreadsheet.getSpreadsheetFunctions().addColumn(newFactor.getFieldName(), newFactor.isRequired());
 
                 if (field.getDatatype() == DataTypes.STRING) {
 
@@ -124,7 +124,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
                     spreadsheet.getSpreadsheetFunctions().addFieldToReferenceObject(unitFo);
 
-                    unitColumn = spreadsheet.getSpreadsheetFunctions().addColumn("Unit");
+                    unitColumn = spreadsheet.getSpreadsheetFunctions().addColumn("Unit", newFactor.isRequired());
 
                     spreadsheet.getSpreadsheetFunctions().addColumnToDependencies(factorColumn, unitColumn);
 

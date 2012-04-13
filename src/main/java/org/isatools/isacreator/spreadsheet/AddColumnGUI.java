@@ -417,13 +417,13 @@ public class AddColumnGUI extends JDialog {
 
                     String colName = typeAsText + "[" + toAdd + "]";
 
-                    FieldObject charFo = new FieldObject(st.getColumnCount(),
+                    FieldObject newFieldObject = new FieldObject(st.getColumnCount(),
                             colName, typeAsText + " value", DataTypes.STRING,
                             "", false, false, false);
 
-                    st.getSpreadsheetFunctions().addFieldToReferenceObject(charFo);
+                    st.getSpreadsheetFunctions().addFieldToReferenceObject(newFieldObject);
 
-                    st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, -1);
+                    st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, newFieldObject.isRequired(), -1);
 
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -484,7 +484,7 @@ public class AddColumnGUI extends JDialog {
                             st.getSpreadsheetFunctions().addFieldToReferenceObject(charFo);
 
                             if (!toAdd.equals("")) {
-                                st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, -1);
+                                st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, charFo.isRequired(), -1);
                             }
 
                             if (quantativeOp.isSelected()) {
@@ -495,7 +495,7 @@ public class AddColumnGUI extends JDialog {
                                         false);
                                 st.getSpreadsheetFunctions().addFieldToReferenceObject(unitFo);
                                 st.getSpreadsheetFunctions().addColumnAfterPosition("Unit",
-                                        unitField.getText(), -1);
+                                        unitField.getText(), unitFo.isRequired(), -1);
                             }
 
                             SwingUtilities.invokeLater(new Runnable() {

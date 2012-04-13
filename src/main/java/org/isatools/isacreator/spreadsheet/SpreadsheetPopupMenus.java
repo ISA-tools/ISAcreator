@@ -141,7 +141,7 @@ public class SpreadsheetPopupMenus {
 
                 spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Sample Name", null, -1);
+                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Sample Name", null, fo.isRequired(), -1);
             }
         });
 
@@ -157,7 +157,7 @@ public class SpreadsheetPopupMenus {
 
                 spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Material Type", null, -1);
+                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Material Type", null, fo.isRequired(), -1);
             }
         });
 
@@ -192,7 +192,7 @@ public class SpreadsheetPopupMenus {
 
                 spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Protocol REF", null, -1);
+                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Protocol REF", null, fo.isRequired(), -1);
             }
         });
 
@@ -223,7 +223,7 @@ public class SpreadsheetPopupMenus {
 
                 spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Date", "", -1);
+                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Date", "", fo.isRequired(), -1);
             }
         });
 
@@ -239,7 +239,7 @@ public class SpreadsheetPopupMenus {
 
                 spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(fo);
 
-                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Performer", null, -1);
+                spreadsheet.spreadsheetFunctions.addColumnAfterPosition("Performer", null, fo.isRequired(), -1);
             }
         });
 
@@ -295,7 +295,7 @@ public class SpreadsheetPopupMenus {
                 JMenuItem item = new JMenuItem(hiddenColumn);
                 item.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        spreadsheet.spreadsheetFunctions.addColumnAfterPosition(hiddenColumn, null, -1);
+                        spreadsheet.spreadsheetFunctions.addColumnAfterPosition(hiddenColumn, null, false, -1);
                         spreadsheet.hiddenColumns.remove(hiddenColumn);
                     }
                 });
@@ -367,6 +367,13 @@ public class SpreadsheetPopupMenus {
             }
         });
 
+        JMenuItem highlightRequiredFields = new JMenuItem("Highlight Required Fields");
+        highlightRequiredFields.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                spreadsheet.highlightRequiredFields();
+            }
+        });
+
         JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for assays");
         viewWorkflowForAssays.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -435,6 +442,7 @@ public class SpreadsheetPopupMenus {
         }
 
         popup.add(highlightGroups);
+        popup.add(highlightRequiredFields);
         if (spreadsheet.highlightActive) {
             popup.add(removeHighlight);
         }
@@ -478,9 +486,10 @@ public class SpreadsheetPopupMenus {
                         public void actionPerformed(ActionEvent ae) {
                             popup.setVisible(false);
 
-                            spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(tro.getMissingFields().get(missingField));
+                            FieldObject missingFieldToAdd = tro.getMissingFields().get(missingField);
+                            spreadsheet.spreadsheetFunctions.addFieldToReferenceObject(missingFieldToAdd);
 
-                            spreadsheet.spreadsheetFunctions.addColumnAfterPosition(missingField, "", -1);
+                            spreadsheet.spreadsheetFunctions.addColumnAfterPosition(missingField, "", missingFieldToAdd.isRequired(), -1);
                             toRemove[0] = missingField;
 
                         }
