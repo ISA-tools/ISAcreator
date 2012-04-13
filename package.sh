@@ -46,17 +46,12 @@ cd target
 mv ISAcreator-$VERSION-jar-with-dependencies.jar ISAcreator.jar
 zip -u ISAcreator-$VERSION-all.zip ISAcreator.jar
 
-echo "Replacing JavaApplicationStub with Symbolic link to users Stub."
-rm -r ISAcreator-$VERSION.app/Contents/MacOS/JavaApplicationStub
-
-
-# this will obviously only work on the MAC. If you are using another operating system, you should download from another system
-ln -s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub ISAcreator-$VERSION.app/Contents/MacOS/JavaApplicationStub
+python ../bundler.py
 
 pwd
 
 zip --exclude .DS_STORE -r ISAcreator-$VERSION-mac.zip ../Configurations ../Data ../"isatab files"
-zip -u ISAcreator-$VERSION-mac.zip ISAcreator-$VERSION.app
+zip -u ISAcreator-$VERSION-mac.zip ISAcreator.app
 
 echo "Packaging completed successfully!"
 
