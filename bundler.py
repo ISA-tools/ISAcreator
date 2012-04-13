@@ -3,7 +3,7 @@ __author__ = 'eamonnmaguire'
 import os
 
 # first create the app, should externalise some names to make it a bit nicer
-os.chdir('target')
+print 'Packaging up jars to run within a native MacOS container'
 os.makedirs('ISAcreator.app/Contents/Resources/Java')
 os.makedirs('ISAcreator.app/Contents/MacOS')
 
