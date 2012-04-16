@@ -40,7 +40,7 @@ package org.isatools.isacreator.archiveoutput;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.io.OutputISAFiles;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
@@ -69,7 +69,6 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
     private JLabel archiveOutputStatus;
 
-    private ISAcreator main;
     private String reference;
     private String outputLocation;
     private int compressionLevel = LOW_COMPRESSION;
@@ -89,39 +88,19 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
     /**
      * OutputISArchive Constructor
-     *
-     * @param main - MainGUI to be used to gain access to everything which needs to be output
      */
-    public ArchiveOutputUtil(ISAcreator main) {
-        this.main = main;
+    public ArchiveOutputUtil() {
         missingFiles = null;
         archiveLocation = null;
         localFiles = null;
-        browseViewErrorPane = new ViewErrorPane(main);
-
+        browseViewErrorPane = new ViewErrorPane(ApplicationManager.getCurrentApplicationInstance());
+        outputISATAB = new OutputISAFiles(ApplicationManager.getCurrentApplicationInstance());
         createProgressLabel();
-    }
-
-
-    /**
-     * Create the GUI.
-     */
-    public void createGUI() {
-
-        outputISATAB = new OutputISAFiles(main);
-        instantiateFrame();
-
+        setOpaque(false);
     }
 
     public String getReference() {
         return reference;
-    }
-
-    /**
-     * Instantiate the Frame.
-     */
-    public void instantiateFrame() {
-        setOpaque(false);
     }
 
     /**
@@ -140,7 +119,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             addedFilePaths = new HashSet<String>();
             statistics = new ArchivingStatistics();
             statistics.setStartTime(System.currentTimeMillis());
-            Investigation inv = main.getDataEntryEnvironment().getInvestigation();
+            Investigation inv = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
 
             if (inv.getReference().equals("")) {
                 archiveOutputStatus.setText("<html>Please <b>save</b> the submission first!</html>");
@@ -150,8 +129,6 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             log.info("Starting creating of archive");
             archiveOutputStatus.setText("<html><i>creating archive...please wait</i></html>");
             localFiles = new HashMap<String, List<String>>();
-//			Set<String> remoteFiles = new HashSet<String>();
-
             missingData = new HashMap<String, List<ArchiveOutputError>>();
 
             log.info("Gathering datafiles to be zipped");
@@ -236,7 +213,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
     }
 
     private JLayeredPane getAssayByRef(String assayRef) {
-        Investigation investigation = main.getDataEntryEnvironment().getInvestigation();
+        Investigation investigation = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
         return investigation.getStudies().get(investigation.getAssays().get(assayRef)).getAssays().get(assayRef).getSpreadsheetUI();
     }
 

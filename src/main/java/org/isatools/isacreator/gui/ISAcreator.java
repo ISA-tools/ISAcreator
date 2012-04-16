@@ -418,14 +418,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 exportArchiveIcon);
         exportISArchive.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
+                final ArchiveOutputWindow oaw = new ArchiveOutputWindow();
+                oaw.setLocation(((getX() + getWidth()) / 2) - (ArchiveOutputWindow.WIDTH / 2), ((getY() + getHeight()) / 2) - (ArchiveOutputWindow.HEIGHT / 2));
+
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-
-                        ArchiveOutputUtil oISA = new ArchiveOutputUtil(ISAcreator.this);
-                        oISA.createGUI();
-
-                        ArchiveOutputWindow oaw = new ArchiveOutputWindow(oISA);
-                        oaw.setLocation(((getX() + getWidth()) / 2) - (ArchiveOutputWindow.WIDTH / 2), ((getY() + getHeight()) / 2) - (ArchiveOutputWindow.HEIGHT / 2));
                         oaw.createGUI();
                     }
                 });
@@ -1346,8 +1343,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     public static void main(String[] args) {
-
-
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 ISAcreator main = new ISAcreator(Mode.NORMAL_MODE, null);
@@ -1355,6 +1350,4 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         });
     }
-
-
 }

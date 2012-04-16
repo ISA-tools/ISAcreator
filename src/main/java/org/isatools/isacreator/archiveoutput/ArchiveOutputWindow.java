@@ -38,6 +38,7 @@
 
 package org.isatools.isacreator.archiveoutput;
 
+import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.optionselector.OptionGroup;
@@ -48,16 +49,12 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 
 
-public class ArchiveOutputWindow extends JFrame {
+public class ArchiveOutputWindow extends JFrame implements WindowListener {
     public static final int WIDTH = 300;
     public static final int HEIGHT = 350;
 
@@ -65,42 +62,31 @@ public class ArchiveOutputWindow extends JFrame {
     private Image headerImage;
 
     @InjectedResource
-    private ImageIcon createArchiveButton, createArchiveButtonOver, chooseCompression, fastLowCompressionSelected, fastLowCompressionNotSelected,
+    private ImageIcon chooseCompression, fastLowCompressionSelected, fastLowCompressionNotSelected,
             medCompressionSelected, medCompressionNotSelected, slowHighCompressionSelected, slowHighCompressionNotSelected,
-            chooseOutputLocation, openDirectory, wait;
+            chooseOutputLocation, openDirectory, wait, saveArchive, saveArchiveOver;
 
     private ImageIcon creatingArchiveAnimation = new ImageIcon(getClass().getResource("/images/gui/create_archive_progress.gif"));
 
-    private ArchiveOutputUtil archiveOutputUtil;
+    private JPanel swappableContainer = new JPanel(new BorderLayout());
 
-    private JTextField fileLocationText;
+    private FileSelectionPanel outputFileLocation;
     private JFileChooser fileChooser;
-    private JPanel swappableContainer;
     private JPanel exportingProgressContainer;
     private JLabel selectedCompression;
-    private JLabel waitLabel;
+    private JLabel createArchiveButton;
     private Timer closeWindowTimer;
+    private final ArchiveOutputUtil archiveOutputUtil;
 
-    public ArchiveOutputWindow(ArchiveOutputUtil archiveOutputUtil) {
-
+    public ArchiveOutputWindow() {
         ResourceInjector.get("archiveoutput-package.style").inject(this);
-
-        this.archiveOutputUtil = archiveOutputUtil;
-
         setUndecorated(true);
         setBackground(UIHelper.BG_COLOR);
         setLayout(new BorderLayout());
         setAlwaysOnTop(true);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
-
         closeWindowTimer = new Timer(4000, new CloseEvent());
-
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                createGUI();
-            }
-        });
-
+        archiveOutputUtil = new ArchiveOutputUtil();
     }
 
     public void createGUI() {
@@ -109,10 +95,7 @@ public class ArchiveOutputWindow extends JFrame {
         add(titlePanel, BorderLayout.NORTH);
         titlePanel.installListeners();
 
-        swappableContainer = new JPanel();
-        swappableContainer.setLayout(new BorderLayout());
         createProgressScreen();
-
 
         JPanel exportOptionContainer = new JPanel();
         exportOptionContainer.setLayout(new BoxLayout(exportOptionContainer, BoxLayout.PAGE_AXIS));
@@ -121,21 +104,21 @@ public class ArchiveOutputWindow extends JFrame {
         exportOptionContainer.add(Box.createVerticalStrut(20));
         exportOptionContainer.add(createSelectOutputDirectoryUI());
         exportOptionContainer.add(Box.createVerticalStrut(20));
-        exportOptionContainer.add(createWaitUI());
+        exportOptionContainer.add(createCreateArchiveButtonUI());
 
+        swappableContainer.add(exportOptionContainer, BorderLayout.CENTER);
         add(swappableContainer, BorderLayout.CENTER);
-
-        swappableContainer.add(exportOptionContainer);
-        swappableContainer.revalidate();
 
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2, true));
 
+        addWindowListener(this);
         pack();
         setVisible(true);
     }
 
     public void createProgressScreen() {
         exportingProgressContainer = new JPanel();
+        exportingProgressContainer.setSize(new Dimension(this.getWidth(), this.getHeight()));
         exportingProgressContainer.setLayout(new BorderLayout());
         exportingProgressContainer.setBackground(UIHelper.BG_COLOR);
 
@@ -153,15 +136,12 @@ public class ArchiveOutputWindow extends JFrame {
         compressionOptions.addOptionItem("<html><strong>fast</strong> speed & <strong>low</strong> compression</html>", true, fastLowCompressionSelected, fastLowCompressionNotSelected, true, false);
         compressionOptions.addOptionItem("<html><strong>medium</strong> speed & <strong>medium</strong> compression</html>", false, medCompressionSelected, medCompressionNotSelected, true, false);
         compressionOptions.addOptionItem("<html><strong>slow</strong> speed & <strong>high</strong> compression</html>", false, slowHighCompressionSelected, slowHighCompressionNotSelected, true, false);
-
         compressionOptionContainer.add(new JLabel(chooseCompression, JLabel.LEFT), BorderLayout.NORTH);
         compressionOptionContainer.add(compressionOptions, BorderLayout.CENTER);
 
         compressionOptions.addPropertyChangeListener("optionSelectionChange", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
                 selectedCompression.setText(((OptionItem<String>) propertyChangeEvent.getNewValue()).getUserObject());
-                updateWaitLabel();
             }
         });
 
@@ -172,78 +152,65 @@ public class ArchiveOutputWindow extends JFrame {
         return compressionOptionContainer;
     }
 
-    private JPanel createWaitUI() {
+    private JPanel createCreateArchiveButtonUI() {
         JPanel waitContainer = new JPanel(new BorderLayout());
 
-        waitLabel = UIHelper.createLabel("a little", UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR);
-        waitLabel.setIcon(wait);
+        createArchiveButton = new JLabel(saveArchive);
+        createArchiveButton.addMouseListener(new MouseAdapter() {
 
-        waitContainer.add(UIHelper.wrapComponentInPanel(waitLabel));
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
 
+                if (createArchiveButton.isEnabled()) {
+                    createArchiveButton.setIcon(saveArchive);
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                if (createArchiveButton.isEnabled()) {
+                    createArchiveButton.setIcon(saveArchiveOver);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                System.out.println("Selected file path..." + outputFileLocation.getSelectedFilePath());
+                if (!outputFileLocation.getSelectedFilePath().isEmpty()) {
+                    createArchive();
+                } else {
+                    outputFileLocation.setWarning(true);
+                }
+            }
+        });
+        waitContainer.add(UIHelper.wrapComponentInPanel(createArchiveButton), BorderLayout.WEST);
 
         return waitContainer;
+    }
+
+    private void createArchive() {
+
+        System.out.println("Creating archive..");
+        swapContainers(exportingProgressContainer);
+
+        attachListenersForArchiveOutputUtil();
+        archiveOutputUtil.setOutputLocation(outputFileLocation.getSelectedFilePath());
+        archiveOutputUtil.setCompressionLevel(getCompressionLevel());
+        final Thread archiveCreation = new Thread(archiveOutputUtil);
+        archiveCreation.start();
     }
 
     private JPanel createSelectOutputDirectoryUI() {
 
         JPanel container = new JPanel(new BorderLayout());
-
-        JPanel fileLocPanel = new JPanel();
-        fileLocPanel.setLayout(new BoxLayout(fileLocPanel, BoxLayout.LINE_AXIS));
-        fileLocPanel.setBackground(UIHelper.BG_COLOR);
-
         setupFileChooser();
 
-        fileLocationText = new JTextField(10);
-        fileLocationText.setEditable(false);
-        fileLocationText.setForeground(UIHelper.DARK_GREEN_COLOR);
-        fileLocationText.setToolTipText(
-                "<html><b>Please select a directory to save ISArchive in.</b></html>");
-
-        JLabel openDirLab = new JLabel(openDirectory);
-        openDirLab.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                String directory;
-
-                if (fileChooser.showOpenDialog(ArchiveOutputWindow.this) == JFileChooser.APPROVE_OPTION) {
-                    File selected = fileChooser.getSelectedFile();
-                    if (selected.isDirectory()) {
-                        directory = selected.getAbsolutePath();
-                    } else {
-                        directory = selected.getParentFile().getAbsolutePath();
-                    }
-
-                    final String finalDirectory = directory;
-
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            fileLocationText.setText(finalDirectory);
-
-                            attachListenersForArchiveOutputUtil();
-
-                            archiveOutputUtil.setOutputLocation(finalDirectory);
-                            archiveOutputUtil.setCompressionLevel(getCompressionLevel());
-
-
-                            final Thread archiveCreation = new Thread(archiveOutputUtil);
-                            swapContainers(exportingProgressContainer);
-                            archiveCreation.start();
-                        }
-                    });
-                }
-            }
-        });
-
-        fileLocPanel.add(Box.createHorizontalStrut(20));
-        fileLocPanel.add(fileLocationText);
-        fileLocPanel.add(openDirLab);
-        fileLocPanel.add(Box.createHorizontalStrut(20));
+        outputFileLocation = new FileSelectionPanel("", fileChooser);
 
         Box fileLocationContainer = Box.createVerticalBox();
         fileLocationContainer.add(UIHelper.wrapComponentInPanel(new JLabel(chooseOutputLocation, JLabel.LEFT)));
         fileLocationContainer.add(Box.createVerticalStrut(5));
-        fileLocationContainer.add(fileLocPanel);
+        fileLocationContainer.add(outputFileLocation);
 
         container.add(fileLocationContainer, BorderLayout.NORTH);
 
@@ -265,7 +232,6 @@ public class ArchiveOutputWindow extends JFrame {
                                 dispose();
                             }
                         });
-
                         swapContainers(failUI);
                     }
                 });
@@ -283,22 +249,23 @@ public class ArchiveOutputWindow extends JFrame {
                         swapContainers(successUI);
                     }
                 });
-
                 closeWindowTimer.start();
-
             }
         });
     }
 
 
     private void swapContainers(final JPanel newContainer) {
-        if (newContainer != null) {
-            swappableContainer.removeAll();
-            swappableContainer.add(newContainer);
-            swappableContainer.repaint();
-            swappableContainer.validate();
-
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (newContainer != null) {
+                    swappableContainer.removeAll();
+                    swappableContainer.add(newContainer);
+                    swappableContainer.repaint();
+                    swappableContainer.validate();
+                }
+            }
+        });
     }
 
     private void setupFileChooser() {
@@ -309,19 +276,6 @@ public class ArchiveOutputWindow extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
 
-    private void updateWaitLabel() {
-        String compressionType = selectedCompression.getText();
-
-        if (compressionType.contains("fast")) {
-            waitLabel.setText("a little...");
-        } else if (compressionType.contains("medium")) {
-            waitLabel.setText("a little bit more...");
-        } else {
-            waitLabel.setText("quite a bit more...");
-        }
-
-        waitLabel.repaint();
-    }
 
     private int getCompressionLevel() {
         String compressionType = selectedCompression.getText();
@@ -332,6 +286,28 @@ public class ArchiveOutputWindow extends JFrame {
         } else {
             return ArchiveOutputUtil.HIGH_COMPRESSION;
         }
+    }
+
+    public void windowOpened(WindowEvent windowEvent) {
+    }
+
+    public void windowClosing(WindowEvent windowEvent) {
+    }
+
+    public void windowClosed(WindowEvent windowEvent) {
+        dispose();
+    }
+
+    public void windowIconified(WindowEvent windowEvent) {
+    }
+
+    public void windowDeiconified(WindowEvent windowEvent) {
+    }
+
+    public void windowActivated(WindowEvent windowEvent) {
+    }
+
+    public void windowDeactivated(WindowEvent windowEvent) {
     }
 
     class CloseEvent implements ActionListener {
