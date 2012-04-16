@@ -505,7 +505,11 @@ public class SpreadsheetModel extends DefaultTableModel {
 
         /* try making it a number */
         try {
-            return new Float(input);
+            if (input.contains(".")) {
+                return new Double(input);
+            } else {
+                return new Integer(input);
+            }
         } catch (NumberFormatException e) {
             /* all else fails treat as string */
             return input;
@@ -646,6 +650,7 @@ public class SpreadsheetModel extends DefaultTableModel {
             aValue = "";
         }
 
+
         if (aValue instanceof String) {
             String input = (String) aValue;
 
@@ -655,6 +660,7 @@ public class SpreadsheetModel extends DefaultTableModel {
                 if (input.contains(".")) {
                     Double data = new Double(input);
                     setCellAt(data, aRow, aColumn);
+                    System.out.println("Value was a double, so set it as a double value");
                 } else {
                     Integer data = new Integer(input);
                     setCellAt(data, aRow, aColumn);
@@ -667,6 +673,9 @@ public class SpreadsheetModel extends DefaultTableModel {
 
 
         } else {
+            System.out.println("aValue was instance of " + aValue.getClass().toString());
+            System.out.println("In else clause. Setting value: " + aValue);
+
             setCellAt(aValue, aRow, aColumn);
 
         }
@@ -754,6 +763,7 @@ public class SpreadsheetModel extends DefaultTableModel {
      */
     protected void fill(SpreadsheetCellRange range, Object input) {
         //loop through range
+
         for (int i = range.getStartRow(); i <= range.getEndRow(); i++) {
             for (int j = range.getStartCol(); j <= range.getEndCol(); j++) {
                 doSetValueAt(input, i, j);
