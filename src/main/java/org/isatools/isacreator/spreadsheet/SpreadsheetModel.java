@@ -312,41 +312,6 @@ public class SpreadsheetModel extends DefaultTableModel {
     }
 
     /**
-     * This method copies the cells in a range into a two-dimensional array of
-     * cells.
-     *
-     * @param range range of cells to copy
-     * @return copy of range
-     */
-    public SpreadsheetCell[][] getRange(SpreadsheetCellRange range) {
-        //get dimensions of range
-        SpreadsheetCell[][] board = new SpreadsheetCell[range.getHeight()][range.getWidth()];
-
-        //copy the cells
-        for (int i = range.getStartRow(); i <= range.getEndRow(); i++) {
-            for (int j = range.getStartCol(); j <= range.getEndCol(); j++) {
-                //translate to coordinates in copy array
-                int x = i - range.getStartRow();
-                int y = j - range.getStartCol();
-
-                SpreadsheetCell field = getCellAt(i, j);
-
-                /*
-                     * if it is a formula copy both the value and the formula The
-                     * value will be useful with a paste by value
-                    */
-
-                //value cells have immutable objects
-                board[x][y] = new SpreadsheetCell(field.getValue());
-
-            }
-        }
-
-        return board;
-    }
-
-
-    /**
      * set table selection to the range sel
      *
      * @param sel the range to be selected
@@ -457,17 +422,6 @@ public class SpreadsheetModel extends DefaultTableModel {
     }
 
     /**
-     * Determines if a cell is empty
-     *
-     * @param row row coordinate of cell
-     * @param col column coordinate of cell
-     * @return true if cell is empty
-     */
-    public boolean isEmptyCell(int row, int col) {
-        return getCellAt(row, col).getValue().equals("");
-    }
-
-    /**
      * Returns JTable
      *
      * @return JTable
@@ -540,70 +494,6 @@ public class SpreadsheetModel extends DefaultTableModel {
     }
 
     /**
-     * This method sets the cells given by the range to the cooresponding value
-     * in the Object array. In other words, this method pastes the object array
-     * onto the range. It is assumed that the range and Object array have the
-     * same dimensions. (a "placeAt" method for ranges)
-     *
-     * @param range the range of cells to paste to
-     * @param data  the data to paste
-     */
-    public void setRange(SpreadsheetCellRange range, Object[][] data) {
-        /* Loop through the paste range */
-        for (int i = range.getStartRow(); i <= range.getEndRow(); i++) {
-            for (int j = range.getStartCol(); j <= range.getEndCol(); j++) {
-                //calculate the corresponding entry in data array
-                int x = i - range.getStartRow();
-                int y = j - range.getStartCol();
-
-                //place data entry at that place
-                doSetValueAt(data[x][y], i, j);
-            }
-        }
-    }
-
-    /**
-     * This is a method used to paste cells onto the table. This method is used
-     * by the SharpClipboard class. It's feature is that it can paste only the
-     * old evaluated values or it can be told to paste the data cells and
-     * formulas.
-     *
-     * @param range   range to paste to
-     * @param data    cells that need to be pasted
-     * @param byValue true if only paste values if there are formula
-     */
-    public void setRange(SpreadsheetCellRange range, SpreadsheetCell[][] data, boolean byValue) {
-        /*
-                 * there may be formula so if byValue is true paste evaluated formula
-                 * value into the range as a data cell
-                 */
-        if (byValue) {
-            for (int i = range.getStartRow(); i <= range.getEndRow(); i++) {
-                for (int j = range.getStartCol(); j <= range.getEndCol(); j++) {
-                    int x = i - range.getStartRow();
-                    int y = j - range.getStartCol();
-
-                    //get only value of a formula cell not formula
-                    doSetValueAt(data[x][y].getValue(), i, j);
-                }
-            }
-        } else {
-            for (int i = range.getStartRow(); i <= range.getEndRow(); i++) {
-                for (int j = range.getStartCol(); j <= range.getEndCol(); j++) {
-                    int x = i - range.getStartRow();
-                    int y = j - range.getStartCol();
-                    SpreadsheetCell info = data[x][y];
-
-                    //paste new formula to recalculate
-
-                    doSetValueAt(info.getValue(), i, j);
-
-                }
-            }
-        }
-    }
-
-    /**
      * Sets the value of the cell. It takes care of formulas and data. If aValue
      * is a string, it parses it to see if it is a formula (begins with an "=")
      * or a number. It then sets the value of the cell accordingly.
@@ -650,17 +540,13 @@ public class SpreadsheetModel extends DefaultTableModel {
             aValue = "";
         }
 
-
         if (aValue instanceof String) {
             String input = (String) aValue;
-
-            /* try making it a formula */
 
             try {
                 if (input.contains(".")) {
                     Double data = new Double(input);
                     setCellAt(data, aRow, aColumn);
-                    System.out.println("Value was a double, so set it as a double value");
                 } else {
                     Integer data = new Integer(input);
                     setCellAt(data, aRow, aColumn);
@@ -670,14 +556,8 @@ public class SpreadsheetModel extends DefaultTableModel {
                 /* all else fails treat as string */
                 setCellAt(aValue, aRow, aColumn);
             }
-
-
         } else {
-            System.out.println("aValue was instance of " + aValue.getClass().toString());
-            System.out.println("In else clause. Setting value: " + aValue);
-
             setCellAt(aValue, aRow, aColumn);
-
         }
     }
 
@@ -691,14 +571,11 @@ public class SpreadsheetModel extends DefaultTableModel {
      * @see SpreadsheetClipboard
      */
     public String toString(SpreadsheetCellRange range, char delim) {
-        StringBuffer sbf = new StringBuffer();
+        StringBuilder sbf = new StringBuilder();
 
         for (int i = range.getStartRow(); i <= range.getEndRow(); i++) {
             for (int j = range.getStartCol(); j <= range.getEndCol(); j++) {
-
                 sbf.append(getValueAt(i, j));
-
-
                 if (j < range.getEndCol()) {
                     sbf.append(delim);
                 }
@@ -719,7 +596,7 @@ public class SpreadsheetModel extends DefaultTableModel {
      * @see SpreadsheetClipboard
      */
     public String extendedToString(SpreadsheetCellRange range, char delim) {
-        StringBuffer sbf = new StringBuffer();
+        StringBuilder sbf = new StringBuilder();
         int[] columns = range.getColumnList();
         if (columns != null) {
 
@@ -845,6 +722,7 @@ public class SpreadsheetModel extends DefaultTableModel {
                 row++;
             }
         } catch (Exception e) {
+            // do nothing
         }
     }
 
@@ -902,6 +780,7 @@ public class SpreadsheetModel extends DefaultTableModel {
                 }
             }
         } catch (Exception e) {
+            // do nothing
         }
     }
 
@@ -921,5 +800,3 @@ public class SpreadsheetModel extends DefaultTableModel {
     }
 
 }
-
-

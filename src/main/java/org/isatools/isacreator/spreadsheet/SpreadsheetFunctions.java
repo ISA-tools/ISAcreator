@@ -197,7 +197,6 @@ public class SpreadsheetFunctions {
 
         while (columns.hasMoreElements()) {
             TableColumn tc = columns.nextElement();
-
             if (spreadsheet.getTableReferenceObject().acceptsFileLocations(tc.getHeaderValue().toString())) {
                 int colIndex = Utils.convertModelIndexToView(spreadsheet.getTable(), tc.getModelIndex());
 
@@ -205,7 +204,6 @@ public class SpreadsheetFunctions {
                     String s = (spreadsheet.getTable().getValueAt(row, colIndex) == null) ? ""
                             : spreadsheet.getTable().getValueAt(row,
                             colIndex).toString();
-
                     if (s != null && !s.trim().equals("")) {
                         files.add(s);
                     }

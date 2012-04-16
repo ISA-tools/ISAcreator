@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
-public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
+public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends FilterField
         implements TableCellEditor, DocumentListener, FocusListener, KeyListener {
 
     protected transient List<CellEditorListener> listeners;
@@ -240,9 +240,7 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
     }
 
     private void showSelector() {
-
         try {
-
             if (selector == null) {
                 instantiateSelectorIfRequired();
                 selector.fadeInWindow();
@@ -254,7 +252,7 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // do nothing
         }
     }
 
@@ -263,7 +261,6 @@ public abstract class DefaultAutoFilterCellEditor<T> extends FilterField
     protected abstract void updateContent();
 
     private void hideSelector() {
-
         if (selector.isShowing()) {
             selector.fadeOutWindow();
         }

@@ -46,7 +46,7 @@ import java.util.Map;
  *         Date: 29/07/2011
  *         Time: 16:48
  */
-public class SampleInformation {
+public class SampleInformation implements Comparable<SampleInformation> {
 
     private int rowNumber;
     private String sampleName;
@@ -93,5 +93,9 @@ public class SampleInformation {
     @Override
     public String toString() {
         return sampleName;
+    }
+
+    public int compareTo(SampleInformation o) {
+        return sampleName.compareToIgnoreCase(o.getSampleName());
     }
 }

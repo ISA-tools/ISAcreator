@@ -47,7 +47,7 @@ import java.io.Serializable;
  *
  * @author Eamonn Maguire
  */
-public class Protocol extends ISASection implements StudySubData, Serializable {
+public class Protocol extends ISASection implements StudySubData, Serializable, Comparable<Protocol> {
 
     public static final String PROTOCOL_NAME = "Study Protocol Name";
     public static final String PROTOCOL_TYPE = "Study Protocol Type";
@@ -199,5 +199,9 @@ public class Protocol extends ISASection implements StudySubData, Serializable {
     @Override
     public String toString() {
         return getProtocolName();
+    }
+
+    public int compareTo(Protocol protocol) {
+        return getProtocolName().compareToIgnoreCase(protocol.getProtocolName());
     }
 }

@@ -51,11 +51,6 @@ public class SpreadsheetCell {
 
     private Object value;
 
-    public SpreadsheetCell() {
-        value = null;
-
-    }
-
     public SpreadsheetCell(Object datum) {
         value = datum;
     }

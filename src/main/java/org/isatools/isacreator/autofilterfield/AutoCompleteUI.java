@@ -7,23 +7,20 @@ import org.isatools.isacreator.autofilteringlist.FilterField;
 import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.GraphicsUtils;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
+import uk.ac.ebi.utils.collections.AlphaNumComparator;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collections;
 
 /**
  * The AutoCompleteUI class provides the user interface to allow users to select study samples from an autocompleting list
  * of Study sample ids. It also allows the user to propagate metadata from the study sample file directly into the Assay file.
  */
-public class AutoCompleteUI<T> extends JWindow implements ActionListener {
+public class AutoCompleteUI<T extends Comparable> extends JWindow implements ActionListener {
 
     public static final int INCOMING = 1;
     public static final int OUTGOING = -1;
@@ -43,17 +40,17 @@ public class AutoCompleteUI<T> extends JWindow implements ActionListener {
     public static final int WIDTH = 230;
 
     private FilterField filterField;
-    private Collection<T> filterableContent;
+    private List<T> filterableContent;
     private ListCellRenderer cellRenderer;
 
     private ExtendedJList filterList;
 
 
-    public AutoCompleteUI(FilterField filterField, Collection<T> filterableContent) {
+    public AutoCompleteUI(FilterField filterField, List<T> filterableContent) {
         this(filterField, filterableContent, new FilterableListCellRenderer());
     }
 
-    public AutoCompleteUI(FilterField filterField, Collection<T> filterableContent, ListCellRenderer cellRenderer) {
+    public AutoCompleteUI(FilterField filterField, List<T> filterableContent, ListCellRenderer cellRenderer) {
         this.filterField = filterField;
         this.filterableContent = filterableContent;
         this.cellRenderer = cellRenderer;
@@ -249,11 +246,11 @@ public class AutoCompleteUI<T> extends JWindow implements ActionListener {
         repaint();
     }
 
-    public void updateContent(Collection<T> studySampleInformation) {
-        filterableContent = studySampleInformation;
+    public void updateContent(List<T> content) {
+        filterableContent = content;
 
         filterList.clearItems();
-
+        Collections.sort(filterableContent, new AlphaNumComparator<T>());
         for (T item : filterableContent) {
             filterList.addItem(item);
         }
