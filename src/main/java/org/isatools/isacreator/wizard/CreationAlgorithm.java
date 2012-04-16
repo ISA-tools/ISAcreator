@@ -162,16 +162,44 @@ public abstract class CreationAlgorithm extends JPanel {
         return false;
     }
 
+    protected int calculateMaxRepliates(Map<Integer, TreatmentReplicate> treatmentGroups) {
+        int maxReplicateCount = 0;
+
+        for (TreatmentReplicate replicate : treatmentGroups.values()) {
+            if (replicate.getNumReplicates() > maxReplicateCount) {
+                maxReplicateCount = replicate.getNumReplicates();
+            }
+        }
+
+        return maxReplicateCount;
+    }
+
+    protected String padNumericString(int largestNumber, int targetNumber) {
+        String largestNumberAsString = String.valueOf(largestNumber);
+        String targetNumberAsString = String.valueOf(targetNumber);
+
+        if (largestNumberAsString.length() == targetNumberAsString.length()) {
+            return targetNumberAsString;
+        }
+
+        int padAmount = largestNumberAsString.length() - targetNumberAsString.length();
+        for (int padStep = 0; padStep < padAmount; padStep++) {
+            targetNumberAsString = "0" + targetNumberAsString;
+        }
+
+        return targetNumberAsString;
+    }
+
 
     public String replaceStringModelValues(String dataWithReplacementTerms,
-                                           String institution, int groupNo, int subjectNo, String targetExtract,
+                                           String institution, String groupNo, String subjectNo, String targetExtract,
                                            int labelNo, String arrayDesign) {
         dataWithReplacementTerms = dataWithReplacementTerms.replaceAll("\\[INSTITUTION\\]",
                 institution);
         dataWithReplacementTerms = dataWithReplacementTerms.replaceAll("\\[GROUP_NO\\]",
-                String.valueOf(groupNo));
+                groupNo);
         dataWithReplacementTerms = dataWithReplacementTerms.replaceAll("\\[SUBJECT_NO\\]",
-                String.valueOf(subjectNo));
+                subjectNo);
         dataWithReplacementTerms = dataWithReplacementTerms.replaceAll("\\[SAMPLE_EXTRACT\\]",
                 targetExtract);
         dataWithReplacementTerms = dataWithReplacementTerms.replaceAll("\\[EXTRACT_COUNT\\]",

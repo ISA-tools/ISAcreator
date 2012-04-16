@@ -132,6 +132,8 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
 
         buildingModel.setPreDefinedHeaders(headersForReferenceObject);
 
+        int maxSamples = calculateMaxRepliates(treatmentGroups);
+
         for (int groups = 0; groups < treatmentGroups.size(); groups++) {
             for (ExtractDetailsCapture extractField : extractDetails) {
 
@@ -175,26 +177,12 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                         shortExtractName = extractName.substring(extractName.indexOf(":") + 1);
                     }
 
-                    row = replaceStringModelValues(row, institution, groups + 1,
-                            replicates, shortExtractName, 1, "");
-
-
-                    String sampleName = replaceStringModelValues(buildingModel.getColumnFormatByName("sample name"),
-                            institution, groups + 1, replicates, shortExtractName, 1, "");
-
-                    String sourceName = replaceStringModelValues(sourceNameFormat,
-                            institution, groups + 1, replicates, shortExtractName, 1, "");
-
-                    sampleInfo.put(sampleName, new GeneratedSampleDetails(extractName, sourceName, treatmentGroups.get(groups).getTreatmentGroup()));
-
-                    buildingModel.addRowData(headersAsArray.toArray(new String[headersAsArray.size()]),
-                            row.split("\t"));
+                    addRow(row, headersAsArray, groups, replicates, extractName, shortExtractName, maxSamples);
 
                     // reset variables for next iteration
                     row = "";
                 }
             }
-
         }
 
         TableReferenceObjectWrapper troAdapter = new TableReferenceObjectWrapper(buildingModel);
@@ -205,6 +193,28 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
 
         // add extract statement for reference sample addition.
         assay.setTableReferenceObject(buildingModel);
+    }
+
+    private void addRow(String row, List<String> headersAsArray, int groups, int replicates, String extractName, String shortExtractName, int totalSamples) {
+
+        String groupNo = padNumericString(treatmentGroups.size(), groups + 1);
+        String subjectNo = padNumericString(totalSamples, replicates);
+
+
+        row = replaceStringModelValues(row, institution, groupNo,
+                subjectNo, shortExtractName, 1, "");
+
+
+        String sampleName = replaceStringModelValues(buildingModel.getColumnFormatByName("sample name"),
+                institution, groupNo, subjectNo, shortExtractName, 1, "");
+
+        String sourceName = replaceStringModelValues(sourceNameFormat,
+                institution, groupNo, subjectNo, shortExtractName, 1, "");
+
+        sampleInfo.put(sampleName, new GeneratedSampleDetails(extractName, sourceName, treatmentGroups.get(groups).getTreatmentGroup()));
+
+        buildingModel.addRowData(headersAsArray.toArray(new String[headersAsArray.size()]),
+                row.split("\t"));
     }
 
     public JPanel instantiatePanel() {

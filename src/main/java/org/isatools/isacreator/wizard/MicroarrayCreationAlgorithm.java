@@ -361,7 +361,6 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         return microArrayQuestionCont;
     }
 
-
     public void performAssayCentricTask() {
         // run the algorithm using all gathered information!
 
@@ -379,6 +378,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
 
         buildingModel.setPreDefinedHeaders(headersForReferenceObject);
 
+        int maxReplicates = calculateMaxRepliates(treatmentGroups);
 
         for (String arrayDesign : getSelectedArrayDesigns()) {
             for (int groups = 0; groups < treatmentGroups.size(); groups++) {
@@ -425,20 +425,8 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                                 shortExtractName = extractName.substring(extractName.indexOf(":") + 1);
                             }
 
-                            row = new StringBuffer(replaceStringModelValues(row.toString(), institution, groups + 1,
-                                    subjects, shortExtractName,
-                                    labelNum + 1, arrayDesign));
-
-                            String sampleName = replaceStringModelValues(buildingModel.getColumnFormatByName("sample name"),
-                                    institution, groups + 1, subjects, shortExtractName, labelNum + 1, arrayDesign);
-
-                            String sourceName = replaceStringModelValues(sourceNameFormat,
-                                    institution, groups + 1, subjects, shortExtractName, labelNum + 1, arrayDesign);
-
-                            sampleInfo.put(sampleName, new GeneratedSampleDetails(
-                                    extractName, sourceName, treatmentGroups.get(groups).getTreatmentGroup()));
-
-                            buildingModel.addRowData(headersAsArray, row.toString().split("\t"));
+                            addRow(row, headersAsArray, arrayDesign, groups,
+                                    subjects, labelNum, extractName, shortExtractName, maxReplicates);
 
                             // reset variables for nex iteration
                             row = new StringBuffer();
@@ -456,5 +444,42 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         study.getProtocols().addAll(protocols);
 
         assay.setTableReferenceObject(buildingModel);
+    }
+
+    private void addRow(StringBuffer row, String[] headersAsArray, String arrayDesign, int groups, int subjects, int labelNum, String extractName, String shortExtractName, int totalSamples) {
+        String groupNo = padNumericString(treatmentGroups.size(), groups + 1);
+        String subjectNo = padNumericString(totalSamples, subjects);
+
+        row = new StringBuffer(replaceStringModelValues(row.toString(), institution, groupNo,
+                subjectNo, shortExtractName,
+                labelNum + 1, arrayDesign));
+
+        String sampleName = replaceStringModelValues(buildingModel.getColumnFormatByName("sample name"),
+                institution, groupNo, subjectNo, shortExtractName, labelNum + 1, arrayDesign);
+
+        String sourceName = replaceStringModelValues(sourceNameFormat,
+                institution, groupNo, subjectNo, shortExtractName, labelNum + 1, arrayDesign);
+
+        sampleInfo.put(sampleName, new GeneratedSampleDetails(
+                extractName, sourceName, treatmentGroups.get(groups).getTreatmentGroup()));
+
+        buildingModel.addRowData(headersAsArray, row.toString().split("\t"));
+    }
+
+    private int calculateMaxSamples() {
+        int totalSamples = 0;
+        for (String arrayDesign : getSelectedArrayDesigns()) {
+            for (int groups = 0; groups < treatmentGroups.size(); groups++) {
+                for (ExtractDetailsCapture extractField : extractDetails) {
+                    for (int subjects = 0; subjects <= treatmentGroups.get(groups).getNumReplicates(); subjects++) {
+                        for (int labelNum = 0; labelNum < getLabelCount(); labelNum++) {
+                            totalSamples++;
+                        }
+                    }
+                }
+            }
+        }
+
+        return totalSamples;
     }
 }

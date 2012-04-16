@@ -1429,7 +1429,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
                     System.out.println("about to create add assay pane, dep is null? " + (studyBeingEdited.getUserInterface() == null));
                     System.out.println("DataEntryEnvironment parent frame is null? " + (studyBeingEdited.getUserInterface().getDataEntryEnvironment().getParentFrame() == null));
-                    addAssayUI = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, dep, currentUser);
+                    addAssayUI = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, currentUser);
                     addAssayUI.createGUI();
                     addAssayUI.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);
                     addAssayUI.addPropertyChangeListener("canceledAssayCreation", new PropertyChangeListener() {

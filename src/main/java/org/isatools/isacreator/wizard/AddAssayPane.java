@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.model.Assay;
@@ -82,20 +83,19 @@ public class AddAssayPane extends JPanel {
     private Study study;
     private List<PropertyType> factorsToAdd;
     private Map<Integer, TreatmentReplicate> treatmentGroups;
-    private DataEntryEnvironment dataEntryEnvironment;
+
     private ListOrderedMap<String, GeneratedSampleDetails> sampleNameValues;
     private AbstractDataEntryEnvironment abstractDataEntryEnvironment;
     private UserProfile up;
     private MouseListener[] listeners;
 
     public AddAssayPane(AbstractDataEntryEnvironment abstractDataEntryEnvironment, Study study, List<PropertyType> factorsToAdd,
-                        Map<Integer, TreatmentReplicate> treatmentGroups, DataEntryEnvironment dep, UserProfile up) {
+                        Map<Integer, TreatmentReplicate> treatmentGroups, UserProfile up) {
         this.abstractDataEntryEnvironment = abstractDataEntryEnvironment;
         this.up = up;
         this.study = study;
         this.factorsToAdd = factorsToAdd;
         this.treatmentGroups = treatmentGroups;
-        this.dataEntryEnvironment = dataEntryEnvironment;
         assaysToDefine = study.getAssays().values();
 
         algorithmsToRun = new ArrayList<CreationAlgorithm>();
@@ -122,21 +122,21 @@ public class AddAssayPane extends JPanel {
         centerPanel.setOpaque(false);
         centerPanel.add(Box.createVerticalStrut(15));
 
-        String sourceNameFormat = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
+        String sourceNameFormat = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
 
         String[] arrayDesigns = retrieveArrayDesigns();
 
         for (Assay a : assaysToDefine) {
             if (a.getTechnologyType().equalsIgnoreCase("dna microarray")) {
                 MicroarrayCreationAlgorithm maAlg = new MicroarrayCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(dataEntryEnvironment.getParentFrame().selectTROForUserSelection(
+                        new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(
                                 a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat, arrayDesigns);
                 algorithmsToRun.add(maAlg);
                 centerPanel.add(maAlg);
             } else {
                 GeneralCreationAlgorithm gca = new GeneralCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(dataEntryEnvironment.getParentFrame().selectTROForUserSelection(a.getMeasurementEndpoint(),
+                        new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat);
                 algorithmsToRun.add(gca);
                 centerPanel.add(gca);
