@@ -42,6 +42,8 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
@@ -50,9 +52,9 @@ import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 import uk.ac.ebi.utils.collections.Pair;
-
 
 import java.util.*;
 
@@ -72,10 +74,12 @@ public class StructureToInvestigationMapper {
 
     private Investigation investigation;
 
+
     public StructureToInvestigationMapper() {
         ontologyTermsDefined = new ArrayList<OntologyTerm>();
         messages = new ArrayList<ErrorMessage>();
     }
+
 
     public Pair<Boolean, Investigation> createInvestigationFromDataStructure(
             OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> investigationStructure) {
@@ -103,7 +107,6 @@ public class StructureToInvestigationMapper {
                 investigation.addStudy(study);
             }
         }
-
 
         return new Pair<Boolean, Investigation>(validateInvestigationFile(investigation), investigation);
     }
@@ -142,6 +145,7 @@ public class StructureToInvestigationMapper {
                 sectionFields.put(investigationSection, processedContactSection.fst);
                 contacts = processedContactSection.snd;
             }
+
         }
 
         if (tmpInvestigation != null) {
@@ -149,7 +153,7 @@ public class StructureToInvestigationMapper {
             tmpInvestigation.addToPublications(publications);
             tmpInvestigation.addToContacts(contacts);
 
-            tmpInvestigation.setReferenceObject(new DataEntryReferenceObject(sectionFields));
+            tmpInvestigation.addToReferenceObject(sectionFields);
         }
 
         return tmpInvestigation;
@@ -246,7 +250,10 @@ public class StructureToInvestigationMapper {
             study.setFactors(factors);
             study.setPublications(publications);
 
-            study.setReferenceObject(new DataEntryReferenceObject(sectionFields));
+            // we want to add new fields, but want to keep the general working of the configuration. So we do just that.
+            // new fields (unknown) will be treated as Strings, other known values will acquire the properties
+            // specified of them in the configuration XML.
+            study.addToReferenceObject(sectionFields);
         }
 
         return study;
@@ -462,8 +469,6 @@ public class StructureToInvestigationMapper {
 
             if (!isNullRecord(record)) {
                 p.addToFields(record);
-
-
                 for (int hashCode : ontologyFields.keySet()) {
                     Map<String, String> ontologyField = ontologyFields.get(hashCode);
 
@@ -474,7 +479,6 @@ public class StructureToInvestigationMapper {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
                 }
-
                 protocols.add(p);
             }
         }
@@ -524,6 +528,7 @@ public class StructureToInvestigationMapper {
     }
 
     private Set<String> getFieldList(Map<String, List<String>> records) {
+        // we also need to add missing fields here as well.
         return records.keySet();
     }
 

@@ -38,9 +38,13 @@
 package org.isatools.isacreator.model;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +74,7 @@ public class Investigation extends ISASection {
     private List<Contact> contacts;
     private Map<String, Study> studies;
     private Map<String, String> assays;
-    private DataEntryReferenceObject referenceObject;
+
     private String reference;
 
 
@@ -110,6 +114,7 @@ public class Investigation extends ISASection {
         setSubmissionDate(submissionDate);
         setPublicReleaseDate(publicReleaseDate);
 
+
         initialise();
     }
 
@@ -121,8 +126,13 @@ public class Investigation extends ISASection {
         OntologyManager.newInvestigation(getInvestigationId().equals("") ? "investigation-" + System.currentTimeMillis() : getInvestigationId());
     }
 
+    @Override
+    public void setReferenceObjectForSection() {
+        setReferenceObject(ApplicationManager.getInvestigationDataEntryReferenceObject());
+    }
 
     public boolean addStudy(Study study) {
+
         if (studies.get(study.getStudyId()) == null) {
             studies.put(study.getStudyId(), study);
             return true;
@@ -156,6 +166,7 @@ public class Investigation extends ISASection {
     public boolean addPublication(Publication publication) {
 
         if (!checkPublicationExists(publication.getPublicationTitle())) {
+            publication.setReferenceObject(getReferenceObject(), InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION);
             publications.add(publication);
             return true;
         }
@@ -211,14 +222,6 @@ public class Investigation extends ISASection {
         return reference;
     }
 
-    public DataEntryReferenceObject getReferenceObject() {
-        return referenceObject;
-    }
-
-    public void setReferenceObject(DataEntryReferenceObject referenceObject) {
-        this.referenceObject = referenceObject;
-    }
-
     public Map<String, String> getAssays() {
         return assays;
     }
@@ -260,7 +263,6 @@ public class Investigation extends ISASection {
             configurationName = configurationName.substring(configurationName.lastIndexOf("/") + 1);
         }
 
-        System.out.println("Setting last configuration used to " + configurationName);
         fieldValues.put(CONFIGURATION_LAST_OPENED_WITH, configurationName);
     }
 
@@ -345,6 +347,7 @@ public class Investigation extends ISASection {
      */
     public boolean addContact(Contact contact) {
         if (!checkContactExists(contact.getFirstName(), contact.getLastName(), contact.getEmail())) {
+            contact.setReferenceObject(getReferenceObject(), InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION);
             contacts.add(contact);
 
             return true;
@@ -356,7 +359,6 @@ public class Investigation extends ISASection {
     private boolean checkContactExists(String forename, String surname,
                                        String email) {
         for (Contact c : contacts) {
-
             if (c.getFirstName() != null && c.getLastName() != null) {
                 if (c.getFirstName().equals(forename) &&
                         c.getLastName().equals(surname) &&
@@ -388,5 +390,9 @@ public class Investigation extends ISASection {
         if (toRemove != null) {
             publications.remove(toRemove);
         }
+    }
+
+    public void setReferenceObject(DataEntryReferenceObject referenceObject) {
+        setReferenceObject(referenceObject, InvestigationFileSection.INVESTIGATION_SECTION);
     }
 }

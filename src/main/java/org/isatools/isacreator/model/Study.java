@@ -37,8 +37,12 @@
 
 package org.isatools.isacreator.model;
 
+import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.util.*;
 
@@ -69,8 +73,6 @@ public class Study extends ISASection {
     private Set<String> previousFactors;
 
     private StudyDataEntry studyDataEntryEnvironment;
-
-    private DataEntryReferenceObject referenceObject;
 
     private Map<String, Set<String>> termsToBeReplaced;
     private Map<String, Set<String>> termsToReplaceWith;
@@ -107,7 +109,6 @@ public class Study extends ISASection {
     public Study(String studyId, String studyTitle, String dateOfSubmission,
                  String publicReleaseDate, String studyDesc, String studySample) {
         super();
-
         fieldValues.put(STUDY_ID, studyId);
         fieldValues.put(STUDY_TITLE, studyTitle);
         fieldValues.put(STUDY_DATE_OF_SUBMISSION, dateOfSubmission);
@@ -127,6 +128,11 @@ public class Study extends ISASection {
         studyDesigns = new ArrayList<StudyDesign>();
         termsToBeReplaced = new HashMap<String, Set<String>>();
         termsToReplaceWith = new HashMap<String, Set<String>>();
+    }
+
+    @Override
+    public void setReferenceObjectForSection() {
+        setReferenceObject(ApplicationManager.getInvestigationDataEntryReferenceObject());
     }
 
     public boolean addAssay(Assay assay) {
@@ -331,14 +337,6 @@ public class Study extends ISASection {
 
     public String getStudyId() {
         return getValue(STUDY_ID);
-    }
-
-    public DataEntryReferenceObject getReferenceObject() {
-        return referenceObject;
-    }
-
-    public void setReferenceObject(DataEntryReferenceObject referenceObject) {
-        this.referenceObject = referenceObject;
     }
 
     public Assay getStudySample() {
@@ -751,5 +749,8 @@ public class Study extends ISASection {
         return false;
     }
 
+    public void setReferenceObject(DataEntryReferenceObject referenceObject) {
+        setReferenceObject(referenceObject, InvestigationFileSection.STUDY_SECTION);
+    }
 
 }

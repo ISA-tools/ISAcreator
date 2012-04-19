@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.configuration.io.ConfigXMLParser;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
@@ -146,8 +147,10 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
 
-                            menu.getMain().setAssayDefinitions(configParser.getTables());
-                            menu.getMain().setMappings(configParser.getMappings());
+                            ApplicationManager.getCurrentApplicationInstance().setAssayDefinitions(configParser.getTables());
+                            ApplicationManager.getCurrentApplicationInstance().setMappings(configParser.getMappings());
+
+                            ApplicationManager.setCurrentDataReferenceObject();
 
                             ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_CONFIGURATION, new File(dir).getAbsolutePath());
 

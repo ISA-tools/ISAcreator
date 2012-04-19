@@ -288,6 +288,10 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         Set<String> ontologyFields = referenceObject.getOntologyTerms(sectionToAddTo);
         Set<String> fieldsToIgnore = referenceObject.getFieldsToIgnore();
 
+        for (String refField : referenceObject.getFieldsForSection(sectionToAddTo)) {
+            System.out.println(refField);
+        }
+
         for (String fieldName : fieldValues.keySet()) {
 
             if (!fieldsToIgnore.contains(fieldName)) {
@@ -295,7 +299,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                 FieldObject fieldDescriptor = referenceObject.getFieldDefinition(fieldName);
 
                 if (!fieldDescriptor.isHidden()) {
-
                     String tmpFieldName = fieldName;
 
                     if (realNamesToAliases.containsKey(fieldName)) {

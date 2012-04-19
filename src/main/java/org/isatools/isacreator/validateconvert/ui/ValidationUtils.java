@@ -46,23 +46,6 @@ import uk.ac.ebi.utils.collections.Pair;
 
 public class ValidationUtils {
 
-    public static String extractFileInformation(LoggingEvent loggingEvent) {
-
-        String ndc = loggingEvent.getNDC();
-
-        if (ndc != null) {
-            System.out.println(ndc);
-
-            ndc = ndc.substring(ndc.lastIndexOf("file:")).replaceAll("file:|]|\\[sect:ASSAYS", "").trim();
-
-
-            return ndc;
-        }
-
-        return null;
-
-    }
-
     public static Pair<Assay, FileType> resolveFileTypeFromFileName(String fileName, Investigation currentInvestigation) {
 
         for (String studyId : currentInvestigation.getStudies().keySet()) {

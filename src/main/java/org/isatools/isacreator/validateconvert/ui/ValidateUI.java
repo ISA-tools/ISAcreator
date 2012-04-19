@@ -41,10 +41,7 @@ import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.isatools.errorreporter.model.ErrorLevel;
-import org.isatools.errorreporter.model.ErrorMessage;
-import org.isatools.errorreporter.model.FileType;
-import org.isatools.errorreporter.model.ISAFileErrorReport;
+import org.isatools.errorreporter.model.*;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
@@ -165,7 +162,9 @@ public class ValidateUI extends JFrame {
                     boolean strictValidationEnabled = Boolean.valueOf(ISAcreatorProperties.getProperty(ISAcreatorProperties.STRICT_VALIDATION));
                     log.info("Strict validation on? " + strictValidationEnabled);
 
-                    boolean shouldShowErrors = strictValidationEnabled && getErrorMessages(isatabValidator.getLog()).size() > 0;
+                    final Map<String, List<ErrorMessage>> errorMessages = getErrorMessages(isatabValidator.getLog());
+
+                    boolean shouldShowErrors = strictValidationEnabled && errorMessages.size() > 0;
 
                     if (result == GUIInvokerResult.SUCCESS && !shouldShowErrors) {
 
@@ -193,7 +192,7 @@ public class ValidateUI extends JFrame {
                         log.info("Showing errors and warnings...");
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                displayValidationErrorsAndWarnings(getErrorMessages(isatabValidator.getLog()));
+                                displayValidationErrorsAndWarnings(errorMessages);
                             }
                         });
                     }
@@ -236,7 +235,7 @@ public class ValidateUI extends JFrame {
         Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
 
         for (TabLoggingEventWrapper event : logEvents) {
-            String fileName = ValidationUtils.extractFileInformation(event.getLogEvent());
+            String fileName = ErrorUtils.extractFileInformation(event.getLogEvent());
 
             if (fileName != null) {
                 if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
@@ -252,7 +251,6 @@ public class ValidateUI extends JFrame {
 
     private void convertISAtab(BIIObjectStore store, AllowedConversions conversion,
                                String isatabLocation, String outputLocation) {
-
 
         GUIISATABConverter converter = new GUIISATABConverter();
         GUIInvokerResult result = converter.convert(store, isatabLocation, outputLocation, conversion);

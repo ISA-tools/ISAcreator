@@ -39,20 +39,27 @@ package org.isatools.isacreator.model;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.collections15.set.ListOrderedSet;
+import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by the ISA team
  *
  * @author Eamonn Maguire (eamonnmag@gmail.com)
  */
-public class ISASection {
+public abstract class ISASection {
 
     protected OrderedMap<String, String> fieldValues;
+    private DataEntryReferenceObject referenceObject;
 
     public ISASection() {
         fieldValues = new ListOrderedMap<String, String>();
+        setReferenceObjectForSection();
     }
 
     public OrderedMap<String, String> getFieldValues() {
@@ -77,5 +84,34 @@ public class ISASection {
             value = fieldValues.get(key);
         }
         return value;
+    }
+
+    public DataEntryReferenceObject getReferenceObject() {
+        return referenceObject;
+    }
+
+    public void setReferenceObject(DataEntryReferenceObject referenceObject, InvestigationFileSection section) {
+        this.referenceObject = referenceObject;
+
+        if (referenceObject.getFieldsForSection(section) != null) {
+            for (String field : referenceObject.getFieldsForSection(section)) {
+                if (!fieldValues.containsKey(field)) {
+                    fieldValues.put(field, referenceObject.getFieldDefinition(field).getDefaultVal());
+                }
+            }
+        }
+    }
+
+    public void addToReferenceObject(OrderedMap<InvestigationFileSection, Set<String>> sectionFields) {
+        for (InvestigationFileSection section : sectionFields.keySet()) {
+            if (!referenceObject.getSectionDefinition().containsKey(section)) {
+                referenceObject.getSectionDefinition().put(section, new ListOrderedSet<String>());
+            }
+            referenceObject.getSectionDefinition().get(section).addAll(sectionFields.get(section));
+        }
+    }
+
+    public void setReferenceObjectForSection() {
+        // can be overridden...
     }
 }

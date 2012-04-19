@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.ontologymanager;
 
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.ISASection;
 
 import java.io.Serializable;
@@ -74,8 +76,6 @@ public class OntologySourceRefObject extends ISASection implements Serializable 
         fieldValues.put(SOURCE_VERSION, sourceVersion);
         fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
     }
-
-
 
 
     public String getSourceDescription() {

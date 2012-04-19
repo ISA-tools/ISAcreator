@@ -103,6 +103,8 @@ public class ConfigXMLParser {
                     }
                 }
             }
+
+
         } catch (XmlException e) {
             log.error("Please ensure you have provided a directory containing only valid configuration xml produced by ISAcreator Configurator!");
             e.printStackTrace();
