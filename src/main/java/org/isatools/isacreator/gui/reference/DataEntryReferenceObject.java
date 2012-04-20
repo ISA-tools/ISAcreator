@@ -29,6 +29,7 @@ public class DataEntryReferenceObject {
 
 
     public DataEntryReferenceObject() {
+        this(new ListOrderedMap<InvestigationFileSection, Set<String>>());
     }
 
     public DataEntryReferenceObject(OrderedMap<InvestigationFileSection, Set<String>> sectionDefinition) {

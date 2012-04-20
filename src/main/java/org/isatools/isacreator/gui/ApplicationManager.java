@@ -33,6 +33,6 @@ public class ApplicationManager {
     }
 
     public static DataEntryReferenceObject getInvestigationDataEntryReferenceObject() {
-        return investigationDataEntryReferenceObject;
+        return investigationDataEntryReferenceObject == null ? new DataEntryReferenceObject() : investigationDataEntryReferenceObject;
     }
 }
