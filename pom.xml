@@ -59,9 +59,8 @@
         </repository>
 
         <repository>
-            <id>repo2.maven.org</id>
-            <name>repo2.maven.org</name>
-            <url>http://repo2.maven.org/maven2</url>
+            <id>mvnsearch</id>
+            <url>http://www.mvnsearch.org/maven2/</url>
         </repository>
 
     </repositories>
