@@ -58,6 +58,12 @@
             <url>http://frog.oerc.ox.ac.uk:8080/artifactory/repo/</url>
         </repository>
 
+        <repository>
+            <id>repo2.maven.org</id>
+            <name>repo2.maven.org</name>
+            <url>http://repo2.maven.org/maven2</url>
+        </repository>
+
     </repositories>
 
     <build>
