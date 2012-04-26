@@ -22,7 +22,7 @@ You should read this article about Git Flow: <http://scottchacon.com/2011/08/31/
 2. Clone your forked repository to your machine
 3. Create a branch (`git checkout -b myisacreator`)
 4. Make your changes
-5. Run the tests (`mvn clean test -Ptest,h2,index_local`)
+5. Run the tests (`mvn clean test`)
 6. Commit your changes (`git commit -am "Added something useful"`)
 7. Push to the branch (`git push origin myisacreator`)
 8. Create a [Pull Request](http://help.github.com/pull-requests/) from your branch.
