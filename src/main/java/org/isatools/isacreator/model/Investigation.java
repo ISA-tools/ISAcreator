@@ -259,8 +259,8 @@ public class Investigation extends ISASection {
     }
 
     public void setLastConfigurationUsed(String configurationName) {
-        if (configurationName.contains("/")) {
-            configurationName = configurationName.substring(configurationName.lastIndexOf("/") + 1);
+        if (configurationName.contains(File.separator)) {
+            configurationName = configurationName.substring(configurationName.lastIndexOf(File.separator) + 1);
         }
 
         fieldValues.put(CONFIGURATION_LAST_OPENED_WITH, configurationName);
