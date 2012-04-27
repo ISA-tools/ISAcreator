@@ -83,7 +83,6 @@ public class ConfigXMLParser {
         tables = new ArrayList<TableReferenceObject>();
     }
 
-
     public void loadConfiguration() {
         List<IsaTabConfigFileType> definitions;
         try {
@@ -103,8 +102,6 @@ public class ConfigXMLParser {
                     }
                 }
             }
-
-
         } catch (XmlException e) {
             log.error("Please ensure you have provided a directory containing only valid configuration xml produced by ISAcreator Configurator!");
             e.printStackTrace();
@@ -224,6 +221,8 @@ public class ConfigXMLParser {
                 FieldObject newField = new FieldObject(colNo, stdField.getHeader(), StringProcessing.cleanUpString(stdField.getDescription()), DataTypes.resolveDataType(stdField.getDataType()), stdField.getDefaultValue(), stdField.getSection(),
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
+
+                System.out.println("Loaded field: " + newField.getFieldName() + " for " + newField.getSection());
 
                 newField.setWizardTemplate(stdField.getGeneratedValueTemplate());
 

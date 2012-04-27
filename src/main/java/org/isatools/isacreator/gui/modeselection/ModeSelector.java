@@ -252,7 +252,6 @@ public class ModeSelector extends JFrame implements BundleActivator {
                         "org.isatools.isatab.isaconfigurator, com.explodingpixels.macwidgets, org.isatools.isacreator.io.importisa.errorhandling.exceptions");
 
         File pluginsDirectory = new File("Plugins");
-        // TODO - check if it loads the configuration correctly.
         if (!pluginsDirectory.exists()) {
             pluginsDirectory.mkdir();
         } else {

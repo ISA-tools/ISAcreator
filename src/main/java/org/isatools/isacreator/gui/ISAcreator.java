@@ -744,19 +744,15 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         if (getCurrentUser() != null) {
             for (UserProfile up : getUserProfiles()) {
-
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
                     up.setUserHistory(OntologyManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
-
                     break;
                 }
-
             }
         }
         userProfileIO.saveUserProfiles();
         dispose();
-        //exit with no problems!
         System.exit(0);
     }
 

@@ -59,6 +59,8 @@ public class DataEntryReferenceObject {
             this.fieldDefinition.put(field.getFieldName(), field);
         }
 
+        createSectionDefinitionsFromField();
+
     }
 
     private void createSectionDefinitionsFromField() {

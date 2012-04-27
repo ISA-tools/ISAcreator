@@ -72,8 +72,6 @@ public class StructureToInvestigationMapper {
     private List<OntologyTerm> ontologyTermsDefined;
     private List<ErrorMessage> messages;
 
-    private Investigation investigation;
-
 
     public StructureToInvestigationMapper() {
         ontologyTermsDefined = new ArrayList<OntologyTerm>();
@@ -84,7 +82,7 @@ public class StructureToInvestigationMapper {
     public Pair<Boolean, Investigation> createInvestigationFromDataStructure(
             OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>> investigationStructure) {
 
-        investigation = null;
+        Investigation investigation = null;
 
         List<Study> studies = new ArrayList<Study>();
 
