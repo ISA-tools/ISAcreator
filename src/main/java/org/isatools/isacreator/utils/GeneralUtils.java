@@ -39,6 +39,7 @@ package org.isatools.isacreator.utils;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.io.*;
@@ -123,6 +124,19 @@ public class GeneralUtils {
         Pattern urlPattern = Pattern.compile("((((ht|f)tp(s?)):(//)?)(\\S+)?)");
         Matcher m = urlPattern.matcher(value);
         return m.matches();
+    }
+
+    public static String getShortString(String toShorten) {
+        toShorten = toShorten.replaceAll("(\\[|\\])", "");
+        if (toShorten.contains(GeneralFieldTypes.CHARACTERISTIC.name)) {
+            return toShorten.replaceAll(GeneralFieldTypes.CHARACTERISTIC.name, GeneralFieldTypes.CHARACTERISTIC.abbreviation);
+        } else if (toShorten.contains(GeneralFieldTypes.PARAMETER_VALUE.name)) {
+            return toShorten.replaceAll(GeneralFieldTypes.PARAMETER_VALUE.name, GeneralFieldTypes.PARAMETER_VALUE.abbreviation);
+        } else if (toShorten.contains(GeneralFieldTypes.FACTOR_VALUE.name)) {
+            return toShorten.replaceAll(GeneralFieldTypes.FACTOR_VALUE.name, GeneralFieldTypes.FACTOR_VALUE.abbreviation);
+        } else {
+            return toShorten;
+        }
     }
 
 

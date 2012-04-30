@@ -36,8 +36,11 @@ package org.isatools.isacreator.settings;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
+import org.isatools.isacreator.utils.PropertyFileIO;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 
 public class ISAcreatorProperties {
@@ -50,6 +53,7 @@ public class ISAcreatorProperties {
 
     public static void setProperty(String key, String value) {
         properties.put(key, value);
+        saveProperties();
     }
 
     public static String getProperty(String key) {
@@ -57,6 +61,15 @@ public class ISAcreatorProperties {
             return properties.get(key);
         }
         return "";
+    }
+
+    private static void saveProperties() {
+        Properties toSave = new Properties();
+        for (String propertyName : properties.keySet()) {
+            toSave.setProperty(propertyName, properties.get(propertyName));
+        }
+
+        PropertyFileIO.saveProperties(toSave, SettingsUtil.PROPERTIES_FILE);
     }
 
 

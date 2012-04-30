@@ -91,7 +91,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     // we create a static instance because the one component can be used across multiple SubForm elements in this way
     protected static EmptyBorder em = new EmptyBorder(0, 0, 0, 0);
 
-    private static final SubFormCellRenderer DEFAULT_LOCKED_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, new Color(141, 198, 63, 40));
+    private static final SubFormCellRenderer DEFAULT_LOCKED_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, new Color(141, 198, 63, 40), true);
     private static final SubFormCellRenderer DEFAULT_SCROLL_TABLE_RENDERER = new SubFormCellRenderer(UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, null);
 
     @InjectedResource

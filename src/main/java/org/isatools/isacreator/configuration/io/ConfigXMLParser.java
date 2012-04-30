@@ -222,8 +222,6 @@ public class ConfigXMLParser {
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
 
-                System.out.println("Loaded field: " + newField.getFieldName() + " for " + newField.getSection());
-
                 newField.setWizardTemplate(stdField.getGeneratedValueTemplate());
 
                 if (stdField.getRecommendedOntologies() != null) {

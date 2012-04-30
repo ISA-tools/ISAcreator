@@ -32,11 +32,6 @@ public class ApplicationManager {
         TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.INVESTIGATION);
         investigationDataEntryReferenceObject = new DataEntryReferenceObject();
         investigationDataEntryReferenceObject.setFieldDefinition(tro.getTableFields().getFields());
-
-        System.out.println("What fields do I have in the data entry reference object?");
-        for (String fieldObject : investigationDataEntryReferenceObject.getFieldsForSection(InvestigationFileSection.INVESTIGATION_SECTION)) {
-            System.out.println(fieldObject);
-        }
     }
 
     public static DataEntryReferenceObject getInvestigationDataEntryReferenceObject() {

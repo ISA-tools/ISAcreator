@@ -39,6 +39,8 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -49,6 +51,7 @@ public class CustomRowRenderer extends DefaultTableCellRenderer {
     private Map<Integer, Color> rowColors;
 
     private Font font;
+    private boolean fieldNameColumn;
 
     /**
      * Creates a FactorGroupCellRenderer.
@@ -56,9 +59,15 @@ public class CustomRowRenderer extends DefaultTableCellRenderer {
      * @param rowColors - colours rows should be painted in.
      */
     public CustomRowRenderer(Map<Integer, Color> rowColors, Font font) {
+        this(rowColors, font, false);
+
+    }
+
+    public CustomRowRenderer(Map<Integer, Color> rowColors, Font font, boolean isFieldNameColumn) {
         super();
         this.rowColors = rowColors;
         this.font = font;
+        fieldNameColumn = isFieldNameColumn;
     }
 
     /**
@@ -74,7 +83,6 @@ public class CustomRowRenderer extends DefaultTableCellRenderer {
      * @return the default table cell renderer
      */
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
         if (isSelected) {
             super.setForeground(UIHelper.BG_COLOR);
             super.setBackground(new Color(0, 104, 56, 175));
@@ -96,7 +104,15 @@ public class CustomRowRenderer extends DefaultTableCellRenderer {
         }
 
         /* this method has been changed for formula feature */
-        setValue(value);
+        setValue(value == null ? "" : value.toString());
+
+        if (fieldNameColumn) {
+            boolean shortNames = Boolean.parseBoolean(ISAcreatorProperties.getProperty("useShortNames"));
+            if (shortNames && value != null) {
+                String shortHeader = GeneralUtils.getShortString(value.toString());
+                setValue(shortHeader);
+            }
+        }
 
         //DefaulTableCellRenderer code
         // begin optimization to avoid painting background

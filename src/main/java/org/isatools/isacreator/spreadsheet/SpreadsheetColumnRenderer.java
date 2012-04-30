@@ -38,6 +38,10 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.model.GeneralFieldTypes;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -124,9 +128,19 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
 
         text.setForeground(isRequired.contains(vColIndex) ? UIHelper.RED_COLOR : UIHelper.DARK_GREEN_COLOR);
         text.setFont(isSelected ? UIHelper.VER_11_BOLD : UIHelper.VER_11_PLAIN);
-        text.setText(value.toString());
+
+        boolean shortNames = Boolean.parseBoolean(ISAcreatorProperties.getProperty("useShortNames"));
+
+        if (shortNames) {
+            String shortHeader = GeneralUtils.getShortString(value.toString());
+            text.setText(shortHeader);
+        } else {
+            text.setText(value.toString());
+        }
+
         return this;
     }
+
 
     public void setSelectedColumn(int col) {
         if (col < 0) {

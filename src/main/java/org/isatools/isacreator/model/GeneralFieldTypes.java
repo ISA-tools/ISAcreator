@@ -9,14 +9,20 @@ package org.isatools.isacreator.model;
  *         Time: 16:57
  */
 public enum GeneralFieldTypes {
-    CHARACTERISTIC("Characteristics"), FACTOR_VALUE("Factor Value"), COMMENT("Comment"), PROTOCOL_REF("Protocol REF"),
-    PARAMETER_VALUE("Parameter Value"), UNIT("Unit"), SAMPLE_NAME("Sample Name"), SOURCE_NAME("Source Name"),
+    CHARACTERISTIC("Characteristics", "[CH]"), FACTOR_VALUE("Factor Value", "[FV]"), COMMENT("Comment", "[C]"), PROTOCOL_REF("Protocol REF"),
+    PARAMETER_VALUE("Parameter Value", "[PV]"), UNIT("Unit"), SAMPLE_NAME("Sample Name"), SOURCE_NAME("Source Name"),
     TERM_SOURCE_REF("Term Source REF"), TERM_SOURCE_ACCESSION("Term Source Accession");
 
     public String name;
+    public String abbreviation;
 
     GeneralFieldTypes(String name) {
+        this(name, name);
+    }
+
+    GeneralFieldTypes(String name, String abbreviation) {
         this.name = name;
+        this.abbreviation = abbreviation;
     }
 
     public String toString() {

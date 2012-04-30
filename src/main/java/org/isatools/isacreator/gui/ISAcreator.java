@@ -145,6 +145,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private MenuPluginTracker menuPluginTracker;
     private SpreadsheetPluginTracker spreadsheetPluginTracker;
     private OntologyPluginTracker ontologyPluginTracker;
+    private JMenuItem useShortNames;
 
     static {
         UIManager.put("Panel.background", UIHelper.BG_COLOR);
@@ -300,7 +301,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
-
     private void loadProgramSettings() {
         programSettings = PropertyFileIO.loadSettings(SettingsUtil.PROPERTIES_FILE);
 
@@ -341,8 +341,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 System.out.println("Property name: " + propertyName + "= " + programSettings.get(propertyName));
                 ISAcreatorProperties.setProperty(propertyName, programSettings.get(propertyName).toString());
             }
-
-
         }
     }
 
@@ -561,6 +559,19 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         });
 
+
+        useShortNames = new JMenuItem(!Boolean.parseBoolean(ISAcreatorProperties.getProperty("useShortNames")) ? "Use abbreviated form of field names?" : "Use full form of field names");
+        useShortNames.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                boolean shortNames = Boolean.parseBoolean(ISAcreatorProperties.getProperty("useShortNames"));
+
+                ISAcreatorProperties.setProperty("useShortNames", String.valueOf(!shortNames));
+                useShortNames.setText(!shortNames ? "Use full form of field names" : "Use abbreviated form of field names?");
+                repaint();
+            }
+        });
+
         JMenu options = new JMenu("options");
         options.addMouseListener(cleanUpDisplayedEditors);
         options.addMouseListener(new MouseAdapter() {
@@ -571,6 +582,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         });
 
         options.add(clearOntologySearchCache);
+        options.add(useShortNames);
 
         menuBar.add(options);
 

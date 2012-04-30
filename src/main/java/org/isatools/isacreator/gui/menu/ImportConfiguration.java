@@ -68,7 +68,7 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
 
     public ImportConfiguration(ISAcreatorMenu menu) {
         super(menu);
-        setPreferredSize(new Dimension(400, 350));
+        setPreferredSize(new Dimension(400, 400));
     }
 
     public JPanel createAlternativeExitDisplay() {

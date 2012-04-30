@@ -38,14 +38,14 @@
 package org.isatools.isacreator.gui.formelements;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * SubFormCellRenderer
@@ -60,6 +60,7 @@ public class SubFormCellRenderer extends DefaultTableCellRenderer {
 
     private Font defaultFont;
     private Color defaultFontColor;
+    private boolean fieldNameColumn;
     private Color bgColor;
 
     /**
@@ -69,11 +70,20 @@ public class SubFormCellRenderer extends DefaultTableCellRenderer {
         this(defaultFont, defaultFontColor, bgColor, new HashMap<Integer, Color>());
     }
 
+    public SubFormCellRenderer(Font defaultFont, Color defaultFontColor, Color bgColor, boolean isFieldNameColumn) {
+        this(defaultFont, defaultFontColor, bgColor, new HashMap<Integer, Color>(), isFieldNameColumn);
+    }
+
     public SubFormCellRenderer(Font defaultFont, Color defaultFontColor, Color bgColor, Map<Integer, Color> columnColors) {
+        this(defaultFont, defaultFontColor, bgColor, columnColors, false);
+    }
+
+    public SubFormCellRenderer(Font defaultFont, Color defaultFontColor, Color bgColor, Map<Integer, Color> columnColors, boolean isFieldNameColumn) {
         this.bgColor = bgColor;
         this.columnColors = columnColors;
         this.defaultFont = defaultFont;
         this.defaultFontColor = defaultFontColor;
+        fieldNameColumn = isFieldNameColumn;
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -97,7 +107,20 @@ public class SubFormCellRenderer extends DefaultTableCellRenderer {
         }
 
         setFont(defaultFont);
-        setText(value == null ? "" : value.toString());
+
+        if (fieldNameColumn) {
+            boolean shortNames = Boolean.parseBoolean(ISAcreatorProperties.getProperty("useShortNames"));
+
+            if (shortNames) {
+                String shortHeader = GeneralUtils.getShortString(value.toString());
+                setText(shortHeader);
+            } else {
+                setText(value.toString());
+            }
+        } else {
+            setText(value == null ? "" : value.toString());
+        }
+
         return this;
     }
 }

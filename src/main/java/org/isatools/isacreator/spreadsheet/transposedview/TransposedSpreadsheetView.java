@@ -138,7 +138,7 @@ public class TransposedSpreadsheetView extends JDialog {
                 } else {
 
                     transposedSpreadsheetSubform.changeTableRenderer(transposedSpreadsheetSubform.getLockedTable(),
-                            new CustomRowRenderer(transposedSpreadsheetModel.getRowToColour(), UIHelper.VER_11_BOLD));
+                            new CustomRowRenderer(transposedSpreadsheetModel.getRowToColour(), UIHelper.VER_11_BOLD, true));
 
                     transposedSpreadsheetSubform.changeTableRenderer(transposedSpreadsheetSubform.getScrollTable(),
                             new CustomRowRenderer(transposedSpreadsheetModel.getRowToColour(), UIHelper.VER_11_PLAIN));
