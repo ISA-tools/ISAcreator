@@ -587,7 +587,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         menuBar.add(options);
 
         pluginMenu = new JMenu("plugins");
-
+        pluginMenu.setVisible(false);
         menuBar.add(pluginMenu);
 
         JMenu help = new JMenu("help");

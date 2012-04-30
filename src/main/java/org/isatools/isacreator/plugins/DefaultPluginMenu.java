@@ -34,6 +34,7 @@ public class DefaultPluginMenu implements PluginMenu {
 
     public JMenu removeMenu(JMenu menu) {
 
+
         if (context != null && !disposed) {
             try {
                 menuService = (PluginMenu) context.getService(sRef);
@@ -50,6 +51,7 @@ public class DefaultPluginMenu implements PluginMenu {
         if (context != null && !disposed) {
             try {
                 menuService = (PluginMenu) context.getService(sRef);
+                menu.setVisible(true);
                 return menuService.addMenu(menu);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -58,4 +60,6 @@ public class DefaultPluginMenu implements PluginMenu {
 
         return menu;
     }
+
+
 }
