@@ -82,7 +82,7 @@ public class StudyDesignSubForm extends SubForm {
         }
     }
 
-    protected void removeItem(int itemToRemove) {
+    public void removeItem(int itemToRemove) {
         removeColumn(itemToRemove);
     }
 

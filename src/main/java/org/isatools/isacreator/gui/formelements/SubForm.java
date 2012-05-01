@@ -254,7 +254,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         JTableHeader lockedHeader = lockedTable.getTableHeader();
         setHeaderProperties(lockedTable, lockedTableHeaderRenderer);
         lockedHeader.setReorderingAllowed(false);
-//        lockedHeader.setResizingAllowed(false);
         frozenTable.setCorner(JScrollPane.UPPER_LEFT_CORNER, lockedHeader);
 
 
@@ -858,7 +857,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         }
     }
 
-    protected abstract void removeItem(int itemToRemove);
+    public abstract void removeItem(int itemToRemove);
 
     protected void removeColumn(int curColDelete) {
         if ((curColDelete == -1) || (curColDelete == 0)) {
@@ -977,6 +976,15 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         return record;
     }
 
+    public int getColumnIndexForValue(int fieldIndex, String value) {
+        for (int column = 1; column < defaultTableModel.getColumnCount(); column++) {
+            if (defaultTableModel.getValueAt(fieldIndex, column).toString().equals(value)) {
+                return column;
+            }
+        }
+        return -1;
+    }
+
     private JPanel setupOptionsPanel() {
         options = new JPanel();
         options.setLayout(new BoxLayout(options, BoxLayout.LINE_AXIS));
@@ -1085,6 +1093,11 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         } catch (ClassNotFoundException e) {
             log.error("Problem occurred when changing TableRenderer : " + e.getMessage());
         }
+    }
+
+    public void resetModel(int newSize) {
+        defaultTableModel = new DefaultTableModel();
+        setupTableModel(newSize);
     }
 
     public void setDataEntryEnvironment(DataEntryEnvironment dataEntryEnvironment) {

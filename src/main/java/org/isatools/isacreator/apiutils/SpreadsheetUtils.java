@@ -310,4 +310,78 @@ public class SpreadsheetUtils {
                 columnName.contains("Factor") ||
                 columnName.equals("Parameter Value"));
     }
+
+    /**
+     * Given a spreadsheet and a set of values to find, will return a set of those
+     * values found within the spreadsheet object
+     *
+     * @param targetSheet - Spreadsheet to interrogate
+     * @param values      - Set of values to be searched for.
+     * @return Set<String> containing the values that were found.
+     */
+    public Set<String> findValueInSheet(Spreadsheet targetSheet, Set<String> values) {
+        return findValueInSheet(targetSheet, values, new HashSet<String>());
+    }
+
+    /**
+     * Given a spreadsheet and a set of values to find, will return a set of those
+     * values found within the spreadsheet object
+     *
+     * @param spreadsheet - Spreadsheet to interrogate
+     * @param values      - Set of values to be searched for.
+     * @param fieldFocus  - target search on specific field types, e.g. Protocol REF, Characteristics and so forth.
+     * @return Set<String> containing the values that were found.
+     */
+    public static Set<String> findValueInSheet(Spreadsheet spreadsheet, Set<String> values, Set<String> fieldFocus) {
+        Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+
+        Set<String> foundValues = new HashSet<String>();
+
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+
+            boolean headerContained = fieldFocus.isEmpty() || fieldFocus.contains(tc.getHeaderValue().toString());
+
+            if (headerContained) {
+                int colIndex = Utils.convertModelIndexToView(spreadsheet.getTable(), tc.getModelIndex());
+
+                for (int row = 0; row < spreadsheet.getTable().getRowCount(); row++) {
+                    String columnValue = (spreadsheet.getTable().getValueAt(row, colIndex) == null) ? ""
+                            : spreadsheet.getTable().getValueAt(row, colIndex).toString();
+
+                    if (values.contains(columnValue)) {
+                        foundValues.add(columnValue);
+                    }
+
+                    // end early if possible
+                    if (foundValues.size() == values.size()) {
+                        return foundValues;
+                    }
+                }
+            }
+        }
+        return foundValues;
+    }
+
+    public static Set<String> findValuesForColumnInSpreadsheet(Spreadsheet spreadsheet, String type) {
+
+        Enumeration<TableColumn> columns = spreadsheet.getTable().getColumnModel().getColumns();
+        Set<String> values = new HashSet<String>();
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+
+            boolean isTargetFieldType = tc.getHeaderValue().toString().contains(type);
+
+            if (isTargetFieldType) {
+                int colIndex = Utils.convertModelIndexToView(spreadsheet.getTable(), tc.getModelIndex());
+
+                for (int row = 0; row < spreadsheet.getTable().getRowCount(); row++) {
+                    String columnValue = (spreadsheet.getTable().getValueAt(row, colIndex) == null) ? ""
+                            : spreadsheet.getTable().getValueAt(row, colIndex).toString();
+                    values.add(columnValue);
+                }
+            }
+        }
+        return values;
+    }
 }

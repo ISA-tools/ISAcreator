@@ -84,7 +84,7 @@ public class ContactSubForm extends HistoricalSelectionEnabledSubForm {
         }
     }
 
-    protected void removeItem(int itemToRemove) {
+    public void removeItem(int itemToRemove) {
 
         if (dataEntryForm != null) {
 

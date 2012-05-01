@@ -275,7 +275,7 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
 
     public abstract void reformPreviousContent();
 
-    protected abstract void removeItem(int itemToRemove);
+    public abstract void removeItem(int itemToRemove);
 
     public abstract void update();
 

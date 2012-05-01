@@ -96,7 +96,7 @@ public class PublicationSubForm extends SubForm {
         }
     }
 
-    protected void removeItem(int itemToRemove) {
+    public void removeItem(int itemToRemove) {
         // provide a publication id or a publication title depending on which is available
         if (dataEntryForm != null) {
 

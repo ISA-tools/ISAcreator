@@ -186,7 +186,7 @@ public class AssaySubForm extends SubForm implements Serializable {
         }
     }
 
-    protected void removeItem(int assayToRemove) {
+    public void removeItem(int assayToRemove) {
         // get factor name which is in the 2nd row (index 1) of the table
         Map<String, String> record = getRecord(assayToRemove);
 

@@ -38,13 +38,13 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.assayselection.AssaySelectionDialog;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.WeakPropertyChangeListener;
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.formelements.assay.AssayInformationPanel;
 import org.isatools.isacreator.gui.formelements.assay.AssayInformationWriter;
@@ -64,10 +64,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -482,12 +480,45 @@ public class StudyDataEntry extends DataEntryForm {
     public void removeAssay(String assayRef) {
         // remove assay from the tree
         getDataEntryEnvironment().removeFromTree(assayRef);
-
+        removeUnusedProtocols(assayRef);
         // remove assay from the study
         getStudy().removeAssay(assayRef);
 
         // remove assay from investigation assay list.
         getDataEntryEnvironment().getInvestigation().getAssays().remove(assayRef);
+    }
+
+    private void removeUnusedProtocols(String assayRef) {
+        Assay assay = getStudy().getAssays().get(assayRef);
+
+        Set<String> protocolRefsInAssay = SpreadsheetUtils.findValuesForColumnInSpreadsheet(assay.getSpreadsheetUI().getSpreadsheet(), GeneralFieldTypes.PROTOCOL_REF.name);
+
+        Set<String> fieldFocus = Collections.singleton(GeneralFieldTypes.PROTOCOL_REF.name);
+
+        Set<String> protocolsPresentInOtherAssays = new HashSet<String>();
+        if (!protocolRefsInAssay.isEmpty()) {
+            // now check remaining assays to see if the protocol is used elsewhere
+            for (String otherAssayRef : getStudy().getAssays().keySet()) {
+                if (!otherAssayRef.equals(assay.getAssayReference())) {
+                    Set<String> foundValues = SpreadsheetUtils.findValueInSheet(getStudy().getAssays().get(otherAssayRef).getSpreadsheetUI().getSpreadsheet(), protocolRefsInAssay, fieldFocus);
+                    protocolsPresentInOtherAssays.addAll(foundValues);
+                }
+            }
+        }
+
+        // now check if we need to remove any protocols
+        if (!protocolsPresentInOtherAssays.containsAll(protocolRefsInAssay)) {
+            // we need to remove some protocols
+            for (String protocolRef : protocolRefsInAssay) {
+                if (!protocolsPresentInOtherAssays.contains(protocolRef)) {
+                    // remove this protocol
+                    int index = protocolSubForm.getColumnIndexForValue(0, protocolRef);
+                    if (index != -1) {
+                        protocolSubForm.removeItem(index);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -614,7 +645,6 @@ public class StudyDataEntry extends DataEntryForm {
 
         removeAll();
     }
-
 
     class RemoveAssayListener implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent propertyChangeEvent) {

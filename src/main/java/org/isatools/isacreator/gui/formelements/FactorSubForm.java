@@ -98,7 +98,7 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
 
     }
 
-    protected void removeItem(int itemToRemove) {
+    public void removeItem(int itemToRemove) {
         if (dataEntryForm != null && dataEntryForm.getStudy() != null) {
 
             Map<String, String> record = getRecord(itemToRemove);

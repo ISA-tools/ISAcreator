@@ -86,7 +86,7 @@ public class TransposedSubForm extends SubForm {
         }
     }
 
-    protected void removeItem(int itemToRemove) {
+    public void removeItem(int itemToRemove) {
 
     }
 

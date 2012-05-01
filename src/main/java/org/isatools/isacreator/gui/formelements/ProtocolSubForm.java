@@ -40,6 +40,7 @@ package org.isatools.isacreator.gui.formelements;
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.model.Protocol;
 
+import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,6 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
 
     public void reformItems() {
         List<Protocol> protocols = dataEntryForm.getProtocols();
-
         for (int record = 1; record <= protocols.size() + 1; record++) {
 
             if (protocols.size() > record - 1) {
@@ -93,7 +93,7 @@ public class ProtocolSubForm extends HistoricalSelectionEnabledSubForm {
 
     }
 
-    protected void removeItem(int itemToRemove) {
+    public void removeItem(int itemToRemove) {
 
         Map<String, String> record = getRecord(itemToRemove);
 
