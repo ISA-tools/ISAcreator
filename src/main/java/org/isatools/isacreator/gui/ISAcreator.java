@@ -533,7 +533,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         tagInvestigation.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                OntologiserUI ontologiserUI = new OntologiserUI(ISAcreator.this, new InvestigationAdaptor(getDataEntryEnvironment().getInvestigation()));
+                OntologiserUI ontologiserUI = new OntologiserUI(ApplicationManager.getCurrentApplicationInstance(), new InvestigationAdaptor(getDataEntryEnvironment().getInvestigation()));
                 ontologiserUI.createGUI();
 
                 showJDialogAsSheet(ontologiserUI);

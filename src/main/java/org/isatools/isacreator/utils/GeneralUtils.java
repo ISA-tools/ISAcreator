@@ -139,5 +139,9 @@ public class GeneralUtils {
         }
     }
 
+    public static boolean charIsAlphanumeric(char c) {
+        return String.valueOf(c).matches("[\\p{Alnum}]*");
+    }
+
 
 }

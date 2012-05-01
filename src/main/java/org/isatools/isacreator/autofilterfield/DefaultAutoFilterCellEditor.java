@@ -1,10 +1,45 @@
 package org.isatools.isacreator.autofilterfield;
 
+/**
+ ISAcreator is a component of the ISA software suite (http://www.isa-tools.org)
+
+ License:
+ ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
+
+ EXHIBIT A. CPAL version 1.0
+ “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ you may not use this file except in compliance with the License. You may obtain a
+ copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
+ The License is based on the Mozilla Public License version 1.1 but Sections
+ 14 and 15 have been added to cover use of software over a computer network and
+ provide for limited attribution for the Original Developer. In addition, Exhibit
+ A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an “AS IS” basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ the specific language governing rights and limitations under the License.
+
+ The Original Code is ISAcreator.
+ The Original Developer is the Initial Developer. The Initial Developer of the
+ Original Code is the ISA Team (Eamonn Maguire, eamonnmag@gmail.com;
+ Philippe Rocca-Serra, proccaserra@gmail.com; Susanna-Assunta Sansone, sa.sanson@gmail.com;
+ http://www.isa-tools.org). All portions of the code written by the ISA Team are
+ Copyright (c) 2007-2011 ISA Team. All Rights Reserved.
+
+ EXHIBIT B. Attribution Information
+ Attribution Copyright Notice: Copyright (c) 2008-2011 ISA Team
+ Attribution Phrase: Developed by the ISA Team
+ Attribution URL: http://www.isa-tools.org
+ Graphic Image provided in the Covered Code as file: http://isa-tools.org/licenses/icons/poweredByISAtools.png
+ Display of Attribution Information is required in Larger Works which are defined in the CPAL as a work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+
+ Sponsors:
+ The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
+ */
+
 import org.isatools.isacreator.autofilteringlist.FilterField;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
 import javax.swing.*;
@@ -31,11 +66,10 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
     protected AutoCompleteUI<T> selector;
 
     protected JTable currentTable;
-    protected int currentRow;
-    protected int currentColumn;
+    protected transient int currentRow;
+    protected transient int currentColumn;
 
     protected Spreadsheet spreadsheet;
-
 
     public DefaultAutoFilterCellEditor(Spreadsheet spreadsheet) {
         super();
@@ -88,8 +122,6 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
         for (int i = listeners.size() - 1; i >= 0; i--) {
             (listeners.get(i)).editingCanceled(ce);
         }
-
-
     }
 
     /**
@@ -114,18 +146,20 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
     }
 
     /**
-     * Gets the component used to edit a cell - in this case, the OntologyCellEditor.
+     * Gets the component used to edit a cell.
      *
      * @param table      - JTable being edited.
      * @param value      - /
      * @param isSelected - is the cell currently selected
      * @param row        - the row identifier for the cell
      * @param column     - the column identifier for the cell
-     * @return The editing component. A OntologyCellEditor.
+     * @return The editing component.
      */
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
         currentTable = table;
+        setCurrentRowAndColumn(row, column);
+
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
 
@@ -136,24 +170,31 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
         }
 
         setText(originalValue);
-
-        currentRow = row;
-        currentColumn = column;
-
+        setCaretPositionToEndOfString();
         return this;
     }
 
-    protected Point calculateDisplayLocation(JTable table, int row, int column) {
+    public void setCaretPositionToEndOfString() {
+        int position = getText().length();
+        select(position, position);
+        setCaretPosition(position);
+    }
 
+    public void setCurrentRowAndColumn(int row, int column) {
+        currentRow = row;
+        currentColumn = column;
+    }
+
+    protected Point calculateDisplayLocation(JTable table, int row, int column) {
         Point p = table.getLocationOnScreen();
-        Rectangle r = table.getCellRect(row, column, true);
+        Rectangle r = table.getCellRect(row, column, false);
         int proposedX = r.x + p.x;
-        int proposedY = r.y + p.y + getHeight();
+        int proposedY = r.y + p.y + 20;
 
         Rectangle desktopBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getMaximumWindowBounds();
 
-        if ((proposedY + OntologySelectionTool.HEIGHT) > desktopBounds.height) {
+        if ((proposedY + AutoCompleteUI.HEIGHT) > desktopBounds.height) {
             int difference = (proposedY + AutoCompleteUI.HEIGHT) -
                     desktopBounds.height;
             proposedY = proposedY - difference;
@@ -164,7 +205,7 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
     }
 
     /**
-     * Always returns true since the date field should always be editable.
+     * Always returns true since the field should always be editable.
      *
      * @param eo EventObject
      * @return true, always.
@@ -198,6 +239,7 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
      * @return true
      */
     public boolean stopCellEditing() {
+
         fireEditingStopped();
         if (selector != null) {
             selector.setVisible(false);
@@ -209,14 +251,12 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
     @Override
     public void changedUpdate(DocumentEvent event) {
         super.changedUpdate(event);
-
         showSelector();
     }
 
     @Override
     public void insertUpdate(DocumentEvent event) {
         super.insertUpdate(event);
-
         if (event.getType() != DocumentEvent.EventType.REMOVE) {
             showSelector();
         }
@@ -226,13 +266,16 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
     @Override
     public void removeUpdate(DocumentEvent event) {
         super.removeUpdate(event);
-
         if (selector != null) {
-            if (selector.isShowing()) {
 
+            if (!selector.isShowing()) {
                 if (getText().length() > 0) {
                     showSelector();
-                } else {
+                }
+            }
+
+            if (selector.isShowing()) {
+                if (getText().length() == 0) {
                     hideSelector();
                 }
             }
@@ -284,7 +327,6 @@ public abstract class DefaultAutoFilterCellEditor<T extends Comparable> extends 
     }
 
     public void keyReleased(KeyEvent keyEvent) {
-
     }
 
     private void processKeyInputEvent(KeyEvent keyEvent) {

@@ -43,6 +43,7 @@ import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
+import org.isatools.isacreator.utils.GeneralUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -79,9 +80,22 @@ public class CustomTable extends JTable {
                 super.editCellAt(row, column, eventObject);
             }
 
-        } else {
+            if (eventObject instanceof KeyEvent && GeneralUtils.charIsAlphanumeric(((KeyEvent) eventObject).getKeyChar())) {
+                super.editCellAt(row, column, eventObject);
+            }
 
-            super.editCellAt(row, column, eventObject);
+        } else if (editor instanceof DefaultAutoFilterCellEditor) {
+            if (eventObject instanceof MouseEvent && ((MouseEvent) eventObject).getClickCount() == 2) {
+                super.editCellAt(row, column, eventObject);
+                ((JTextComponent) editor).requestFocus();
+            }
+
+            if (eventObject instanceof KeyEvent && GeneralUtils.charIsAlphanumeric(((KeyEvent) eventObject).getKeyChar())) {
+                super.editCellAt(row, column, eventObject);
+                ((DefaultAutoFilterCellEditor) editor).setCurrentRowAndColumn(row, column);
+                ((JTextComponent) editor).requestFocus();
+            }
+        } else {
 
             boolean result = super.editCellAt(row, column, eventObject);
 
@@ -99,10 +113,6 @@ public class CustomTable extends JTable {
             return result;
         }
         return false;
-    }
-
-    private boolean iskeyOk(KeyEvent event) {
-        return event.getKeyCode() != KeyEvent.VK_DOWN && event.getKeyCode() != KeyEvent.VK_UP && event.getKeyCode() != KeyEvent.VK_ENTER;
     }
 
     @Override
