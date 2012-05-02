@@ -36,8 +36,9 @@
  */
 
 
-package org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers;
+package org.isatools.isacreator.ontologymanager.bioportal.io;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,31 +47,12 @@ import java.util.Set;
  * @author eamonnmaguire
  * @date Mar 30, 2010
  */
-public enum AcceptedOntologies {
-    OBI("1123", "OBI"), EFO("1136", "EFO"), NCI_THESAURUS("1032", "NCIt"), CHEBI("1007", "CHEBI"), NPO("1083", "NPO"),
-    SNOMED("1353", "SNOMEDCT"), MDR("1422", "MDR"), PATO("1107", "PATO"), UO("1112", "UO"), BFO("1005", "BFO"),
-    NCBITaxon("1132", "NCBITaxon"), PLANT_ONTOLOGY("1587", "PO"), BAO("1533", "BAO"), EDAM("1498", "EDAM");
+public class AcceptedOntologies {
 
-    private String ontologyID;
-    private String ontologyAbbreviation;
+    private static List<AcceptedOntology> acceptedOntologies;
 
-    AcceptedOntologies(String ontologyID, String ontologyAbbreviation) {
-
-        this.ontologyID = ontologyID;
-        this.ontologyAbbreviation = ontologyAbbreviation;
-    }
-
-    @Override
-    public String toString() {
-        return ontologyID;
-    }
-
-    public String getOntologyAbbreviation() {
-        return ontologyAbbreviation;
-    }
-
-    public String getOntologyID() {
-        return ontologyID;
+    static {
+        acceptedOntologies = AcceptedOntologiesLoader.getAcceptedOntologies();
     }
 
     /**
@@ -80,7 +62,7 @@ public enum AcceptedOntologies {
      * @return when 1123 is supplied, OBI will be returned
      */
     public static String getOntologyAbbreviationFromId(String ontologyId) {
-        for (AcceptedOntologies ontology : values()) {
+        for (AcceptedOntology ontology : acceptedOntologies) {
             if (ontology.getOntologyID().equals(ontologyId)) {
                 return ontology.getOntologyAbbreviation();
             }
@@ -88,21 +70,24 @@ public enum AcceptedOntologies {
         return null;
     }
 
-    public static String getAllowedOntologyIds(Set<AcceptedOntologies> toIgnore) {
+    public static String getAllowedOntologyIds(Set<AcceptedOntology> toIgnore) {
         StringBuilder allowedOntologies = new StringBuilder();
 
         int count = 0;
-        for (AcceptedOntologies ontology : values()) {
+        for (AcceptedOntology ontology : acceptedOntologies) {
             if (!toIgnore.contains(ontology)) {
                 allowedOntologies.append(ontology.getOntologyID());
-                if (count != values().length - 1) {
+                if (count != acceptedOntologies.size() - 1) {
                     allowedOntologies.append(",");
                 }
-
             }
             count++;
         }
 
         return allowedOntologies.toString();
+    }
+
+    public static List<AcceptedOntology> values() {
+        return acceptedOntologies;
     }
 }

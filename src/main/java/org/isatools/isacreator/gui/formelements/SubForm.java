@@ -218,6 +218,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         IAppWidgetFactory.makeIAppScrollPane(frozenTable);
 
         lockedTable = new ExtendedJTable(model, rowEditor);
+        lockedTable.getTableHeader().setReorderingAllowed(false);
         setTableProperties(lockedTable, true);
 
         scrollTable = new ExtendedJTable(model, rowEditor);

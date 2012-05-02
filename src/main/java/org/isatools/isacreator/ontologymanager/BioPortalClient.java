@@ -42,8 +42,9 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
-import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalClassBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalSearchBeanResultHandler;
@@ -304,7 +305,7 @@ public class BioPortalClient implements OntologyService {
 
     private void updateOntologyManagerWithOntologyInformation() {
         if (!doneOntologyCheck) {
-            for (AcceptedOntologies ao : AcceptedOntologies.values()) {
+            for (AcceptedOntology ao : AcceptedOntologies.values()) {
                 Ontology o = getOntologyById(ao.getOntologyID());
                 if (o != null) {
                     OntologyManager.addOLSOntologyDefinitions(Collections.singletonMap(o.getOntologyAbbreviation(),
@@ -319,9 +320,9 @@ public class BioPortalClient implements OntologyService {
         String allowedOntologies = "";
 
         int count = 0;
-        for (AcceptedOntologies ao : AcceptedOntologies.values()) {
+        for (AcceptedOntology ao : AcceptedOntologies.values()) {
             allowedOntologies += ao.getOntologyID();
-            if (count < AcceptedOntologies.values().length - 1) {
+            if (count < AcceptedOntologies.values().size() - 1) {
                 allowedOntologies += ",";
             }
             count++;

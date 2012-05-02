@@ -81,6 +81,8 @@ public class IOUtils {
     }
 
     /**
+     * Outputs ontology fields as a string for output in ISA-Tab
+     *
      * @param ontologyTerms
      * @param fieldValues
      * @return

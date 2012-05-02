@@ -40,6 +40,8 @@ package org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyFormats;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -138,7 +140,7 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
                            String qName) throws SAXException {
         if (qName.equalsIgnoreCase("ontologyBean")) {
 
-            for (AcceptedOntologies ontology : AcceptedOntologies.values()) {
+            for (AcceptedOntology ontology : AcceptedOntologies.values()) {
                 if (ontology.toString().equals(currentOntologyEntry.getOntologyID())) {
                     result.add(currentOntologyEntry);
                     break;

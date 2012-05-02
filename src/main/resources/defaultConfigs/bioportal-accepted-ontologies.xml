@@ -1,0 +1,17 @@
+<!-- Defines the accepted ontologies for BioPortal -->
+<acceptedOntologies>
+    <acceptedOntology abbreviation="OBI" id="1123"/>
+    <acceptedOntology abbreviation="EFO" id="1136"/>
+    <acceptedOntology abbreviation="NCIt" id="1032"/>
+    <acceptedOntology abbreviation="CHEBI" id="1007"/>
+    <acceptedOntology abbreviation="NPO" id="1083"/>
+    <acceptedOntology abbreviation="SNOMEDCT" id="1353"/>
+    <acceptedOntology abbreviation="MDR" id="1422"/>
+    <acceptedOntology abbreviation="PATO" id="1107"/>
+    <acceptedOntology abbreviation="UO" id="1112"/>
+    <acceptedOntology abbreviation="BFO" id="1005"/>
+    <acceptedOntology abbreviation="NCBITaxon" id="1132"/>
+    <acceptedOntology abbreviation="PO" id="1587"/>
+    <acceptedOntology abbreviation="BAO" id="1533"/>
+    <acceptedOntology abbreviation="EDAM" id="1498"/>
+</acceptedOntologies>

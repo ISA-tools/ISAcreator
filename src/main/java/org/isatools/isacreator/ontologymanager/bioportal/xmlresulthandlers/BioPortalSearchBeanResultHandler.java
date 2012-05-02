@@ -43,6 +43,7 @@ import bioontology.bioportal.searchBean.schema.SearchResultListDocument;
 import bioontology.bioportal.searchBean.schema.SuccessDocument;
 import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.bioportal.model.BioPortalSearchResult;
 

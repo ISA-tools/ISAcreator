@@ -5,8 +5,9 @@ import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.isatools.isacreator.ontologymanager.OLSClient;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
-import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.utils.StringProcessing;
 
@@ -48,7 +49,7 @@ public class OntologyUtils {
 
     public static OntologyPortal getSourcePortalByAbbreviation(String abbreviation) {
         boolean isBioPortal = false;
-        for (AcceptedOntologies bioPortalOntologies : AcceptedOntologies.values()) {
+        for (AcceptedOntology bioPortalOntologies : AcceptedOntologies.values()) {
             if (bioPortalOntologies.getOntologyAbbreviation().equalsIgnoreCase(abbreviation)) {
                 isBioPortal = true;
                 break;

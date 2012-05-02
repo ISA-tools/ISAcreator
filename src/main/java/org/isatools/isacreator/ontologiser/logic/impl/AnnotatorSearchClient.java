@@ -3,16 +3,16 @@ package org.isatools.isacreator.ontologiser.logic.impl;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
-import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalAnnotatorResultHandler;
 import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,12 +30,7 @@ public class AnnotatorSearchClient {
     public static final String BASE_QUERY_URL = "http://rest.bioontology.org/obs/annotator";
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms) {
-        Set<AcceptedOntologies> toIgnoreInSearch = new HashSet<AcceptedOntologies>();
-        toIgnoreInSearch.add(AcceptedOntologies.PLANT_ONTOLOGY);
-        toIgnoreInSearch.add(AcceptedOntologies.BAO);
-
-        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(
-                toIgnoreInSearch), true);
+        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(new HashSet<AcceptedOntology>()), true);
     }
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn, boolean wholeWordOnly) {

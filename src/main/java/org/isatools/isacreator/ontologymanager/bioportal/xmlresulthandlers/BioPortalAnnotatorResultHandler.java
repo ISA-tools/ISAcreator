@@ -5,6 +5,8 @@ import bioontology.bioportal.annotator.schema.ConceptDocument;
 import bioontology.bioportal.annotator.schema.OntologyUsedBeanDocument;
 import bioontology.bioportal.annotator.schema.SuccessDocument;
 import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
@@ -109,7 +111,7 @@ public class BioPortalAnnotatorResultHandler {
                 newOntology.setOntologyVersion(ontology.getLocalOntologyId().toString());
 
 
-                for (AcceptedOntologies accceptedOntology : AcceptedOntologies.values()) {
+                for (AcceptedOntology accceptedOntology : AcceptedOntologies.values()) {
                     if (accceptedOntology.toString().equals(newOntology.getOntologyID())) {
                         newOntology.setOntologyAbbreviation(accceptedOntology.getOntologyAbbreviation());
                         ontologies.put(ontology.getLocalOntologyId().toString(), newOntology);
