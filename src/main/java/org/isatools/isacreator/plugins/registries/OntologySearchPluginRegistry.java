@@ -45,6 +45,10 @@ public class OntologySearchPluginRegistry {
         return result;
     }
 
+    public static List<PluginOntologyCVSearch> getOntologyCVSearchPlugins() {
+        return ontologyCVSearchPlugins;
+    }
+
     public static boolean searchResourcesAvailable() {
         return ontologyCVSearchPlugins.size() > 0;
     }

@@ -213,7 +213,7 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
         ontologyTool.addNotify();
         ontologyTool.setLocation(proposedX, proposedY);
         ontologyTool.makeVisible();
-        ontologyTool.loadRecommendedOntologiesIfAllowed();
+//        ontologyTool.loadRecommendedOntologiesIfAllowed();
         return this;
     }
 

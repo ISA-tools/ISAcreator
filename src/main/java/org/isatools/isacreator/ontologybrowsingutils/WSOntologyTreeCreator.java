@@ -106,12 +106,13 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     }
 
     private void initiateOntologyVisualization() {
-        tree.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 
         // instead of visualising just one ontology, we need to visualise all that have been selected to browse on, if they have branches
         // specified...or maybe should allow to browse the whole ontology as well.
 
         try {
+            browser.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             for (String ontology : ontologies.keySet()) {
                 System.out.println("Adding " + ontology + " to tree");
 

@@ -58,6 +58,7 @@ import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.optionselector.OptionGroup;
+import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
 import org.isatools.isacreator.plugins.registries.OntologySearchPluginRegistry;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -97,6 +98,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private static final int HISTORY_MODE = 2;
     public static final int WIDTH = 800;
     public static final int HEIGHT = 400;
+    public static final String RECOMMENDED_ONTOLOGIES = "Recommended Ontologies";
+    public static final String ALL_ONTOLOGIES = "All Ontologies";
 
     private SingleSelectionListCellRenderer singleSelectionListCellRenderer = new SingleSelectionListCellRenderer();
 
@@ -135,7 +138,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private WSOntologyTreeCreator wsOntologyTreeCreator;
 
     private JPanel ontologyViewContainer, searchUIContainer, browseUIContainer, historyUIContainer;
-    private JLabel searchOntologyiesTab, browseRecommendedOntologiesTab, viewHistoryTab, searchOntologiesButton, confirmOkButton;
+    private JLabel searchOntologiesTab, browseRecommendedOntologiesTab, viewHistoryTab, searchOntologiesButton, confirmOkButton;
 
     private OptionGroup<String> searchSpan;
     private Set<OntologyTerm> selectedTerms;
@@ -192,18 +195,40 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         pack();
     }
 
-    public void setRecommendedOntologies(Map<String, RecommendedOntology> recommendedOntologies) {
-        this.recommendedOntologies = recommendedOntologies;
-        browseRecommendedOntologiesTab.setVisible(checkIfRecommendedOntologiesAreAvailable());
-    }
-
     public void setMultipleTermsAllowed(boolean multipleTermsAllowed) {
         this.multipleTermsAllowed = multipleTermsAllowed;
     }
 
     public void setForceOntologySelection(boolean forceOntologySelection) {
         this.forceOntologySelection = forceOntologySelection;
+        selectedTerm.setEditable(!forceOntologySelection);
     }
+
+    public void setRecommendedOntologies(Map<String, RecommendedOntology> recommendedOntologies) {
+        this.recommendedOntologies = recommendedOntologies;
+
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+
+                boolean recommendedOntologiesAvailable = checkIfRecommendedOntologiesAreAvailable();
+                browseRecommendedOntologiesTab.setVisible(recommendedOntologiesAvailable);
+
+                resetView();
+
+                searchSpan.toggleOptionEnabled(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable);
+                searchSpan.setSelectedItem(recommendedOntologiesAvailable ? RECOMMENDED_ONTOLOGIES : ALL_ONTOLOGIES);
+            }
+        });
+    }
+
+    private void resetView() {
+        resetButtons();
+        searchOntologiesTab.setIcon(searchOntologiesIconOver);
+        mode = SEARCH_MODE;
+        swapContainers(searchUIContainer);
+    }
+
 
     /**
      * Create each of the required JPanels for the GUI, and add them to the appropriate section of
@@ -236,24 +261,24 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         JPanel searchPanelContainer = createStandardBorderPanel(false);
         searchPanelContainer.setBackground(UIHelper.BG_COLOR);
 
-        searchOntologyiesTab = new JLabel(searchOntologiesIconOver);
-        searchOntologyiesTab.addMouseListener(new MouseAdapter() {
+        searchOntologiesTab = new JLabel(searchOntologiesIconOver);
+        searchOntologiesTab.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 resetButtons();
                 swapContainers(searchUIContainer);
-                searchOntologyiesTab.setIcon(searchOntologiesIconOver);
+                searchOntologiesTab.setIcon(searchOntologiesIconOver);
                 mode = SEARCH_MODE;
             }
 
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
-                searchOntologyiesTab.setIcon(searchOntologiesIconOver);
+                searchOntologiesTab.setIcon(searchOntologiesIconOver);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
-                searchOntologyiesTab.setIcon(mode == SEARCH_MODE ? searchOntologiesIconOver : searchOntologiesIcon);
+                searchOntologiesTab.setIcon(mode == SEARCH_MODE ? searchOntologiesIconOver : searchOntologiesIcon);
             }
         });
 
@@ -304,7 +329,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         boolean recommendedOntologiesAvailable = checkIfRecommendedOntologiesAreAvailable();
 
         Box navigationTabContainer = Box.createHorizontalBox();
-        navigationTabContainer.add(searchOntologyiesTab);
+        navigationTabContainer.add(searchOntologiesTab);
 
         navigationTabContainer.add(Box.createHorizontalStrut(5));
         navigationTabContainer.add(browseRecommendedOntologiesTab);
@@ -321,7 +346,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         createSearchUI(recommendedOntologiesAvailable);
         createHistoryPanel();
 
-        ontologyViewContainer.add(recommendedOntologiesAvailable ? browseUIContainer : searchUIContainer);
+        ontologyViewContainer.add(searchUIContainer);
 
         searchPanelContainer.add(ontologyViewContainer, BorderLayout.CENTER);
 
@@ -505,8 +530,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
             recommendedOntologiesAvailable = true;
         }
 
-        searchSpan.addOptionItem("Recommended Ontologies", recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
-        searchSpan.addOptionItem("All Ontologies", !recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
+        searchSpan.addOptionItem(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
+        searchSpan.addOptionItem(ALL_ONTOLOGIES, !recommendedOntologiesAvailable, true, true);
+
     }
 
     /**
@@ -1097,7 +1123,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                     }
 
-                    repaint();
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            browseUIContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                            repaint();
+                        }
+                    });
+
                 }
             }
         });
@@ -1201,7 +1233,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     private void resetButtons() {
-        searchOntologyiesTab.setIcon(searchOntologiesIcon);
+        searchOntologiesTab.setIcon(searchOntologiesIcon);
         browseRecommendedOntologiesTab.setIcon(browseOntologiesIcon);
         viewHistoryTab.setIcon(viewHistoryIcon);
     }

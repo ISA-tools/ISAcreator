@@ -100,6 +100,10 @@ public class OptionGroup<T> extends JPanel implements MouseListener {
         addOptionItem(item, setSelected, null, null, enabled, useStringRepresentation);
     }
 
+    public void toggleOptionEnabled(T optionItem, boolean enabled) {
+        availableOptions.get(optionItem).setEnabled(enabled);
+    }
+
     public void addOptionItem(T item, boolean setSelected, ImageIcon selectedImage, ImageIcon unselectedImage, boolean enabled, boolean useStringRepresentation) {
         OptionItem<T> option = new OptionItem<T>(setSelected, item, selectedImage, unselectedImage, useStringRepresentation);
         option.addMouseListener(this);
@@ -143,14 +147,16 @@ public class OptionGroup<T> extends JPanel implements MouseListener {
         return selectedItems;
     }
 
-    public void setSelectedItem(T item) {
-        clearSelections();
-        OptionItem<T> toSelect = availableOptions.get(item);
-        System.out.println("setting item to be selected");
-        toSelect.setSelectedIcon(toSelect.getSelectedIcon());
-        revalidate();
-        repaint();
-
+    public void setSelectedItem(final T item) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                clearSelections();
+                OptionItem<T> toSelect = availableOptions.get(item);
+                toSelect.setSelectedIcon(true);
+                revalidate();
+                repaint();
+            }
+        });
     }
 
 

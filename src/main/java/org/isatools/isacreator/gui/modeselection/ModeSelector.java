@@ -243,8 +243,7 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         Map<String, Object> configMap = new HashMap<String, Object>();
         String osgiDependencies = OSGiDependencyImport.getDependencies();
-        System.out.println(osgiDependencies);
-        System.out.println();
+        System.out.println("Loaded the following system packages:\n" + osgiDependencies);
         configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, OSGiDependencyImport.getDependencies());
 
         File pluginsDirectory = new File("Plugins");
