@@ -30,6 +30,7 @@
     <dependency package="org.isatools.isatab.isaconfigurator"/>
     <dependency package="com.explodingpixels.macwidgets"/>
     <dependency package="org.isatools.isacreator.io.importisa.errorhandling.exceptions"/>
-    <!--add dependencies requested by metabolights and nina-->
+    <dependency package="org.apache.commons.logging"/>
+    <dependency package="org.isatools.isacreator.ontologyselectiontool"/>
 
 </osgiDependencies>
