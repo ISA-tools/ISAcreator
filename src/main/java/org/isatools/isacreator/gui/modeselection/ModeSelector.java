@@ -42,6 +42,7 @@ import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoActivator;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.io.osgi.OSGiDependencyImport;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleActivator;
@@ -241,15 +242,10 @@ public class ModeSelector extends JFrame implements BundleActivator {
         });
 
         Map<String, Object> configMap = new HashMap<String, Object>();
-        configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "org.isatools.isacreator.plugins, uk.ac.ebi.utils.xml, uk.ac.ebi.utils.io, uk.ac.ebi.utils.xml, org.isatools.isacreator.ontologymanager.common, " +
-                        "org.isatools.isacreator.ontologymanager, org.isatools.isacreator.io.importisa, org.isatools.isacreator.plugins.registries, org.isatools.isacreator.plugins.host.service," +
-                        "org.isatools.isacreator.configuration.io, org.isatools.isacreator.model, org.isatools.isacreator.gui, org.isatools.isacreator.common, " +
-                        "org.isatools.errorreporter.ui, org.apache.xmlbeans, org.apache.log4j, org.apache.log4j.spi, org.isatools.isatab.configurator.schema," +
-                        "org.isatools.isacreator.effects, org.isatools.isacreator.spreadsheet, org.isatools.isacreator.apiutils, " +
-                        "org.isatools.isacreator.configuration, org.isatools.errorreporter.ui.borders, " +
-                        "com.sun.awt, uk.ac.ebi.utils.collections, org.jdesktop.fuse, org.isatools.isacreator.gui.menu, " +
-                        "org.isatools.isatab.isaconfigurator, com.explodingpixels.macwidgets, org.isatools.isacreator.io.importisa.errorhandling.exceptions");
+        String osgiDependencies = OSGiDependencyImport.getDependencies();
+        System.out.println(osgiDependencies);
+        System.out.println();
+        configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, OSGiDependencyImport.getDependencies());
 
         File pluginsDirectory = new File("Plugins");
         if (!pluginsDirectory.exists()) {

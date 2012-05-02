@@ -1,0 +1,35 @@
+<!-- Defines the accepted ontologies for BioPortal -->
+<osgiDependencies>
+    <dependency package="org.isatools.isacreator.plugins"/>
+    <dependency package="uk.ac.ebi.utils.xml"/>
+    <dependency package="uk.ac.ebi.utils.io"/>
+    <dependency package="uk.ac.ebi.utils.xml"/>
+    <dependency package="org.isatools.isacreator.ontologymanager.common"/>
+    <dependency package="org.isatools.isacreator.ontologymanager"/>
+    <dependency package="org.isatools.isacreator.io.importisa"/>
+    <dependency package="org.isatools.isacreator.plugins.registries"/>
+    <dependency package="org.isatools.isacreator.plugins.host.service"/>
+    <dependency package="org.isatools.isacreator.configuration.io"/>
+    <dependency package="org.isatools.isacreator.model"/>
+    <dependency package="org.isatools.isacreator.gui"/>
+    <dependency package="org.isatools.isacreator.common"/>
+    <dependency package="org.isatools.errorreporter.ui"/>
+    <dependency package="org.apache.xmlbeans"/>
+    <dependency package="org.apache.log4j"/>
+    <dependency package="org.apache.log4j.spi"/>
+    <dependency package="org.isatools.isatab.configurator.schema"/>
+    <dependency package="org.isatools.isacreator.effects"/>
+    <dependency package="org.isatools.isacreator.spreadsheet"/>
+    <dependency package="org.isatools.isacreator.apiutils"/>
+    <dependency package="org.isatools.isacreator.configuration"/>
+    <dependency package="org.isatools.errorreporter.ui.borders"/>
+    <dependency package="com.sun.awt"/>
+    <dependency package="uk.ac.ebi.utils.collections"/>
+    <dependency package="org.jdesktop.fuse"/>
+    <dependency package="org.isatools.isacreator.gui.menu"/>
+    <dependency package="org.isatools.isatab.isaconfigurator"/>
+    <dependency package="com.explodingpixels.macwidgets"/>
+    <dependency package="org.isatools.isacreator.io.importisa.errorhandling.exceptions"/>
+    <!--add dependencies requested by metabolights and nina-->
+
+</osgiDependencies>
