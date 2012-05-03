@@ -29,16 +29,13 @@ public class OSGiDependencyImport {
             for (int sectionIndex = 0; sectionIndex <= sections.getLength(); sectionIndex++) {
                 String dependency = (String) reader.read("/osgiDependencies/dependency[" + sectionIndex + "]/@package", XPathConstants.STRING);
                 if (!dependency.isEmpty()) {
-                    packages.append(dependency);
+                    packages.append(dependency).append(",");
 
-                    if (sectionIndex < sections.getLength() - 1) {
-                        packages.append(",");
-                    }
                 }
             }
         }
 
-        return packages.toString();
+        return packages.substring(0, packages.length() - 1);
     }
 
 }
