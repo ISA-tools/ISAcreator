@@ -47,6 +47,8 @@ import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.model.Factor;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -241,7 +243,14 @@ public class AddColumnGUI extends JDialog {
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
                         dropdown.hidePopup(ontologySelectionTool);
-                        field.setText(evt.getNewValue().toString());
+                        // we need to get the selected terms, get the first object and modify the output so that it gives us something conforming to
+                        // term (source:accession)
+                        OntologyTerm term = OntologyManager.getUserOntologyHistory().get(evt.getNewValue().toString());
+                        if (term != null) {
+                            field.setText(getStringForHeaderFromOntologyTerm(term));
+                        } else {
+                            field.setText(evt.getNewValue().toString());
+                        }
                     }
                 });
 
@@ -253,6 +262,13 @@ public class AddColumnGUI extends JDialog {
                 });
 
         return dropdown;
+    }
+
+    private String getStringForHeaderFromOntologyTerm(OntologyTerm ontologyTerm) {
+        // we just need the one term.
+        return ontologyTerm.getOntologyTermName() + "(" + (ontologyTerm.getOntologyPurl().isEmpty()
+                ? ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession()
+                : ontologyTerm.getOntologyPurl()) + ")";
     }
 
     /**
