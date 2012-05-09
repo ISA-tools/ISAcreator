@@ -53,7 +53,7 @@ public class OntologyTerm {
 
     private String ontologySourceAccession;
     private String ontologyTermName;
-    private String purl;
+    private String purl = "";
 
     // extra terms for metadata processing
     private Map<String, String> comments;
@@ -150,7 +150,7 @@ public class OntologyTerm {
 
         String ontologySource = getOntologySource();
 
-        if(!ontologySource.equals("")) {
+        if (!ontologySource.equals("")) {
             return ontologySource + ":" + getOntologyTermName();
         }
 

@@ -1068,6 +1068,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         return "";
     }
 
+    public Set<OntologyTerm> getSelectedTerms() {
+        return selectedTerms;
+    }
+
     public void makeVisible() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

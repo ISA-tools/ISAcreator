@@ -129,11 +129,11 @@ public class GeneralUtils {
     public static String getShortString(String toShorten) {
         toShorten = toShorten.replaceAll("(\\[|\\])", "");
         if (toShorten.contains(GeneralFieldTypes.CHARACTERISTIC.name)) {
-            return toShorten.replaceAll(GeneralFieldTypes.CHARACTERISTIC.name, GeneralFieldTypes.CHARACTERISTIC.abbreviation);
+            return toShorten.replaceAll(GeneralFieldTypes.CHARACTERISTIC.name, "") + " " + GeneralFieldTypes.CHARACTERISTIC.abbreviation;
         } else if (toShorten.contains(GeneralFieldTypes.PARAMETER_VALUE.name)) {
-            return toShorten.replaceAll(GeneralFieldTypes.PARAMETER_VALUE.name, GeneralFieldTypes.PARAMETER_VALUE.abbreviation);
+            return toShorten.replaceAll(GeneralFieldTypes.PARAMETER_VALUE.name, "") + " " + GeneralFieldTypes.PARAMETER_VALUE.abbreviation;
         } else if (toShorten.contains(GeneralFieldTypes.FACTOR_VALUE.name)) {
-            return toShorten.replaceAll(GeneralFieldTypes.FACTOR_VALUE.name, GeneralFieldTypes.FACTOR_VALUE.abbreviation);
+            return toShorten.replaceAll(GeneralFieldTypes.FACTOR_VALUE.name, "") + " " + GeneralFieldTypes.FACTOR_VALUE.abbreviation;
         } else {
             return toShorten;
         }
