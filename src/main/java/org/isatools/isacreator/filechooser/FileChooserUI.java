@@ -78,8 +78,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
     public static final int HEIGHT = 300;
 
     @InjectedResource
-    private Image logoActive, logoInactive;
-    @InjectedResource
     private ImageIcon connectIcon, viewHistoryIcon, previousLocationsHeader, localFileSystemIcon, localFileSystemIconOver,
             remoteFileSystemIcon, remoteFileSystemIconOver, downIcon, downIconOver, upIcon, upIconOver, deleteIcon, deleteIconOver,
             sortAscIcon, sortAscIconOver, sortDescIcon, sortDescIconOver, homeIcon, homeIconOver;
@@ -151,7 +149,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.PAGE_AXIS));
         topContainer.setBackground(UIHelper.BG_COLOR);
 
-        HUDTitleBar titlePanel = new HUDTitleBar(logoActive, logoInactive, true);
+        HUDTitleBar titlePanel = new HUDTitleBar(null, null, true);
         add(titlePanel, BorderLayout.NORTH);
         titlePanel.installListeners();
 

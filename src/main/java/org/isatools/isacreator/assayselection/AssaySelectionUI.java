@@ -42,7 +42,6 @@ import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.assayselection.platform.Platform;
 import org.isatools.isacreator.assayselection.platform.PlatformParser;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
-import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
@@ -209,6 +208,7 @@ public class AssaySelectionUI extends JPanel {
                     platform = otherInformationEntry.getText();
                 }
 
+                System.out.println("Measurement is " + measurement + " technology is: " + technology);
                 addToSelectedAssays(new AssaySelection(measurement, technology, platform));
             }
         });
@@ -346,6 +346,7 @@ public class AssaySelectionUI extends JPanel {
             }
         }
 
+        System.out.println("Hopefully it isn't present: " + !present);
         if (!present && isValidAssay(assaySelection)) {
             selectedAssaysList.addItem(assaySelection);
         }
@@ -359,11 +360,16 @@ public class AssaySelectionUI extends JPanel {
      */
     private boolean isValidAssay(AssaySelection assaySelection) {
         if (measToAllowedTechnologies.containsKey(assaySelection.getMeasurement())) {
-            if (measToAllowedTechnologies.get(assaySelection.getMeasurement()).size() == 0
+            if (measToAllowedTechnologies.get(assaySelection.getMeasurement()).size() == 1
                     || measToAllowedTechnologies.get(assaySelection.getMeasurement()).contains(assaySelection.getTechnology())) {
+
                 return true;
             }
+            System.out.println("Is invalid assay");
+            System.out.println(measToAllowedTechnologies.get(assaySelection.getMeasurement()).size());
+
         }
+
 
         return false;
     }
