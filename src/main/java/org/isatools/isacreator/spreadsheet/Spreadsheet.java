@@ -49,6 +49,7 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
@@ -1608,6 +1609,9 @@ public class Spreadsheet extends JComponent implements
                 addFactor.setEnabled(false);
                 addProtocol.setEnabled(false);
             }
+
+
+            ApplicationManager.setCurrentlySelectedField(spreadsheetTitle + ":>" + colName);
         }
 
         if ((rowSelected != -1) && (columnSelected != -1) && table.getValueAt(rowSelected, columnSelected) != null) {

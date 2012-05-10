@@ -38,6 +38,7 @@
 
 package org.isatools.isacreator.common;
 
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelector;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -65,6 +66,7 @@ public class DropDownComponent extends JComponent implements ActionListener,
     @InjectedResource
     private ImageIcon calendarIcon, calendarIconOver, ontologyIcon, ontologyIconOver, tableBrowserIcon, tableBrowserIconOver;
 
+    private String fieldName;
     private JComponent visibleComponent;
     private JLabel icon;
     private Window hideableWindow;
@@ -78,7 +80,13 @@ public class DropDownComponent extends JComponent implements ActionListener,
      * @param type              - type of dropdown component to be added, e.g. ONTOLOGY, CALENDAR or TABLE_BROWSER
      */
     public DropDownComponent(JComponent visibleComponent,
-                             Window dropDownComponent, final int type) {
+                             Window dropDownComponent, int type) {
+        this("", visibleComponent, dropDownComponent, type);
+    }
+
+    public DropDownComponent(String fieldName, JComponent visibleComponent,
+                             Window dropDownComponent, int type) {
+        this.fieldName = fieldName;
         this.visibleComponent = visibleComponent;
         this.visibleComponent.setPreferredSize(new Dimension(visibleComponent.getWidth(), visibleComponent.getHeight()));
         this.hideableWindow = dropDownComponent;
@@ -224,6 +232,7 @@ public class DropDownComponent extends JComponent implements ActionListener,
             container.setLocation(pt);
             container.toFront();
 
+            ApplicationManager.setCurrentlySelectedField(fieldName);
             if (container instanceof OntologySelector) {
                 ((OntologySelector) container).makeVisible();
             } else {

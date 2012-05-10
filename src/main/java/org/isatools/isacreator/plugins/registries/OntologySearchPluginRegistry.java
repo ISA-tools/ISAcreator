@@ -1,9 +1,9 @@
 package org.isatools.isacreator.plugins.registries;
 
+import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
-import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +38,17 @@ public class OntologySearchPluginRegistry {
         Map<OntologySourceRefObject, List<OntologyTerm>> result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
         for (PluginOntologyCVSearch searchResource : ontologyCVSearchPlugins) {
-            System.out.println("Executing CV/Ontology search on plugin resource");
             result.putAll(searchResource.searchRepository(term));
+        }
+
+        return result;
+    }
+
+    public static Map<OntologySourceRefObject, List<OntologyTerm>> compositeSearch(String term, Map<String, RecommendedOntology> recommendedOntologies) {
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+
+        for (PluginOntologyCVSearch searchResource : ontologyCVSearchPlugins) {
+            result.putAll(searchResource.searchRepository(term, recommendedOntologies, false));
         }
 
         return result;
@@ -49,8 +58,20 @@ public class OntologySearchPluginRegistry {
         return ontologyCVSearchPlugins;
     }
 
-    public static boolean searchResourcesAvailable() {
-        return ontologyCVSearchPlugins.size() > 0;
+    public static boolean areSearchResourcesAvailableForCurrentField(Map<String, RecommendedOntology> recommendedOntologies) {
+
+        for (PluginOntologyCVSearch pluginOntologyCVSearch : ontologyCVSearchPlugins) {
+            if (pluginOntologyCVSearch.hasPreferredResourceForCurrentField(recommendedOntologies)) return true;
+        }
+        return false;
+    }
+
+    public static boolean isOntologySourceAbbreviationDefinedInPlugins(String ontologySourceAbbreviation) {
+        for (PluginOntologyCVSearch pluginOntologyCVSearch : ontologyCVSearchPlugins) {
+            if (pluginOntologyCVSearch.getAvailableResourceAbbreviations().contains(ontologySourceAbbreviation))
+                return true;
+        }
+        return false;
     }
 
 }

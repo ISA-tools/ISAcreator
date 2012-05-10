@@ -1,5 +1,6 @@
 package org.isatools.isacreator.plugins;
 
+import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
@@ -7,9 +8,7 @@ import org.isatools.isacreator.plugins.registries.OntologySearchPluginRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by the ISA team
@@ -70,5 +69,41 @@ public class DefaultOntologySearchWidget implements PluginOntologyCVSearch {
         }
 
         return new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+    }
+
+    public boolean hasPreferredResourceForCurrentField(Map<String, RecommendedOntology> recommendedOntologies) {
+        if (context != null && !disposed) {
+            try {
+                ontologySearchService = (PluginOntologyCVSearch) context.getService(sRef);
+                return ontologySearchService.hasPreferredResourceForCurrentField(recommendedOntologies);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public Map<OntologySourceRefObject, List<OntologyTerm>> searchRepository(String term, Map<String, RecommendedOntology> recommendedOntologies, boolean searchAll) {
+        if (context != null && !disposed) {
+            try {
+                ontologySearchService = (PluginOntologyCVSearch) context.getService(sRef);
+                return ontologySearchService.searchRepository(term, recommendedOntologies, searchAll);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+    }
+
+    public Set<String> getAvailableResourceAbbreviations() {
+        if (context != null && !disposed) {
+            try {
+                ontologySearchService = (PluginOntologyCVSearch) context.getService(sRef);
+                return ontologySearchService.getAvailableResourceAbbreviations();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return new HashSet<String>();
     }
 }

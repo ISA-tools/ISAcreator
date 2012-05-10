@@ -137,13 +137,14 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         return label;
     }
 
-    public JComponent createOntologyDropDown(JTextComponent field,
+    public JComponent createOntologyDropDown(String fieldName, JTextComponent field,
                                              boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource) {
+
 
         OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
         ontologySelectionTool.createGUI();
 
-        DropDownComponent dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
+        DropDownComponent dropdown = new DropDownComponent(fieldName, field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
 
         ontologySelectionTool.addPropertyChangeListener("selectedOntology", new OntologySelectedEvent(ontologySelectionTool, dropdown, field));
 
@@ -344,7 +345,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                     } else {
 
                         if (fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || ontologyFields.contains(fieldName)) {
-                            fieldPanel.add(createOntologyDropDown(textComponent, true, false, fieldDescriptor.getRecommmendedOntologySource()));
+                            fieldPanel.add(createOntologyDropDown(fieldName, textComponent, true, false, fieldDescriptor.getRecommmendedOntologySource()));
                         } else if (fieldDescriptor.getDatatype() == DataTypes.DATE) {
                             fieldPanel.add(createDateDropDown(textComponent));
                         } else {

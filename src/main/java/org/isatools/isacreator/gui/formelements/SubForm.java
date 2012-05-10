@@ -733,6 +733,9 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                             ooForSelectedTerm.getOntologySourceAccession() + "</p>" +
                             "</html>");
                 }
+
+                ApplicationManager.setCurrentlySelectedField(fields.get(rowSelected).getFieldName());
+
             } else {
                 TableCellEditor tce = scrollTable.getCellEditor(rowSelected, columnSelected);
                 Icon icon = null;

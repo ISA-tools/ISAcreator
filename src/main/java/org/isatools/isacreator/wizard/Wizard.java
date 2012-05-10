@@ -280,7 +280,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         recommendedOntologyMap.put("NEWT",
                 new RecommendedOntology(new Ontology("", "Jun 2011", "NEWT", "NEWT UniProt Taxonomy Database")));
 
-        organismListPanel.add(createOntologyDropDown(organism, false, false, recommendedOntologyMap));
+        organismListPanel.add(createOntologyDropDown("Organism used *", organism, false, false, recommendedOntologyMap));
 
         // create number of treatment groups field
         JPanel numTreatmentGroupsPanel = createFieldPanel(1, 2);

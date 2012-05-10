@@ -58,7 +58,6 @@ import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.optionselector.OptionGroup;
-import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
 import org.isatools.isacreator.plugins.registries.OntologySearchPluginRegistry;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -526,7 +525,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         searchSpan = new OptionGroup<String>(OptionGroup.HORIZONTAL_ALIGNMENT, true);
 
         // if we have search resources available via the plugin mechanism, then we should encourage searching on this resource.
-        if (OntologySearchPluginRegistry.searchResourcesAvailable()) {
+        if (OntologySearchPluginRegistry.areSearchResourcesAvailableForCurrentField(recommendedOntologies) || recommendedOntologies.size() > 0) {
             recommendedOntologiesAvailable = true;
         }
 
@@ -610,19 +609,23 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         historyUIContainer.add(historySelectionUI);
     }
 
-    private void setTermDefinitionView(OntologyTerm historyTerm, Map<String, String> ontologyVersions) {
+    private void setTermDefinitionView(OntologyTerm ontologyTerm, Map<String, String> ontologyVersions) {
+        boolean sourceIsInPlugins = OntologySearchPluginRegistry.isOntologySourceAbbreviationDefinedInPlugins(ontologyTerm.getOntologySource());
         viewTermDefinition.setContent(
-                createOntologyBranch(historyTerm), ontologyVersions.get(historyTerm.getOntologySource()), bioportalClient);
+                createOntologyBranch(ontologyTerm), ontologyVersions.get(ontologyTerm.getOntologySource()), sourceIsInPlugins ? null : bioportalClient);
     }
 
     private OntologyBranch createOntologyBranch(OntologyTerm historyTerm) {
-        return new OntologyBranch(historyTerm.getOntologySourceAccession(), historyTerm.getOntologyTermName());
+        OntologyBranch branch = new OntologyBranch(historyTerm.getOntologySourceAccession(), historyTerm.getOntologyTermName());
+        branch.setComments(historyTerm.getComments());
+        return branch;
     }
 
-    private void setTermDefinitionView(OntologyTerm historyTerm) {
+    private void setTermDefinitionView(OntologyTerm ontologyTerm) {
+        boolean sourceIsInPlugins = OntologySearchPluginRegistry.isOntologySourceAbbreviationDefinedInPlugins(ontologyTerm.getOntologySource());
         viewTermDefinition.setContent(
-                new OntologyBranch(historyTerm.getOntologySource() + ":" + historyTerm.getOntologySourceAccession(), historyTerm.getOntologyTermName()), historyTerm.getOntologySource(),
-                olsClient == null ? new OLSClient() : olsClient);
+                new OntologyBranch(ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession(), ontologyTerm.getOntologyTermName()), ontologyTerm.getOntologySource(),
+                sourceIsInPlugins ? null : olsClient == null ? new OLSClient() : olsClient);
     }
 
     private JPanel createTermDefinitionPanel() {
@@ -904,8 +907,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                                 List<RecommendedOntology> bioportalOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.BIOPORTAL);
 
-                                Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(),
-                                        bioportalOntologies);
+                                Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), bioportalOntologies);
 
                                 if (bioportalResult != null) {
                                     System.out.println("bioportal result size is : " + bioportalResult.size());
@@ -914,7 +916,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                                 // by default, for now we'll assume that reading from the recommended ontologies will also
                                 // encompass plugged in ontology resources.
-                                result.putAll(OntologySearchPluginRegistry.compositeSearch(searchField.getText()));
+                                result.putAll(OntologySearchPluginRegistry.compositeSearch(searchField.getText(), recommendedOntologies));
                             }
 
                             // only add to the cache if we got a result!
@@ -1173,7 +1175,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         }
 
                         if (OntologyUtils.getSourceOntologyPortalByVersion(ontologySource.getSourceVersion()) == OntologyPortal.BIOPORTAL) {
-                            viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceVersion(), bioportalClient == null ? new BioPortalClient() : bioportalClient);
+                            boolean sourceIsInPlugins = OntologySearchPluginRegistry.isOntologySourceAbbreviationDefinedInPlugins(ontologyTerm.getOntologySource());
+                            viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceVersion(), sourceIsInPlugins ? null : bioportalClient == null ? new BioPortalClient() : bioportalClient);
                         } else {
                             viewTermDefinition.setContent(new OntologyBranch(ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession(), ontologyTerm.getOntologyTermName()), ontologySource.getSourceName(), olsClient);
                         }

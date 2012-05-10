@@ -204,8 +204,11 @@ public class ViewTermDefinitionUI extends JPanel {
         Thread performer = new Thread(new Runnable() {
             public void run() {
                 try {
-                    setCurrentPage(new JLabel(LOADING));
-                    properties = ontologyService.getTermMetadata(term.getBranchIdentifier(), searchOntology);
+                    properties = term.getComments();
+                    if (ontologyService != null) {
+                        setCurrentPage(new JLabel(LOADING));
+                        properties.putAll(ontologyService.getTermMetadata(term.getBranchIdentifier(), searchOntology));
+                    }
                     setCurrentPage(createOntologyInformationPane(term));
                 } catch (Exception e) {
                     setCurrentPage(createOntologyInformationPane(term));

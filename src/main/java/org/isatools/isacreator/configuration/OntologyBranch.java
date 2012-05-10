@@ -37,9 +37,9 @@
 
 package org.isatools.isacreator.configuration;
 
-import org.isatools.isacreator.utils.StringProcessing;
-
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -53,6 +53,8 @@ public class OntologyBranch implements Serializable {
     private String branchIdentifier;
     private String branchName;
 
+    private Map<String, String> comments;
+
     /**
      * Constructor
      *
@@ -62,13 +64,12 @@ public class OntologyBranch implements Serializable {
     public OntologyBranch(String branchIdentifier, String branchName) {
         this.branchIdentifier = branchIdentifier;
         this.branchName = branchName;
+        comments = new HashMap<String, String>();
     }
 
     public String getBranchIdentifier() {
         return branchIdentifier;
     }
-
-
 
 
     public String getBranchName() {
@@ -82,5 +83,13 @@ public class OntologyBranch implements Serializable {
         }
 
         return getBranchIdentifier();
+    }
+
+    public Map<String, String> getComments() {
+        return comments;
+    }
+
+    public void setComments(Map<String, String> comments) {
+        this.comments = comments;
     }
 }
