@@ -34,5 +34,6 @@
     <dependency package="org.isatools.isacreator.ontologyselectiontool"/>
     <dependency package="org.apache.commons.collections15"/>
     <dependency package="org.apache.commons.collections15.multimap"/>
+    <dependency package="javax.swing.text"/>
 
 </osgiDependencies>
