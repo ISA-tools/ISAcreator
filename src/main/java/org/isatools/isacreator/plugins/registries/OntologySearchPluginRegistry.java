@@ -5,10 +5,7 @@ import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by the ISA team
@@ -73,5 +70,17 @@ public class OntologySearchPluginRegistry {
         }
         return false;
     }
+
+    public static int howManyOfTheseResourcesAreSearchedOnByPlugins(Collection<RecommendedOntology> recommendedOntologies) {
+        Set<RecommendedOntology> searchedOnResources = new HashSet<RecommendedOntology>();
+        for (RecommendedOntology recommendedOntology : recommendedOntologies) {
+            for (PluginOntologyCVSearch pluginOntologyCVSearch : ontologyCVSearchPlugins) {
+                if (pluginOntologyCVSearch.getAvailableResourceAbbreviations().contains(recommendedOntology.getOntology().getOntologyAbbreviation()))
+                    searchedOnResources.add(recommendedOntology);
+            }
+        }
+        return searchedOnResources.size();
+    }
+
 
 }

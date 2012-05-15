@@ -865,18 +865,18 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                             result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
                             if (searchAllOntologies) {
-                                System.out.println("no recommended ontology specified, so searching for " + searchField.getText());
+                                log.info("no recommended ontology specified, so searching for " + searchField.getText());
 
                                 Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), null, false);
 
                                 if (olsResult != null) {
-                                    System.out.println("found " + olsResult.size() + " terms in ols");
+                                    log.info("found " + olsResult.size() + " terms in ols");
                                     result.putAll(olsResult);
                                 }
 
                                 Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), "all", false);
 
-                                System.out.println("found " + bioportalResult.size() + " terms in bioportal");
+                                log.info("found " + bioportalResult.size() + " terms in bioportal");
 
                                 if (bioportalResult.size() > 0) {
                                     result.putAll(bioportalResult);
@@ -887,7 +887,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                     result.putAll(pluginResults);
                                 }
 
-                                System.out.println("almalgamated result is " + result.size() + " terms");
+                                log.info("almalgamated result is " + result.size() + " terms");
 
                                 OntologyManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
 
@@ -898,20 +898,30 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                                 List<RecommendedOntology> olsOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.OLS);
 
-                                Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), olsOntologies);
+                                if (olsOntologies.size() > 0) {
+                                    Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), olsOntologies);
 
-                                if (olsResult != null) {
-                                    System.out.println("ols result size is: " + olsResult);
-                                    result.putAll(olsResult);
+                                    if (olsResult != null) {
+                                        log.info("ols result size is: " + olsResult);
+                                        result.putAll(olsResult);
+                                    }
+                                } else {
+                                    log.info("Not searching OLS, nothing to search for in recommended ontologies.");
                                 }
 
                                 List<RecommendedOntology> bioportalOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.BIOPORTAL);
 
-                                Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), bioportalOntologies);
+                                int totalResourcesSearchedOnByPluginResources = OntologySearchPluginRegistry.howManyOfTheseResourcesAreSearchedOnByPlugins(recommendedOntologies.values());
 
-                                if (bioportalResult != null) {
-                                    System.out.println("bioportal result size is : " + bioportalResult.size());
-                                    result.putAll(bioportalResult);
+                                if (bioportalOntologies.size() > 0 && totalResourcesSearchedOnByPluginResources != recommendedOntologies.size()) {
+                                    Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), bioportalOntologies);
+
+                                    if (bioportalResult != null) {
+                                        log.info("bioportal result size is : " + bioportalResult.size());
+                                        result.putAll(bioportalResult);
+                                    }
+                                } else {
+                                    log.info("Not searching Bioportal, nothing to search for in recommended ontologies.");
                                 }
 
                                 // by default, for now we'll assume that reading from the recommended ontologies will also
