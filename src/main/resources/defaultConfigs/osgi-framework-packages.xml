@@ -34,6 +34,41 @@
     <dependency package="org.isatools.isacreator.ontologyselectiontool"/>
     <dependency package="org.apache.commons.collections15"/>
     <dependency package="org.apache.commons.collections15.multimap"/>
+    
+    
+    <!-- needed for JDK7 -->
+    <dependency package="javax.swing"/>
     <dependency package="javax.swing.text"/>
+    <dependency package="javax.swing.tree"/>
+    <dependency package="javax.swing.table"/>
+    <dependency package="javax.swing.event"/>
+    <dependency package="javax.swing.border"/>
+    <dependency package="javax.management"/>
+    <dependency package="javax.naming"/>
+    <dependency package="javax.crypto"/>
+    <dependency package="javax.crypto.spec"/>
+    <dependency package="javax.net.ssl"/>
+    <dependency package="javax.security.auth.x500"/>
+        
+    <dependency package="javax.xml.transform.dom"/>
+    <dependency package="javax.xml.transform.stream"/>
+    <dependency package="javax.xml.parsers"/>
+    <dependency package="javax.xml.datatype"/>
+    <dependency package="javax.xml.xpath"/>
+    <dependency package="javax.xml.transform"/>
+    <dependency package="javax.xml.transform.sax"/>
+    <dependency package="javax.xml.validation"/>
+
+    <dependency package="org.w3c.dom"/>
+    <dependency package="org.w3c.dom.traversal"/>
+    <dependency package="org.w3c.dom.ranges"/>
+    <dependency package="org.w3c.dom.ls"/>
+    <dependency package="org.w3c.dom.events"/>
+    
+    <dependency package="org.xml.sax"/>
+    <dependency package="org.xml.sax.ext"/>
+    <dependency package="org.xml.sax.helpers"/>
+    <dependency package="org.ietf.jgss"/>
+
 
 </osgiDependencies>
