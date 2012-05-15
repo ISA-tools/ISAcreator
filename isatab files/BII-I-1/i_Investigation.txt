@@ -1,8 +1,8 @@
 ONTOLOGY SOURCE REFERENCE
-Term Source Name	"OBI"	"BTO"	"NEWT"	"UO"	"OBI"	"CHEBI"	"PATO"	"EFO"	"OBI"	
-Term Source File	""	"ArrayExpress Experimental Factor Ontology"	""	""	""	""	""	""	""	
-Term Source Version	""	"v 1.26"	"v 1.26"	"v 1.26"	"beta"	"v 1.26"	"v 1.26"	"v 1.26"	""	
-Term Source Description	"Ontology for Biomedical Investigations"	"BRENDA tissue / enzyme source"	"NEWT UniProt Taxonomy Database"	"Unit Ontology"	"Ontology of Biomedical Investigation"	"Chemical Entities of Biological Interest"	"Phenotypic qualities (properties)"	"ArrayExpress Experimental Factor Ontology"	"Ontology for Biomedical Investigations"	
+Term Source Name	"OBI"	"BTO"	"NEWT"	"UO"	"CHEBI"	"PATO"	"EFO"	
+Term Source File	""	"ArrayExpress Experimental Factor Ontology"	""	""	""	""	""	
+Term Source Version	""	"v 1.26"	"v 1.26"	"v 1.26"	"v 1.26"	"v 1.26"	"v 1.26"	
+Term Source Description	"Ontology for Biomedical Investigations"	"BRENDA tissue / enzyme source"	"NEWT UniProt Taxonomy Database"	"Unit Ontology"	"Chemical Entities of Biological Interest"	"Phenotypic qualities (properties)"	"ArrayExpress Experimental Factor Ontology"	
 INVESTIGATION
 Investigation Identifier	"BII-I-1"
 Investigation Title	"Growth control of the eukaryote cell: a systems biology study in yeast"
@@ -10,7 +10,6 @@ Investigation Description	"Background Cell growth underlies many key cellular an
 Investigation Submission Date	"2007-04-30"
 Investigation Public Release Date	"2009-03-10"
 Comment [Last Opened With Configuration]	"isaconfig-default_v2011-02-18"
-Comment [Last opened with configuration]	"isaconfig-default_v2011-02-18"
 INVESTIGATION PUBLICATIONS
 Investigation PubMed ID	"17439666"
 Investigation Publication DOI	"doi:10.1186/jbiol54"
@@ -58,11 +57,11 @@ Study Factor Type Term Accession Number	"37577"	"0000161"
 Study Factor Type Term Source REF	"CHEBI"	"PATO"
 STUDY ASSAYS
 Study Assay Measurement Type	"metabolite profiling"	"protein expression profiling"	"transcription profiling"
-Study Assay Measurement Type Term Accession Number	"0000366"	""	"0000424"
 Study Assay Measurement Type Term Source REF	"OBI"	"OBI"	"OBI"
+Study Assay Measurement Type Term Accession Number	"0000366"	""	"0000424"
 Study Assay Technology Type	"mass spectrometry"	"mass spectrometry"	"DNA microarray"
-Study Assay Technology Type Term Accession Number	""	""	"0400148"
 Study Assay Technology Type Term Source REF	"OBI"	"OBI"	"OBI"
+Study Assay Technology Type Term Accession Number	""	""	"0400148"
 Study Assay Technology Platform	"LC-MS/MS"	"iTRAQ"	"Affymetrix"
 Study Assay File Name	"a_metabolome.txt"	"a_proteome.txt"	"a_transcriptome.txt"
 STUDY PROTOCOLS
@@ -119,11 +118,11 @@ Study Factor Type Term Accession Number	"0000368"	"0000721"	"0000428"
 Study Factor Type Term Source REF	"EFO"	"EFO"	"EFO"
 STUDY ASSAYS
 Study Assay Measurement Type	"transcription profiling"
-Study Assay Measurement Type Term Accession Number	"0000424"
 Study Assay Measurement Type Term Source REF	"OBI"
+Study Assay Measurement Type Term Accession Number	"0000424"
 Study Assay Technology Type	"DNA microarray"
-Study Assay Technology Type Term Accession Number	"0400148"
 Study Assay Technology Type Term Source REF	"OBI"
+Study Assay Technology Type Term Accession Number	"0400148"
 Study Assay Technology Platform	"Affymetrix"
 Study Assay File Name	"a_microarray.txt"
 STUDY PROTOCOLS
