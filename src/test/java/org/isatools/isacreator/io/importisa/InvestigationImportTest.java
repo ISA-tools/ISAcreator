@@ -55,7 +55,7 @@ public class InvestigationImportTest {
 
     @Test
     public void loadInvestigationFile() {
-        File testInvestigationFile = new File("isatab files/BII-I-1/i_investigation.txt");
+        File testInvestigationFile = new File("isatab files/BII-I-1/i_Investigation.txt");
 
         System.out.println("__TESTING loadInvestigationFile() on " + testInvestigationFile.getName());
 
