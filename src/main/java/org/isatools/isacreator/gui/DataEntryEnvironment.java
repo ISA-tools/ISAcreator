@@ -48,6 +48,7 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.datastructures.CollectionUtils;
@@ -294,7 +295,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
      * @return - DefaultMutableTreeNode. The root node with all nodes contained within it.
      */
     private DefaultMutableTreeNode buildTreeFromInvestigation(Investigation inv) {
-        if (inv.getStudies().size() > 1) {
+        boolean alwaysShowInvestigation = Boolean.valueOf(ISAcreatorProperties.getProperty("alwaysShowInvestigation"));
+        System.out.println("Should I always show the investigation? " + alwaysShowInvestigation);
+        if (inv.getStudies().size() > 1 || alwaysShowInvestigation) {
             inv.getUserInterface().update();
             overviewTreeRoot = new DefaultMutableTreeNode(inv);
 
