@@ -374,15 +374,15 @@ public class SpreadsheetPopupMenus {
             }
         });
 
-        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for assays");
-        viewWorkflowForAssays.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                SpreadsheetAnalysis analysis = new TranscriptomicSpreadsheetAnalysis(spreadsheet);
-                analysis.runAnalysis();
-                analysis.getGraph().outputGraph();
-                new WorkflowVisualization().createGUI();
-            }
-        });
+//        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for assays");
+//        viewWorkflowForAssays.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent actionEvent) {
+//                SpreadsheetAnalysis analysis = new TranscriptomicSpreadsheetAnalysis(spreadsheet);
+//                analysis.runAnalysis();
+//                analysis.getGraph().outputGraph();
+//                new WorkflowVisualization().createGUI();
+//            }
+//        });
 
         JMenuItem mapFilesToDirectory = new JMenuItem("Resolve file names");
         mapFilesToDirectory.setToolTipText("<html>" +
@@ -447,8 +447,8 @@ public class SpreadsheetPopupMenus {
             popup.add(removeHighlight);
         }
 
-        popup.add(new JSeparator());
-        popup.add(viewWorkflowForAssays);
+//        popup.add(new JSeparator());
+//        popup.add(viewWorkflowForAssays);
         popup.show(jc, x, y);
     }
 

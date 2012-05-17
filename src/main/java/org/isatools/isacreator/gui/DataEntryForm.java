@@ -380,14 +380,15 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
             int fieldType = SubFormField.STRING;
 
             if (ontologyFields.contains(fieldName)) {
-
                 fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
 
-                if (fieldDescriptor != null)
-                    if (fieldDescriptor.isAcceptsMultipleValues())
+                if (fieldDescriptor != null) {
+                    if (fieldDescriptor.isAcceptsMultipleValues()) {
                         fieldType = SubFormField.MULTIPLE_ONTOLOGY_SELECT;
-
+                    }
+                }
                 return new SubFormField(fieldName, fieldType, fieldDescriptor.getRecommmendedOntologySource());
+
             } else {
 
                 if (fieldDescriptor != null) {
@@ -398,6 +399,10 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         if (fieldDescriptor.isAcceptsFileLocations()) {
                             fieldType = SubFormField.FILE;
                         }
+                    }
+
+                    if (fieldType == SubFormField.SINGLE_ONTOLOGY_SELECT || fieldType == SubFormField.MULTIPLE_ONTOLOGY_SELECT) {
+                        return new SubFormField(fieldName, fieldType, fieldDescriptor.getRecommmendedOntologySource());
                     }
                 }
 

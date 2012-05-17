@@ -711,7 +711,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         if ((rowSelected != -1) && (columnSelected != -1)) {
 
-
             removeRecord.setText((showRemoveOption ? "Remove " : "Selected ") + fieldType + " " + (columnSelected + 1));
             if (!removeRecord.isVisible()) {
                 removeRecord.setVisible(true);
