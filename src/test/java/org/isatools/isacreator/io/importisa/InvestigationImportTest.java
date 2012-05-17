@@ -55,7 +55,10 @@ public class InvestigationImportTest {
 
     @Test
     public void loadInvestigationFile() {
-        File testInvestigationFile = new File("isatab files/BII-I-1/i_Investigation.txt");
+
+        String baseDir = System.getProperty("basedir");
+        File testInvestigationFile = new File(baseDir + "/target/test-classes/test-data/BII-I-1/i_investigation.txt");
+
 
         System.out.println("__TESTING loadInvestigationFile() on " + testInvestigationFile.getName());
 
