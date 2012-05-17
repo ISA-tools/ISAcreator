@@ -146,6 +146,16 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>xmlbeans-maven-plugin</artifactId>
                 <version>2.3.3</version>
@@ -216,6 +226,13 @@
 
 
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources/defaultConfigs</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 
     </build>
 
@@ -388,26 +405,33 @@
 
     </dependencies>
 
-    <!--<profiles>-->
-    <!--<profile>-->
-    <!--<id>default-tools.jar</id>-->
-    <!--<activation>-->
-    <!--<property>-->
-    <!--<name>java.vendor</name>-->
-    <!--<value>Sun Microsystems Inc.</value>-->
-    <!--</property>-->
-    <!--</activation>-->
-    <!--<dependencies>-->
-    <!--<dependency>-->
-    <!--<groupId>com.sun</groupId>-->
-    <!--<artifactId>tools</artifactId>-->
-    <!--<version>1.4.2</version>-->
-    <!--<scope>system</scope>-->
-    <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
-    <!--</dependency>-->
-    <!--</dependencies>-->
-    <!--</profile>-->
-    <!--</profiles>-->
+    <profiles>
+        <!--<profile>-->
+        <!--<id>default-tools.jar</id>-->
+        <!--<activation>-->
+        <!--<property>-->
+        <!--<name>java.vendor</name>-->
+        <!--<value>Sun Microsystems Inc.</value>-->
+        <!--</property>-->
+        <!--</activation>-->
+        <!--<dependencies>-->
+        <!--<dependency>-->
+        <!--<groupId>com.sun</groupId>-->
+        <!--<artifactId>tools</artifactId>-->
+        <!--<version>1.4.2</version>-->
+        <!--<scope>system</scope>-->
+        <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
+        <!--</dependency>-->
+        <!--</dependencies>-->
+        <!--</profile>-->
+
+        <profile>
+            <id>toxbank</id>
+            <properties>
+                <isacreator.alwaysShowInvestigation>true</isacreator.alwaysShowInvestigation>
+            </properties>
+        </profile>
+    </profiles>
 
 
     <distributionManagement>
