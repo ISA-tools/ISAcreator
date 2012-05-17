@@ -229,7 +229,7 @@
 
         <resources>
             <resource>
-                <directory>src/main/resources/defaultConfigs</directory>
+                <directory>src/main/resources/</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>

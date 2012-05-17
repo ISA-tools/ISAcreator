@@ -97,7 +97,7 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
                     se.getMessage());
         } catch (ParserConfigurationException pce) {
             log.error(
-                    "Parser Configuraion Exception Caught: \n Details are: \n" +
+                    "Parser Configuration Exception Caught: \n Details are: \n" +
                             pce.getMessage());
         } catch (IOException ioe) {
             log.error("File not found: \n Details are: \n" +
