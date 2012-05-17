@@ -215,6 +215,24 @@
             </plugin>
         </plugins>
 
+        <resources>
+            <!-- defines the files to be filtered -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <!--   defines the files to copy unaltered  -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
 
     </build>
 
@@ -406,6 +424,14 @@
         <!--</dependency>-->
         <!--</dependencies>-->
         <!--</profile>-->
+
+        <profile>
+            <id>toxbank</id>
+            <properties>
+                <isacreator.alwaysShowInvestigation>true</isacreator.alwaysShowInvestigation>
+            </properties>
+
+        </profile>
     </profiles>
 
 
