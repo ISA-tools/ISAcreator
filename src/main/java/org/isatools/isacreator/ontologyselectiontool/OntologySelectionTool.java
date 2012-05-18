@@ -525,8 +525,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         searchSpan = new OptionGroup<String>(OptionGroup.HORIZONTAL_ALIGNMENT, true);
 
         // if we have search resources available via the plugin mechanism, then we should encourage searching on this resource.
-        if (OntologySearchPluginRegistry.areSearchResourcesAvailableForCurrentField(recommendedOntologies) || recommendedOntologies.size() > 0) {
-            recommendedOntologiesAvailable = true;
+        if (recommendedOntologies != null) {
+            if (OntologySearchPluginRegistry.areSearchResourcesAvailableForCurrentField(recommendedOntologies) || recommendedOntologies.size() > 0) {
+                recommendedOntologiesAvailable = true;
+            }
         }
 
         searchSpan.addOptionItem(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable, recommendedOntologiesAvailable, true);
