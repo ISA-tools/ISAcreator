@@ -433,12 +433,14 @@ public class AddColumnGUI extends JDialog {
 
                     String colName = typeAsText + "[" + toAdd + "]";
 
-                    FieldObject newFieldObject = new FieldObject(st.getColumnCount(),
-                            colName, typeAsText + " value", DataTypes.STRING,
-                            "", false, false, false);
+                    FieldObject newFieldObject = st.getTableReferenceObject().getFieldByName(colName);
+                    if (newFieldObject == null) {
+                        newFieldObject = new FieldObject(st.getColumnCount(),
+                                colName, typeAsText + " value", DataTypes.STRING,
+                                "", false, false, false);
+                    }
 
                     st.getSpreadsheetFunctions().addFieldToReferenceObject(newFieldObject);
-
                     st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, newFieldObject.isRequired(), -1);
 
                     SwingUtilities.invokeLater(new Runnable() {
@@ -549,7 +551,6 @@ public class AddColumnGUI extends JDialog {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         st.getParentFrame().hideSheet();
-//                        ontologySelectionTool.cleanupReferences();
                         ontologySelectionTool = null;
                     }
                 });

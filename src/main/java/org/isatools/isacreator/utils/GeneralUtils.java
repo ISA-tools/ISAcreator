@@ -134,6 +134,8 @@ public class GeneralUtils {
             return toShorten.replaceAll(GeneralFieldTypes.PARAMETER_VALUE.name, "") + " " + GeneralFieldTypes.PARAMETER_VALUE.abbreviation;
         } else if (toShorten.contains(GeneralFieldTypes.FACTOR_VALUE.name)) {
             return toShorten.replaceAll(GeneralFieldTypes.FACTOR_VALUE.name, "") + " " + GeneralFieldTypes.FACTOR_VALUE.abbreviation;
+        } else if (toShorten.contains(GeneralFieldTypes.COMMENT.name)) {
+            return toShorten.replaceAll(GeneralFieldTypes.COMMENT.name, "") + " " + GeneralFieldTypes.COMMENT.abbreviation;
         } else {
             return toShorten;
         }
