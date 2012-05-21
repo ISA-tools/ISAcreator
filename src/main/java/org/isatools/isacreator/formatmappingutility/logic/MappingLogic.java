@@ -54,6 +54,7 @@ import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWr
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -323,6 +324,13 @@ public class MappingLogic {
         try {
             String[] subsAsArray = substitutions.toArray(new String[substitutions.size()]);
 
+            int rowOffSet;
+            try {
+                rowOffSet = Integer.parseInt(ISAcreatorProperties.getProperty("isacreator.rowOffset")) - 1;
+            } catch (NumberFormatException nfe) {
+                rowOffSet = 0;
+            }
+
             if (readerToUse == FileLoader.CSV_READER_CSV || readerToUse == FileLoader.CSV_READER_TXT) {
 
                 char delimiter = (readerToUse == FileLoader.CSV_READER_CSV) ? FileLoader.COMMA_DELIM : FileLoader.TAB_DELIM;
@@ -335,7 +343,7 @@ public class MappingLogic {
                 while ((nextLine = fileReader.readNext()) != null) {
 
                     // we don't want the column names as well!
-                    if (count != 0) {
+                    if (count != 0 && count > rowOffSet) {
                         // we decrement count since we're skipping 0.
                         addDataToTRO(headers, subsAsArray, nextLine, tro);
                     }
@@ -353,7 +361,7 @@ public class MappingLogic {
                         for (Sheet s : w.getSheets()) {
 
                             if (s.getRows() > 1) {
-                                for (int row = 1; row < s.getRows(); row++) {
+                                for (int row = rowOffSet + 1; row < s.getRows(); row++) {
                                     String[] nextLine = new String[s.getColumns()];
 
                                     for (int col = 0; col < s.getColumns(); col++) {

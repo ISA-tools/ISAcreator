@@ -46,6 +46,7 @@ import org.isatools.isacreator.common.FileSelectionPanel;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.formatmappingutility.exceptions.MultipleExtensionsException;
 import org.isatools.isacreator.formatmappingutility.exceptions.NoAvailableLoaderException;
 import org.isatools.isacreator.formatmappingutility.io.ISAFieldMapping;
@@ -238,6 +239,30 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
         selectFilesContainer.add(selectMappingPanel);
 
+        final RoundedJTextField rowOffset = new RoundedJTextField(3);
+        rowOffset.setEnabled(false);
+        rowOffset.setSize(new Dimension(20, 20));
+        rowOffset.setText("1");
+
+        final JCheckBox overrideRowPosition = new JCheckBox("override row start position?");
+        UIHelper.renderComponent(overrideRowPosition, UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
+        overrideRowPosition.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                rowOffset.setEnabled(overrideRowPosition.isSelected());
+            }
+        });
+
+
+        Box fileInputPanel = Box.createHorizontalBox();
+        fileInputPanel.setSize(new Dimension(100, 20));
+        fileInputPanel.add(overrideRowPosition);
+        fileInputPanel.add(Box.createHorizontalStrut(5));
+        fileInputPanel.add(rowOffset);
+
+        selectFilesContainer.add(fileInputPanel);
+
+
+        selectFilesContainer.add(selectMappingPanel);
 
         JPanel statusPanel = new JPanel(new GridLayout(1, 1));
         statusPanel.setPreferredSize(new Dimension(400, 30));
@@ -289,6 +314,8 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
                 Thread loadFile = new Thread(new Runnable() {
                     public void run() {
+                        ISAcreatorProperties.setProperty("isacreator.rowOffset", rowOffset.isEnabled() ? rowOffset.getText() : "1");
+
                         if (useMapping.isSelected()) {
 
                             if (!savedMappingsFile.getSelectedFilePath().trim().equals("")) {

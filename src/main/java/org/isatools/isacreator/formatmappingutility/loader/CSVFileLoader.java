@@ -40,6 +40,7 @@ package org.isatools.isacreator.formatmappingutility.loader;
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -99,11 +100,23 @@ public class CSVFileLoader implements FileLoader {
 
                     CSVReader reader = new CSVReader(new FileReader(file), delimiter);
 
-                    if (delimiter == FileLoader.COMMA_DELIM) {
 
+                    if (delimiter == FileLoader.COMMA_DELIM) {
                         readerUsed = FileLoader.CSV_READER_CSV;
                     } else {
                         readerUsed = FileLoader.CSV_READER_TXT;
+                    }
+
+
+                    int rowOffSet;
+                    try {
+                        rowOffSet = Integer.parseInt(ISAcreatorProperties.getProperty("isacreator.rowOffset")) - 1;
+                    } catch (NumberFormatException nfe) {
+                        rowOffSet = 0;
+                    }
+
+                    for (int skipCount = 0; skipCount < rowOffSet; skipCount++) {
+                        reader.readNext();
                     }
 
                     firstLine = reader.readNext();

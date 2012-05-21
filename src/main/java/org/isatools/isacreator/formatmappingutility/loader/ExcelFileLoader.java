@@ -42,6 +42,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,12 +75,21 @@ public class ExcelFileLoader implements FileLoader {
                 // Get the first sheet
                 for (Sheet s : w.getSheets()) {
 
+                    int rowStart;
+                    try {
+                        rowStart = Integer.parseInt(ISAcreatorProperties.getProperty("isacreator.rowOffset")) - 1;
+                        System.out.println("Row offset is: " + rowStart);
+                    } catch (NumberFormatException nfe) {
+                        System.out.println(nfe.getMessage());
+                        rowStart = 0;
+                    }
+
                     if (s.getRows() > 0) {
-                        int row = 0;
+
                         List<String> headersForSheet = new ArrayList<String>();
                         for (int j = 0; j < s.getColumns(); j++) {
 
-                            String cellContents = s.getCell(j, row).getContents();
+                            String cellContents = s.getCell(j, rowStart).getContents();
                             if (!cellContents.trim().equals("")) {
                                 headersForSheet.add(cellContents);
                             }
