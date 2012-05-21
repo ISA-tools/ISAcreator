@@ -238,11 +238,22 @@ public class TableReferenceObject implements Serializable {
 
     public Map<String, FieldObject> getMissingFields() {
         if (missingFields != null) {
+            getMultipleInstanceFields();
             return Collections.synchronizedMap(missingFields);
         } else {
             return null;
         }
     }
+
+    public void getMultipleInstanceFields() {
+        Map<String, FieldObject> fieldsThatMayBeAddedMultipleTimes = new HashMap<String, FieldObject>();
+        for (String field : fieldLookup.keySet()) {
+            if (acceptsMultipleValues(field)) {
+                missingFields.put(field, fieldLookup.get(field));
+            }
+        }
+    }
+
 
     public void setMissingFields(Map<String, FieldObject> missingFields) {
         this.missingFields = missingFields;

@@ -41,7 +41,6 @@ public class ApplicationManager {
         if (colName.contains("html")) {
             colName = colName.replaceAll("(Assay measuring)|<html>|<p align=\"right\">|<b>|</b>|</p>|</html>", "").trim();
         }
-        System.out.println("Currently editing field: " + colName);
         ApplicationManager.currentlySelectedFieldName = colName;
     }
 
