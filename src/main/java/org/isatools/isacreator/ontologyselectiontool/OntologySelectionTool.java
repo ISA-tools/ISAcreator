@@ -551,7 +551,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         historyList = new ExtendedJList(singleSelectionListCellRenderer);
 
         try {
-            for (OntologyTerm h : OntologyManager.getUserOntologyHistory().values()) {
+            for (OntologyTerm h : getSortedHistory()) {
                 historyList.addItem(h);
             }
         } catch (ConcurrentModificationException cme) {
@@ -609,6 +609,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         historySelectionUI.add(historyScroll, BorderLayout.CENTER);
         historySelectionUI.add(historyFilterContainer, BorderLayout.SOUTH);
         historyUIContainer.add(historySelectionUI);
+    }
+
+    private List<OntologyTerm> getSortedHistory() {
+        List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
+        ontologyTerms.addAll(OntologyManager.getUserOntologyHistory().values());
+        Collections.sort(ontologyTerms);
+        return ontologyTerms;
     }
 
     private void setTermDefinitionView(OntologyTerm ontologyTerm, Map<String, String> ontologyVersions) {
@@ -1050,7 +1057,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                     OntologyTerm[] newHistory = new OntologyTerm[OntologyManager.getUserOntologyHistory().size()];
 
                     int count = 0;
-                    for (OntologyTerm oo : OntologyManager.getUserOntologyHistory().values()) {
+                    for (OntologyTerm oo : getSortedHistory()) {
                         newHistory[count] = oo;
                         count++;
                     }

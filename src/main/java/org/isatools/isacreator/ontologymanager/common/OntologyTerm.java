@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class OntologyTerm {
+public class OntologyTerm implements Comparable<OntologyTerm> {
 
     public static final String THING = "Thing";
 
@@ -158,4 +158,7 @@ public class OntologyTerm {
     }
 
 
+    public int compareTo(OntologyTerm ontologyTerm) {
+        return getOntologyTermName().toLowerCase().compareTo(ontologyTerm.getOntologyTermName().toLowerCase());
+    }
 }
