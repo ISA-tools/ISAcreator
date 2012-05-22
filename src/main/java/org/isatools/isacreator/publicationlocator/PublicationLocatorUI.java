@@ -82,9 +82,8 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
     private Publication currentPublication;
 
     @InjectedResource
-    private ImageIcon searchBy, pubmedOption, pubmedOptionOver, doiOption, doiOptionOver, resultInactive,
-            result, resultOver, end, close, closeOver, accept, acceptOver, search, searchOver, pubmedText, doiText,
-            searchFieldLeft;
+    private ImageIcon searchBy, pubmedOption, pubmedOptionOver, doiOption, doiOptionOver, resultInactive, result,
+            resultOver, end, close, closeOver, accept, acceptOver, search, searchOver, pubmedText, doiText, searchFieldLeft;
 
     private JPanel swappableContainer;
 
@@ -119,15 +118,12 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
 
         swappableContainer = new JPanel();
         swappableContainer.setPreferredSize(new Dimension(499, 270));
-
-        // todo add pubmed panel to swappableContainer.
         swappableContainer.add(createSearchPanel());
 
         add(swappableContainer, BorderLayout.CENTER);
         add(createSouthPanel(), BorderLayout.SOUTH);
 
         pack();
-//		setVisible(true);
     }
 
     private Container createSouthPanel() {
@@ -385,8 +381,7 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     if (progressIndicator.isStarted()) {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {

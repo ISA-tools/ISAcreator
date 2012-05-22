@@ -78,6 +78,8 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
 
     private int currentReadStatus = -1;
 
+    private boolean loadAllOntologies = false;
+
 
     /**
      * Parse the config.xml file
@@ -105,6 +107,16 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
         }
 
         return null;
+    }
+
+    /**
+     * Normally, we only parse those ontologies that are defined in the accepted ontologies xml document.
+     * However, this can be overriden by setting this flag to true.
+     *
+     * @param loadAllOntologies - set to true to tell parser to load all ontologies, not just the 'accepted ontologies'.
+     */
+    public void setLoadAllOntologies(boolean loadAllOntologies) {
+        this.loadAllOntologies = loadAllOntologies;
     }
 
     /**
@@ -140,11 +152,15 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
                            String qName) throws SAXException {
         if (qName.equalsIgnoreCase("ontologyBean")) {
 
-            for (AcceptedOntology ontology : AcceptedOntologies.values()) {
-                if (ontology.toString().equals(currentOntologyEntry.getOntologyID())) {
-                    result.add(currentOntologyEntry);
-                    break;
+            if (!loadAllOntologies) {
+                for (AcceptedOntology ontology : AcceptedOntologies.values()) {
+                    if (ontology.toString().equals(currentOntologyEntry.getOntologyID())) {
+                        result.add(currentOntologyEntry);
+                        break;
+                    }
                 }
+            } else {
+                result.add(currentOntologyEntry);
             }
 
             currentReadStatus = IGNORE_READ;

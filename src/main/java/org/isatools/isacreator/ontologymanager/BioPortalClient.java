@@ -90,6 +90,10 @@ public class BioPortalClient implements OntologyService {
     }
 
     public List<Ontology> getAllOntologies() {
+        return getAllOntologies(false);
+    }
+
+    public List<Ontology> getAllOntologies(boolean loadAll) {
 
         if (ontologies == null || ontologies.size() == 0) {
 
@@ -100,6 +104,7 @@ public class BioPortalClient implements OntologyService {
             DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
             BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
+            parser.setLoadAllOntologies(loadAll);
 
             ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 

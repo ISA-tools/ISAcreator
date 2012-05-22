@@ -86,20 +86,25 @@ public class CiteExploreClient {
     }
 
     public List<CiteExploreResult> searchForPublication(SearchOption searchOption, String query) throws QueryException_Exception, NoPublicationFoundException {
-        WSCitationImpl port = service.getWSCitationImplPort();
 
         String fullQueryString = searchOption.getQueryString(query);
+
+        return performQuery(searchOption, fullQueryString);
+    }
+
+    public List<CiteExploreResult> performQuery(SearchOption searchOption, String fullQueryString) throws QueryException_Exception, NoPublicationFoundException {
+        WSCitationImpl port = service.getWSCitationImplPort();
 
         ResultListBean resultListBean = port.searchCitations(fullQueryString, "all", 0, "");
 
         if (resultListBean.getHitCount() > 0) {
             return createResultList(resultListBean);
         } else {
-            throw new NoPublicationFoundException(searchOption, query);
+            throw new NoPublicationFoundException(searchOption, fullQueryString);
         }
     }
 
-    public List<CiteExploreResult> createResultList(ResultListBean searchResults) {
+    private List<CiteExploreResult> createResultList(ResultListBean searchResults) {
         List<CiteExploreResult> resultSet = new ArrayList<CiteExploreResult>();
 
         List<ResultBean> resultBeans = searchResults.getResultBeanCollection();

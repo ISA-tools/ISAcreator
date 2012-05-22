@@ -45,7 +45,8 @@ package org.isatools.isacreator.publicationlocator;
  */
 public enum SearchOption {
     PUBMED("pubmed id", "EXT_ID:${replace} SRC:med"), DOI("doi", "DOI:${replace}"),
-    TITLE("title", "TITLE:${replace}"), FULL_TEXT("full_text", "FULL:${replace}");
+    TITLE("title", "TITLE:${replace}"), FULL_TEXT("full_text", "FULL:${replace}"),
+    COMPOSITE("composite", "");
 
     private String identifier, pattern;
 
