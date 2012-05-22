@@ -44,30 +44,20 @@ import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.StudyPublication;
 import uk.ac.ebi.cdb.client.*;
 
-import javax.print.attribute.ResolutionSyntax;
 import javax.xml.ws.WebServiceRef;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class CiteExploreClient {
 
-    private static final String EXT_ID = "EXT_ID";
-    private static final String SRC_ID = "SRC";
-    private static final String DOI = "DOI";
 
     @WebServiceRef(wsdlLocation = "http://www.ebi.ac.uk/webservices/citexplore/v1.0/service?wsdl")
     private WSCitationImplService service;
 
     public CiteExploreClient() {
         service = new WSCitationImplService();
-    }
-
-    private String formPubMedQueryString(String pubMedId) {
-        return EXT_ID + ":" + pubMedId + " " + SRC_ID + ":med";
-    }
-
-    private String formDOIQueryString(String doi) {
-        return DOI + ":" + doi;
     }
 
     public Map<String, Publication> getPublication(SearchOption searchOption, String query, DataEntryForm parent) throws NoPublicationFoundException {
@@ -115,7 +105,7 @@ public class CiteExploreClient {
     public List<ResultBean> searchForPublication(SearchOption searchOption, String query) throws QueryException_Exception, NoPublicationFoundException {
         WSCitationImpl port = service.getWSCitationImplPort();
 
-        String fullQueryString = searchOption == SearchOption.DOI ? formDOIQueryString(query) : formPubMedQueryString(query);
+        String fullQueryString = searchOption.getQueryString(query);
 
         ResultListBean resultListBean = port.searchCitations(fullQueryString, "all", 0, "");
 

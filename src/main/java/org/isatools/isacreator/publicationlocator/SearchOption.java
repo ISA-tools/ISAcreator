@@ -44,17 +44,23 @@ package org.isatools.isacreator.publicationlocator;
  * @date Dec 4, 2009
  */
 public enum SearchOption {
-    PUBMED("pubmed id"), DOI("doi");
-    private String identifier;
+    PUBMED("pubmed id", "EXT_ID:${replace} SRC:med"), DOI("doi", "DOI:${replace}"),
+    TITLE("title", "TITLE:${replace}"), FULL_TEXT("full_text", "FULL:${replace}");
 
-    SearchOption(String identifier) {
+    private String identifier, pattern;
+
+    SearchOption(String identifier, String pattern) {
         this.identifier = identifier;
+        this.pattern = pattern;
     }
 
     public String getIdentifier() {
         return identifier;
     }
 
+    public String getQueryString(String query) {
+        return pattern.replaceAll("\\$\\{replace\\}", query);
+    }
 
     @Override
     public String toString() {

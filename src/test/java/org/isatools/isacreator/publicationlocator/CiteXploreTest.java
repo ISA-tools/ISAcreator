@@ -28,6 +28,16 @@ public class CiteXploreTest {
         runTest(SearchOption.DOI, "10.1093/bioinformatics/btq415");
     }
 
+    @Test
+    public void testCiteXploreTitle() {
+        runTest(SearchOption.TITLE, "obi");
+    }
+
+    @Test
+    public void testCiteXploreFull() {
+        runTest(SearchOption.FULL_TEXT, "ontology for biomedical investigations");
+    }
+
     private void runTest(SearchOption searchOption, String query) {
         CiteExploreClient publicationSearcher = new CiteExploreClient();
 
@@ -42,7 +52,7 @@ public class CiteXploreTest {
     }
 
     private void printResultBeans(Collection<ResultBean> resultBeans) {
-        for(ResultBean resultBean : resultBeans) {
+        for (ResultBean resultBean : resultBeans) {
             Citation citation = resultBean.getCitation();
 
             System.out.println("citation.getTitle() = " + citation.getTitle());
