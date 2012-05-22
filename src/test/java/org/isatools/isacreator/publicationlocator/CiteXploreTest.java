@@ -42,7 +42,7 @@ public class CiteXploreTest {
         CiteExploreClient publicationSearcher = new CiteExploreClient();
 
         try {
-            List<ResultBean> result = publicationSearcher.searchForPublication(searchOption, query);
+            List<CiteExploreResult> result = publicationSearcher.searchForPublication(searchOption, query);
             printResultBeans(result);
         } catch (QueryException_Exception qex) {
             System.out.printf("Caught QueryException_Exception: %s\n", qex.getFaultInfo().getMessage());
@@ -51,13 +51,13 @@ public class CiteXploreTest {
         }
     }
 
-    private void printResultBeans(Collection<ResultBean> resultBeans) {
-        for (ResultBean resultBean : resultBeans) {
-            Citation citation = resultBean.getCitation();
+    private void printResultBeans(Collection<CiteExploreResult> resultBeans) {
+        for (CiteExploreResult resultBean : resultBeans) {
 
-            System.out.println("citation.getTitle() = " + citation.getTitle());
-            System.out.println("citation.getAbstractText() = " + citation.getAbstractText());
-            System.out.println("citation.getAffiliation() = " + citation.getAffiliation());
+            System.out.println("getTitle() = " + resultBean.getTitle());
+            System.out.println("getAbstractText() = " + resultBean.getAbstractText());
+            System.out.println("getAffiliation() = " + resultBean.getAffiliation());
+            System.out.println();
         }
     }
 }

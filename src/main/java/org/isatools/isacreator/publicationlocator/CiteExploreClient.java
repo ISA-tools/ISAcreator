@@ -45,6 +45,7 @@ import org.isatools.isacreator.model.StudyPublication;
 import uk.ac.ebi.cdb.client.*;
 
 import javax.xml.ws.WebServiceRef;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,36 +65,18 @@ public class CiteExploreClient {
         Map<String, Publication> publications = new HashMap<String, Publication>();
         try {
 
-            List<ResultBean> resultBeanCollection = searchForPublication(searchOption, query);
+            List<CiteExploreResult> resultBeanCollection = searchForPublication(searchOption, query);
 
-            for (ResultBean resultBean : resultBeanCollection) {
-                uk.ac.ebi.cdb.client.Citation citation = resultBean.getCitation();
-
-
-                String authorList = "";
-                for (Author author : citation.getAuthorCollection()) {
-                    authorList += author.getLastName() + " " + author.getInitials() + ",";
-                }
-                if (authorList.length() > 1) {
-                    authorList = authorList.substring(0, authorList.length() - 1);
-                }
-
-                String doi = "";
-                for (FullTextURL ftURL : citation.getUrlCollection()) {
-                    if (ftURL.getUrl().contains("doi")) {
-                        doi = ftURL.getUrl();
-                        break;
-                    }
-                }
+            for (CiteExploreResult resultBean : resultBeanCollection) {
 
                 Publication pub;
                 if (parent instanceof StudyDataEntry) {
-                    pub = new StudyPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                    pub = new StudyPublication(resultBean.getId(), resultBean.getDoi(), resultBean.getAuthors(), resultBean.getTitle(), "Published");
                 } else {
-                    pub = new InvestigationPublication(citation.getExternalId(), doi, authorList, citation.getTitle().replaceAll("\\[|\\]", ""), "Published");
+                    pub = new InvestigationPublication(resultBean.getId(), resultBean.getDoi(), resultBean.getAuthors(), resultBean.getTitle(), "Published");
                 }
-                pub.setAbstractText(citation.getAbstractText());
-                publications.put(citation.getExternalId(), pub);
+                pub.setAbstractText(resultBean.getAbstractText());
+                publications.put(resultBean.getId(), pub);
             }
         } catch (QueryException_Exception qex) {
             System.out.printf("Caught QueryException_Exception: %s\n", qex.getFaultInfo().getMessage());
@@ -102,7 +85,7 @@ public class CiteExploreClient {
         return publications;
     }
 
-    public List<ResultBean> searchForPublication(SearchOption searchOption, String query) throws QueryException_Exception, NoPublicationFoundException {
+    public List<CiteExploreResult> searchForPublication(SearchOption searchOption, String query) throws QueryException_Exception, NoPublicationFoundException {
         WSCitationImpl port = service.getWSCitationImplPort();
 
         String fullQueryString = searchOption.getQueryString(query);
@@ -110,10 +93,40 @@ public class CiteExploreClient {
         ResultListBean resultListBean = port.searchCitations(fullQueryString, "all", 0, "");
 
         if (resultListBean.getHitCount() > 0) {
-            return resultListBean.getResultBeanCollection();
+            return createResultList(resultListBean);
         } else {
             throw new NoPublicationFoundException(searchOption, query);
         }
+    }
+
+    public List<CiteExploreResult> createResultList(ResultListBean searchResults) {
+        List<CiteExploreResult> resultSet = new ArrayList<CiteExploreResult>();
+
+        List<ResultBean> resultBeans = searchResults.getResultBeanCollection();
+
+        for (ResultBean result : resultBeans) {
+            Citation citation = result.getCitation();
+            String authorList = "";
+            for (Author author : citation.getAuthorCollection()) {
+                authorList += author.getLastName() + " " + author.getInitials() + ",";
+            }
+            if (authorList.length() > 1) {
+                authorList = authorList.substring(0, authorList.length() - 1);
+            }
+
+            String doi = "";
+            for (FullTextURL ftURL : citation.getUrlCollection()) {
+                if (ftURL.getUrl().contains("doi")) {
+                    doi = ftURL.getUrl();
+                    break;
+                }
+            }
+
+            resultSet.add(new CiteExploreResult(citation.getExternalId(), doi, authorList,
+                    citation.getTitle().replaceAll("\\[|\\]", ""), citation.getAbstractText(), citation.getAffiliation()));
+        }
+
+        return resultSet;
     }
 
 
