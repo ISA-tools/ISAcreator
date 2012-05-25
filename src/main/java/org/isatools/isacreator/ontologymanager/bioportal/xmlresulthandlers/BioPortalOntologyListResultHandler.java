@@ -73,6 +73,10 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
     private static final int READING_ONT_VERSION = 5;
     private static final int READING_IS_FOUNDRY = 6;
     private static final int READING_FORMAT = 7;
+    private static final int READING_CONTACT = 8;
+    private static final int READING_CONTACT_EMAIL = 9;
+    private static final int READING_URL = 10;
+    private static final int READING_IS_VIEW = 11;
 
     private static final int IGNORE_READ = -1;
 
@@ -144,6 +148,14 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
             currentReadStatus = READING_IS_FOUNDRY;
         } else if (qName.equalsIgnoreCase("format")) {
             currentReadStatus = READING_FORMAT;
+        } else if (qName.equalsIgnoreCase("homepage")) {
+            currentReadStatus = READING_URL;
+        } else if (qName.equalsIgnoreCase("contactName")) {
+            currentReadStatus = READING_CONTACT;
+        } else if (qName.equalsIgnoreCase("contactEmail")) {
+            currentReadStatus = READING_CONTACT_EMAIL;
+        } else if (qName.equalsIgnoreCase("isView")) {
+            currentReadStatus = READING_IS_VIEW;
         }
     }
 
@@ -186,6 +198,15 @@ public class BioPortalOntologyListResultHandler extends DefaultHandler {
                 if (isFormatSupported(trimmedSource)) {
                     currentOntologyEntry.setFormat(OntologyFormats.valueOf(trimmedSource));
                 }
+            } else if (currentReadStatus == READING_CONTACT) {
+                currentOntologyEntry.setContactName(data);
+            } else if (currentReadStatus == READING_CONTACT_EMAIL) {
+                currentOntologyEntry.setContactEmail(data);
+            } else if (currentReadStatus == READING_URL) {
+                currentOntologyEntry.setHomePage(data);
+            } else if (currentReadStatus == READING_IS_VIEW) {
+                boolean isView = Boolean.valueOf(data);
+                currentOntologyEntry.setIsView(isView);
             }
             currentReadStatus = IGNORE_READ;
         }

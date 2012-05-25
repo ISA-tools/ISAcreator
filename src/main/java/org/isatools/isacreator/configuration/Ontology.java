@@ -56,6 +56,10 @@ public class Ontology implements Serializable {
     private OntologyFormats format;
     private DefaultMutableTreeNode view = null;
     private OntologyBranch subsectionToQuery;
+    private String contactName;
+    private String contactEmail;
+    private String homepage;
+    private Boolean isView;
 
     public Ontology() {
     }
@@ -130,7 +134,6 @@ public class Ontology implements Serializable {
         return format;
     }
 
-
     public OntologyBranch getSubsectionToQuery() {
         return subsectionToQuery;
     }
@@ -143,5 +146,31 @@ public class Ontology implements Serializable {
         this.format = format;
     }
 
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
 
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public void setHomePage(String homepage) {
+        this.homepage = homepage;
+    }
+
+    public void setIsView(boolean isView) {
+        this.isView = isView;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public String getHomepage() {
+        return homepage;
+    }
 }

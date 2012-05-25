@@ -72,7 +72,7 @@ public class BioPortalClientTest {
 
         System.out.println("Found " + ontologies.size() + " ontologies \n");
         for (Ontology ontology : ontologies) {
-            System.out.println(ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel() + " -> " + ontology.getOntologyVersion());
+            System.out.println(ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel() + " -> " + ontology.getOntologyVersion() + " - " + ontology.getHomepage() + " " + ontology.getContactName());
         }
     }
 
