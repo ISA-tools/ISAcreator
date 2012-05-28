@@ -16,6 +16,8 @@
 
 ## Development
 
+<a href="http://www.jetbrains.com/idea/" style="position: relative;display:block; width:88px; height:31px; border:0; margin:0;padding:0;text-decoration:none;text-indent:0;"><span style="margin: 0;padding: 0;position: absolute;top: -1px;left: 4px;font-size: 10px;cursor:pointer;  background-image:none;border:0;color: #0d3a9e; font-family: trebuchet ms,arial,sans-serif;font-weight: normal;text-align:left;">Developed with</span><img src="http://www.jetbrains.com/idea/opensource/img/all/banners/idea88x31_white.gif" alt="The best Java IDE" border="0"/></a>
+
 ### Contributing
 
 You should read this article about Git Flow: <http://scottchacon.com/2011/08/31/github-flow.html>. It's a really useful tutorial on how to use Git for collaborative development.
