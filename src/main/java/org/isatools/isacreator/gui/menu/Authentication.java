@@ -40,6 +40,7 @@ package org.isatools.isacreator.gui.menu;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.jdesktop.fuse.InjectedResource;
@@ -244,8 +245,8 @@ public class Authentication extends MenuUIComponent {
                 if (up.getPassword() == pwdAsString.hashCode()) {
                     clearFields();
 
-                    menu.getMain().setCurrentUser(up);
-                    menu.getMain().setUserOntologyHistory(up.getUserHistory());
+                    ISAcreator.setCurrentUser(up);
+                    ISAcreator.setUserOntologyHistory(up.getUserHistory());
                     Spreadsheet.fileSelectEditor.setFtpManager(up.getFtpManager());
                     menu.changeView(menu.getMainMenuGUI());
                     found = true;

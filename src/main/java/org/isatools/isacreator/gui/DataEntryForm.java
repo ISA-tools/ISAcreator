@@ -77,7 +77,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     protected Map<String, String> realNamesToAliases;
 
 
-    protected OrderedMap<String, JTextComponent> fieldDefinitions;
+    protected OrderedMap<String, JComponent> fieldDefinitions;
 
     public DataEntryForm(DataEntryEnvironment dataEntryEnvironment) {
         this.dataEntryEnvironment = dataEntryEnvironment;
@@ -283,7 +283,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public void addFieldsToPanel(Container containerToAddTo, InvestigationFileSection sectionToAddTo, OrderedMap<String, String> fieldValues, DataEntryReferenceObject referenceObject) {
 
         if (fieldDefinitions == null) {
-            fieldDefinitions = new ListOrderedMap<String, JTextComponent>();
+            fieldDefinitions = new ListOrderedMap<String, JComponent>();
         }
 
         Set<String> ontologyFields = referenceObject.getOntologyTerms(sectionToAddTo);
@@ -304,27 +304,30 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                     JPanel fieldPanel = createFieldPanel(1, 2);
                     JLabel fieldLabel = createLabel(tmpFieldName);
 
-                    JTextComponent textComponent;
+                    JComponent textComponent;
 
                     if (fieldDescriptor.getDatatype() == DataTypes.STRING || fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || fieldDescriptor.getDatatype() == DataTypes.DATE) {
                         textComponent = new RoundedJTextField(10);
                     } else if (fieldDescriptor.getDatatype() == DataTypes.LONG_STRING) {
                         textComponent = new JTextArea();
 
-                        textComponent.setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
-                        textComponent.setSelectedTextColor(UIHelper.BG_COLOR);
+                        ((JTextArea) textComponent).setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
+                        ((JTextArea) textComponent).setSelectedTextColor(UIHelper.BG_COLOR);
 
                         ((JTextArea) textComponent).setWrapStyleWord(true);
                         ((JTextArea) textComponent).setLineWrap(true);
                         textComponent.setBackground(UIHelper.BG_COLOR);
                         textComponent.setBorder(UIHelper.GREEN_ROUNDED_BORDER);
+                    } else if (fieldDescriptor.getDatatype() == DataTypes.LIST) {
+                        textComponent = new JComboBox(fieldDescriptor.getFieldList());
                     } else {
                         textComponent = new RoundedJTextField(10);
                     }
 
-
-                    textComponent.setText(fieldValues.get(fieldName).equals("")
-                            ? fieldDescriptor.getDefaultVal() : fieldValues.get(fieldName));
+                    if (textComponent instanceof JTextArea || textComponent instanceof JTextComponent) {
+                        ((JTextComponent) textComponent).setText(fieldValues.get(fieldName).equals("")
+                                ? fieldDescriptor.getDefaultVal() : fieldValues.get(fieldName));
+                    }
                     textComponent.setToolTipText(fieldDescriptor.getDescription());
 
                     UIHelper.renderComponent(textComponent, UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
@@ -341,16 +344,18 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
 
                         IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
-                        fieldPanel.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, textComponent));
-                    } else {
+                        fieldPanel.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, (JTextArea) textComponent));
+                    } else if (textComponent instanceof JTextComponent) {
 
                         if (fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM || ontologyFields.contains(fieldName)) {
-                            fieldPanel.add(createOntologyDropDown(fieldName, textComponent, true, false, fieldDescriptor.getRecommmendedOntologySource()));
+                            fieldPanel.add(createOntologyDropDown(fieldName, (JTextComponent) textComponent, true, false, fieldDescriptor.getRecommmendedOntologySource()));
                         } else if (fieldDescriptor.getDatatype() == DataTypes.DATE) {
-                            fieldPanel.add(createDateDropDown(textComponent));
+                            fieldPanel.add(createDateDropDown((JTextComponent) textComponent));
                         } else {
                             fieldPanel.add(textComponent);
                         }
+                    } else {
+                        fieldPanel.add(textComponent);
                     }
 
                     fieldDefinitions.put(tmpFieldName, textComponent);

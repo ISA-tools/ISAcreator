@@ -55,6 +55,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -263,7 +264,11 @@ public class InvestigationDataEntry extends DataEntryForm {
             if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
-            investigation.getFieldValues().put(tmpFieldName, fieldDefinitions.get(fieldName).getText());
+            if (fieldDefinitions.get(fieldName) instanceof JTextComponent) {
+                investigation.getFieldValues().put(tmpFieldName, ((JTextComponent) fieldDefinitions.get(fieldName)).getText());
+            } else if (fieldDefinitions.get(fieldName) instanceof JComboBox) {
+                investigation.getFieldValues().put(tmpFieldName, ((JComboBox) fieldDefinitions.get(fieldName)).getSelectedItem().toString());
+            }
         }
         publicationsSubForm.update();
         contactsSubform.update();

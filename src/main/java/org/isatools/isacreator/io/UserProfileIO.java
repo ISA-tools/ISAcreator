@@ -68,9 +68,6 @@ import java.util.List;
 public class UserProfileIO {
     private static final Logger log = Logger.getLogger(UserProfileIO.class.getName());
 
-    private static String ONTOLOGY_LIBRARY_OUTPUT_NAME = "isacreator-ontologies.ontlib";
-    private static String CONTACT_LIBRARY_OUTPUT_NAME = "isacreator-contacts.contlib";
-    private static String PROTOCOL_LIBRARY_OUTPUT_NAME = "isacreator-protocols.protlib";
     private static String USER_PROFILE_FILENAME = "profiles.sup";
 
     private ISAcreator main;
@@ -158,6 +155,7 @@ public class UserProfileIO {
 
     public static void saveOntologyLibrary(OntologyLibrary library, File dir) throws IOException {
 
+        String ONTOLOGY_LIBRARY_OUTPUT_NAME = "isacreator-ontologies.ontlib";
         File f = new File(dir.getPath() + File.separator + ONTOLOGY_LIBRARY_OUTPUT_NAME);
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
                 f));
@@ -175,6 +173,7 @@ public class UserProfileIO {
     }
 
     public static void saveContactsLibrary(List<Contact> library, File dir) throws IOException {
+        String CONTACT_LIBRARY_OUTPUT_NAME = "isacreator-contacts.contlib";
         File f = new File(dir.getPath() + File.separator + CONTACT_LIBRARY_OUTPUT_NAME);
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
                 f));
@@ -191,6 +190,7 @@ public class UserProfileIO {
     }
 
     public static void saveProtocolLibrary(List<Protocol> library, File dir) throws IOException {
+        String PROTOCOL_LIBRARY_OUTPUT_NAME = "isacreator-protocols.protlib";
         File f = new File(dir.getPath() + File.separator + PROTOCOL_LIBRARY_OUTPUT_NAME);
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
                 f));

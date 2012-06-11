@@ -59,6 +59,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -566,7 +567,13 @@ public class StudyDataEntry extends DataEntryForm {
             if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
-            study.getFieldValues().put(tmpFieldName, fieldDefinitions.get(fieldName).getText());
+
+            if (fieldDefinitions.get(fieldName) instanceof JTextComponent) {
+                study.getFieldValues().put(tmpFieldName, ((JTextComponent) fieldDefinitions.get(fieldName)).getText());
+            } else if (fieldDefinitions.get(fieldName) instanceof JComboBox) {
+                study.getFieldValues().put(tmpFieldName, ((JComboBox) fieldDefinitions.get(fieldName)).getSelectedItem().toString());
+            }
+
         }
 
         studyDesignSubform.update();

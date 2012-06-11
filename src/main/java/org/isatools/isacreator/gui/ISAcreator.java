@@ -131,7 +131,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private JPanel glass;
 
     private ISAcreatorMenu isacreatorMenu = null;
-    private UserProfile currentUser = null;
+    private static UserProfile currentUser = null;
     private JMenuBar menuBar;
     private JMenu pluginMenu;
 
@@ -831,13 +831,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         validate();
     }
 
-    public void setCurrentUser(UserProfile currentUser) {
+    public static void setCurrentUser(UserProfile currentUser) {
         if (currentUser != null) {
             System.err.println("setting user to : " + currentUser.getUsername());
-            this.currentUser = currentUser;
+            ISAcreator.currentUser = currentUser;
         } else {
             System.err.println("Logging out user...");
-            this.currentUser = null;
+            ISAcreator.currentUser = null;
         }
     }
 

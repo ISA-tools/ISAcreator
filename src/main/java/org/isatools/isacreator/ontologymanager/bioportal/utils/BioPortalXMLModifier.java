@@ -78,7 +78,7 @@ public class BioPortalXMLModifier {
                     return newFile;
 
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 } finally {
                     if (outputStream != null) {
                         outputStream.flush();
