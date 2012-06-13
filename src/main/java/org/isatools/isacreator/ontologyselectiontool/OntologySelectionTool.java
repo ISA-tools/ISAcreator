@@ -204,8 +204,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     }
 
     public void setRecommendedOntologies(Map<String, RecommendedOntology> recommendedOntologies) {
-        this.recommendedOntologies = recommendedOntologies;
 
+        final boolean resetView = !(this.recommendedOntologies == recommendedOntologies);
+
+        this.recommendedOntologies = recommendedOntologies;
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -213,15 +215,21 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                 boolean recommendedOntologiesAvailable = checkIfRecommendedOntologiesAreAvailable();
                 browseRecommendedOntologiesTab.setVisible(recommendedOntologiesAvailable);
 
-                resetView();
-
-                searchSpan.toggleOptionEnabled(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable);
-                searchSpan.setSelectedItem(recommendedOntologiesAvailable ? RECOMMENDED_ONTOLOGIES : ALL_ONTOLOGIES);
+                if (resetView) {
+                    // should also reset the recommended ontologies. Displaying recommended ontologies for another field
+                    // if not a great idea.
+                    if (recommendedOntologiesAvailable) {
+                        ontologySearchResultsTree.setModel(new FilterableOntologyTreeModel<OntologySourceRefObject, List<OntologyTerm>>(new DefaultMutableTreeNode("results"), ontologySearchResultsTree));
+                    }
+                    searchSpan.toggleOptionEnabled(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable);
+                    searchSpan.setSelectedItem(recommendedOntologiesAvailable ? RECOMMENDED_ONTOLOGIES : ALL_ONTOLOGIES);
+                }
             }
         });
     }
 
-    private void resetView() {
+    private void resetView(boolean resetButtons) {
+
         resetButtons();
         searchOntologiesTab.setIcon(searchOntologiesIconOver);
         mode = SEARCH_MODE;
@@ -499,7 +507,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
             }
         };
 
-        createBrowseRecommendedOntologyTree(ui, recommendedOntologies);
+        createBrowseRecommendedOntologyTree(ui);
 
         JScrollPane treeScroll = new JScrollPane(browseRecommendedOntologyTree,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -513,8 +521,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         browseUIContainer.add(treeScroll, BorderLayout.CENTER);
     }
 
-    private void createBrowseRecommendedOntologyTree(BasicTreeUI ui, Map<String, RecommendedOntology> ontologies) {
-        browseRecommendedOntologyTree = new JTree();
+    private void createBrowseRecommendedOntologyTree(BasicTreeUI ui) {
+        browseRecommendedOntologyTree = new JTree(new DefaultMutableTreeNode("Nothing to display"));
         wsOntologyTreeCreator = new WSOntologyTreeCreator(this, browseRecommendedOntologyTree);
         browseRecommendedOntologyTree.setCellRenderer(new CustomTreeRenderer());
         browseRecommendedOntologyTree.setShowsRootHandles(false);
@@ -879,13 +887,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                 Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), null, false);
 
                                 if (olsResult != null) {
-                                    log.info("found " + olsResult.size() + " terms in ols");
+                                    log.info("found terms in " + olsResult.size() + " ols ontologies");
                                     result.putAll(olsResult);
                                 }
 
                                 Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), "all", false);
 
-                                log.info("found " + bioportalResult.size() + " terms in bioportal");
+                                log.info("found terms in " + bioportalResult.size() + " bioportal ontologies");
 
                                 if (bioportalResult.size() > 0) {
                                     result.putAll(bioportalResult);
@@ -896,7 +904,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                     result.putAll(pluginResults);
                                 }
 
-                                log.info("almalgamated result is " + result.size() + " terms");
+                                log.info("almalgamated result is comprised of " + result.size() + " ontologies");
 
                                 OntologyManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
 
@@ -911,7 +919,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                     Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), olsOntologies);
 
                                     if (olsResult != null) {
-                                        log.info("ols result size is: " + olsResult);
+                                        log.info("found terms in " + olsResult.size() + " ols ontologies");
                                         result.putAll(olsResult);
                                     }
                                 } else {
@@ -926,7 +934,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                                     Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), bioportalOntologies);
 
                                     if (bioportalResult != null) {
-                                        log.info("bioportal result size is : " + bioportalResult.size());
+                                        log.info("found terms in " + bioportalResult.size() + " bioportal ontologies");
                                         result.putAll(bioportalResult);
                                     }
                                 } else {
@@ -940,8 +948,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                             // only add to the cache if we got a result!
                             if (result.size() > 0) {
-                                OntologyManager.searchResultCache.addToCache(cacheKeyLookup,
-                                        result);
+                                OntologyManager.searchResultCache.addToCache(cacheKeyLookup, result);
                             }
 
                         } else {
