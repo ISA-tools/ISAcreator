@@ -1,22 +1,21 @@
 package org.isatools.isacreator.visualization.workflowvisualization;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.formatmappingutility.ui.GenerateMappingView;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.visualization.TreeView;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import prefuse.controls.ControlAdapter;
 import prefuse.data.Tree;
 import prefuse.data.io.TreeMLReader;
+import prefuse.visual.VisualItem;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.io.File;
 
 /**
@@ -46,12 +45,12 @@ public class WorkflowVisualization extends AnimatableJFrame {
     @InjectedResource
     private Image workflowVisIcon, workflowVisIconInactive;
 
-    @InjectedResource
-    private ImageIcon workflow;
 
     public WorkflowVisualization() {
         ResourceInjector.get("workflow-package.style").inject(this);
     }
+
+    private NodeDetail nodeDetailView = null;
 
     public void createGUI() {
         setUndecorated(true);
@@ -89,9 +88,44 @@ public class WorkflowVisualization extends AnimatableJFrame {
         }
 
         TreeView treeView = new WorkflowVisualisationTreeView(t, new Dimension(600, 800), TreeView.NAME_STRING, 2);
+
+        treeView.addControlListener(new ControlAdapter() {
+            @Override
+            public void itemEntered(VisualItem visualItem, MouseEvent mouseEvent) {
+                // we should show a hover display about the item
+                if (nodeDetailView != null && nodeDetailView.isShowing()) {
+                    setContentForNodeDetail(visualItem);
+                }
+            }
+
+            @Override
+            public void itemClicked(VisualItem visualItem, MouseEvent mouseEvent) {
+                // we should set the fixed panel to be visible (if it is not already) and display information
+                // about the node.
+                if (nodeDetailView == null) {
+                    nodeDetailView = new NodeDetail();
+                    nodeDetailView.createGUI();
+                }
+
+                setContentForNodeDetail(visualItem);
+                if (!nodeDetailView.isShowing()) {
+                    nodeDetailView.setVisible(true);
+                }
+            }
+        });
+
         centralPanel.add(treeView);
-//        centralPanel.add(new JLabel(workflow));
         add(centralPanel, BorderLayout.CENTER);
+    }
+
+    private void setContentForNodeDetail(VisualItem visualItem) {
+        try {
+            nodeDetailView.setContent(new WorkflowVisualisationNode(visualItem.get("image").toString(),
+                    visualItem.get("type").toString(), visualItem.get("name").toString(),
+                    visualItem.get("workflow").toString()));
+        } catch (Exception e) {
+            // ignore the error.
+        }
     }
 
     private void addSouthPanel() {

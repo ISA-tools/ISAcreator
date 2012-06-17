@@ -208,7 +208,7 @@ public class UIHelper {
         return components;
     }
 
-    private static int hashString(String s) {
+    public static int hashString(String s) {
         int hashcode = s.hashCode();
 
         for (char c : s.toCharArray()) {

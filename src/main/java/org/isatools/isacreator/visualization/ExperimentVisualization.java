@@ -226,6 +226,7 @@ public class ExperimentVisualization extends JLayeredPane {
 
         // create a search panel for the tree map
         tview.addControlListener(new ControlAdapter() {
+
             public void itemClicked(VisualItem item, MouseEvent e) {
                 if (item.canGetString(TreeView.NAME_STRING) && item.canGetString("type")) {
                     final String name = item.getString(TreeView.NAME_STRING);
