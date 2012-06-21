@@ -54,8 +54,7 @@ import java.util.Map;
 public class AssayInformationWriter {
 
 
-    public String printAssays(
-            Collection<Assay> assays, List<MappingObject> mappingObjects) {
+    public String printAssays(Collection<Assay> assays, List<MappingObject> mappingObjects) {
 
 
         Map<String, OrderedMap<String, String>> assayToInformation = new HashMap<String, OrderedMap<String, String>>();
@@ -70,17 +69,23 @@ public class AssayInformationWriter {
                 MappingObject technology = getMappingObjectForAssayValue(assay.getTechnologyType(), mappingObjects);
                 MappingObject measurement = getMappingObjectForAssayValue(assay.getMeasurementEndpoint(), mappingObjects);
 
+
                 assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT, assay.getMeasurementEndpoint());
-                assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Source REF", measurement.getMeasurementSource());
-                assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Accession Number", measurement.getMeasurementAccession());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Source REF", measurement == null
+                        ? "" : measurement.getMeasurementSource());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.MEASUREMENT_ENDPOINT + " Term Accession Number", measurement == null
+                        ? "" : measurement.getMeasurementAccession());
 
 
                 assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE, assay.getTechnologyType());
-                assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Source REF", technology.getTechnologySource());
-                assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Accession Number", technology.getTechnologyAccession());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Source REF", technology == null
+                        ? "" : technology.getTechnologySource());
+                assayToInformation.get(assay.getAssayReference()).put(Assay.TECHNOLOGY_TYPE + " Term Accession Number", technology == null
+                        ? "" : technology.getTechnologyAccession());
 
                 assayToInformation.get(assay.getAssayReference()).put(Assay.ASSAY_PLATFORM, assay.getAssayPlatform());
                 assayToInformation.get(assay.getAssayReference()).put(Assay.ASSAY_REFERENCE, assay.getAssayReference());
+
 
             }
         } else {
