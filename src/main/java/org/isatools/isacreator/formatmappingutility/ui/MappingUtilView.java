@@ -37,7 +37,6 @@
 
 package org.isatools.isacreator.formatmappingutility.ui;
 
-import com.apple.eawt.Application;
 import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;

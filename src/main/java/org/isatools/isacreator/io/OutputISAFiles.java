@@ -37,8 +37,6 @@
 
 package org.isatools.isacreator.io;
 
-import com.apple.eawt.Application;
-import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
@@ -46,8 +44,6 @@ import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
@@ -60,9 +56,7 @@ import java.util.List;
 /**
  * Outputs the ISAtab files corresponding to their respective objects in the ISAcreator model.
  */
-
-
-public class OutputISAFiles {
+public class OutputISAFiles extends ISAFileOutput {
     private static final Logger log = Logger.getLogger(OutputISAFiles.class.getName());
 
     private List<Spreadsheet> errorSheets;
@@ -135,53 +129,6 @@ public class OutputISAFiles {
         }
     }
 
-    public String getOntologiesUsedOutput() {
-        String[] headerTerms = new String[]{
-                "Term Source Name", "Term Source File", "Term Source Version",
-                "Term Source Description"
-        };
-        String toReturn = "ONTOLOGY SOURCE REFERENCE\n";
-
-        for (int i = 0; i < headerTerms.length; i++) {
-            StringBuffer line = new StringBuffer(headerTerms[i] + "\t");
-            String val = "";
-            for (OntologySourceRefObject anOntologiesUsed : OntologyManager.getOntologiesUsed()) {
-
-                if (headerTerms[i].equals("Term Source Name")) {
-                    val = anOntologiesUsed.getSourceName();
-                } else if (headerTerms[i].equals("Term Source File")) {
-                    val = anOntologiesUsed.getSourceFile();
-                } else if (headerTerms[i].equals("Term Source Version")) {
-                    val = anOntologiesUsed.getSourceVersion();
-                } else if (headerTerms[i].equals("Term Source Description")) {
-                    val = anOntologiesUsed.getSourceDescription();
-                }
-
-                addToLine(line, StringUtils.isEmpty(val) ? " " : val);
-            }
-
-            // add new line to everything line but the last line
-            if (i != (headerTerms.length - 1)) {
-                line.append("\n");
-            }
-
-            toReturn += line;
-        }
-
-        return toReturn;
-    }
-
-    private void addToLine(StringBuffer line, String toAdd) {
-        if (toAdd == null) {
-            toAdd = "";
-        }
-
-        if (!toAdd.equals("")) {
-            toAdd = toAdd.trim();
-
-            line.append("\"").append(toAdd).append("\"\t");
-        }
-    }
 
     public List<Spreadsheet> getAllSheets() {
         return allSheets;
