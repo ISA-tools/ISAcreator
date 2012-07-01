@@ -1,4 +1,4 @@
-package org.isatools.isacreator.visualization.workflowvisualization;
+package org.isatools.isacreator.visualization.workflowvisualization.taxonomy;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
@@ -42,7 +42,7 @@ public class TaxonomyRenderer extends JPanel {
 
         if (taxonomyToRender != null) {
 
-            g2d.setFont(UIHelper.VER_8_BOLD);
+            g2d.setFont(UIHelper.VER_9_BOLD);
 
             double midPoint = calculateMidPoint(xSpace, diameter);
 

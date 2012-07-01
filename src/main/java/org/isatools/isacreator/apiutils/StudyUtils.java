@@ -37,9 +37,11 @@ package org.isatools.isacreator.apiutils;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.sampleselection.SampleInformation;
+import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -70,10 +72,11 @@ public class StudyUtils {
      * @return - Map<String, Map<String, String>> -> Sample Name - other Key, Value pairs describing the sample
      */
     public static Map<String, SampleInformation> getStudySampleInformation(final Study study) {
-        final Spreadsheet studySampleSpreadsheet = study.getStudySample().getSpreadsheetUI().getSpreadsheet();
+
+        final Spreadsheet studySampleSpreadsheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(
+                study.getStudySample())).getSpreadsheet();
 
         if (studySampleInformation.get(study.getStudyId()) == null || studySampleFileModifiedFlag.get(study.getStudyId())) {
-
 
             Thread sampleHarvestingThread = new Thread(new Runnable() {
                 public void run() {

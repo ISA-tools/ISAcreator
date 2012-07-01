@@ -43,6 +43,8 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;
@@ -172,11 +174,12 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         JPanel labelPanel = new JPanel(new GridLayout(2, 2));
         labelPanel.setBackground(UIHelper.BG_COLOR);
 
-        System.out.println("Study user interface is null? " + (study.getUserInterface() == null));
-        System.out.println("Study user interface dep is null? " + (study.getUserInterface().getDataEntryEnvironment() == null));
+        final DataEntryForm studyUISection = ApplicationManager.getUserInterfaceForISASection(study);
+        System.out.println("Study user interface is null? " + (studyUISection == null));
+        System.out.println("Study user interface dep is null? " + (studyUISection.getDataEntryEnvironment() == null));
 
-        label1Capture = new LabelCapture("Label (e.g. Cy3)", study.getUserInterface().getDataEntryEnvironment());
-        label2Capture = new LabelCapture("Label (e.g. Cy5)", study.getUserInterface().getDataEntryEnvironment());
+        label1Capture = new LabelCapture("Label (e.g. Cy3)", studyUISection.getDataEntryEnvironment());
+        label2Capture = new LabelCapture("Label (e.g. Cy5)", studyUISection.getDataEntryEnvironment());
         label2Capture.setVisible(false);
 
         // create dye swap check box
@@ -211,7 +214,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         extractNameContainer.setOpaque(false);
 
-        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
+        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), studyUISection.getDataEntryEnvironment());
 
         extractDetails.add(extract);
         extractNameContainer.add(extract);
@@ -225,7 +228,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         addExtractButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
+                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), studyUISection.getDataEntryEnvironment());
                 extractDetails.add(extract);
                 extractNameContainer.add(extract);
 

@@ -7,10 +7,7 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.gui.InvestigationDataEntry;
-import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
@@ -23,7 +20,6 @@ import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import uk.ac.ebi.utils.collections.Pair;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -184,7 +180,7 @@ public class ISAtabImporter {
 
                     if (constructWithGUIs) {
                         attachGUIsToInvestigation();
-                        dataEntryEnvironment.createGUIFromInvestigatio(investigation);
+                        dataEntryEnvironment.createGUIFromInvestigation(investigation);
                         assignOntologiesToSession(mapper.getOntologyTermsDefined());
                     }
 
@@ -334,30 +330,29 @@ public class ISAtabImporter {
     }
 
     private void attachGUIsToInvestigation() {
-        investigation.setUserInterface(new InvestigationDataEntry(investigation, dataEntryEnvironment));
+        ApplicationManager.assignDataEntryToISASection(investigation, new InvestigationDataEntry(investigation, dataEntryEnvironment));
 
         for (String studyIdentifier : investigation.getStudies().keySet()) {
             Study study = investigation.getStudies().get(studyIdentifier);
 
-            study.setUI(new StudyDataEntry(dataEntryEnvironment, study));
-
-            study.getStudySample().setUserInterface(study.getUserInterface());
+            ApplicationManager.assignDataEntryToISASection(study, new StudyDataEntry(dataEntryEnvironment, study));
+            ApplicationManager.assignDataEntryToISASection(study.getStudySample(), ApplicationManager.getUserInterfaceForAssay(
+                    study.getStudySample(), ((StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(study))));
 
             for (String assay : study.getAssays().keySet()) {
-
-                study.getAssays().get(assay).setUserInterface(study.getUserInterface());
+                Assay assayToAdd = study.getAssays().get(assay);
+                ApplicationManager.assignDataEntryToISASection(assayToAdd, ApplicationManager.getUserInterfaceForAssay(
+                        assayToAdd, ((StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(study))));
             }
         }
     }
 
     private void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
-
         for (OntologyTerm oo : ontologiesUsed) {
             if (!oo.getOntologyTermName().trim().equals("")) {
                 OntologyManager.addToUserHistory(oo);
             }
         }
-
     }
 
     public List<ISAFileErrorReport> getMessages() {

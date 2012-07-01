@@ -48,6 +48,7 @@ public class WorkflowVisualisationTreeView extends TreeView {
         m_nodeRenderer = new LabelRenderer(null, "image");
 
         m_edgeRenderer = new EdgeRenderer(Constants.EDGE_TYPE_CURVE);
+        m_edgeRenderer.setDefaultLineWidth(4);
 
         DefaultRendererFactory rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);

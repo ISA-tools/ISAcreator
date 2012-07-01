@@ -134,6 +134,8 @@ public class CSVFileLoader implements FileLoader {
             log.error("file not found: " + e.getMessage());
         } catch (IOException e) {
             log.error("io exception occurred " + e.getMessage());
+        } catch (Exception e) {
+            log.error("problem with incoming file. We were unable to process it for this reason: " + e.getMessage());
         }
         return result;
 

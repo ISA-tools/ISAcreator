@@ -41,6 +41,7 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;
@@ -246,7 +247,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
         JPanel labelPanel = new JPanel(new GridLayout(1, 2));
         labelPanel.setBackground(UIHelper.BG_COLOR);
 
-        labelCapture = new LabelCapture("Label", study.getUserInterface().getDataEntryEnvironment());
+        labelCapture = new LabelCapture("Label", ApplicationManager.getUserInterfaceForISASection(study).getDataEntryEnvironment());
         labelCapture.setVisible(false);
 
         labelUsed = new JCheckBox("Label used?", false);
@@ -279,7 +280,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
                 BoxLayout.PAGE_AXIS));
         extractNameContainer.setBackground(UIHelper.BG_COLOR);
 
-        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
+        extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), ApplicationManager.getUserInterfaceForISASection(study).getDataEntryEnvironment());
 
         extractDetails.add(extract);
         extractNameContainer.add(extract);
@@ -293,7 +294,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
         addButton.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), study.getUserInterface().getDataEntryEnvironment());
+                extract = new ExtractDetailsCapture("Sample " + (extractDetails.size() + 1), ApplicationManager.getUserInterfaceForISASection(study).getDataEntryEnvironment());
                 extractDetails.add(extract);
                 extractNameContainer.add(extract);
 

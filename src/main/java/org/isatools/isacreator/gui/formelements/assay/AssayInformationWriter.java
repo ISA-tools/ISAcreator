@@ -89,13 +89,13 @@ public class AssayInformationWriter {
 
             }
         } else {
-            createDefaultAssaySecton(assayToInformation);
+            createDefaultAssaySection(assayToInformation);
         }
 
         return outputAssayMapAsString(assayToInformation);
     }
 
-    private void createDefaultAssaySecton(Map<String, OrderedMap<String, String>> assayToInformation) {
+    private void createDefaultAssaySection(Map<String, OrderedMap<String, String>> assayToInformation) {
         assayToInformation.put("", new ListOrderedMap<String, String>());
 
         assayToInformation.get("").put(Assay.MEASUREMENT_ENDPOINT, "");

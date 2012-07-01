@@ -41,6 +41,8 @@ import org.isatools.isacreator.autofilterfield.AutoCompleteUI;
 import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.spreadsheet.Utils;
@@ -81,7 +83,7 @@ public class SampleSelectorCellEditor extends DefaultAutoFilterCellEditor<Sample
 
         Map<String, SampleInformation> allSampleInformation = StudyUtils.getStudySampleInformation(getStudyFromSpreadsheet());
 
-        Spreadsheet studySampleSheet = getStudyFromSpreadsheet().getStudySample().getSpreadsheetUI().getSpreadsheet();
+        Spreadsheet studySampleSheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(getStudyFromSpreadsheet().getStudySample())).getSpreadsheet();
 
         Map<TableColumn, TableColumn> studySampleSheetFactors = studySampleSheet.getSpreadsheetFunctions().getFactors();
 

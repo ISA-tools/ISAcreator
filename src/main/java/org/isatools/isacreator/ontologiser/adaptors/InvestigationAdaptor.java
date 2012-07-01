@@ -3,6 +3,8 @@ package org.isatools.isacreator.ontologiser.adaptors;
 import org.isatools.isacreator.apiutils.InvestigationUtils;
 import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -72,11 +74,11 @@ public class InvestigationAdaptor implements ContentAdaptor {
             Study study = investigation.getStudies().get(studyAccession);
 
             System.out.println("Replacing terms in " + studyAccession);
-            SpreadsheetUtils.replaceFreeTextWithOntologyTerms(study.getStudySample().getSpreadsheetUI().getSpreadsheet(), mappingsForReplacement);
+            SpreadsheetUtils.replaceFreeTextWithOntologyTerms(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet(), mappingsForReplacement);
 
             for (Assay assay : study.getAssays().values()) {
                 System.out.println("Replacing terms in " + assay.getAssayReference());
-                SpreadsheetUtils.replaceFreeTextWithOntologyTerms(assay.getSpreadsheetUI().getSpreadsheet(), mappingsForReplacement);
+                SpreadsheetUtils.replaceFreeTextWithOntologyTerms(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet(), mappingsForReplacement);
             }
         }
     }

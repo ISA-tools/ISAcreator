@@ -68,8 +68,6 @@ public class Investigation extends ISASection {
     public static final String CONFIGURATION_CREATED_WITH = "Comment [Created With Configuration]";
     public static final String CONFIGURATION_LAST_OPENED_WITH = "Comment [Last Opened With Configuration]";
 
-    private InvestigationDataEntry userInterface;
-
     private List<Publication> publications;
     private List<Contact> contacts;
     private Map<String, Study> studies;
@@ -230,10 +228,6 @@ public class Investigation extends ISASection {
         return studies;
     }
 
-    public InvestigationDataEntry getUserInterface() {
-        return userInterface;
-    }
-
     public void setSubmissionDate(String submissionDate) {
         fieldValues.put(INVESTIGATION_SUBMISSION_DATE_KEY, submissionDate);
     }
@@ -306,10 +300,6 @@ public class Investigation extends ISASection {
         }
 
         this.reference = directory + File.separator + investigationFileName;
-    }
-
-    public void setUserInterface(InvestigationDataEntry ui) {
-        this.userInterface = ui;
     }
 
     public String toString() {

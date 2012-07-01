@@ -39,6 +39,7 @@ package org.isatools.isacreator.visualization;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -85,13 +86,16 @@ public class ExperimentVisualization extends JLayeredPane {
         try {
             Thread populate = new Thread(new Runnable() {
                 public void run() {
-                    investigation.getUserInterface().getDataEntryEnvironment().setOverviewIconAsBusy(true);
+                    ApplicationManager.getUserInterfaceForISASection(investigation)
+                            .getDataEntryEnvironment().setOverviewIconAsBusy(true);
                     populateAssayInformationInBackground();
                 }
             });
             populate.start();
         } finally {
-            investigation.getUserInterface().getDataEntryEnvironment().setOverviewIconAsBusy(false);
+
+            ApplicationManager.getUserInterfaceForISASection(investigation)
+                    .getDataEntryEnvironment().setOverviewIconAsBusy(false);
         }
     }
 

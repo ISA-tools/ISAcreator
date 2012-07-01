@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.formatmappingutility.ui;
 
+import com.apple.eawt.Application;
 import jxl.read.biff.BiffException;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
@@ -57,6 +58,7 @@ import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.loader.Loader;
 import org.isatools.isacreator.formatmappingutility.logic.MappingLogic;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
@@ -913,12 +915,12 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                     public void run() {
                         investigation = MappingLogic.createInvestigation(definitions, assaySelections, dataEntryEnvironment);
                         // now we need to construct the investigation from the defined table reference objects and the
-                        investigation.setUserInterface(new InvestigationDataEntry(investigation, dataEntryEnvironment));
+                        ApplicationManager.assignDataEntryToISASection(investigation, new InvestigationDataEntry(investigation, dataEntryEnvironment));
 
                         investigation.setConfigurationCreateWith(menuPanels.getMain().getLoadedConfiguration());
                         investigation.setLastConfigurationUsed(menuPanels.getMain().getLoadedConfiguration());
 
-                        dataEntryEnvironment.createGUIFromInvestigatio(investigation);
+                        dataEntryEnvironment.createGUIFromInvestigation(investigation);
 
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
                         menuPanels.getMain().hideGlassPane();

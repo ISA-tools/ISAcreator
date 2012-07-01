@@ -136,6 +136,7 @@ public class Spreadsheet extends JComponent implements
     protected JOptionPane optionPane;
     private CustomTable table;
 
+
     private List<CopyPasteObserver> observers;
 
 

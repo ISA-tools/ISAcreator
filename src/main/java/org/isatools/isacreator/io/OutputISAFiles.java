@@ -37,8 +37,11 @@
 
 package org.isatools.isacreator.io;
 
+import com.apple.eawt.Application;
 import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
@@ -94,31 +97,31 @@ public class OutputISAFiles {
             // print section defining the Ontologies Used
             ps.println(getOntologiesUsedOutput());
             // print the Investigation section.
-            ps.println(investigation.getUserInterface().toString());
+            ps.println(ApplicationManager.getUserInterfaceForISASection(investigation).toString());
 
             File fileToSave;
 
-            for (Study s : investigation.getStudies().values()) {
-                ps.println(s.getUserInterface().toString());
+            for (Study study : investigation.getStudies().values()) {
+                ps.println(ApplicationManager.getUserInterfaceForISASection(study).toString());
 
                 fileToSave = new File(file.getParentFile().getPath() +
-                        File.separator + s.getStudySampleFileIdentifier());
+                        File.separator + study.getStudySampleFileIdentifier());
 
-                Spreadsheet tmpSheet = s.getStudySample().getSpreadsheetUI().getSpreadsheet();
+                Spreadsheet tmpSheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet();
                 if (!tmpSheet.getSpreadsheetFunctions().exportTable(fileToSave, "\t", removeEmptyColumns)) {
                     errorSheets.add(tmpSheet);
                     shouldShowIncorrectOrderGUI = true;
                 }
                 allSheets.add(tmpSheet);
 
-                Assay a;
-                for (String assayRef : s.getAssays().keySet()) {
-                    a = s.getAssays().get(assayRef);
+                Assay assay;
+                for (String assayRef : study.getAssays().keySet()) {
+                    assay = study.getAssays().get(assayRef);
 
                     fileToSave = new File(file.getParentFile().getPath() +
-                            File.separator + a.getAssayReference());
+                            File.separator + assay.getAssayReference());
 
-                    tmpSheet = a.getSpreadsheetUI().getSpreadsheet();
+                    tmpSheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet();
                     if (!tmpSheet.getSpreadsheetFunctions().exportTable(fileToSave, "\t", removeEmptyColumns)) {
                         errorSheets.add(tmpSheet);
                         shouldShowIncorrectOrderGUI = true;

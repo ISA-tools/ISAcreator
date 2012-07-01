@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.visualization;
 
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
@@ -67,7 +69,7 @@ public class AssayAnalysis {
     }
 
     private Spreadsheet getAssayContent() {
-        return a.getSpreadsheetUI().getSpreadsheet();
+        return ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(a)).getSpreadsheet();
     }
 
     public Map<String, List<Object>> performTreatmentGroupAnalysis() {

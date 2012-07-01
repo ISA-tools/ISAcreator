@@ -51,6 +51,8 @@ import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.ui.*;
 import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.*;
@@ -198,10 +200,12 @@ public class MappingLogic {
 
 
         StudyDataEntry sde = new StudyDataEntry(dep, study);
-        study.setUI(sde);
+        ApplicationManager.assignDataEntryToISASection(study, sde);
+
         Assay studySample = new Assay("s_study_sample.txt", mappings.get(MappingObject.STUDY_SAMPLE));
 
-        studySample.setUserInterface(sde);
+        ApplicationManager.assignDataEntryToISASection(studySample, ApplicationManager.getUserInterfaceForAssay(studySample, sde));
+
         study.setStudySamples(studySample);
 
         for (String assayName : mappings.keySet()) {
@@ -213,7 +217,7 @@ public class MappingLogic {
                 Assay mappedAssay = new Assay("a_" + assayName.replaceAll("\\s+", "") + ".txt",
                         measurement, technology, "", mappings.get(assayName));
 
-                mappedAssay.setUserInterface(sde);
+                ApplicationManager.assignDataEntryToISASection(mappedAssay, ApplicationManager.getUserInterfaceForAssay(mappedAssay, sde));
                 study.addAssay(mappedAssay);
                 inv.addToAssays(mappedAssay.getAssayReference(), study.getStudyId());
             }

@@ -1,5 +1,7 @@
 package org.isatools.isacreator.apiutils;
 
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -35,10 +37,10 @@ public class InvestigationUtils {
             Study study = studies.get(studyId);
 
             result.put(study.getStudySample(),
-                    SpreadsheetUtils.getFreetextInSpreadsheet(study.getStudySample().getSpreadsheetUI().getSpreadsheet()));
+                    SpreadsheetUtils.getFreetextInSpreadsheet(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet()));
 
             for (Assay assay : study.getAssays().values()) {
-                result.put(assay, SpreadsheetUtils.getFreetextInSpreadsheet(assay.getSpreadsheetUI().getSpreadsheet()));
+                result.put(assay, SpreadsheetUtils.getFreetextInSpreadsheet(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet()));
             }
         }
 

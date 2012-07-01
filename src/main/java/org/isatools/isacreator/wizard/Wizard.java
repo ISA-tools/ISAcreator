@@ -47,10 +47,7 @@ import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedFormattedTextField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.InvestigationDataEntry;
-import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.gui.formelements.AssaySubForm;
 import org.isatools.isacreator.gui.formelements.FactorSubForm;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
@@ -1081,19 +1078,23 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
                 studyBeingEdited.setStudySamples(studySample);
 
-                studyBeingEdited.getStudySample().setUserInterface(studyBeingEdited.getUserInterface());
+//                ((AssaySpreadsheet)ApplicationManager.getUserInterfaceForISASection(studyBeingEdited.getStudySample()))
+                // todo need to generate the view better.
+                StudyDataEntry studyDataEntryUI = (StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(studyBeingEdited);
 
-                for (Assay a : studyBeingEdited.getAssays().values()) {
-                    investigationDefinition.addToAssays(a.getAssayReference(),
+                ApplicationManager.assignDataEntryToISASection(studySample, ApplicationManager.getUserInterfaceForAssay(studySample, studyDataEntryUI));
+
+                for (Assay assay : studyBeingEdited.getAssays().values()) {
+                    investigationDefinition.addToAssays(assay.getAssayReference(),
                             studyBeingEdited.getStudyId());
 
-                    if (a.getTableReferenceObject() == null) {
-                        TableReferenceObject temp = dep.getParentFrame().selectTROForUserSelection(a.getMeasurementEndpoint(),
-                                a.getTechnologyType());
+                    if (assay.getTableReferenceObject() == null) {
+                        TableReferenceObject temp = dep.getParentFrame().selectTROForUserSelection(assay.getMeasurementEndpoint(),
+                                assay.getTechnologyType());
 
                         if (temp != null) {
                             TableReferenceObject assayRef = new TableReferenceObject(temp.getTableFields());
-                            a.setTableReferenceObject(assayRef);
+                            assay.setTableReferenceObject(assayRef);
                         } else {
                             status.setText(
                                     "the selected combination of endpoint and technology type does not exist!");
@@ -1102,11 +1103,11 @@ public class Wizard extends AbstractDataEntryEnvironment {
                             return;
                         }
                     }
-
-                    a.setUserInterface(studyBeingEdited.getUserInterface());
+                    ApplicationManager.assignDataEntryToISASection(assay,
+                            ApplicationManager.getUserInterfaceForAssay(assay, studyDataEntryUI));
                 }
 
-                studyBeingEdited.getUserInterface().reformProtocols();
+                ((StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(studyBeingEdited)).reformProtocols();
                 investigationDefinition.addStudy(studyBeingEdited);
 
                 //if more studies to define, then define them, else show created thing!
@@ -1237,13 +1238,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
             public void mousePressed(MouseEvent mouseEvent) {
                 // go back to define assay page.
-
-                // todo may need to investigate the inclusion of ontology information
                 mainMenu.getMain().setCurDataEntryPanel(dep);
-                investigationDefinition.setUserInterface(new InvestigationDataEntry(
+
+                ApplicationManager.assignDataEntryToISASection(investigationDefinition, new InvestigationDataEntry(
                         investigationDefinition, dep));
 
-                dep.createGUIFromInvestigatio(investigationDefinition);
+                dep.createGUIFromInvestigation(investigationDefinition);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         mainMenu.getMain().setCurrentPage(dep);
@@ -1425,10 +1425,8 @@ public class Wizard extends AbstractDataEntryEnvironment {
         Thread createStudyThread = new Thread(new Runnable() {
             public void run() {
                 if (assayDefinitionRequired()) {
-                    studyBeingEdited.setUI(new StudyDataEntry(dep, studyBeingEdited));
+                    ApplicationManager.assignDataEntryToISASection(studyBeingEdited, new StudyDataEntry(dep, studyBeingEdited));
 
-                    System.out.println("about to create add assay pane, dep is null? " + (studyBeingEdited.getUserInterface() == null));
-                    System.out.println("DataEntryEnvironment parent frame is null? " + (studyBeingEdited.getUserInterface().getDataEntryEnvironment().getParentFrame() == null));
                     addAssayUI = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, currentUser);
                     addAssayUI.createGUI();
                     addAssayUI.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);

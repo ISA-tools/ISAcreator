@@ -287,12 +287,9 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         for (String s : investigation.getStudies().keySet()) {
             Study tmpStudy = investigation.getStudies().get(s);
-            tmpStudy.getUserInterface().removeReferences();
-            tmpStudy.setUI(null);
+            ApplicationManager.getUserInterfaceForISASection(tmpStudy).removeAll();
         }
-
-        investigation.getUserInterface().removeAll();
-        investigation.setUserInterface(null);
+        ApplicationManager.getUserInterfaceForISASection(investigation).removeAll();
 
         investigation = null;
     }

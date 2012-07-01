@@ -798,7 +798,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
                         DataEntryEnvironment dep = new DataEntryEnvironment();
 
                         ApplicationManager.getCurrentApplicationInstance().setCurDataEntryPanel(dep);
-                        dep.createGUIFromInvestigatio(inv1);
+                        dep.createGUIFromInvestigation(inv1);
                         ApplicationManager.getCurrentApplicationInstance().setCurrentPage(dep);
                     }
                 });

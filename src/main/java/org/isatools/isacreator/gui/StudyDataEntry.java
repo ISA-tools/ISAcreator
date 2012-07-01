@@ -492,7 +492,7 @@ public class StudyDataEntry extends DataEntryForm {
     private void removeUnusedProtocols(String assayRef) {
         Assay assay = getStudy().getAssays().get(assayRef);
 
-        Set<String> protocolRefsInAssay = SpreadsheetUtils.findValuesForColumnInSpreadsheet(assay.getSpreadsheetUI().getSpreadsheet(), GeneralFieldTypes.PROTOCOL_REF.name);
+        Set<String> protocolRefsInAssay = SpreadsheetUtils.findValuesForColumnInSpreadsheet(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet(), GeneralFieldTypes.PROTOCOL_REF.name);
 
         Set<String> fieldFocus = Collections.singleton(GeneralFieldTypes.PROTOCOL_REF.name);
 
@@ -501,7 +501,7 @@ public class StudyDataEntry extends DataEntryForm {
             // now check remaining assays to see if the protocol is used elsewhere
             for (String otherAssayRef : getStudy().getAssays().keySet()) {
                 if (!otherAssayRef.equals(assay.getAssayReference())) {
-                    Set<String> foundValues = SpreadsheetUtils.findValueInSheet(getStudy().getAssays().get(otherAssayRef).getSpreadsheetUI().getSpreadsheet(), protocolRefsInAssay, fieldFocus);
+                    Set<String> foundValues = SpreadsheetUtils.findValueInSheet(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet(), protocolRefsInAssay, fieldFocus);
                     protocolsPresentInOtherAssays.addAll(foundValues);
                 }
             }
@@ -630,25 +630,25 @@ public class StudyDataEntry extends DataEntryForm {
         viewAssayListener = null;
         removeAssayListener = null;
 
-        study.getStudySample().getSpreadsheetUI().setDataEntryEnvironment(null);
+
+        ApplicationManager.getIsaSectionToDataEntryForm().get(study.getStudySample()).setDataEntryEnvironment(null);
 
         for (String assayReference : study.getAssays().keySet()) {
             Assay assay = study.getAssays().get(assayReference);
-            assay.removeReferences();
+            ApplicationManager.removeISASectionAndDataEntryForm(assay);
         }
 
         study.getAssays().clear();
 
-        study.getStudySample().removeReferences();
+
         setDataEntryEnvironment(null);
         study.setAssays(null);
-        study.getUserInterface().removeAll();
-        study.setUI(null);
+        // todo add in previous removals for cleanup.
         study.setStudySamples(null);
         study = null;
 
         fieldContainer.removeAll();
-
+        ApplicationManager.clearUserInterfaceAssignments();
 
         removeAll();
     }

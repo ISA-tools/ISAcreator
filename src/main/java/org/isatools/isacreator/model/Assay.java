@@ -38,6 +38,7 @@
 package org.isatools.isacreator.model;
 
 import org.isatools.isacreator.gui.AssaySpreadsheet;
+import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.gui.StudySubData;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
@@ -55,7 +56,6 @@ public class Assay extends ISASection implements StudySubData {
     public static final String ASSAY_PLATFORM = "Study Assay Technology Platform";
 
     private TableReferenceObject tableReferenceObject = null;
-    private AssaySpreadsheet spreadsheet;
 
     public Assay() {
         super();
@@ -95,32 +95,6 @@ public class Assay extends ISASection implements StudySubData {
         fieldValues.put(ASSAY_PLATFORM, assayPlatform);
     }
 
-    /**
-     * The Assay object represents the Spreadsheet/Matrix defining the processes involved
-     * to get data files from a Sample
-     *
-     * @param assayReference       - A Reference to be given to the Assay
-     * @param measurementEndpoint  - the measurement being made in this Assay (e.g. transcription profiling)
-     * @param technologyType       - the technology being used to make the measurement in this Assay (e.g. DNA microarray)
-     * @param assayPlatform        - the technology platform used (e.g. Agilent, Affymetrix, Bruker, etc.)
-     * @param studyDataEntry       - the StudyDataEntry object relating to the parent Study Object.
-     * @param tableReferenceObject - the Table Reference Object which contains all the properties of a an Assay, in particular defining which Columns are required, Which are Ontology terms, etc. These files are provided via the ISAConfiguration Tool.
-     */
-    public Assay(String assayReference, String measurementEndpoint,
-                 String technologyType, String assayPlatform, StudyDataEntry studyDataEntry,
-                 TableReferenceObject tableReferenceObject) {
-        super();
-
-        fieldValues.put(ASSAY_REFERENCE, assayReference);
-        fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
-        fieldValues.put(TECHNOLOGY_TYPE, technologyType);
-        fieldValues.put(ASSAY_PLATFORM, assayPlatform);
-
-        // we copy the table reference object, otherwise all modifications
-        // to this object will be carried through to all other assays too!
-        TableReferenceObject newTRO = new TableReferenceObject(tableReferenceObject.getTableFields());
-        spreadsheet = new AssaySpreadsheet(studyDataEntry, newTRO, getMeasurementEndpoint(), getTechnologyType());
-    }
 
     /**
      * The Assay object represents the Spreadsheet/Matrix defining the processes involved
@@ -173,14 +147,6 @@ public class Assay extends ISASection implements StudySubData {
         return tableReferenceObject;
     }
 
-    public AssaySpreadsheet getSpreadsheetUI() {
-        return spreadsheet;
-    }
-
-    public void setSpreadsheet(AssaySpreadsheet spreadsheet) {
-        this.spreadsheet = spreadsheet;
-    }
-
     /**
      * Returns a 2D Array representation of the Data contained inside this Assay.
      *
@@ -194,25 +160,9 @@ public class Assay extends ISASection implements StudySubData {
         this.tableReferenceObject = tro;
     }
 
-    public void setUserInterface(StudyDataEntry sde) {
-        if (getMeasurementEndpoint().equals("") && getTechnologyType().equals("")) {
-            if (tableReferenceObject != null) {
-                this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject);
-            }
-        } else {
-            this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject, getMeasurementEndpoint(), getTechnologyType());
-        }
-    }
 
     public String toString() {
         return getValue(ASSAY_REFERENCE);
-    }
-
-    public void removeReferences() {
-        getSpreadsheetUI().setDataEntryEnvironment(null);
-        getSpreadsheetUI().getSpreadsheet().removeReferences();
-        getSpreadsheetUI().setSpreadsheet(null);
-        setSpreadsheet(null);
     }
 
 }

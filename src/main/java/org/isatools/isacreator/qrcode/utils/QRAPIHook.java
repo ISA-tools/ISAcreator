@@ -39,6 +39,8 @@ package org.isatools.isacreator.qrcode.utils;
 
 import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.formatmappingutility.ui.MappingChoice;
+import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -75,16 +77,18 @@ public class QRAPIHook {
     public void generateDataFromEnvironment() {
         Study study = getInvestigation().getStudies().get(studyId);
 
-        subData = SpreadsheetUtils.getSpreadsheetDataSubset(study.getStudySample().getSpreadsheetUI().getSpreadsheet(), 4);
+        AssaySpreadsheet studySampleInterface = (AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample());
+
+        subData = SpreadsheetUtils.getSpreadsheetDataSubset(studySampleInterface.getSpreadsheet(), 4);
 
         Map<Integer, String> columnIndexToName = SpreadsheetUtils.getColumns(
-                study.getStudySample().getSpreadsheetUI().getSpreadsheet(), new HashSet<String>());
+                studySampleInterface.getSpreadsheet(), new HashSet<String>());
 
         columnNames = columnIndexToName.values().toArray(new String[columnIndexToName.values().size()]);
 
         sampleNameIndex = getSampleNameIndex(columnIndexToName);
         if (sampleNameIndex != -1) {
-            sampleNames = SpreadsheetUtils.getDataInColumn(study.getStudySample().getSpreadsheetUI().getSpreadsheet(), 2);
+            sampleNames = SpreadsheetUtils.getDataInColumn(studySampleInterface.getSpreadsheet(), 2);
         } else {
             sampleNames = new HashSet<String>();
         }
@@ -117,7 +121,7 @@ public class QRAPIHook {
         }
 
         Study study = getInvestigation().getStudies().get(studyId);
-        String[][] data = SpreadsheetUtils.getSpreadsheetDataSubset(study.getStudySample().getSpreadsheetUI().getSpreadsheet());
+        String[][] data = SpreadsheetUtils.getSpreadsheetDataSubset(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet());
 
         for (String[] aData : data) {
             sampleNameToEncoding.put(aData[sampleNameIndex - 1],

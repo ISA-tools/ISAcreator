@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,7 @@ import java.util.List;
  *         Date: 17/06/2012
  *         Time: 07:33
  */
-public class NodeDetail extends JFrame {
+public class NodeDetail extends JFrame implements WindowListener {
 
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
@@ -33,7 +35,7 @@ public class NodeDetail extends JFrame {
     private Image nodeDetailIcon, nodeDetailIconInactive;
 
     private JLabel glyphImage, typeLabel, valueLabel;
-    private TaxonomyRenderer taxonomyRenderer;
+    private FragmentedGlyphRenderer taxonomyRenderer;
 
     public NodeDetail() {
         ResourceInjector.get("workflow-package.style").inject(this);
@@ -42,12 +44,13 @@ public class NodeDetail extends JFrame {
     public void createGUI() {
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(250, 300));
+        setPreferredSize(new Dimension(250, 350));
         setBackground(UIHelper.BG_COLOR);
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
         addTitlePane();
         setAlwaysOnTop(true);
         addCentralPanel();
+        addWindowListener(this);
 
         pack();
         setLocationRelativeTo(null);
@@ -90,7 +93,9 @@ public class NodeDetail extends JFrame {
 
         // ending glyph information container
 
-        taxonomyRenderer = new TaxonomyRenderer();
+        taxonomyRenderer = new FragmentedGlyphRenderer();
+        container.add(Box.createVerticalStrut(5));
+        container.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Glyph Composition", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR)));
         container.add(taxonomyRenderer);
 
         add(container, BorderLayout.CENTER);
@@ -108,9 +113,9 @@ public class NodeDetail extends JFrame {
         nodeDetail.createGUI();
 
         List<WorkflowVisualisationNode> workflowsTest = new ArrayList<WorkflowVisualisationNode>();
-        workflowsTest.add(new WorkflowVisualisationNode("Data/images/glyph_organism.png",
+        workflowsTest.add(new WorkflowVisualisationNode("Data/images/glyph_growth.png",
                 "Sample Name", "sample1-homo sapiens",
-                "protocol(2):in vivo(3):material amplification(5):organism(7)"));
+                "process(2):in vivo(3):material amplification(5):process_organism(7)"));
 
         for (WorkflowVisualisationNode node : workflowsTest) {
             nodeDetail.setContent(node);
@@ -138,5 +143,28 @@ public class NodeDetail extends JFrame {
     private void setTaxonomyView(String taxonomyAsString) {
         taxonomyRenderer.setTaxonomyToRender(taxonomyAsString);
         taxonomyRenderer.repaint();
+    }
+
+    public void windowOpened(WindowEvent windowEvent) {
+    }
+
+    public void windowClosing(WindowEvent windowEvent) {
+    }
+
+    public void windowClosed(WindowEvent windowEvent) {
+        taxonomyRenderer.closeAll();
+    }
+
+    public void windowIconified(WindowEvent windowEvent) {
+        taxonomyRenderer.closeAll();
+    }
+
+    public void windowDeiconified(WindowEvent windowEvent) {
+    }
+
+    public void windowActivated(WindowEvent windowEvent) {
+    }
+
+    public void windowDeactivated(WindowEvent windowEvent) {
     }
 }

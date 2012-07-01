@@ -41,8 +41,10 @@ package org.isatools.isacreator.archiveoutput;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.io.OutputISAFiles;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.ISASection;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
@@ -132,31 +134,32 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             missingData = new HashMap<String, List<ArchiveOutputError>>();
 
             log.info("Gathering datafiles to be zipped");
-            for (Study s : inv.getStudies().values()) {
+            for (Study study : inv.getStudies().values()) {
                 List<ArchiveOutputError> missingDataResult;
 
-                if ((missingDataResult = s.getStudySample().getSpreadsheetUI().getSpreadsheet().checkForCompleteness()).size() > 0) {
+                if ((missingDataResult = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet().checkForCompleteness()).size() > 0) {
                     log.info("Missing " + missingDataResult.size() + " files in the study sample file...");
 
-                    missingData.put(s.getStudySample().getAssayReference(), missingDataResult);
+                    missingData.put(study.getStudySample().getAssayReference(), missingDataResult);
                 }
 
-                for (Assay a : s.getAssays().values()) {
+                for (Assay a : study.getAssays().values()) {
                     localFiles.put(a.getAssayReference(), new ArrayList<String>());
                     // getFilesDefinedInTable will get all files and directory paths listed in each file column in the table!
-                    for (String file : a.getSpreadsheetUI().getSpreadsheet().getSpreadsheetFunctions().getFilesDefinedInTable()) {
+                    AssaySpreadsheet assaySpreadsheet = (AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(a);
+                    for (String file : assaySpreadsheet.getSpreadsheet().getSpreadsheetFunctions().getFilesDefinedInTable()) {
                         if (!file.startsWith("ftp") && !file.startsWith("http")) {
 
                             localFiles.get(a.getAssayReference()).add(file);
                         }
                     }
 
-                    if ((missingDataResult = a.getSpreadsheetUI().getSpreadsheet().checkForCompleteness()).size() > 0) {
+                    if ((missingDataResult = assaySpreadsheet.getSpreadsheet().checkForCompleteness()).size() > 0) {
                         log.info("Missing " + missingDataResult.size() + " files in file " + a.getAssayReference());
                         missingData.put(a.getAssayReference(), missingDataResult);
                     }
 
-                    a.getSpreadsheetUI().getSpreadsheet().changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_RELATIVE);
+                    assaySpreadsheet.getSpreadsheet().changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_RELATIVE);
                 }
             }
 
@@ -179,8 +182,8 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             // reset file names back to absolute locations.
             for (Study study : inv.getStudies().values()) {
                 for (Assay assay : study.getAssays().values()) {
-                    assay.getSpreadsheetUI().getSpreadsheet()
-                            .changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_ABSOLUTE);
+                    AssaySpreadsheet assaySpreadsheet = (AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay);
+                    assaySpreadsheet.getSpreadsheet().changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_ABSOLUTE);
                 }
             }
 
@@ -213,8 +216,12 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
     }
 
     private JLayeredPane getAssayByRef(String assayRef) {
-        Investigation investigation = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
-        return investigation.getStudies().get(investigation.getAssays().get(assayRef)).getAssays().get(assayRef).getSpreadsheetUI();
+        for (ISASection isaSection : ApplicationManager.getIsaSectionToDataEntryForm().keySet()) {
+            if (isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE).equals(assayRef)) {
+                return ApplicationManager.getUserInterfaceForISASection(isaSection);
+            }
+        }
+        return null;
     }
 
     public void zipDir(String sourceDir, File dirToZip, ZipOutputStream zos, byte[] buffer) {
