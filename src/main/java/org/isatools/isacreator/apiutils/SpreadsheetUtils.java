@@ -40,11 +40,12 @@ package org.isatools.isacreator.apiutils;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
+import org.isatools.isacreator.sampleselection.SampleInformation;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
-import org.isatools.isacreator.sampleselection.SampleInformation;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -383,5 +384,19 @@ public class SpreadsheetUtils {
             }
         }
         return values;
+    }
+
+    public static StringBuilder outputAssayAsString(Assay assay) {
+        StringBuilder output = new StringBuilder();
+        Object[][] content = assay.getTableReferenceObject().getDataAsArray();
+
+        for (Object[] row : content) {
+            for (int columnIndex = 0; columnIndex < row.length; columnIndex++) {
+                output.append(row[columnIndex].toString());
+                output.append(columnIndex != row.length ? "\t" : "\n");
+            }
+        }
+
+        return output;
     }
 }

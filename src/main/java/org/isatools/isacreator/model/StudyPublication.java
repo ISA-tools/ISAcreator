@@ -55,7 +55,7 @@ public class StudyPublication extends Publication {
     public static final String PUBLICATION_STATUS_SOURCE_REF = "Study Publication Status Term Source REF";
 
     public StudyPublication() {
-        super();
+        this("", "", "", "", "");
     }
 
     /**

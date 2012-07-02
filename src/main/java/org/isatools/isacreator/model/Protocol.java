@@ -66,7 +66,7 @@ public class Protocol extends ISASection implements StudySubData, Serializable, 
 
 
     public Protocol() {
-        super();
+        this("", "", "", "", "", "", "", "");
     }
 
 

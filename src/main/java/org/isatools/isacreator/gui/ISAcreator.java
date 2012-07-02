@@ -39,7 +39,6 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
-import org.isatools.isacreator.archiveoutput.ArchiveOutputUtil;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
@@ -50,7 +49,7 @@ import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.io.OutputISAFiles;
+import org.isatools.isacreator.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileIO;
 import org.isatools.isacreator.model.Investigation;
@@ -137,7 +136,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private Map<String, JMenu> menusRequiringStudyIds;
 
-    private OutputISAFiles outputISATAB;
+    private OutputISAFilesFromGUI outputISATABFromGUI;
     private IncorrectColumnOrderGUI incorrectGUI;
     private UserProfileIO userProfileIO;
     private Mode mode;
@@ -215,7 +214,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             ontologyPluginTracker.open();
         }
 
-        outputISATAB = new OutputISAFiles(this);
+        outputISATABFromGUI = new OutputISAFilesFromGUI(this);
         userProfileIO = new UserProfileIO(this);
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
@@ -1094,12 +1093,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
 
-                        if (outputISATAB.isShouldShowIncorrectOrderGUI()) {
+                        if (outputISATABFromGUI.isShouldShowIncorrectOrderGUI()) {
 
 
                             Map<String, List<String>> report = new HashMap<String, List<String>>();
                             // highlight columns in each affected spreadsheet
-                            for (Spreadsheet s : outputISATAB.getErrorSheets()) {
+                            for (Spreadsheet s : outputISATABFromGUI.getErrorSheets()) {
                                 // highlight the columns in the spreadsheet
                                 report.putAll(s.getTableConsistencyChecker().getErrorReport());
                                 Map<Integer, Color> colorcoding = new HashMap<Integer, Color>();
@@ -1116,7 +1115,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
                         } else {
                             // IF EVERYTHING IS OK, RESET ROW COLORS!
-                            for (Spreadsheet s : outputISATAB.getAllSheets()) {
+                            for (Spreadsheet s : outputISATABFromGUI.getAllSheets()) {
                                 s.setRowsToDefaultColor();
                             }
                             // proceed to subsequent tasks...
@@ -1141,7 +1140,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     public void saveISATab() {
-        outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
+        outputISATABFromGUI.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
     }
 
     class ScreenResizeAction extends AbstractAction {

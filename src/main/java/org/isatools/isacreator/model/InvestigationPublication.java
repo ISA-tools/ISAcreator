@@ -55,8 +55,11 @@ public class InvestigationPublication extends Publication {
     public static final String PUBLICATION_STATUS_TERM_ACC = "Investigation Publication Status Term Accession Number";
     public static final String PUBLICATION_STATUS_SOURCE_REF = "Investigation Publication Status Term Source REF";
 
+    /**
+     * Creates a blank investigation publication node.
+     */
     public InvestigationPublication() {
-        super();
+        this("", "", "", "", "");
     }
 
     /**

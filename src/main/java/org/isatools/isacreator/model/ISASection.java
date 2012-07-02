@@ -43,9 +43,7 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by the ISA team
@@ -109,6 +107,12 @@ public abstract class ISASection {
             }
             referenceObject.getSectionDefinition().get(section).addAll(sectionFields.get(section));
         }
+    }
+
+    public List<String> getFieldKeysAsList() {
+        List<String> keys = new ArrayList<String>();
+        keys.addAll(fieldValues.keySet());
+        return keys;
     }
 
     public void setReferenceObjectForSection() {

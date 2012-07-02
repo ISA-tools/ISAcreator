@@ -35,7 +35,7 @@
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-package org.isatools.isacreator.io;
+package org.isatools.isacreator.io.exportisa;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.ApplicationManager;
@@ -56,8 +56,8 @@ import java.util.List;
 /**
  * Outputs the ISAtab files corresponding to their respective objects in the ISAcreator model.
  */
-public class OutputISAFiles extends ISAFileOutput {
-    private static final Logger log = Logger.getLogger(OutputISAFiles.class.getName());
+public class OutputISAFilesFromGUI extends ISAFileOutput {
+    private static final Logger log = Logger.getLogger(OutputISAFilesFromGUI.class.getName());
 
     private List<Spreadsheet> errorSheets;
     private List<Spreadsheet> allSheets;
@@ -65,7 +65,7 @@ public class OutputISAFiles extends ISAFileOutput {
     private boolean shouldShowIncorrectOrderGUI;
     private ISAcreator main;
 
-    public OutputISAFiles(ISAcreator main) {
+    public OutputISAFilesFromGUI(ISAcreator main) {
         this.main = main;
     }
 
@@ -86,17 +86,17 @@ public class OutputISAFiles extends ISAFileOutput {
 
             File file = new File(investigation.getReference());
 
-            PrintStream ps = new PrintStream(file);
+            PrintStream investigationFilePrintStream = new PrintStream(file);
 
             // print section defining the Ontologies Used
-            ps.println(getOntologiesUsedOutput());
+            investigationFilePrintStream.println(getOntologiesUsedOutput());
             // print the Investigation section.
-            ps.println(ApplicationManager.getUserInterfaceForISASection(investigation).toString());
+            investigationFilePrintStream.println(ApplicationManager.getUserInterfaceForISASection(investigation).toString());
 
             File fileToSave;
 
             for (Study study : investigation.getStudies().values()) {
-                ps.println(ApplicationManager.getUserInterfaceForISASection(study).toString());
+                investigationFilePrintStream.println(ApplicationManager.getUserInterfaceForISASection(study).toString());
 
                 fileToSave = new File(file.getParentFile().getPath() +
                         File.separator + study.getStudySampleFileIdentifier());

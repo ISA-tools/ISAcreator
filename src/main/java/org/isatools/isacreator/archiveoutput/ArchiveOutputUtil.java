@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
-import org.isatools.isacreator.io.OutputISAFiles;
+import org.isatools.isacreator.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.ISASection;
 import org.isatools.isacreator.model.Investigation;
@@ -77,7 +77,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
 
     private ViewErrorPane browseViewErrorPane;
-    private OutputISAFiles outputISATAB;
+    private OutputISAFilesFromGUI outputISATABFromGUI;
     private File archiveLocation;
 
     private ArchivingStatistics statistics;
@@ -96,7 +96,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
         archiveLocation = null;
         localFiles = null;
         browseViewErrorPane = new ViewErrorPane(ApplicationManager.getCurrentApplicationInstance());
-        outputISATAB = new OutputISAFiles(ApplicationManager.getCurrentApplicationInstance());
+        outputISATABFromGUI = new OutputISAFilesFromGUI(ApplicationManager.getCurrentApplicationInstance());
         createProgressLabel();
         setOpaque(false);
     }
@@ -164,7 +164,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             }
 
 
-            outputISATAB.saveISAFiles(true, inv);
+            outputISATABFromGUI.saveISAFiles(true, inv);
 
             File parentFile = new File(new File(inv.getReference()).getParent());
 
@@ -187,7 +187,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 }
             }
 
-            outputISATAB.saveISAFiles(false, inv);
+            outputISATABFromGUI.saveISAFiles(false, inv);
         } catch (OutOfMemoryError ome) {
             // this will happen only with very large assays! if it does, inform the user to increase the memory allowance to ISAcreator
             log.info("The system ran out of memory whilst trying to zip the files. Ensure that overall archive size is below 4GB.");

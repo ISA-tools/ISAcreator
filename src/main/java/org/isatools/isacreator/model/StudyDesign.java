@@ -52,7 +52,7 @@ public class StudyDesign extends ISASection implements StudySubData {
     public static final String STUDY_DESIGN_TYPE_TERM_SOURCE_REF = "Study Design Type Term Source REF";
 
     public StudyDesign() {
-        super();
+        this("");
     }
 
     /**
@@ -61,8 +61,7 @@ public class StudyDesign extends ISASection implements StudySubData {
      * @param studyDesignType - String representing the Study Design.
      */
     public StudyDesign(String studyDesignType) {
-        super();
-        fieldValues.put(STUDY_DESIGN_TYPE, studyDesignType);
+        this(studyDesignType, "", "");
     }
 
 

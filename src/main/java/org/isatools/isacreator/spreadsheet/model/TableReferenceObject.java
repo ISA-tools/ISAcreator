@@ -85,6 +85,8 @@ public class TableReferenceObject implements Serializable {
         missingFields = new HashMap<String, FieldObject>();
         definedOntologies = new HashMap<String, OntologyTerm>();
 
+        referenceData = new ReferenceData();
+
         for (FieldObject fo : tableConfig.getFields()) {
             fieldLookup.put(fo.getFieldName(), fo);
             fieldIndexLookup.put(fo.getColNo(), fo);
@@ -376,11 +378,12 @@ public class TableReferenceObject implements Serializable {
 
 
     public Object[][] getDataAsArray() {
-        List<List<String>> spreadsheetData = this.referenceData.getData();
+        List<List<String>> spreadsheetData = referenceData.getData();
 
-        Object[][] ssContents = new Object[spreadsheetData.size() + 1][];
+        Object[][] ssContents = new Object[spreadsheetData.size()][];
 
-        ssContents[0] = getHeaders().subList(1, getHeaders().size() - 1).toArray(new String[getHeaders().size() - 2]);
+
+        ssContents[0] = getHeaders().toArray(new String[getHeaders().size()]);
 
         int count = 1;
         for (List<String> rowContent : spreadsheetData) {
@@ -396,18 +399,14 @@ public class TableReferenceObject implements Serializable {
     }
 
     public String getDefaultValue(int colNumber) {
-
         if (tableConfig != null) {
             if (preprocessedTableFields == null) {
                 createProcessedTableFields();
             }
-
             FieldObject field = preprocessedTableFields.get(colNumber);
-
             if (field == null) {
                 return "";
             }
-
             return field.getDefaultVal() == null ? "" : field.getDefaultVal();
         }
         return "";

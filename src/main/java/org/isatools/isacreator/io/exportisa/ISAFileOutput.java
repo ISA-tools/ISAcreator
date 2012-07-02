@@ -1,4 +1,4 @@
-package org.isatools.isacreator.io;
+package org.isatools.isacreator.io.exportisa;
 
 import org.apache.axis.utils.StringUtils;
 import org.isatools.isacreator.model.Investigation;

@@ -42,14 +42,13 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
-import org.isatools.isacreator.io.IOUtils;
+import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
-import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -59,7 +58,6 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -206,37 +204,7 @@ public class InvestigationDataEntry extends DataEntryForm {
     public String toString() {
         update();
         StringBuilder output = new StringBuilder();
-        output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
-        Set<String> ontologyFields = IOUtils.filterFields(investigation.getFieldValues().keySet(), IOUtils.ACCESSION, IOUtils.SOURCE_REF);
-        Map<Integer, Map<String, String>> ontologyTerms = IOUtils.getOntologyTerms(investigation.getFieldValues().keySet());
-        // now, do ontology processing
-        for (String fieldName : ontologyFields) {
-            int fieldHashCode = fieldName.substring(0, fieldName.toLowerCase().indexOf("term")).trim().hashCode();
-            if (ontologyTerms.containsKey(fieldHashCode)) {
-                Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
-                Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, investigation.getFieldValues());
-
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM),
-                        processedOntologyField.get(processedOntologyField.get(IOUtils.TERM)));
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION),
-                        processedOntologyField.get(processedOntologyField.get(IOUtils.ACCESSION)));
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF),
-                        processedOntologyField.get(processedOntologyField.get(IOUtils.SOURCE_REF)));
-            }
-        }
-
-        // now, do output
-        for (String fieldName : investigation.getFieldValues().keySet()) {
-
-            String tmpFieldName = fieldName;
-
-            if (aliasesToRealNames.containsKey(fieldName)) {
-                tmpFieldName = aliasesToRealNames.get(fieldName);
-            }
-
-            output.append(tmpFieldName).append("\t\"").append((StringProcessing.cleanUpString(
-                    investigation.getFieldValues().get(tmpFieldName)))).append("\"\n");
-        }
+        output.append(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION, aliasesToRealNames));
 
         output.append(publicationsSubForm.toString());
         output.append(contactsSubform.toString());

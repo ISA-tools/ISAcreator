@@ -24,7 +24,7 @@ public class InvestigationContact extends Contact {
 
 
     public InvestigationContact() {
-        super();
+        this("", "", "", "", "", "", "", "", "");
     }
 
     /**

@@ -60,7 +60,7 @@ public class Factor extends ISASection implements StudySubData, Serializable {
 
 
     public Factor() {
-        super();
+        this("", "");
     }
 
     /**

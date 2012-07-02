@@ -37,9 +37,8 @@
 
 package org.isatools.isacreator.model;
 
-import org.isatools.isacreator.gui.AssaySpreadsheet;
-import org.isatools.isacreator.gui.DataEntryForm;
-import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.StudySubData;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
@@ -52,13 +51,17 @@ import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 public class Assay extends ISASection implements StudySubData {
     public static final String ASSAY_REFERENCE = "Study Assay File Name";
     public static final String MEASUREMENT_ENDPOINT = "Study Assay Measurement Type";
+    public static final String MEASUREMENT_ENDPOINT_TERM_ACCESSION = "Study Assay Measurement Type Term Accession Number";
+    public static final String MEASUREMENT_ENDPOINT_TERM_SOURCE_REF = "Study Assay Measurement Type Term Source REF";
     public static final String TECHNOLOGY_TYPE = "Study Assay Technology Type";
+    public static final String TECHNOLOGY_TYPE_TERM_ACCESSION = "Study Assay Technology Type Term Accession Number";
+    public static final String TECHNOLOGY_TYPE_TERM_SOURCE_REF = "Study Assay Technology Type Term Source REF";
     public static final String ASSAY_PLATFORM = "Study Assay Technology Platform";
 
     private TableReferenceObject tableReferenceObject = null;
 
     public Assay() {
-        super();
+        this("", null);
     }
 
     /**
@@ -72,7 +75,6 @@ public class Assay extends ISASection implements StudySubData {
         super();
 
         fieldValues.put(ASSAY_REFERENCE, assayReference);
-
         this.tableReferenceObject = tableReferenceObject;
     }
 
@@ -87,12 +89,10 @@ public class Assay extends ISASection implements StudySubData {
      */
     public Assay(String assayReference, String measurementEndpoint,
                  String technologyType, String assayPlatform) {
-        super();
 
-        fieldValues.put(ASSAY_REFERENCE, assayReference);
-        fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
-        fieldValues.put(TECHNOLOGY_TYPE, technologyType);
-        fieldValues.put(ASSAY_PLATFORM, assayPlatform);
+        this(assayReference, measurementEndpoint, technologyType, assayPlatform,
+                new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(
+                        measurementEndpoint, technologyType).getTableFields()));
     }
 
 
@@ -110,12 +110,17 @@ public class Assay extends ISASection implements StudySubData {
                  String technologyType, String assayPlatform, TableReferenceObject tableReferenceObject) {
         super();
 
+        this.tableReferenceObject = tableReferenceObject;
+        MappingObject mappingObject = tableReferenceObject.getTableFields().getMappingObject();
+
         fieldValues.put(ASSAY_REFERENCE, assayReference);
         fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_ACCESSION, mappingObject.getMeasurementAccession());
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_SOURCE_REF, mappingObject.getMeasurementSource());
         fieldValues.put(TECHNOLOGY_TYPE, technologyType);
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_ACCESSION, mappingObject.getTechnologyAccession());
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_SOURCE_REF, mappingObject.getTechnologySource());
         fieldValues.put(ASSAY_PLATFORM, assayPlatform);
-
-        this.tableReferenceObject = tableReferenceObject;
     }
 
 
