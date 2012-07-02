@@ -1,9 +1,7 @@
 package org.isatools.isacreator.publicationlocator;
 
 import org.junit.Test;
-import uk.ac.ebi.cdb.client.Citation;
 import uk.ac.ebi.cdb.client.QueryException_Exception;
-import uk.ac.ebi.cdb.client.ResultBean;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,8 +53,11 @@ public class CiteXploreTest {
         for (CiteExploreResult resultBean : resultBeans) {
 
             System.out.println("getTitle() = " + resultBean.getTitle());
+            System.out.println("resultBean.getId() = " + resultBean.getId());
+            System.out.println("resultBean = " + resultBean.getAuthors());
             System.out.println("getAbstractText() = " + resultBean.getAbstractText());
             System.out.println("getAffiliation() = " + resultBean.getAffiliation());
+            System.out.println("grants = " + resultBean.getGrants());
             System.out.println();
         }
     }

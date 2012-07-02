@@ -95,44 +95,36 @@ public class CiteExploreClient {
     public List<CiteExploreResult> performQuery(SearchOption searchOption, String fullQueryString) throws QueryException_Exception, NoPublicationFoundException {
         WSCitationImpl port = service.getWSCitationImplPort();
 
-        ResultListBean resultListBean = port.searchCitations(fullQueryString, "all", 0, "");
-
-        if (resultListBean.getHitCount() > 0) {
-            return createResultList(resultListBean);
+        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString, "metadata", "core", 0, false, "isatools@googlgroups.com");
+        ResultList resultList = responseWrapper.getResultList();
+        if (resultList.getResult().size() > 0) {
+            return createResultList(resultList);
         } else {
             throw new NoPublicationFoundException(searchOption, fullQueryString);
         }
     }
 
-    private List<CiteExploreResult> createResultList(ResultListBean searchResults) {
+    private List<CiteExploreResult> createResultList(ResultList searchResults) {
         List<CiteExploreResult> resultSet = new ArrayList<CiteExploreResult>();
 
-        List<ResultBean> resultBeans = searchResults.getResultBeanCollection();
+        List<Result> resultBeans = searchResults.getResult();
 
-        for (ResultBean result : resultBeans) {
-            Citation citation = result.getCitation();
-            String authorList = "";
-            for (Author author : citation.getAuthorCollection()) {
-                authorList += author.getLastName() + " " + author.getInitials() + ",";
-            }
-            if (authorList.length() > 1) {
-                authorList = authorList.substring(0, authorList.length() - 1);
-            }
+        for (Result result : resultBeans) {
+            CiteExploreResult citexploreRecord = new CiteExploreResult(result.getId(), result.getDOI(), result.getAuthorString(),
+                    result.getTitle().replaceAll("\\[|\\]", ""), result.getAbstractText(), result.getAffiliation());
 
-            String doi = "";
-            for (FullTextURL ftURL : citation.getUrlCollection()) {
-                if (ftURL.getUrl().contains("doi")) {
-                    doi = ftURL.getUrl();
-                    break;
+            resultSet.add(citexploreRecord);
+            if (result.getGrantsList() != null) {
+                String grants = "";
+                int grantCount = 0;
+                for (GrantInfo grantInfo : result.getGrantsList().getGrant()) {
+                    grants += (grantInfo.getAcronym() == null ? "" : grantInfo.getAcronym() + ", ") + grantInfo.getAgency() + " (" + grantInfo.getGrantId() + ")";
+                    grants += grantCount < result.getGrantsList().getGrant().size() - 1 ? ", " : "";
                 }
+                citexploreRecord.setGrants(grants);
             }
-
-            resultSet.add(new CiteExploreResult(citation.getExternalId(), doi, authorList,
-                    citation.getTitle().replaceAll("\\[|\\]", ""), citation.getAbstractText(), citation.getAffiliation()));
         }
 
         return resultSet;
     }
-
-
 }
