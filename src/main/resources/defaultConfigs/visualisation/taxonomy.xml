@@ -2,10 +2,7 @@
     <!--Can look up by image name for the fragment to find related fragments at the same level-->
 
     <level name="root">
-        <value name="Inputs and Outputs" image="Data/images/fragments/inputs-and-outputs.png">
-            asdasda
-        </value>
-
+        <value name="Inputs and Outputs" image="Data/images/fragments/inputs-and-outputs.png"/>
         <value name="Process" image="Data/images/fragments/process.png"/>
     </level>
 
