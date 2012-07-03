@@ -380,10 +380,9 @@ public class TableReferenceObject implements Serializable {
     public Object[][] getDataAsArray() {
         List<List<String>> spreadsheetData = referenceData.getData();
 
-        Object[][] ssContents = new Object[spreadsheetData.size()][];
+        Object[][] ssContents = new Object[spreadsheetData.size() + 1][];
 
-
-        ssContents[0] = getHeaders().toArray(new String[getHeaders().size()]);
+        ssContents[0] = getHeaders().subList(1, getHeaders().size()).toArray(new String[getHeaders().size() - 1]);
 
         int count = 1;
         for (List<String> rowContent : spreadsheetData) {

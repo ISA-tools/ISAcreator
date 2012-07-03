@@ -35,7 +35,9 @@ public class ProgrammaticISATabCreationTest {
         Assay studySample = new Assay("s_samples.txt", ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
         study.setStudySamples(studySample);
 
-        studySample.getTableReferenceObject().addRowData(studySample.getTableReferenceObject().getHeaders().toArray(new String[]{"Source Name", "Characteristics[organism]", "Protocol REF", "Sample Name"}), new String[]{"source1", "homo sapiens", "sample1"});
+        studySample.getTableReferenceObject().addRowData(studySample.getTableReferenceObject().getHeaders().toArray(
+                new String[]{"Source Name", "Characteristics[organism]", "Protocol REF", "Sample Name"}),
+                new String[]{"source1", "homo sapiens", "sampling", "sample1"});
 
         investigation.addStudy(study);
 

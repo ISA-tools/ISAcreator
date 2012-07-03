@@ -393,7 +393,7 @@ public class SpreadsheetUtils {
         for (Object[] row : content) {
             for (int columnIndex = 0; columnIndex < row.length; columnIndex++) {
                 output.append(row[columnIndex].toString());
-                output.append(columnIndex != row.length ? "\t" : "\n");
+                output.append(columnIndex != row.length - 1 ? "\t" : "\n");
             }
         }
 
