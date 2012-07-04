@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -177,7 +177,7 @@
                         <configuration>
 
                             <wsdlUrls>
-                                <wsdlUrl>http://www.ebi.ac.uk/webservices/citexplore/v1.0/service?wsdl</wsdlUrl>
+                                <wsdlUrl>http://www.ebi.ac.uk/webservices/citexplore/v3.0.1/service?wsdl</wsdlUrl>
                             </wsdlUrls>
                             <packageName>uk.ac.ebi.cdb.client</packageName>
                             <sourceDestDir>target/generated/citexplore</sourceDestDir>
