@@ -1,15 +1,6 @@
 package org.isatools.isacreator.io.importisa;
 
-import java.io.File;
-
-import java.net.URL;
-
-import org.isatools.errorreporter.model.ErrorMessage;
-import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.model.*;
-
-import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
