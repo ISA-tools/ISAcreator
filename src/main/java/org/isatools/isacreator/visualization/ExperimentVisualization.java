@@ -43,6 +43,7 @@ import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.visualization.tree.TreeView;
 import prefuse.controls.ControlAdapter;
 import prefuse.data.Tree;
 import prefuse.data.io.TreeMLReader;

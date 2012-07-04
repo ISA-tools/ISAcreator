@@ -1,12 +1,11 @@
 package org.isatools.isacreator.visualization.workflowvisualization;
 
-import org.isatools.isacreator.visualization.TreeView;
+import org.isatools.isacreator.visualization.tree.TreeView;
 import prefuse.Constants;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
 import prefuse.action.ItemAction;
 import prefuse.action.RepaintAction;
-import prefuse.action.animate.ColorAnimator;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.DataColorAction;
 import prefuse.action.layout.CollapsedSubtreeLayout;

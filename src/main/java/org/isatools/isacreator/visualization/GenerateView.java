@@ -40,6 +40,7 @@ package org.isatools.isacreator.visualization;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.visualization.tree.TreeView;
 
 import java.io.File;
 import java.io.FileNotFoundException;

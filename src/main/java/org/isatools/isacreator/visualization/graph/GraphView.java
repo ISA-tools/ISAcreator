@@ -1,5 +1,6 @@
 package org.isatools.isacreator.visualization.graph;
 
+import org.isatools.isacreator.common.UIHelper;
 import prefuse.Constants;
 import prefuse.Display;
 import prefuse.Visualization;
@@ -10,29 +11,24 @@ import prefuse.action.animate.QualityControlAnimator;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.filter.GraphDistanceFilter;
 import prefuse.action.layout.graph.NodeLinkTreeLayout;
-import prefuse.action.layout.graph.TreeLayout;
 import prefuse.activity.Activity;
 import prefuse.controls.*;
 import prefuse.data.Graph;
 import prefuse.data.Tuple;
 import prefuse.data.event.TupleSetListener;
+import prefuse.data.io.DataIOException;
 import prefuse.data.io.GraphMLReader;
 import prefuse.data.tuple.TupleSet;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.render.LabelRenderer;
 import prefuse.util.ColorLib;
-import prefuse.util.GraphicsLib;
-import prefuse.util.display.DisplayLib;
-import prefuse.util.display.ItemBoundsListener;
 import prefuse.util.ui.UILib;
 import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.geom.Rectangle2D;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by the ISA team
@@ -47,62 +43,44 @@ public class GraphView extends JPanel {
     private static final String graph = "graph";
     private static final String nodes = "graph.nodes";
     private static final String edges = "graph.edges";
+    private Display display;
 
     private static int backgroundColor = ColorLib.rgb(255, 255, 255);
 
     private Visualization m_vis;
 
-    public GraphView(Graph g, String label, int orientation) {
-        setLayout(new BorderLayout());
+    public GraphView(Graph g, String label, int orientation, Dimension size) {
         // create a new, empty visualization for our data
+        initialiseGraphView(g, label, orientation, size);
+    }
+
+    private void initialiseGraphView(Graph g, String label, int orientation, Dimension size) {
+        setSize(size);
         m_vis = new Visualization();
+        m_vis.addFocusGroup("selected");
 
-        // --------------------------------------------------------------------
-        // set up the renderers
-
-        LabelRenderer tr = new LabelRenderer(label.equalsIgnoreCase("image") ? null : label, label.equalsIgnoreCase("image") ? label : null);
-        tr.setRoundedCorner(8, 8);
+        LabelRenderer tr = new LabelRenderer(label.equalsIgnoreCase("image") ? null :
+                label, label.equalsIgnoreCase("image") ? label : null);
         m_vis.setRendererFactory(new DefaultRendererFactory(tr));
-
-        // --------------------------------------------------------------------
-        // register the data with a visualization
 
         // adds graph to visualization and sets renderer label field
         setGraph(g);
 
-        // fix selected focus nodes
-        TupleSet focusGroup = m_vis.getGroup(Visualization.FOCUS_ITEMS);
-        focusGroup.addTupleSetListener(new TupleSetListener() {
-            public void tupleSetChanged(TupleSet ts, Tuple[] add, Tuple[] rem) {
-                for (Tuple aRem : rem) ((VisualItem) aRem).setFixed(false);
-                for (Tuple anAdd : add) {
-                    ((VisualItem) anAdd).setFixed(false);
-                    ((VisualItem) anAdd).setFixed(true);
-                }
-                if (ts.getTupleCount() == 0) {
-                    ts.addTuple(rem[0]);
-                    ((VisualItem) rem[0]).setFixed(false);
-                }
-                m_vis.run("draw");
-            }
-        });
-
         int hops = 10;
         final GraphDistanceFilter filter = new GraphDistanceFilter(graph, hops);
 
-        ColorAction fill = new ColorAction(nodes,
-                VisualItem.FILLCOLOR, backgroundColor);
-        fill.add(VisualItem.HIGHLIGHT, backgroundColor);
+        ColorAction fill = new ColorAction(nodes, VisualItem.FILLCOLOR, backgroundColor);
+        fill.add("ingroup('selected')", ColorLib.rgb(105, 210, 231));
 
-        ActionList draw = new ActionList();
+        ActionList draw = new ActionList(500);
         draw.add(filter);
         draw.add(fill);
-        draw.add(new ColorAction(nodes, VisualItem.STROKECOLOR, 0));
         draw.add(new ColorAction(nodes, VisualItem.TEXTCOLOR, ColorLib.rgb(0, 0, 0)));
         draw.add(new ColorAction(edges, VisualItem.FILLCOLOR, ColorLib.gray(200)));
         draw.add(new ColorAction(edges, VisualItem.STROKECOLOR, ColorLib.gray(200)));
+        draw.add(new RepaintAction());
 
-        ActionList animate = new ActionList(Activity.DEFAULT_STEP_TIME);
+        ActionList animate = new ActionList();
 
         NodeLinkTreeLayout layout = new NodeLinkTreeLayout(graph);
         layout.setDepthSpacing(70);
@@ -112,57 +90,37 @@ public class GraphView extends JPanel {
         animate.add(new QualityControlAnimator());
         animate.add(new LocationAnimator(nodes));
         animate.add(layout);
-        animate.add(fill);
-        animate.add(new RepaintAction());
 
-        // finally, we register our ActionList with the Visualization.
-        // we can later execute our Actions by invoking a method on our
-        // Visualization, using the name we've chosen below.
         m_vis.putAction("draw", draw);
         m_vis.putAction("layout", animate);
 
-        m_vis.runAfter("draw", "layout");
-
-
-        // --------------------------------------------------------------------
         // set up a display to show the visualization
-
-        Display display = new Display(m_vis);
-        display.setSize(700, 700);
-        display.setForeground(Color.GRAY);
-        display.setBackground(Color.WHITE);
+        display = new Display(m_vis);
+        display.setSize(size);
 
         // main display controls
-        display.addControlListener(new FocusControl());
-//        display.addControlListener(new DragControl());
         display.addControlListener(new PanControl());
         display.addControlListener(new ZoomControl());
         display.addControlListener(new WheelZoomControl());
         display.addControlListener(new ZoomToFitControl());
-        display.addControlListener(new NeighborHighlightControl());
-
-        display.setForeground(Color.GRAY);
-        display.setBackground(Color.WHITE);
 
         // now we run our action list
         m_vis.run("draw");
+        m_vis.run("layout");
 
         add(display);
     }
 
-    public void setGraph(Graph g) {
+    public Display getDisplay() {
+        return display;
+    }
 
-        // update graph
-//        m_vis.removeGroup(graph);
+    public void setGraph(Graph g) {
         VisualGraph vg = m_vis.addGraph(graph, g);
         m_vis.setValue(edges, null, VisualItem.INTERACTIVE, Boolean.TRUE);
         VisualItem f = (VisualItem) vg.getNode(0);
         m_vis.getGroup(Visualization.FOCUS_ITEMS).setTuple(f);
-        f.setFixed(true);
     }
-
-    // ------------------------------------------------------------------------
-    // Main and demo methods
 
     public static void main(String[] args) {
         UILib.setPlatformLookAndFeel();
@@ -171,64 +129,63 @@ public class GraphView extends JPanel {
         String datafile = "/Users/eamonnmaguire/git/eamonnrepo/GraphMacro/data/graphml-test.xml";
         String label = "value";
 
-        JFrame frame = demo(datafile, label);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public static JFrame demo(String datafile, String label) {
         Graph g = null;
 
         try {
             g = new GraphMLReader().readGraph(datafile);
-        } catch (Exception e) {
+
+            final GraphView view = new GraphView(g, label, Constants.ORIENT_TOP_BOTTOM, new Dimension(800, 600));
+
+            view.getDisplay().addControlListener(new ControlAdapter() {
+
+                @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                    // do nothing
+                }
+
+                @Override
+                public void itemClicked(VisualItem visualItem, MouseEvent mouseEvent) {
+                    // do nothing.
+                }
+
+                @Override
+                public void itemEntered(VisualItem visualItem, MouseEvent mouseEvent) {
+                    if (visualItem.canGetString("id")) {
+                        System.out.println(visualItem.get("id"));
+                        TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("selected");
+                        focused.addTuple(visualItem);
+                        view.getDisplay().getVisualization().run("draw");
+                    }
+                }
+
+                @Override
+                public void itemExited(VisualItem visualItem, MouseEvent mouseEvent) {
+                    if (visualItem.canGetString("id")) {
+                        System.out.println(visualItem.get("id"));
+                        TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("selected");
+                        focused.removeTuple(visualItem);
+                        view.getDisplay().getVisualization().run("draw");
+                    }
+                }
+            }
+            );
+
+            // launch window
+            JFrame frame = new JFrame("Workflow Viewer | Graph");
+            frame.setBackground(UIHelper.BG_COLOR);
+
+            frame.setContentPane(view);
+            frame.pack();
+            frame.setVisible(true);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        } catch (
+                DataIOException e
+                )
+
+        {
             e.printStackTrace();
             System.exit(1);
-        }
-
-        return demo(g, label);
-    }
-
-    public static JFrame demo(Graph g, String label) {
-        final GraphView view = new GraphView(g, label, Constants.ORIENT_TOP_BOTTOM);
-
-        // launch window
-        JFrame frame = new JFrame("Workflow Viewer | Graph");
-        frame.setContentPane(view);
-        frame.pack();
-        frame.setVisible(true);
-
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowActivated(WindowEvent e) {
-                view.m_vis.run("layout");
-            }
-
-            public void windowDeactivated(WindowEvent e) {
-                view.m_vis.cancel("layout");
-            }
-        });
-
-        return frame;
-    }
-
-
-    class FitOverviewListener implements ItemBoundsListener {
-        private Rectangle2D m_bounds = new Rectangle2D.Double();
-        private Rectangle2D m_temp = new Rectangle2D.Double();
-        private double m_d = 15;
-
-        public void itemBoundsChanged(Display d) {
-            d.getItemBounds(m_temp);
-            GraphicsLib.expand(m_temp, 25 / d.getScale());
-
-            double dd = m_d / d.getScale();
-            double xd = Math.abs(m_temp.getMinX() - m_bounds.getMinX());
-            double yd = Math.abs(m_temp.getMinY() - m_bounds.getMinY());
-            double wd = Math.abs(m_temp.getWidth() - m_bounds.getWidth());
-            double hd = Math.abs(m_temp.getHeight() - m_bounds.getHeight());
-            if (xd > dd || yd > dd || wd > dd || hd > dd) {
-                m_bounds.setFrame(m_temp);
-                DisplayLib.fitViewToBounds(d, m_bounds, 0);
-            }
         }
     }
 }
