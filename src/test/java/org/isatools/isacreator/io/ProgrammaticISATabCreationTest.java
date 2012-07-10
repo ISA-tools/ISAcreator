@@ -23,7 +23,8 @@ public class ProgrammaticISATabCreationTest {
     @Test
     public void createISATabProgrammatically() {
 
-        ISAcreator isAcreator = new ISAcreator(Mode.NORMAL_MODE, null, "/Users/eamonnmaguire/git/isarepo/ISAcreator/Configurations/isaconfig-default_v2011-02-18/");
+    	String baseDir = System.getProperty("basedir");
+        ISAcreator isAcreator = new ISAcreator(Mode.NORMAL_MODE, null, baseDir + "/Configurations/isaconfig-default_v2011-02-18/");
 
         Investigation investigation = new Investigation("gis-investigation", "GIS investigation test");
 
