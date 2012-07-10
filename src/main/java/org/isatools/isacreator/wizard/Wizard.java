@@ -54,6 +54,8 @@ import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Investigation;
@@ -168,7 +170,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         for (String[] aData : data) {
             if ((aData[0] != null) && !aData[0].trim().equals("") && (aData[1] != null)) {
                 String techType = aData[1].equals("--Blank--") ? "" : aData[1];
-                TableReferenceObject tro = dep.getParentFrame().selectTROForUserSelection(aData[0],
+                TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(aData[0],
                         techType);
                 if (tro == null) {
                     String techTypeText = " and technology type <i>" + aData[1] + "</i> does not exist!</html>";
@@ -935,9 +937,9 @@ public class Wizard extends AbstractDataEntryEnvironment {
         List<SubFormField> assayFields = new ArrayList<SubFormField>();
 
         assayFields.add(new SubFormField("measurement type *",
-                SubFormField.COMBOLIST, mainMenu.getMain().getMeasurementEndpoints()));
+                SubFormField.COMBOLIST, ConfigurationManager.getMeasurementEndpoints()));
         assayFields.add(new SubFormField("technology type *",
-                SubFormField.COMBOLIST, mainMenu.getMain().getTechnologyTypes()));
+                SubFormField.COMBOLIST, ConfigurationManager.getTechnologyTypes()));
         assayFields.add(new SubFormField("assay platform", SubFormField.STRING));
         assayFields.add(new SubFormField("assay file name *",
                 SubFormField.STRING));
@@ -1070,15 +1072,14 @@ public class Wizard extends AbstractDataEntryEnvironment {
                     StudySampleCreationAlgorithm ssca = new StudySampleCreationAlgorithm(studyBeingEdited,
                             studySample, factorsToAdd, addAssayUI.getSampleNameValues(),
                             organism.getText(),
-                            dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
+                            ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
                     ssca.runAlgorithm();
                 } else {
-                    studySample.setTableReferenceObject(dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
+                    studySample.setTableReferenceObject(ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
                 }
 
                 studyBeingEdited.setStudySamples(studySample);
 
-//                ((AssaySpreadsheet)ApplicationManager.getUserInterfaceForISASection(studyBeingEdited.getStudySample()))
                 // todo need to generate the view better.
                 StudyDataEntry studyDataEntryUI = (StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(studyBeingEdited);
 
@@ -1089,7 +1090,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                             studyBeingEdited.getStudyId());
 
                     if (assay.getTableReferenceObject() == null) {
-                        TableReferenceObject temp = dep.getParentFrame().selectTROForUserSelection(assay.getMeasurementEndpoint(),
+                        TableReferenceObject temp = ConfigurationManager.selectTROForUserSelection(assay.getMeasurementEndpoint(),
                                 assay.getTechnologyType());
 
                         if (temp != null) {

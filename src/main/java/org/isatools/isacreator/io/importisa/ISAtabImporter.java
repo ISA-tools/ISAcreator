@@ -12,6 +12,8 @@ import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -160,7 +162,7 @@ public class ISAtabImporter {
                     investigation.setFileReference(investigationFile.getPath());
 
                     if (investigation.getReferenceObject() != null) {
-                        TableReferenceObject tro = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(MappingObject.INVESTIGATION);
+                        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
 
                         DataEntryReferenceObject referenceObject = investigation.getReferenceObject();
 
@@ -239,7 +241,7 @@ public class ISAtabImporter {
             System.out.println("Processing " + studyIdentifier);
 
             // here we process the study sample file
-            TableReferenceObject studySampleReference = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(
+            TableReferenceObject studySampleReference = ConfigurationManager.selectTROForUserSelection(
                     MappingObject.STUDY_SAMPLE);
 
             if (studySampleReference != null) {
@@ -279,15 +281,14 @@ public class ISAtabImporter {
 
                 Assay assay = study.getAssays().get(assayReference);
 
-                TableReferenceObject assayTableReferenceObject = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(assay.getMeasurementEndpoint(),
-                        assay.getTechnologyType());
+                TableReferenceObject assayTableReferenceObject = ConfigurationManager.selectTROForUserSelection(
+                        assay.getMeasurementEndpoint(), assay.getTechnologyType());
 
                 if (assayTableReferenceObject != null) {
                     try {
 
                         TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath + File.separator +
                                 assay.getAssayReference(), assayTableReferenceObject);
-
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
                         }

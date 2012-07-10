@@ -38,8 +38,9 @@
 package org.isatools.isacreator.model;
 
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.StudySubData;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 
@@ -91,7 +92,7 @@ public class Assay extends ISASection implements StudySubData {
                  String technologyType, String assayPlatform) {
 
         this(assayReference, measurementEndpoint, technologyType, assayPlatform,
-                new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(
+                new TableReferenceObject(ConfigurationManager.selectTROForUserSelection(
                         measurementEndpoint, technologyType).getTableFields()));
     }
 

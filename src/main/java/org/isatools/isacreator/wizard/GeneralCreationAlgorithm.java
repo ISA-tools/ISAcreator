@@ -41,7 +41,7 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;

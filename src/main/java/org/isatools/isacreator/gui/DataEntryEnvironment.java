@@ -43,6 +43,8 @@ import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.help.Controller;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -129,7 +131,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                           String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-        TableReferenceObject tro = getParentFrame().selectTROForUserSelection(measurementEndpoint,
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,
                 techType);
 
         if (tro != null) {
@@ -253,7 +255,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public boolean addStudy(String studyName) {
-        TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
 
         if (tro != null) {
             Study newStudy = new Study(studyName);
@@ -386,9 +388,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         setSize(ApplicationManager.getCurrentApplicationInstance().getSize());
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
-        // change this!
         this.investigation = newInvestigation;
-//        InvestigationDataEntry dataEntry = new InvestigationDataEntry(investigation, this);
         setupWestPanel(investigation);
 
         // change view pane to initially show the view for whatever node is currently the top node in the tree.
@@ -405,7 +405,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
 
-    private JPanel createNavPanel(Investigation inv) {
+    private JPanel createNavPanel(Investigation investigation) {
         navigationPanel = new JPanel(new BorderLayout());
         navigationPanel.setBackground(UIHelper.DARK_GREEN_COLOR);
         navigationPanel.setBorder(null);
@@ -414,13 +414,15 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 JLabel.LEFT);
         navPanelHeader.setBackground(UIHelper.DARK_GREEN_COLOR);
         navigationPanel.add(navPanelHeader, BorderLayout.NORTH);
-        ApplicationManager.getUserInterfaceForISASection(inv);
-        if (ApplicationManager.getUserInterfaceForISASection(inv) == null) {
-            ApplicationManager.assignDataEntryToISASection(inv,
-                    new InvestigationDataEntry(investigation, DataEntryEnvironment.this));
+
+
+        if (ApplicationManager.getUserInterfaceForISASection(investigation) == null) {
+            ApplicationManager.assignDataEntryToISASection(investigation,
+                    new InvestigationDataEntry(this.investigation, DataEntryEnvironment.this));
         }
 
-        overviewTreeModel = new DefaultTreeModel(buildTreeFromInvestigation(investigation));
+
+        overviewTreeModel = new DefaultTreeModel(buildTreeFromInvestigation(this.investigation));
 
         overviewTree = new JTree(overviewTreeModel);
         overviewTree.setAutoscrolls(true);
@@ -514,7 +516,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             public void mousePressed(MouseEvent event) {
                 closeEditors();
 
-                ExperimentVisualization expViz = new ExperimentVisualization(investigation);
+                ExperimentVisualization expViz = new ExperimentVisualization(DataEntryEnvironment.this.investigation);
                 expViz.createGUI();
 
                 expViz.addPropertyChangeListener("reducedFunctionality", new PropertyChangeListener() {
@@ -690,9 +692,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     /**
      * Setup the navigation panel
      *
-     * @param inv - The investigation to be added. Required to instantiate upper level of investigation.
+     * @param investigation - The investigation to be added. Required to instantiate upper level of investigation.
      */
-    private void setupWestPanel(Investigation inv) {
+    private void setupWestPanel(Investigation investigation) {
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(UIHelper.BG_COLOR);
         westPanel.setBorder(BorderFactory.createEmptyBorder());
@@ -715,7 +717,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         statusInfo.setPreferredSize(new Dimension(175, 160));
 
         // setup tree
-        westPanel.add(createNavPanel(inv), BorderLayout.CENTER);
+        westPanel.add(createNavPanel(investigation), BorderLayout.CENTER);
 
         JScrollPane scroller = new JScrollPane(statusInfo,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,

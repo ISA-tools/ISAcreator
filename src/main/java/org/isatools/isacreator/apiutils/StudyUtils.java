@@ -37,7 +37,7 @@ package org.isatools.isacreator.apiutils;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.sampleselection.SampleInformation;

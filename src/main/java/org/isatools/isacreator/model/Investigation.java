@@ -38,13 +38,10 @@
 package org.isatools.isacreator.model;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
-import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.gui.InvestigationDataEntry;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.io.File;
 import java.util.ArrayList;

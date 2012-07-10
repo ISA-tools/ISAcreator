@@ -44,6 +44,8 @@ import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
@@ -108,7 +110,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         if (investigation.getReferenceObject() == null) {
             TableReferenceObject tro =
-                    ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.INVESTIGATION);
+                    ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
             DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
             referenceObject.setFieldDefinition(tro.getTableFields().getFields());
 

@@ -51,6 +51,8 @@ import org.isatools.isacreator.gui.formelements.assay.AssayInformationWriter;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -113,9 +115,9 @@ public class StudyDataEntry extends DataEntryForm {
 
     public void createGUI() {
         Map<String, List<String>> measToAllowedTechnologies =
-                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
+                ConfigurationManager.getAllowedTechnologiesPerEndpoint();
 
-        assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
+        assaySelectionUI = new AssaySelectionDialog(measToAllowedTechnologies);
         generateAliases(study.getFieldValues().keySet());
         instantiatePane();
         createFields();
@@ -136,8 +138,7 @@ public class StudyDataEntry extends DataEntryForm {
         northPanel.add(header, BorderLayout.NORTH);
 
         if (study.getReferenceObject() == null) {
-            TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance()
-                    .selectTROForUserSelection(MappingObject.INVESTIGATION);
+            TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
 
             DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
             referenceObject.setFieldDefinition(tro.getTableFields().getFields());
@@ -215,9 +216,9 @@ public class StudyDataEntry extends DataEntryForm {
                     public void run() {
 
                         Map<String, List<String>> measToAllowedTechnologies =
-                                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
+                                ConfigurationManager.getAllowedTechnologiesPerEndpoint();
 
-                        assaySelectionUI = new AssaySelectionDialog(ApplicationManager.getCurrentApplicationInstance(), measToAllowedTechnologies);
+                        assaySelectionUI = new AssaySelectionDialog(measToAllowedTechnologies);
                         assaySelectionUI.createGUI();
 
                         ApplicationManager.getCurrentApplicationInstance().showJDialogAsSheet(assaySelectionUI);
@@ -551,7 +552,7 @@ public class StudyDataEntry extends DataEntryForm {
         output.append(studyPublicationsSubForm.toString());
         output.append(factorSubForm.toString());
         output.append(new AssayInformationWriter().printAssays(study.getAssays().values(),
-                getDataEntryEnvironment().getParentFrame().getMappings()));
+                ConfigurationManager.getMappings()));
         output.append(protocolSubForm.toString());
         output.append(contactSubForm.toString());
 

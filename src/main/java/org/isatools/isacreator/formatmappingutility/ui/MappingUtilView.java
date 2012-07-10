@@ -57,16 +57,17 @@ import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.loader.Loader;
 import org.isatools.isacreator.formatmappingutility.logic.MappingLogic;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
-import org.isatools.isacreator.visualization.TreeView;
+import org.isatools.isacreator.visualization.tree.TreeView;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import prefuse.data.Tree;
@@ -181,10 +182,10 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private TableReferenceObject getTableReferenceObject(String technology, String endpoint) {
 
         if (endpoint.equalsIgnoreCase("[sample]")) {
-            return menuPanels.getMain().selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
+            return ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
         } else {
             technology = technology.equalsIgnoreCase(AssaySelectionUI.NO_TECHNOLOGY_TEXT) ? "" : technology;
-            return menuPanels.getMain().selectTROForUserSelection(endpoint, technology);
+            return ConfigurationManager.selectTROForUserSelection(endpoint, technology);
         }
     }
 
@@ -385,7 +386,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
      */
     private JLayeredPane createAssayUsedPanel(final String fileToMap) {
 
-        Map<String, List<String>> measToAllowedTechnologies = menuPanels.getMain().getAllowedTechnologiesPerEndpoint();
+        Map<String, List<String>> measToAllowedTechnologies = ConfigurationManager.getAllowedTechnologiesPerEndpoint();
 
         final AssaySelectionUI assaySelection = new AssaySelectionUI(measToAllowedTechnologies);
         assaySelection.createGUI();

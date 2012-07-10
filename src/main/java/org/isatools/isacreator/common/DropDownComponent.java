@@ -38,7 +38,7 @@
 
 package org.isatools.isacreator.common;
 
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelector;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;

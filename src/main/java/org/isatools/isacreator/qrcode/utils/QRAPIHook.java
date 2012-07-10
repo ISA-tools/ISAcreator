@@ -39,7 +39,7 @@ package org.isatools.isacreator.qrcode.utils;
 
 import org.isatools.isacreator.apiutils.SpreadsheetUtils;
 import org.isatools.isacreator.formatmappingutility.ui.MappingChoice;
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.Investigation;

@@ -43,9 +43,9 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
@@ -122,21 +122,21 @@ public class AddAssayPane extends JPanel {
         centerPanel.setOpaque(false);
         centerPanel.add(Box.createVerticalStrut(15));
 
-        String sourceNameFormat = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
+        String sourceNameFormat = ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
 
         String[] arrayDesigns = retrieveArrayDesigns();
 
         for (Assay a : assaysToDefine) {
             if (a.getTechnologyType().equalsIgnoreCase("dna microarray")) {
                 MicroarrayCreationAlgorithm maAlg = new MicroarrayCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(
+                        new TableReferenceObject(ConfigurationManager.selectTROForUserSelection(
                                 a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat, arrayDesigns);
                 algorithmsToRun.add(maAlg);
                 centerPanel.add(maAlg);
             } else {
                 GeneralCreationAlgorithm gca = new GeneralCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(a.getMeasurementEndpoint(),
+                        new TableReferenceObject(ConfigurationManager.selectTROForUserSelection(a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat);
                 algorithmsToRun.add(gca);
                 centerPanel.add(gca);

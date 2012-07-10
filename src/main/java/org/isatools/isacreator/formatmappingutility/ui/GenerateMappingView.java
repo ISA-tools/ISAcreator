@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.formatmappingutility.ui;
 
-import org.isatools.isacreator.visualization.TreeView;
+import org.isatools.isacreator.visualization.tree.TreeView;
 
 import java.io.*;
 import java.util.List;

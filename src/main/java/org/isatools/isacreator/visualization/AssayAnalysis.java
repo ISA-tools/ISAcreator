@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.visualization;
 
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;

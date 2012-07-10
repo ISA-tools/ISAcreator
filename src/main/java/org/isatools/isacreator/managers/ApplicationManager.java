@@ -1,12 +1,15 @@
-package org.isatools.isacreator.gui;
+package org.isatools.isacreator.managers;
 
 import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
+import org.isatools.isacreator.gui.DataEntryForm;
+import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.ISASection;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
-import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,12 +23,13 @@ import java.util.Map;
  */
 public class ApplicationManager {
 
+
     private static ISAcreator currentApplicationInstance;
+    private static Map<ISASection, DataEntryForm> isaSectionToDataEntryForm = new HashMap<ISASection, DataEntryForm>();
 
     private static DataEntryReferenceObject investigationDataEntryReferenceObject;
-    private static String currentlySelectedFieldName;
 
-    private static Map<ISASection, DataEntryForm> isaSectionToDataEntryForm;
+    private static String currentlySelectedFieldName;
 
     public static void setCurrentApplicationInstance(ISAcreator isacreatorEnvironment) {
         ApplicationManager.currentApplicationInstance = isacreatorEnvironment;
@@ -36,7 +40,7 @@ public class ApplicationManager {
     }
 
     public static void setCurrentDataReferenceObject() {
-        TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.INVESTIGATION);
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
         investigationDataEntryReferenceObject = new DataEntryReferenceObject();
         investigationDataEntryReferenceObject.setFieldDefinition(tro.getTableFields().getFields());
     }
@@ -85,8 +89,8 @@ public class ApplicationManager {
     public static AssaySpreadsheet getUserInterfaceForAssay(Assay assay, StudyDataEntry sde) {
 
         if (assay.getTableReferenceObject() == null) {
-            assay.setTableReferenceObject(getCurrentApplicationInstance().selectTROForUserSelection(
-                    assay.getMeasurementEndpoint(), assay.getTechnologyType()));
+            assay.setTableReferenceObject(
+                    ConfigurationManager.selectTROForUserSelection(assay.getMeasurementEndpoint(), assay.getTechnologyType()));
         }
 
         if (assay.getMeasurementEndpoint().equals("") && assay.getTechnologyType().equals("")) {

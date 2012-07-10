@@ -38,8 +38,6 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;

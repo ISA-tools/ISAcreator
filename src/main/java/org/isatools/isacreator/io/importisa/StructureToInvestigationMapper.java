@@ -42,9 +42,6 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
-import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedOntologyTermException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
@@ -52,7 +49,6 @@ import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 import uk.ac.ebi.utils.collections.Pair;
 

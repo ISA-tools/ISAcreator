@@ -37,8 +37,6 @@
 
 package org.isatools.isacreator.ontologymanager;
 
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.ISASection;
 
 import java.io.Serializable;

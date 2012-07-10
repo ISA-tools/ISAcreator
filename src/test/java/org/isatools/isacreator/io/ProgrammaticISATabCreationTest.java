@@ -1,11 +1,12 @@
 package org.isatools.isacreator.io;
 
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.io.exportisa.ISAFileOutput;
 import org.isatools.isacreator.io.exportisa.OutputISAFiles;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.*;
 import org.junit.Test;
 
@@ -32,7 +33,7 @@ public class ProgrammaticISATabCreationTest {
         investigation.setFileReference("Data/i_investigation.txt");
 
         Study study = new Study("gis-1");
-        Assay studySample = new Assay("s_samples.txt", ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
+        Assay studySample = new Assay("s_samples.txt", ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
         study.setStudySamples(studySample);
 
         studySample.getTableReferenceObject().addRowData(studySample.getTableReferenceObject().getHeaders().toArray(

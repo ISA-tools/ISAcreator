@@ -52,6 +52,8 @@ import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileIO;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
@@ -120,9 +122,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private AboutPanel aboutPanel;
     private Properties programSettings;
-
-    private List<TableReferenceObject> assayDefinitions;
-    private List<MappingObject> mappings;
 
     private DataEntryEnvironment curDataEntryEnvironment;
     private GridBagConstraints gridbagConstraints;
@@ -228,12 +227,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         gridbagConstraints.gridy = 3;
 
         // this is a way of loading the Configurations through the API.
-        if (configDir != null) {
-            ConfigXMLParser cp = new ConfigXMLParser(configDir);
-            cp.loadConfiguration();
-            mappings = cp.getMappings();
-            assayDefinitions = cp.getTables();
-        }
+        ConfigurationManager.loadConfigurations(configDir);
 
         ApplicationManager.setCurrentApplicationInstance(this);
 
@@ -262,7 +256,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
 
-//        setupAboutPanel();
         // check that java version is supported!
         if (!checkSystemRequirements()) {
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
@@ -275,20 +268,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
-    public void setMappings(List<MappingObject> mappings) {
-        this.mappings = mappings;
-    }
-
-    public void setAssayDefinitions(List<TableReferenceObject> assayDefinitions) {
-        this.assayDefinitions = assayDefinitions;
-    }
-
-
     private void checkMenuRequired() {
         boolean menuRequired = currentPage instanceof DataEntryEnvironment;
         menuBar.getParent().setVisible(menuRequired);
     }
-
 
     private void setupAboutPanel() {
         aboutPanel = new AboutPanel();
@@ -739,9 +722,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         return currentUser;
     }
 
-    public List<MappingObject> getMappings() {
-        return mappings;
-    }
 
     public List<UserProfile> getUserProfiles() {
         return userProfileIO.getUserProfiles();
@@ -1191,106 +1171,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         }
     }
-
-    public String[] getMeasurementEndpoints() {
-        List<MappingObject> assayToTypeMapping = getMappings();
-        Set<String> measTypeSet = new HashSet<String>();
-
-        for (MappingObject mo : assayToTypeMapping) {
-            if (!mo.getTechnologyType().equals("n/a") &&
-                    !mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]") && !mo.getMeasurementEndpointType().equalsIgnoreCase("[investigation]")) {
-                measTypeSet.add(mo.getMeasurementEndpointType());
-            }
-        }
-
-        List<String> tempMeasTypes = new ArrayList<String>();
-        tempMeasTypes.addAll(measTypeSet);
-
-        Collections.sort(tempMeasTypes);
-
-        return tempMeasTypes.toArray(new String[tempMeasTypes.size()]);
-
-    }
-
-    public String[] getTechnologyTypes() {
-        List<MappingObject> assayToTypeMapping = getMappings();
-        Set<String> techTypeSet = new HashSet<String>();
-
-        for (MappingObject mo : assayToTypeMapping) {
-            if (!mo.getTechnologyType().equals("n/a") && !mo.getTechnologyType().equals("")) {
-                techTypeSet.add(mo.getTechnologyType());
-            }
-        }
-
-        List<String> tempTechTypes = new ArrayList<String>();
-        tempTechTypes.addAll(techTypeSet);
-
-        Collections.sort(tempTechTypes);
-
-        tempTechTypes.add(0, AutoFilterComboCellEditor.BLANK_VALUE);
-
-        return tempTechTypes.toArray(new String[tempTechTypes.size()]);
-    }
-
-    public Map<String, List<String>> getAllowedTechnologiesPerEndpoint() {
-        Map<String, List<String>> measToAllowedTechs = new HashMap<String, List<String>>();
-
-        for (MappingObject mo : mappings) {
-            if (!measToAllowedTechs.containsKey(mo.getMeasurementEndpointType())) {
-                measToAllowedTechs.put(mo.getMeasurementEndpointType(), new ArrayList<String>());
-            }
-            measToAllowedTechs.get(mo.getMeasurementEndpointType()).add(mo.getTechnologyType());
-        }
-
-        return measToAllowedTechs;
-    }
-
-    /**
-     * Select the TableReferenceObject which is required for a given measurement endpoint
-     * and technology type using the MappingObject.
-     *
-     * @param measurementEndpoint - e.g. Gene Expression
-     * @param techType            e.g. DNA Microarray
-     * @return TableReferenceObject if one exists, null otherwise.
-     */
-    public synchronized TableReferenceObject selectTROForUserSelection(
-            String measurementEndpoint, String techType) {
-        for (MappingObject mo : mappings) {
-            if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
-                    mo.getTechnologyType().equalsIgnoreCase(techType)) {
-                for (TableReferenceObject tro : assayDefinitions) {
-                    if (tro.getTableName().equalsIgnoreCase(mo.getAssayName())) {
-                        return tro;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Select the TableReferenceObject which is required for a given tableType
-     *
-     * @param tableType - e.g. study sample or investigation
-     * @return TableReferenceObject if one exists, null otherwise.
-     */
-    public synchronized TableReferenceObject selectTROForUserSelection(
-            String tableType) {
-        for (MappingObject mo : mappings) {
-
-            if (mo.getTableType().equals(tableType)) {
-                for (TableReferenceObject tro : assayDefinitions) {
-                    if (tro.getTableName().equalsIgnoreCase(mo.getAssayName())) {
-                        return new TableReferenceObject(tro.getTableFields());
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
 
     public IncorrectColumnOrderGUI getIncorrectGUI() {
         return incorrectGUI;

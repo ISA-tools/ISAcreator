@@ -39,6 +39,7 @@ package org.isatools.isacreator.gui;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 

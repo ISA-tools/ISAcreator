@@ -40,7 +40,7 @@ package org.isatools.isacreator.archiveoutput;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.ApplicationManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.model.Assay;

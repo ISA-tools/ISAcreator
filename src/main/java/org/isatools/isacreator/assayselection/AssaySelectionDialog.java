@@ -40,6 +40,7 @@ package org.isatools.isacreator.assayselection;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -64,13 +65,11 @@ public class AssaySelectionDialog extends JDialog {
 
     private AssaySelectionUI assaySelectionUI;
     private Map<String, List<String>> measurementsToTechnologies;
-    private ISAcreator isacreatorEnvironment;
 
-    public AssaySelectionDialog(ISAcreator isacreatorEnvironment, Map<String, List<String>> measurementsToTechnologies) {
+    public AssaySelectionDialog(Map<String, List<String>> measurementsToTechnologies) {
 
         ResourceInjector.get("assayselection-package.style").inject(this);
 
-        this.isacreatorEnvironment = isacreatorEnvironment;
         this.measurementsToTechnologies = measurementsToTechnologies;
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(750, 510));
@@ -148,7 +147,7 @@ public class AssaySelectionDialog extends JDialog {
     private void closeWindow() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                isacreatorEnvironment.hideSheet();
+                ApplicationManager.getCurrentApplicationInstance().hideSheet();
             }
         });
     }
