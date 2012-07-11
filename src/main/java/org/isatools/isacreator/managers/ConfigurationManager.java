@@ -21,6 +21,11 @@ public class ConfigurationManager {
     private static List<MappingObject> mappings;
 
 
+    /**
+     * Loads ISA configurations
+     *
+     * @param configDirectory directory with configuration files
+     */
     public static void loadConfigurations(String configDirectory) {
         if (configDirectory != null) {
             ConfigXMLParser cp = new ConfigXMLParser(configDirectory);
@@ -30,10 +35,19 @@ public class ConfigurationManager {
         }
     }
 
+    /**
+     *
+     * @return a list of MappingObjects
+     */
     public static List<MappingObject> getMappings() {
         return mappings;
     }
 
+    /**
+     * Retrieves the measurement endpoints
+     *
+     * @return array of strings with measurement endpoints
+     */
     public static String[] getMeasurementEndpoints() {
         List<MappingObject> assayToTypeMapping = mappings;
         Set<String> measTypeSet = new HashSet<String>();
@@ -54,6 +68,12 @@ public class ConfigurationManager {
 
     }
 
+    /**
+     *
+     * Retrieves technology types
+     *
+     * @return array of strings
+     */
     public static String[] getTechnologyTypes() {
         List<MappingObject> assayToTypeMapping = mappings;
         Set<String> techTypeSet = new HashSet<String>();
@@ -74,6 +94,12 @@ public class ConfigurationManager {
         return tempTechTypes.toArray(new String[tempTechTypes.size()]);
     }
 
+    /**
+     *
+     * Retrives the allowed technologies per endpoint
+     *
+     * @return map of string and string list
+     */
     public static Map<String, List<String>> getAllowedTechnologiesPerEndpoint() {
         Map<String, List<String>> measToAllowedTechs = new HashMap<String, List<String>>();
 
@@ -133,11 +159,20 @@ public class ConfigurationManager {
         return null;
     }
 
-
+    /**
+     * Sets the mappings object.
+     *
+     * @param mappings list of MappingObjects
+     */
     public static void setMappings(List<MappingObject> mappings) {
         ConfigurationManager.mappings = mappings;
     }
 
+    /**
+     * Sets the assayDefinitions object
+     *
+     * @param assayDefinitions list of TableReferenceObjects
+     */
     public static void setAssayDefinitions(List<TableReferenceObject> assayDefinitions) {
         ConfigurationManager.assayDefinitions = assayDefinitions;
     }
