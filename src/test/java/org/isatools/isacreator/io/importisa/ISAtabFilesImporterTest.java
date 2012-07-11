@@ -4,17 +4,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import org.isatools.isacreator.model.*;
-import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.errorreporter.model.ErrorMessage;
 
 /**
  * 
- * Test class for ISAtabImporter
+ * Test class for ISAtabFilesImporter
  * 
  * It assumes that package.sh was run before running this test, as this script downloads the configuration files into ISAcreator/Configurations (Note: wget must be installed for this to work).
  * 
@@ -30,7 +26,7 @@ public class ISAtabImporterTest {
     private static Logger log = Logger.getLogger(ISAtabImporterTest.class);
 
 
-    private ISAtabImporter importer = null;
+    private ISAtabFilesImporter importer = null;
     private String configDir = null;
     private String isatabParentDir = null;
 
@@ -38,10 +34,10 @@ public class ISAtabImporterTest {
     public void setUp() {
     	String baseDir = System.getProperty("basedir");
     	configDir = baseDir + "/Configurations/isaconfig-default_v2011-02-18/";
-    	log.debug("configDir="+configDir);
-        importer = new ISAtabImporter(configDir);
+    	log.debug("configDir=" + configDir);
+        importer = new ISAtabFilesImporter(configDir);
         isatabParentDir = baseDir + "/src/test/resources/test-data/BII-I-1";
-        log.debug("isatabParentDir="+isatabParentDir);
+        log.debug("isatabParentDir=" + isatabParentDir);
     }
 
     @After
