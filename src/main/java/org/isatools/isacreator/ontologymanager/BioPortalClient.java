@@ -106,7 +106,7 @@ public class BioPortalClient implements OntologyService {
             BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
             parser.setLoadAllOntologies(loadAll);
 
-            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
+            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT, false);
 
             if (ontologies != null) {
                 for (Ontology ontology : ontologies) {
@@ -122,6 +122,7 @@ public class BioPortalClient implements OntologyService {
     public Ontology getOntologyById(String ontologyId) {
         String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
 
+        System.out.println(searchString);
         log.info("Getting ontology by id : query string is " + searchString);
 
         String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology-info-" + ontologyId + DownloadUtils.XML_EXT;
@@ -130,7 +131,7 @@ public class BioPortalClient implements OntologyService {
 
         BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
-        List<Ontology> ontologies = parser.parseFile(downloadLocation);
+        List<Ontology> ontologies = parser.parseFile(downloadLocation, true);
 
         if (ontologies != null && !ontologies.isEmpty()) {
             return ontologies.get(0);
