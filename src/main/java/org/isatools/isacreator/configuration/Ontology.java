@@ -39,6 +39,8 @@ package org.isatools.isacreator.configuration;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Eamonn Maguire
@@ -54,14 +56,15 @@ public class Ontology implements Serializable {
     private String ontologyAbbreviation;
     private boolean isFoundry;
     private OntologyFormats format;
-    private DefaultMutableTreeNode view = null;
     private OntologyBranch subsectionToQuery;
     private String contactName;
     private String contactEmail;
     private String homepage;
-    private Boolean isView;
+    private Set<String> categories;
+    private boolean isView;
 
     public Ontology() {
+        this("", "", "", "");
     }
 
     public Ontology(String ontologyID, String ontologyVersion, String ontologyAbbreviation, String ontologyDisplayLabel) {
@@ -75,15 +78,10 @@ public class Ontology implements Serializable {
         this.ontologyVersion = ontologyVersion;
         this.isFoundry = foundry;
         this.format = format;
+
+        categories = new HashSet<String>();
     }
 
-    public DefaultMutableTreeNode getView() {
-        return view;
-    }
-
-    public void setView(DefaultMutableTreeNode view) {
-        this.view = view;
-    }
 
     public String getOntologyAbbreviation() {
         return ontologyAbbreviation == null ? "" : ontologyAbbreviation;
@@ -162,6 +160,10 @@ public class Ontology implements Serializable {
         this.isView = isView;
     }
 
+    public boolean isView() {
+        return isView;
+    }
+
     public String getContactName() {
         return contactName;
     }
@@ -172,5 +174,17 @@ public class Ontology implements Serializable {
 
     public String getHomepage() {
         return homepage;
+    }
+
+    public Set<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<String> categories) {
+        this.categories = categories;
+    }
+
+    public void addCategory(String category) {
+        categories.add(category);
     }
 }
