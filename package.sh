@@ -48,10 +48,7 @@ zip -u ISAcreator-$VERSION-all.zip ISAcreator.jar
 
 python ../bundler.py
 
-pwd
-
-zip --exclude .DS_STORE -r ISAcreator-$VERSION-mac.zip ../Configurations ../Data ../"isatab files"
-zip -u ISAcreator-$VERSION-mac.zip ISAcreator.app
-
 echo "Packaging completed successfully!"
+cd ../
+zip --exclude .DS_STORE -r target/ISAcreator-$VERSION-all.zip target/ISAcreator.app Configurations Data "isatab files"
 
