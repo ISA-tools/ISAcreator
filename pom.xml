@@ -16,6 +16,15 @@
             <organization>ISA tools team</organization>
             <organizationUrl>http://isa-tools.org</organizationUrl>
         </developer>
+
+        <developer>
+            <id>agbeltran</id>
+            <name>Alejandra Gonzalez-Beltran</name>
+            <email>alejandra.gonzalez.beltran@gmail.com</email>
+            <organization>ISA tools team</organization>
+            <organizationUrl>http://isa-tools.org</organizationUrl>
+        </developer>
+
     </developers>
 
     <licenses>
