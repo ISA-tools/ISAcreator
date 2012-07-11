@@ -18,6 +18,7 @@ import java.util.List;
  * Date: 11/07/2012
  * Time: 16:10
  *
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
 public class ISAtabFilesImporterFromGUI extends ISAtabImporter {

@@ -32,6 +32,7 @@ import java.util.List;
  * Date: 11/07/2012
  * Time: 16:08
  *
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
 public abstract class ISAtabImporter {
@@ -44,17 +45,34 @@ public abstract class ISAtabImporter {
     private  List<ErrorMessage> messages;
     protected StructureToInvestigationMapper mapper;
 
+
     public ISAtabImporter(){
         errors = new ArrayList<ISAFileErrorReport>();
         messages = new ArrayList<ErrorMessage>();
     }
 
+    /**
+     * Imports ISATab files
+     *
+     * @param parentDir
+     * @return indicates if import was successful or not
+     */
     public abstract boolean importFile(String parentDir);
 
+    /**
+     * Retrieves errors of the import process
+     *
+     * @return list of ISAFileErrorReports
+     */
     public List<ISAFileErrorReport> getMessages() {
         return errors;
     }
 
+    /**
+     * Retrieves the investigation object
+     *
+     * @return investigation
+     */
     public Investigation getInvestigation() {
         return investigation;
     }
