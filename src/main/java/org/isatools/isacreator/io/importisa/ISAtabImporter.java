@@ -12,8 +12,10 @@ import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.managers.ConfigurationManager;
+
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -53,10 +55,14 @@ public class ISAtabImporter {
      * ImportISAFiles provides a facility for you to import ISATAB files
      * and convert these files into Java Objects for you to use.
      *
+     * This constructor can be used from the API (without accessing GUI elements).
+     *
      * @param configDir - the directory containing the configuration files you wish to use.
      */
     public ISAtabImporter(String configDir) {
-        this(new ISAcreator(Mode.LIGHT_MODE, null, configDir), false);
+        this(ApplicationManager.getCurrentApplicationInstance(),false);
+        ConfigurationManager.loadConfigurations(configDir);
+        //this(new ISAcreator(Mode.LIGHT_MODE, null, configDir), false);
     }
 
     /**
@@ -81,8 +87,10 @@ public class ISAtabImporter {
         this.constructWithGUIs = constructWithGUIs;
         errors = new ArrayList<ISAFileErrorReport>();
 
-        this.dataEntryEnvironment = new DataEntryEnvironment();
-        isacreator.setCurDataEntryPanel(dataEntryEnvironment);
+        if (isacreator!=null){
+            this.dataEntryEnvironment = new DataEntryEnvironment();
+            isacreator.setCurDataEntryPanel(dataEntryEnvironment);
+        }
     }
 
     public Investigation getInvestigation() {
@@ -202,7 +210,9 @@ public class ISAtabImporter {
                             errors.add(investigationErrorReport);
                         }
                     } else {
-                        investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
+                        if (isacreator!=null){
+                            investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
+                        }
                     }
 
                 } else {
