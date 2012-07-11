@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -46,11 +46,12 @@ import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
+import org.isatools.isacreator.io.importisa.ISAtabImporter;
+import org.isatools.isacreator.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
@@ -606,7 +607,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
         Thread performerThread = new Thread(new Runnable() {
             public void run() {
                 try {
-                    ISAtabImporter importISA1 = new ISAtabImporter(menuPanels.getMain());
+                    ISAtabImporter importISA1 = new ISAtabFilesImporterFromGUI(menuPanels.getMain());
 
                     if (!importISA1.importFile(ISA1 + File.separator)) {
 //                        status.setText(importISA1.getProblemLog());
@@ -615,7 +616,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
                     final Investigation inv1 = importISA1.getInvestigation();
 
-                    ISAtabImporter importISA2 = new ISAtabImporter(menuPanels.getMain());
+                    ISAtabImporter importISA2 = new ISAtabFilesImporterFromGUI(menuPanels.getMain());
                     importISA2.importFile(ISA2 + File.separator);
 
                     if (!importISA2.importFile(ISA2 + File.separator)) {

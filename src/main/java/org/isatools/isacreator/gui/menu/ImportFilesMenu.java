@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -44,6 +44,7 @@ import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
@@ -154,7 +155,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             public void run() {
                 try {
 
-                    final ISAtabImporter iISA = new ISAtabImporter(menu.getMain());
+                    final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(menu.getMain());
                     boolean successfulImport = iISA.importFile(dir);
                     if (successfulImport && iISA.getMessages().size() == 0) {
                         // success, so load

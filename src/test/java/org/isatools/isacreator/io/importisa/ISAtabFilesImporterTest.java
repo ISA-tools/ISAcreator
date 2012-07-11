@@ -21,9 +21,9 @@ import org.isatools.isacreator.model.*;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class ISAtabImporterTest {
+public class ISAtabFilesImporterTest {
 
-    private static Logger log = Logger.getLogger(ISAtabImporterTest.class);
+    private static Logger log = Logger.getLogger(ISAtabFilesImporterTest.class);
 
 
     private ISAtabFilesImporter importer = null;
