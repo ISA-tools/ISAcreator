@@ -112,7 +112,8 @@ public class Assay extends ISASection implements StudySubData {
         super();
 
         this.tableReferenceObject = tableReferenceObject;
-        MappingObject mappingObject = tableReferenceObject.getTableFields().getMappingObject();
+
+        MappingObject mappingObject = ConfigurationManager.getMappingObjectForMeasurementAndTechnology(measurementEndpoint, technologyType);
 
         fieldValues.put(ASSAY_REFERENCE, assayReference);
         fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);

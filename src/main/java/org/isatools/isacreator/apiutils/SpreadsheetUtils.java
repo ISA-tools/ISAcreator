@@ -52,7 +52,7 @@ import javax.swing.table.TableColumn;
 import java.util.*;
 
 /**
- * SpreadsheetUtils
+ * SpreadsheetUtils - focused on providing ways to manipulate the spreadsheet object provided in the ISAcreator GUI.
  *
  * @author eamonnmaguire
  * @date Sep 30, 2010
@@ -179,6 +179,11 @@ public class SpreadsheetUtils {
         return columnContents;
     }
 
+    /**
+     * Returns the spreadsheet in its entirety as a 2D String array
+     * @param targetSheet - Spreadsheet to work on
+     * @return - String[][]
+     */
     public static String[][] getSpreadsheetDataSubset(Spreadsheet targetSheet) {
         // initalise array to be the number of columns -1 to account for Row No. column.
         int rowCount = targetSheet.getTable().getRowCount();

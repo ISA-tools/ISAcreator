@@ -53,16 +53,6 @@ public class ISAtabFilesImporterTest {
 
         //if import worked ok, there should not be error messages
         assert(importer.getMessages().size()==0);
-
-        //if we need to check for error messages
-        //List<ISAFileErrorReport> messages = importer.getMessages();
-        //for (ISAFileErrorReport f : messages ){
-        //    System.out.println("problem summary -"+f.getProblemSummary());
-        //    List<ErrorMessage> errorMessages = f.getMessages();
-        //    for(ErrorMessage e: errorMessages){
-        //        System.out.println("message -"+e.getMessage());
-        //    }
-        //}
     }
 
 

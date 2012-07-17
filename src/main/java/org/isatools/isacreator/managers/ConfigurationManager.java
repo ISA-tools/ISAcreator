@@ -158,6 +158,15 @@ public class ConfigurationManager {
 
         return null;
     }
+    
+    public static MappingObject getMappingObjectForMeasurementAndTechnology(String measurement, String technology) {
+        for(MappingObject mappingObject : mappings) {
+            if(mappingObject.getMeasurementEndpointType().equals(measurement) && mappingObject.getTechnologyType().equals(technology)) {
+                return mappingObject;
+            }
+        }
+        return null;
+    }
 
     /**
      * Sets the mappings object.

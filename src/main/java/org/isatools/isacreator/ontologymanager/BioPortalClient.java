@@ -125,7 +125,7 @@ public class BioPortalClient implements OntologyService {
         System.out.println(searchString);
         log.info("Getting ontology by id : query string is " + searchString);
 
-        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology-info-" + ontologyId + DownloadUtils.XML_EXT;
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology" + ontologyId + DownloadUtils.XML_EXT;
 
         DownloadUtils.downloadFile(searchString, downloadLocation);
 
