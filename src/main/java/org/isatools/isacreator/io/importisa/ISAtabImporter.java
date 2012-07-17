@@ -68,6 +68,18 @@ public abstract class ISAtabImporter {
         return errors;
     }
 
+    public String getMessagesAsString(){
+        StringBuilder builder = new StringBuilder();
+        for(ISAFileErrorReport errorReport: errors){
+            builder.append("Error filename: "+errorReport.getFileName());
+            builder.append("\n Error messages: ");
+            for(ErrorMessage error: errorReport.getMessages()){
+                builder.append("\n"+error.getMessage());
+            }
+        }
+        return builder.toString();
+    }
+
     /**
      * Retrieves the investigation object
      *
