@@ -9,6 +9,7 @@ import prefuse.action.RepaintAction;
 import prefuse.action.animate.LocationAnimator;
 import prefuse.action.animate.QualityControlAnimator;
 import prefuse.action.assignment.ColorAction;
+import prefuse.action.assignment.FontAction;
 import prefuse.action.filter.GraphDistanceFilter;
 import prefuse.action.layout.graph.NodeLinkTreeLayout;
 import prefuse.controls.*;
@@ -55,24 +56,30 @@ public class GraphView extends JPanel {
         setSize(size);
         m_vis = new Visualization();
         m_vis.addFocusGroup("selected");
+        m_vis.addFocusGroup("highlighted");
 
-        LabelRenderer tr = new LabelRenderer(label.equalsIgnoreCase("image") ? null :
-                label, label.equalsIgnoreCase("image") ? label : null);
+        LabelRenderer tr = new LabelRenderer("value", label.equalsIgnoreCase("image") ? label : null);
+        tr.setImagePosition(Constants.TOP);
         m_vis.setRendererFactory(new DefaultRendererFactory(tr));
 
         // adds graph to visualization and sets renderer label field
         setGraph(g);
 
-        int hops = 10;
+        int hops = Integer.MAX_VALUE;
         final GraphDistanceFilter filter = new GraphDistanceFilter(graph, hops);
 
         ColorAction fill = new ColorAction(nodes, VisualItem.FILLCOLOR, backgroundColor);
-        fill.add("ingroup('selected')", ColorLib.rgb(105, 210, 231));
+        fill.add("ingroup('highlighted')", ColorLib.rgb(224, 228, 204));
+        fill.add("ingroup('selected')", ColorLib.rgb(242, 106, 33));
+
+        FontAction font = new FontAction(nodes, UIHelper.VER_8_BOLD);
+
 
         ActionList draw = new ActionList(500);
+        draw.add(font);
         draw.add(filter);
         draw.add(fill);
-        draw.add(new ColorAction(nodes, VisualItem.TEXTCOLOR, ColorLib.rgb(0, 0, 0)));
+        draw.add(new ColorAction(nodes, VisualItem.TEXTCOLOR, ColorLib.rgb(242, 106, 33)));
         draw.add(new ColorAction(edges, VisualItem.FILLCOLOR, ColorLib.gray(200)));
         draw.add(new ColorAction(edges, VisualItem.STROKECOLOR, ColorLib.gray(200)));
         draw.add(new RepaintAction());
@@ -123,7 +130,7 @@ public class GraphView extends JPanel {
         UILib.setPlatformLookAndFeel();
 
         // create graphview
-        String datafile = "/Users/eamonnmaguire/git/eamonnrepo/GraphMacro/data/graphml-test.xml";
+        String datafile = "/Users/eamonnmaguire/git/eamonnrepo/GraphMacro/data/graphml/E-GEOD-265.xml";
         String label = "value";
 
         Graph g = null;
@@ -148,8 +155,7 @@ public class GraphView extends JPanel {
                 @Override
                 public void itemEntered(VisualItem visualItem, MouseEvent mouseEvent) {
                     if (visualItem.canGetString("id")) {
-                        System.out.println(visualItem.get("id"));
-                        TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("selected");
+                        TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("highlighted");
                         focused.addTuple(visualItem);
                         view.getDisplay().getVisualization().run("draw");
                     }
@@ -159,7 +165,7 @@ public class GraphView extends JPanel {
                 public void itemExited(VisualItem visualItem, MouseEvent mouseEvent) {
                     if (visualItem.canGetString("id")) {
                         System.out.println(visualItem.get("id"));
-                        TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("selected");
+                        TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("highlighted");
                         focused.removeTuple(visualItem);
                         view.getDisplay().getVisualization().run("draw");
                     }
