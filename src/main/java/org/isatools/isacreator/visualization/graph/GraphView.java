@@ -10,6 +10,7 @@ import prefuse.action.animate.LocationAnimator;
 import prefuse.action.animate.QualityControlAnimator;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.FontAction;
+import prefuse.action.assignment.StrokeAction;
 import prefuse.action.filter.GraphDistanceFilter;
 import prefuse.action.layout.graph.NodeLinkTreeLayout;
 import prefuse.controls.*;
@@ -20,6 +21,7 @@ import prefuse.data.tuple.TupleSet;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.render.LabelRenderer;
 import prefuse.util.ColorLib;
+import prefuse.util.StrokeLib;
 import prefuse.util.ui.UILib;
 import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
@@ -68,18 +70,25 @@ public class GraphView extends JPanel {
         int hops = Integer.MAX_VALUE;
         final GraphDistanceFilter filter = new GraphDistanceFilter(graph, hops);
 
-        ColorAction fill = new ColorAction(nodes, VisualItem.FILLCOLOR, backgroundColor);
-        fill.add("ingroup('highlighted')", ColorLib.rgb(224, 228, 204));
-        fill.add("ingroup('selected')", ColorLib.rgb(242, 106, 33));
+        FontAction font = new FontAction(nodes, UIHelper.VER_8_PLAIN);
 
-        FontAction font = new FontAction(nodes, UIHelper.VER_8_BOLD);
+        ColorAction fill = new ColorAction(nodes, VisualItem.FILLCOLOR, ColorLib.rgb(255, 255, 255));
+        fill.add("ingroup('highlighted')", ColorLib.rgb(241, 242, 242));
+        fill.add("ingroup('selected')", ColorLib.rgb(241, 242, 242));
 
+
+        ColorAction stroke = new ColorAction(nodes, VisualItem.STROKECOLOR, backgroundColor);
+        StrokeAction strokeWeight = new StrokeAction(nodes, StrokeLib.getStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        stroke.add("ingroup('highlighted')", ColorLib.rgb(224, 228, 204));
+        stroke.add("ingroup('selected')", ColorLib.rgb(202, 106, 33));
 
         ActionList draw = new ActionList(500);
         draw.add(font);
         draw.add(filter);
         draw.add(fill);
-        draw.add(new ColorAction(nodes, VisualItem.TEXTCOLOR, ColorLib.rgb(242, 106, 33)));
+        draw.add(stroke);
+        draw.add(strokeWeight);
+        draw.add(new ColorAction(nodes, VisualItem.TEXTCOLOR, ColorLib.rgb(109, 110, 113)));
         draw.add(new ColorAction(edges, VisualItem.FILLCOLOR, ColorLib.gray(200)));
         draw.add(new ColorAction(edges, VisualItem.STROKECOLOR, ColorLib.gray(200)));
         draw.add(new RepaintAction());
@@ -87,7 +96,7 @@ public class GraphView extends JPanel {
         ActionList animate = new ActionList();
 
         NodeLinkTreeLayout layout = new NodeLinkTreeLayout(graph);
-        layout.setDepthSpacing(70);
+        layout.setDepthSpacing(80);
         layout.setBreadthSpacing(70);
         layout.setOrientation(orientation);
 
@@ -130,7 +139,7 @@ public class GraphView extends JPanel {
         UILib.setPlatformLookAndFeel();
 
         // create graphview
-        String datafile = "/Users/eamonnmaguire/git/eamonnrepo/GraphMacro/data/graphml/E-GEOD-265.xml";
+        String datafile = "/Users/eamonnmaguire/git/eamonnrepo/GraphMacro/data/graphml/E-GEOD-20176-E-GEOD-20176.xml";
         String label = "value";
 
         Graph g = null;
