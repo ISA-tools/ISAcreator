@@ -107,6 +107,8 @@ public class BioPortalOntologyListResultHandler {
                     return true;
                 }
             }
+        } else {
+            return true;
         }
         return false;
     }
