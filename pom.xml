@@ -94,6 +94,7 @@
                 </configuration>
             </plugin>
 
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -101,11 +102,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.isatools.isacreator.gui.modeselection.ModeSelector</Bundle-Activator>
+                        <Bundle-Activator>org.isatools.isacreator.launch.ISAcreatorActivator</Bundle-Activator>
                         <Bundle-Vendor>ISA team, http://isa-tools.org</Bundle-Vendor>
                     </instructions>
                 </configuration>
             </plugin>
+
+
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
