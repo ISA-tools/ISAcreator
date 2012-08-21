@@ -28,16 +28,25 @@ if [ "$VERSION" = "" ] ; then
 fi
   
 
-mvn $MVNOPTS -Dmaven.test.skip=true clean assembly:assembly
-
 rm -rf Configurations
+rm -rf src/main/resources/Configurations
 
 mkdir Configurations
+mkdir src/main/resources/Configurations
 cd Configurations
 wget https://github.com/downloads/ISA-tools/Configuration-Files/isaconfig-default_v2011-02-18.zip --no-check-certificate
+cp isaconfig-default_v2011-02-18.zip ../src/main/resources/Configurations/
 unzip isaconfig-default_v2011-02-18.zip
 rm isaconfig-default_v2011-02-18.zip
 cd ../
+
+## keeping configurations in resources so that they are included in the jar
+cd src/main/resources/Configurations
+unzip isaconfig-default_v2011-02-18.zip
+rm isaconfig-default_v2011-02-18.zip
+cd ../../../..
+
+mvn $MVNOPTS -Dmaven.test.skip=true clean assembly:assembly
 
 # Now package up the tools
 
