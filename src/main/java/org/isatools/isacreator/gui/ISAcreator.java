@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -40,16 +40,13 @@ package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
-import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.configuration.io.ConfigXMLParser;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.io.exportisa.OutputISAFilesFromGUI;
+import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileIO;
 import org.isatools.isacreator.managers.ApplicationManager;
@@ -67,7 +64,6 @@ import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
 import org.isatools.isacreator.validateconvert.ui.OperatingMode;
