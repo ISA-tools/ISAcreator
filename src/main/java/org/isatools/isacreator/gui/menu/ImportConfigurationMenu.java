@@ -133,8 +133,8 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
 
-                        ImportConfiguration importConfiguration = new ImportConfiguration();
-                        boolean problemEncountered = importConfiguration.loadConfiguration(dir);
+                        ImportConfiguration importConfiguration = new ImportConfiguration(dir);
+                        boolean problemEncountered = importConfiguration.loadConfiguration();
 
                         System.out.println("Loaded configuration");
                         menu.stopProgressIndicator();
