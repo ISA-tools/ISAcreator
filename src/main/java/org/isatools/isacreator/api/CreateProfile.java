@@ -67,4 +67,8 @@ public class CreateProfile {
         main.saveUserProfiles();
     }
 
+    public static void createProfile(String username){
+        createProfile(username, null, null, null, null, null);
+    }
+
 }
