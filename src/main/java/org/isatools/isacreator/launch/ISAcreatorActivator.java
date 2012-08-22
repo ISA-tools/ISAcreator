@@ -28,8 +28,8 @@ public class ISAcreatorActivator implements BundleActivator {
             public void run() {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        main = new ISAcreator(ISAcreatorApplication.mode, bundleContext);
-                        main.createGUI();
+                      main = new ISAcreator(ISAcreatorApplication.mode, bundleContext, ISAcreatorApplication.configDir);
+                      main.createGUI(ISAcreatorApplication.configDir, ISAcreatorApplication.username, ISAcreatorApplication.isatabDir);
                     }
                 });
             }

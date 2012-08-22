@@ -229,10 +229,53 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
+    /**
+     * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received
+     */
+    public void createGUI(String configDir, String username, String isatabDir){
+
+        setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
+        setIconImage(isacreatorIcon);
+        setBackground(UIHelper.BG_COLOR);
+        //TODO move this into a property
+        setTitle("ISAcreator 1.6");
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setUndecorated(true);
+        setResizable(true);
+        setLayout(new BorderLayout());
+
+        addWindowFocusListener(this);
+        // load user profiles into the system
+        userProfileIO.loadUserProfiles();
+        loadProgramSettings();
+        // create the top menu bar
+
+        createTopPanel();
+
+        FooterPanel fp = new FooterPanel(this);
+        add(fp, BorderLayout.SOUTH);
+
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
+
+        // check that java version is supported!
+        if (!checkSystemRequirements()) {
+            //this can't happen if this is used from java web start
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+        } else {
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir);
+        }
+        setCurrentPage(isacreatorMenu);
+        pack();
+        setVisible(true);
+
+
+    }
+
     public void createGUI() {
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
+        //TODO move this into a property
         setTitle("ISAcreator 1.6");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
