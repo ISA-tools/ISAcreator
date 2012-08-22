@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.configuration.io.ConfigXMLParser;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.ISAcreator;
@@ -59,7 +60,7 @@ import java.io.File;
  */
 
 
-public class ImportConfiguration extends AbstractImportFilesMenu {
+public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
@@ -67,7 +68,7 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
 
     private boolean initialLoadingPassed = false;
 
-    public ImportConfiguration(ISAcreatorMenu menu) {
+    public ImportConfigurationMenu(ISAcreatorMenu menu) {
         super(menu);
         setPreferredSize(new Dimension(400, 400));
     }
@@ -131,29 +132,22 @@ public class ImportConfiguration extends AbstractImportFilesMenu {
                 // success, so load
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        // provide location to the configuration parser!
-                        ConfigXMLParser configParser = new ConfigXMLParser(dir);
-                        configParser.loadConfiguration();
+
+                        ImportConfiguration importConfiguration = new ImportConfiguration();
+                        boolean problemEncountered = importConfiguration.loadConfiguration(dir);
 
                         System.out.println("Loaded configuration");
                         menu.stopProgressIndicator();
-                        if (configParser.isProblemsEncountered()) {
+                        if (problemEncountered) {
                             menu.resetViewAfterProgress();
                             System.out.println("Problem encountered");
-                            problemReport.setText(configParser.getProblemLog());
+                            problemReport.setText(importConfiguration.getProblemLog());
                             problemScroll.setVisible(true);
                             revalidate();
                             repaint();
                         } else {
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
-
-                            ConfigurationManager.setAssayDefinitions(configParser.getTables());
-                            ConfigurationManager.setMappings(configParser.getMappings());
-
-                            ApplicationManager.setCurrentDataReferenceObject();
-
-                            ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_CONFIGURATION, new File(dir).getAbsolutePath());
 
                             if (!initialLoadingPassed) {
                                 System.err.println("loading hasn't been performed before, so now going to authentication screen");
