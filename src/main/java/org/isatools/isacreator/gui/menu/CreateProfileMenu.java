@@ -262,7 +262,7 @@ public class CreateProfileMenu extends MenuUIComponent {
             status.setText(
                     "<html><b>passwords do not match!</b> the password and confirmation must match!</html>");
             return;
-        };
+        }
 
         // check the rest of the fields to ensure values have been entered and proceed to creating the
         // profile if everything is ok!
