@@ -25,12 +25,16 @@ public class ImportConfiguration {
 
     //private static ISAcreator main = ApplicationManager.getCurrentApplicationInstance();
     private ConfigXMLParser configParser = null;
+    private String configDir = null;
 
-    public ImportConfiguration(){}
-
-    public boolean loadConfiguration(String configDir){
-        // provide location to the configuration parser!
+    public ImportConfiguration(String cDir){
+        configDir = cDir;
         configParser = new ConfigXMLParser(configDir);
+    }
+
+    public boolean loadConfiguration(){
+        // provide location to the configuration parser!
+
         configParser.loadConfiguration();
 
         if (!configParser.isProblemsEncountered()){
