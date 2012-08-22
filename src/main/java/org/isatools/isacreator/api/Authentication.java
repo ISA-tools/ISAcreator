@@ -26,9 +26,16 @@ public class Authentication {
      */
     public static boolean login(String username, char[] password) {
 
+        if (username==null && password==null)
+            return false;
+
         for (UserProfile up : main.getUserProfiles()) {
 
             if (up.getUsername()!=null && up.getUsername().equals(username)) {
+
+                if (password==null)
+                    return false;
+
                 char[] pwd = password;
                 String pwdAsString = "";
 
