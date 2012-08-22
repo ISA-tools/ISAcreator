@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,9 +37,9 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.isatools.isacreator.api.CreateProfile;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
-import org.isatools.isacreator.io.UserProfile;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -47,8 +47,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * CreateProfileGUI provides interface to allow users to construct a new profile
@@ -59,7 +58,7 @@ import java.util.regex.Pattern;
  */
 
 
-public class CreateProfile extends MenuUIComponent {
+public class CreateProfileMenu extends MenuUIComponent {
     @InjectedResource
     private ImageIcon createProfileButton, createProfileButtonOver,
             backButtonSml, backButtonSmlOver;
@@ -75,7 +74,7 @@ public class CreateProfile extends MenuUIComponent {
     private JTextField surnameVal;
     private JTextField usernameVal;
 
-    public CreateProfile(ISAcreatorMenu menu) {
+    public CreateProfileMenu(ISAcreatorMenu menu) {
         super(menu);
         status = new JLabel("                                      ");
         status.setForeground(UIHelper.RED_COLOR);
@@ -254,56 +253,30 @@ public class CreateProfile extends MenuUIComponent {
 
     private void createProfile() {
         // check password is not empty and that the password and the confirmation match!
-        String password = new String(passwordVal.getPassword());
-        if (!password.equals("")) {
-            String passwordConfirmation = new String(confirmPasswordVal.getPassword());
-            if (!password.equals(passwordConfirmation)) {
-                status.setText(
-                        "<html><b>passwords do not match!</b> the password and confirmation must match!</html>");
-                return;
-            }
-        } else {
+        if (CreateProfile.emptyPassword(passwordVal.getPassword())) {
             status.setText(
                     "<html><b>password is required!</b></html>");
             return;
         }
+        if (!CreateProfile.matchingPasswords(passwordVal.getPassword(),confirmPasswordVal.getPassword())){
+            status.setText(
+                    "<html><b>passwords do not match!</b> the password and confirmation must match!</html>");
+            return;
+        };
 
         // check the rest of the fields to ensure values have been entered and proceed to creating the
         // profile if everything is ok!
-        if (!usernameVal.getText().equals("")) {
-            if (!firstnameVal.getText().equals("")) {
-                if (!surnameVal.getText().equals("")) {
-                    if (!institutionVal.getText().equals("")) {
-                        if (!emailVal.getText().equals("")) {
-                            Pattern p = Pattern.compile("[.]*@[.]*");
-                            Matcher m = p.matcher(emailVal.getText());
-
-                            if (m.find()) {
-                                UserProfile newUser = new UserProfile(usernameVal.getText(),
-                                        new String(passwordVal.getPassword()).hashCode(),
-                                        firstnameVal.getText(),
-                                        surnameVal.getText(),
-                                        institutionVal.getText(),
-                                        emailVal.getText());
-                                boolean dupUser = false;
-
-                                for (UserProfile up : menu.getMain().getUserProfiles()) {
-                                    if (up.getUsername()
-                                            .equals(usernameVal.getText())) {
-                                        dupUser = true;
-                                        status.setText(
-                                                "<html><b>user name taken!</b> this username is already in use</html>");
-
-                                        break;
-                                    }
-                                }
-
-                                if (!dupUser) {
-                                    menu.getMain().getUserProfiles().add(newUser);
-                                    menu.getMain().setCurrentUser(newUser);
-                                    menu.getMain().setUserOntologyHistory(newUser.getUserHistory());
-                                    menu.getMain().saveUserProfiles();
-
+        if (!CreateProfile.emptyField(usernameVal.getText())) {
+            if (!CreateProfile.emptyField(firstnameVal.getText())) {
+                if (!CreateProfile.emptyField(surnameVal.getText())) {
+                    if (!CreateProfile.emptyField(institutionVal.getText())) {
+                        if (!CreateProfile.emptyField(emailVal.getText())) {
+                            if (CreateProfile.validEmail(emailVal.getText())) {
+                                if (CreateProfile.duplicateUser(usernameVal.getText())){
+                                   status.setText(
+                                         "<html><b>user name taken!</b> this username is already in use</html>");
+                                }else{
+                                    CreateProfile.createProfile(usernameVal.getText(), passwordVal.getPassword(),firstnameVal.getText(),surnameVal.getText(),institutionVal.getText(),emailVal.getText());
                                     menu.changeView(menu.getMainMenuGUI());
                                 }
                             } else {
@@ -330,6 +303,6 @@ public class CreateProfile extends MenuUIComponent {
             status.setText(
                     "<html><b>username is required!</b> please enter a username</html>");
         }
-    }
+    }//createProfile method
 }
 
