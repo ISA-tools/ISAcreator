@@ -1,6 +1,7 @@
 package org.isatools.isacreator.io.importisa;
 
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.junit.After;
 import org.junit.Before;

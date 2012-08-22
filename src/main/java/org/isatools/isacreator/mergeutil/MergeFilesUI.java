@@ -47,7 +47,7 @@ import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
-import org.isatools.isacreator.io.importisa.ISAtabFilesImporterFromGUI;
+import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
