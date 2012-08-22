@@ -27,6 +27,10 @@ public class ISAcreatorApplication  {
     private static Felix felixFramework = null;
 
     public static Mode mode =  null;
+    public static String configDir = null;
+    public static String username = null;
+    //this probably needs to be a set of files...
+    public static String isatabDir = null;
 
 
     /**
@@ -43,7 +47,25 @@ public class ISAcreatorApplication  {
         if (args==null || args.length==0){
            activatorClass = new ModeSelector();
         }else{
-           mode = args[0].equals("NORMAL_MODE")? Mode.NORMAL_MODE: Mode.LIGHT_MODE;
+           int i = 0;
+           String arg = null, option = null;
+           while (i < args.length && args[i].startsWith("--")) {
+                option = args[i++];
+                arg = args[i++];
+
+                if (option.equals("--mode"))
+                   mode = arg.equals("NORMAL_MODE")? Mode.NORMAL_MODE: Mode.LIGHT_MODE;
+                else if (option.equals("--configDir"))
+                    configDir = arg;
+                else if (option.equals("--username"))
+                   username = arg;
+                else if (option.equals("--isatabDir"))
+                   isatabDir = arg;
+
+
+               System.out.println("option="+option);
+               System.out.println("arg="+arg);
+           }
            activatorClass = new ISAcreatorActivator();
 
         }
