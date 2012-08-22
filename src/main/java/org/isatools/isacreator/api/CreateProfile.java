@@ -52,10 +52,11 @@ public class CreateProfile {
         return false;
     }
 
-    public static void createProfile(String username,char[] password, String firstname, String surname, String institution, String email){
+    public static UserProfile createProfile(String username,char[] password, String firstname, String surname, String institution, String email){
 
+        int hashcode = password!=null ? new String(password).hashCode() : 0;
         UserProfile newUser = new UserProfile(username,
-                new String(password).hashCode(),
+                hashcode,
                 firstname,
                 surname,
                 institution,
@@ -65,10 +66,11 @@ public class CreateProfile {
         main.setCurrentUser(newUser);
         main.setUserOntologyHistory(newUser.getUserHistory());
         main.saveUserProfiles();
+        return newUser;
     }
 
-    public static void createProfile(String username){
-        createProfile(username, null, null, null, null, null);
+    public static UserProfile createProfile(String username){
+        return createProfile(username, null, null, null, null, null);
     }
 
 }
