@@ -139,13 +139,18 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 if (candidate.getName()
                         .equals(previousFileList.getSelectedValue()
                                 .toString())) {
-                    menu.showProgressPanel(loadISAanimation);
-                    loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-                            candidate.getName() + File.separator);
+                    getSelectedFileAndLoad(candidate);
                 }
             }
         }
     }
+
+    private void getSelectedFileAndLoad(File candidate) {
+        menu.showProgressPanel(loadISAanimation);
+        loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+                candidate.getName() + File.separator);
+    }
+
 
     public void loadFile(final String dir) {
 
