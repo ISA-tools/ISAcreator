@@ -31,10 +31,13 @@ public class Authentication {
 
         for (UserProfile up : main.getUserProfiles()) {
 
+            //user exists
             if (up.getUsername()!=null && up.getUsername().equals(username)) {
 
-                if (password==null)
-                    return false;
+                if (password==null && up.getPassword()==0) {
+                    setCurrentUser(up);
+                    return true;
+                }
 
                 char[] pwd = password;
                 String pwdAsString = "";
@@ -44,13 +47,18 @@ public class Authentication {
                 }
 
                 if (up.getPassword() == pwdAsString.hashCode()) {
-                    ISAcreator.setCurrentUser(up);
-                    ISAcreator.setUserOntologyHistory(up.getUserHistory());
-                    Spreadsheet.fileSelectEditor.setFtpManager(up.getFtpManager());
+                    setCurrentUser(up);
                     return true;
                 }
             }
         }
         return false;
+    }
+
+
+    private static void setCurrentUser(UserProfile up){
+        ISAcreator.setCurrentUser(up);
+        ISAcreator.setUserOntologyHistory(up.getUserHistory());
+        Spreadsheet.fileSelectEditor.setFtpManager(up.getFtpManager());
     }
 }
