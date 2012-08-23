@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- �The contents of this file are subject to the CPAL version 1.0 (the �License�);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an �AS IS� basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -232,7 +232,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     /**
      * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received
      */
-    public void createGUI(String configDir, String username, String isatabDir){
+    public void createGUI(String configDir, String username, final String isatabDir) {
 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
@@ -267,8 +267,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         setCurrentPage(isacreatorMenu);
         pack();
         setVisible(true);
-
-
     }
 
     public void createGUI() {
@@ -767,7 +765,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     public void hideGlassPane() {
-        glass.setVisible(false);
+        if (glass != null) {
+            glass.setVisible(false);
+        }
     }
 
     private void saveProfilesAndExit() {

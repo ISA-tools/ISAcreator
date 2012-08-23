@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- �The contents of this file are subject to the CPAL version 1.0 (the �License�);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an �AS IS� basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -44,8 +44,9 @@ import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.io.importisa.ISAtabFilesImporterFromGUI;
+import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
@@ -97,7 +98,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 if (problemScroll != null)
                     problemScroll.setVisible(false);
 
-                menu.getMain().setGlassPanelContents(menu.getMainMenuGUI());
+                ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(menu.getMainMenuGUI());
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -145,7 +146,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         }
     }
 
-    private void getSelectedFileAndLoad(File candidate) {
+    public void getSelectedFileAndLoad(File candidate) {
         menu.showProgressPanel(loadISAanimation);
         loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
                 candidate.getName() + File.separator);
