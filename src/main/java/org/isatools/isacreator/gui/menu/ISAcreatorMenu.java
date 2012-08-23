@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,6 +37,9 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.CreateProfile;
+import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.GenericPanel;
 import org.isatools.isacreator.effects.InfiniteImageProgressPanel;
@@ -45,11 +48,13 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
 import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.io.importisa.ISAtabFilesImporter;
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 
 /**
@@ -57,7 +62,8 @@ import java.awt.*;
  * Provides all the elements for logging into the system, creating a profile, and navigating
  * around the program.
  *
- * @author Eamonn Maguire
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
+ * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
 public class ISAcreatorMenu extends JLayeredPane {
 
@@ -67,15 +73,16 @@ public class ISAcreatorMenu extends JLayeredPane {
     public static final int SHOW_CREATE_ISA = 2;
     public static final int SHOW_IMPORT_CONFIGURATION = 3;
     public static final int SHOW_UNSUPPORTED_JAVA = 4;
+    public static final int NONE = 5;
 
 
-    private Authentication authGUI;
+    private AuthenticationMenu authGUI;
     private CreateISATABMenu createISA;
-    private CreateProfile createProfileGUI;
+    private CreateProfileMenu createProfileGUI;
     private ImportFilesMenu importISA;
     private MergeFilesUI mergeStudies;
     private SettingsUtil settings;
-    private ImportConfiguration importConfiguration;
+    private ImportConfigurationMenu importConfigurationMenu;
     private ISAcreator isacreator;
     private MainMenu mainMenu;
 
@@ -83,8 +90,25 @@ public class ISAcreatorMenu extends JLayeredPane {
     private static JPanel previousGlassPane = null;
 
     private Component currentPanel = null;
-    private GenericPanel generic;
+    private GenericPanel background;
 
+
+    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, String isatabDir) {
+        this(ISAcreator, NONE);
+
+        if (!Authentication.login(username, null))
+            CreateProfile.createProfile(username);
+
+        ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
+        boolean problem = importConfiguration.loadConfiguration();
+
+        System.out.println("user created, configuration imported");
+
+        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
+        importISA.getSelectedFileAndLoad(new File(isatabDir));
+        System.out.println("ISATAB dataset loaded");
+
+    }
 
     public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
         this.isacreator = ISAcreator;
@@ -94,19 +118,19 @@ public class ISAcreatorMenu extends JLayeredPane {
         setBackground(UIHelper.BG_COLOR);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        authGUI = new Authentication(this);
+        authGUI = new AuthenticationMenu(this);
         createISA = new CreateISATABMenu(this);
-        createProfileGUI = new CreateProfile(this);
+        createProfileGUI = new CreateProfileMenu(this);
         importISA = new ImportFilesMenu(this);
-        importConfiguration = new ImportConfiguration(this);
-//        mergeStudies = new MergeFilesUI(this);
+        importConfigurationMenu = new ImportConfigurationMenu(this);
+        mergeStudies = new MergeFilesUI(this);
 
         if (isacreator.getMode() == Mode.NORMAL_MODE)
             settings = new SettingsUtil(this, ISAcreator.getProgramSettings());
 
         mainMenu = new MainMenu(this);
 
-        generic = new ISAcreatorBackground();
+        background = new ISAcreatorBackground();
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -116,10 +140,10 @@ public class ISAcreatorMenu extends JLayeredPane {
                 createISA.createGUI();
                 importISA.createGUI();
                 mainMenu.createGUI();
-                importConfiguration.createGUI();
+                importConfigurationMenu.createGUI();
 
 
-                add(generic, JLayeredPane.DEFAULT_LAYER);
+                add(background, JLayeredPane.DEFAULT_LAYER);
                 startAnimation();
 
                 switch (panelToShow) {
@@ -145,8 +169,11 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                         break;
 
+                    case NONE:
+                        break;
+
                     default:
-                        isacreator.setGlassPanelContents(importConfiguration);
+                        isacreator.setGlassPanelContents(importConfigurationMenu);
                 }
 
                 UIHelper.applyBackgroundToSubComponents(ISAcreatorMenu.this, UIHelper.BG_COLOR);
@@ -255,7 +282,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         });
     }
 
-    public Authentication getAuthenticationGUI() {
+    public AuthenticationMenu getAuthenticationGUI() {
         return authGUI;
     }
 
@@ -263,12 +290,12 @@ public class ISAcreatorMenu extends JLayeredPane {
         return createISA;
     }
 
-    public CreateProfile getCreateProfileGUI() {
+    public CreateProfileMenu getCreateProfileGUI() {
         return createProfileGUI;
     }
 
-    public ImportConfiguration getImportConfigurationGUI() {
-        return importConfiguration;
+    public ImportConfigurationMenu getImportConfigurationGUI() {
+        return importConfigurationMenu;
     }
 
     public ImportFilesMenu getImportISAGUI() {
@@ -290,4 +317,6 @@ public class ISAcreatorMenu extends JLayeredPane {
         settings.createGUI();
         return settings;
     }
+
+
 }
