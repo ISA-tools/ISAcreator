@@ -43,6 +43,7 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.ui.ErrorReporterView;
+import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
@@ -78,6 +79,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             loadButton, loadButtonOver, backButton, backButtonOver, filterLeft, filterRight;
 
     private JLabel back;
+    private Container loadingImagePanel;
 
 
     public ImportFilesMenu(ISAcreatorMenu menu) {
@@ -147,10 +149,22 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     }
 
     public void getSelectedFileAndLoad(File candidate) {
-        menu.showProgressPanel(loadISAanimation);
-        revalidate();
+        // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
+        menu.captureCurrentGlassPaneContents();
+        // we hide the glass pane which is currently holding the menu items, loading interface etc.
+        menu.hideGlassPane();
+        // add the loading image panel to the view. No need to use the glass pane here.
+        menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
         loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
                 candidate.getName() + File.separator);
+    }
+    
+    private Container createLoadingImagePanel() {
+        if(loadingImagePanel == null) {
+            loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
+        }
+
+        return loadingImagePanel;
     }
 
 
@@ -167,9 +181,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     if (successfulImport && iISA.getMessages().size() == 0) {
                         // success, so load
 
-                        menu.stopProgressIndicator();
-                        menu.resetViewAfterProgress();
-                        menu.hideGlassPane();
                         menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
 
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
@@ -212,7 +223,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     }
                 } catch (OutOfMemoryError outOfMemory) {
                     System.gc();
-                    menu.stopProgressIndicator();
+
                     menu.resetViewAfterProgress();
 
                     List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
@@ -227,7 +238,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     createErrorView(reports, false);
 
                 } catch (Exception e) {
-                    menu.stopProgressIndicator();
+
                     menu.resetViewAfterProgress();
                     e.printStackTrace();
                     log.error(e.toString());
@@ -241,6 +252,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     reports.add(report);
 
                     createErrorView(reports, false);
+                } finally {
+                    menu.remove(loadingImagePanel);
                 }
             }
         });

@@ -107,7 +107,7 @@ public class ISAcreatorMenu extends JLayeredPane {
 
         System.out.println("user " + (created ? "created" : "authenticated") + ", configuration imported");
 
-        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
+//        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
         importISA.getSelectedFileAndLoad(new File(isatabDir));
         System.out.println("ISATAB dataset loaded");
 
@@ -215,7 +215,7 @@ public class ISAcreatorMenu extends JLayeredPane {
 
     protected void showProgressPanel(ImageIcon image) {
         System.out.println("==================== Show progress panel");
-        previousGlassPane = (JPanel) isacreator.getGlassPane();
+        captureCurrentGlassPaneContents();
         System.out.println("previousGlassPane=" + previousGlassPane);
         InfiniteImageProgressPanel imageProgress = new InfiniteImageProgressPanel(image);
         System.out.println("imageProgress" + imageProgress);
@@ -232,7 +232,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     protected void showProgressPanel(String text) {
-        previousGlassPane = (JPanel) isacreator.getGlassPane();
+        captureCurrentGlassPaneContents();
         progressIndicator = new InfiniteProgressPanel(text);
         progressIndicator.setSize(new Dimension(
                 isacreator.getContentPane().getWidth(),
@@ -242,6 +242,10 @@ public class ISAcreatorMenu extends JLayeredPane {
 
         progressIndicator.start();
         isacreator.validate();
+    }
+
+    protected void captureCurrentGlassPaneContents() {
+        previousGlassPane = (JPanel) isacreator.getGlassPane();
     }
 
     protected void stopProgressIndicator() {

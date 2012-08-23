@@ -1,13 +1,10 @@
 package org.isatools.isacreator.launch;
 
 import org.isatools.isacreator.gui.ISAcreator;
-import org.jdesktop.fuse.InjectedResource;
-import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * Created by the ISATeam.
@@ -26,12 +23,8 @@ public class ISAcreatorActivator implements BundleActivator {
 
         Thread loadISATask = new Thread(new Runnable() {
             public void run() {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                      main = new ISAcreator(ISAcreatorApplication.mode, bundleContext, ISAcreatorApplication.configDir);
-                      main.createGUI(ISAcreatorApplication.configDir, ISAcreatorApplication.username, ISAcreatorApplication.isatabDir);
-                    }
-                });
+                main = new ISAcreator(ISAcreatorApplication.mode, bundleContext, ISAcreatorApplication.configDir);
+                main.createGUI(ISAcreatorApplication.configDir, ISAcreatorApplication.username, ISAcreatorApplication.isatabDir);
             }
         });
 
