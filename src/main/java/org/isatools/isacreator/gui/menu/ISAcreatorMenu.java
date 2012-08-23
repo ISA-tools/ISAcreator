@@ -96,13 +96,16 @@ public class ISAcreatorMenu extends JLayeredPane {
     public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, String isatabDir) {
         this(ISAcreator, NONE);
 
-        if (!Authentication.login(username, null))
+        boolean created = false;
+        if (!Authentication.login(username, null)) {
             CreateProfile.createProfile(username);
+            created = true;
+        }
 
         ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
         boolean problem = importConfiguration.loadConfiguration();
 
-        System.out.println("user created, configuration imported");
+        System.out.println("user " + (created ? "created" : "authenticated") + ", configuration imported");
 
         importISA = new ImportFilesMenu(ISAcreatorMenu.this);
         importISA.getSelectedFileAndLoad(new File(isatabDir));
@@ -211,11 +214,18 @@ public class ISAcreatorMenu extends JLayeredPane {
 
 
     protected void showProgressPanel(ImageIcon image) {
+        System.out.println("==================== Show progress panel");
         previousGlassPane = (JPanel) isacreator.getGlassPane();
+        System.out.println("previousGlassPane=" + previousGlassPane);
         InfiniteImageProgressPanel imageProgress = new InfiniteImageProgressPanel(image);
+        System.out.println("imageProgress" + imageProgress);
+        int isacreatorWidth = isacreator.getContentPane().getWidth();
+        int isacreatorHeight = isacreator.getContentPane().getHeight();
         imageProgress.setSize(new Dimension(
-                isacreator.getContentPane().getWidth(),
-                isacreator.getContentPane().getHeight()));
+                isacreatorWidth == 0 ? ISAcreator.APP_WIDTH : isacreatorWidth,
+                isacreatorHeight == 0 ? ISAcreator.APP_HEIGHT : isacreatorHeight));
+
+        System.out.println("imageProgress = " + imageProgress);
 
         isacreator.setGlassPane(imageProgress);
         isacreator.validate();
@@ -229,6 +239,7 @@ public class ISAcreatorMenu extends JLayeredPane {
                 isacreator.getContentPane().getHeight()));
 
         isacreator.setGlassPane(progressIndicator);
+
         progressIndicator.start();
         isacreator.validate();
     }
@@ -244,6 +255,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     protected void hideGlassPane() {
+        System.out.println("============Hiding glass pane");
         isacreator.hideGlassPane();
     }
 

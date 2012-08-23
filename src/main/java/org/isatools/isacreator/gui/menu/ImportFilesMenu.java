@@ -148,6 +148,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
     public void getSelectedFileAndLoad(File candidate) {
         menu.showProgressPanel(loadISAanimation);
+        revalidate();
         loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
                 candidate.getName() + File.separator);
     }
