@@ -5,11 +5,15 @@ import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoActivator;
 import org.isatools.isacreator.gui.modeselection.ModeSelector;
 import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.utils.GeneralUtils;
 import org.osgi.framework.BundleActivator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import java.net.URL;
 
 /**
  * Created by the ISATeam.
@@ -31,6 +35,7 @@ public class ISAcreatorApplication  {
     public static String username = null;
     //this probably needs to be a set of files...
     public static String isatabDir = null;
+    public static String[] isatabFiles = null;
 
 
     /**
@@ -61,15 +66,45 @@ public class ISAcreatorApplication  {
                    username = arg;
                 else if (option.equals("--isatabDir"))
                    isatabDir = arg;
+                else if (option.equals("--isatabFiles")) {
+                   isatabFiles = parseFilenames(arg);
+                }
 
+               if (isatabFiles!=null){
 
-               System.out.println("option="+option);
-               System.out.println("arg="+arg);
+                 if (isatabDir!=null){
+                   System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
+                   System.exit(-1);
+                 }
+
+                //if isatabFiles is given, create isatabDir in tmp
+                isatabDir = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
+                boolean success = (
+                           new File(isatabDir)).mkdir();
+                   if (success) {
+                       System.out.println("Directory: "
+                               + isatabDir + " created");
+                   }
+
+                //save files in isatabDir
+                for(String filename: isatabFiles){
+
+                    if (filename.startsWith("http")){
+                        int index = filename.lastIndexOf("/");
+                        String fileLocation = filename;
+                        String downloadLocation = File.separator +isatabDir+filename.substring(index+1);
+
+                        GeneralUtils.downloadFile(fileLocation,downloadLocation);
+                    }
+
+                }
+               }
            }
            activatorClass = new ISAcreatorActivator();
 
         }
 
+        System.out.println("isatabDir="+isatabDir);
         System.out.println("\nLaunching ISAcreator Application...");
 
         try
@@ -103,6 +138,9 @@ public class ISAcreatorApplication  {
     }
 
 
+    private static String[] parseFilenames(String arg){
+       return arg.split(",");
+    }
 
 
 }
