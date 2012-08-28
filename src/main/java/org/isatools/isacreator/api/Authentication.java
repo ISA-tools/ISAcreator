@@ -55,7 +55,11 @@ public class Authentication {
         return false;
     }
 
-
+    /**
+     * Sets current user, ontology history and ftp manager
+     *
+     * @param up
+     */
     private static void setCurrentUser(UserProfile up){
         ISAcreator.setCurrentUser(up);
         ISAcreator.setUserOntologyHistory(up.getUserHistory());
