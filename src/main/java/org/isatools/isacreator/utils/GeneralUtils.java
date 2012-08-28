@@ -78,13 +78,14 @@ public class GeneralUtils {
             return true;
 
         } catch (MalformedURLException e) {
-            log.error("url malformed: " + e.getMessage());
+            System.err.println("The URL is malformed: " + e.getMessage());
         } catch (FileNotFoundException e) {
-            log.error("file not found: " + e.getMessage());
+            System.err.println("File not found: " + e.getMessage());
         } catch (IOException e) {
-            log.error("io exception caught: " + e.getMessage());
+            System.err.println("io exception caught: " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
-            log.error("unexpected error occurred: " + e.getMessage());
+            System.err.println("Unexpected error occurred: " + e.getMessage());
         } finally {
             try {
 
@@ -97,7 +98,7 @@ public class GeneralUtils {
                 }
 
             } catch (IOException ioe) {
-                log.error("io exception caught: " + ioe.getMessage());
+                System.err.println("io exception caught: " + ioe.getMessage());
             }
         }
         return false;
