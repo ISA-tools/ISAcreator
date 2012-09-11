@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.spreadsheet;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
@@ -1252,19 +1253,24 @@ public class SpreadsheetFunctions {
         spreadsheet.system.setContents(stsel, stsel);
     }
 
-    protected void cleanReferences() {
-        if (protocolSelectorCellEditor != null) {
-            protocolSelectorCellEditor.setSpreadsheet(null);
-            protocolSelectorCellEditor = null;
+    public Set<String> getValuesInSelectedRowsForColumn(String columnName) {
+        int[] selectedRows = spreadsheet.getTable().getSelectedRows();
+
+        Set<String> values = new ListOrderedSet<String>();
+        for (int columnIndex = 0; columnIndex < spreadsheet.getColumnCount(); columnIndex++) {
+            String colName = spreadsheet.spreadsheetModel.getColumnName(columnIndex);
+            
+            if(colName.equals(columnName)) {
+
+                // add all values for this column.
+                for(int row : selectedRows) {
+                    values.add(spreadsheet.spreadsheetModel.getValueAt(row, columnIndex).toString());
+                }
+                break;
+            }
         }
 
-        if (sampleSelectorCellEditor != null) {
-            sampleSelectorCellEditor.setSpreadsheet(null);
-            sampleSelectorCellEditor = null;
-        }
-
-
+        return values;
     }
-
 
 }

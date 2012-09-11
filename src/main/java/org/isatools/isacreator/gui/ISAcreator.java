@@ -771,7 +771,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     private void saveProfilesAndExit() {
-
+        setVisible(false);
         if (getCurrentUser() != null) {
             for (UserProfile up : getUserProfiles()) {
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
@@ -913,9 +913,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             final JOptionPane[] optionPane = new JOptionPane[1];
             final ImageIcon[] icon = new ImageIcon[1];
+
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-
                     String leaveText = "";
 
                     switch (type) {
@@ -923,21 +923,14 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                             leaveText = "Are you sure you want to logout without saving?";
                             icon[0] = confirmLogout;
                             break;
-
                         case MAIN:
                             leaveText = "Are you sure you want to go to the main menu without saving?";
                             icon[0] = confirmMenu;
                             break;
-
                         case EXIT:
-
                             leaveText = "Are you sure you want to exit ISAcreator?";
                             icon[0] = confirmExit;
                             break;
-
-                        default:
-
-                            //
                     }
 
                     optionPane[0] = new JOptionPane(leaveText,
@@ -947,8 +940,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                     UIHelper.applyOptionPaneBackground(optionPane[0], UIHelper.BG_COLOR);
                     optionPane[0].addPropertyChangeListener(LeaveAction.this);
 
-                    showJDialogAsSheet(optionPane[0].createDialog(
-                            ISAcreator.this, "Confirm"));
+                    showJDialogAsSheet(optionPane[0].createDialog(ISAcreator.this, "Confirm"));
                 }
             });
         }
@@ -961,6 +953,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                         .toString());
                 hideSheet();
                 if (lastOptionAnswer == JOptionPane.YES_OPTION) {
+
+                    ApplicationManager.resetForNextSession();
                     closeWindowTimer.start();
                 }
             }

@@ -50,7 +50,8 @@ import java.awt.*;
  */
 public class AssaySpreadsheet extends DataEntryForm {
     private Spreadsheet spreadsheet;
-
+    private StudyDataEntry studyDataEntry;
+    private TableReferenceObject tableReferenceObject;
 
     /**
      * AssayDataEntry constructor
@@ -66,11 +67,13 @@ public class AssaySpreadsheet extends DataEntryForm {
 
     public AssaySpreadsheet(StudyDataEntry studyDataEntry, TableReferenceObject tableReferenceObject, String measurementType, String technologyType) {
         super(studyDataEntry.getDataEntryEnvironment());
+        this.studyDataEntry = studyDataEntry;
+        this.tableReferenceObject = tableReferenceObject;
         instantiatePane();
 
         String title = constructTitleString(measurementType, technologyType);
 
-        spreadsheet = new Spreadsheet(tableReferenceObject, studyDataEntry, title, this);
+        spreadsheet = new Spreadsheet(title, this);
         add(spreadsheet, BorderLayout.CENTER);
         finalisePane();
     }
@@ -102,5 +105,13 @@ public class AssaySpreadsheet extends DataEntryForm {
 
     public void setSpreadsheet(Spreadsheet spreadsheet) {
         this.spreadsheet = spreadsheet;
+    }
+
+    public TableReferenceObject getTableReferenceObject() {
+        return tableReferenceObject;
+    }
+
+    public StudyDataEntry getStudyDataEntry() {
+        return studyDataEntry;
     }
 }

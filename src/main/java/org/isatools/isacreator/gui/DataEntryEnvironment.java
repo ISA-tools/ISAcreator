@@ -783,11 +783,14 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 }
             }
             setCurrentPage(ApplicationManager.getUserInterfaceForISASection(assay));
+
             setStatusPaneInfo("");
         } else {
             setStatusPaneInfo("");
             setCurrentPage(newSubmission);
         }
+
+        ApplicationManager.setScreenInView(nodeInfo);
 
         if (curDataEntry instanceof StudyDataEntry) {
 
