@@ -57,7 +57,6 @@ public class GraphMLCreator {
                     graphCreator.getNeo4JConnector().getGraphDB());
             System.out.println("Loaded " + experiments.size() + " experiments");
 
-            graphCreator.getNeo4JConnector().getGraphDB().beginTx();
             for (Experiment experiment : experiments) {
 
                 if (isTargetedAssay && experiment.toString().contains(assayInView)) {
@@ -69,8 +68,6 @@ public class GraphMLCreator {
 
                     graphMLFile = graphCreator.createGraphMLForExperiment(experiment, fileAppender);
                     System.out.println("GraphML for experiment is in: " + graphMLFile.getAbsolutePath());
-                    graphCreator.getNeo4JConnector().getGraphDB().getNodeById(
-                            experiment.getCorrespondingNodeInDB().getId()).delete();
                 }
             }
             // we want to shut it down afterwards to avoid having anything running on multiple experiments in view.
