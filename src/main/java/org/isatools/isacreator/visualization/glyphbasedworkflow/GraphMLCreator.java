@@ -25,16 +25,14 @@ import java.util.Set;
 public class GraphMLCreator {
 
     // pass in filter on study samples to look at and create the tree based on that.
-    private File graphMLFile;
 
     public File createGraphMLFileForExperiment(boolean targetedAssay) {
         return createGraphMLFileForExperiment(targetedAssay, null);
     }
 
     public File createGraphMLFileForExperiment(boolean isTargetedAssay, Set<String> selectedSamples) {
+        File graphMLFile = null;
         try {
-
-            graphMLFile = null;
             Investigation investigation = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
 
             System.out.println("Investigation file is in:" + investigation.getReference());
@@ -42,38 +40,41 @@ public class GraphMLCreator {
             Collection<File> flattenedFiles = ISAFileFlattener.flattenISATabFiles(new File(investigation.getReference()).getParentFile(),
                     investigation, selectedSamples);
 
-            // todo get the proper file back. Also, store experiments generated in some cache, or their file locations.
-            // todo so that we don't regenerate every time. Need to detect change? :-o
             GraphCreator graphCreator = new GraphCreator();
             String assayInView = getNameOfAssayInView();
 
             for (File file : flattenedFiles) {
-
                 String fileName = file.getName();
-                System.out.println("Targeting: " + assayInView);
                 if (isTargetedAssay && fileName.contains(assayInView)) {
-                    System.out.println("Loading: " + file.getAbsolutePath());
                     graphCreator.loadGraph(new ISAWorkflowLoader(file, graphCreator.getNeo4JConnector().getGraphDB()));
                 } else if (!isTargetedAssay) {
-                    System.out.println("Loading: " + file.getAbsolutePath());
                     graphCreator.loadGraph(new ISAWorkflowLoader(file, graphCreator.getNeo4JConnector().getGraphDB()));
                 }
             }
 
             System.out.println("Loading experiments");
-            List<Experiment> experiments = GraphFunctions.loadExperiments(graphCreator.getNeo4JConnector().getGraphDB());
+            List<Experiment> experiments = GraphFunctions.loadExperiments(
+                    graphCreator.getNeo4JConnector().getGraphDB());
             System.out.println("Loaded " + experiments.size() + " experiments");
 
+            graphCreator.getNeo4JConnector().getGraphDB().beginTx();
             for (Experiment experiment : experiments) {
-                System.out.println("Analysing " + experiment.toString());
+
                 if (isTargetedAssay && experiment.toString().contains(assayInView)) {
-                    graphMLFile = graphCreator.createGraphMLForExperiment(experiment);
+
+                    String fileAppender = "";
+                    if (selectedSamples != null) {
+                        fileAppender += selectedSamples.hashCode();
+                    }
+
+                    graphMLFile = graphCreator.createGraphMLForExperiment(experiment, fileAppender);
                     System.out.println("GraphML for experiment is in: " + graphMLFile.getAbsolutePath());
+                    graphCreator.getNeo4JConnector().getGraphDB().getNodeById(
+                            experiment.getCorrespondingNodeInDB().getId()).delete();
                 }
             }
-
             // we want to shut it down afterwards to avoid having anything running on multiple experiments in view.
-            graphCreator.getNeo4JConnector().getGraphDB().shutdown();
+            graphCreator.getNeo4JConnector().shutdown();
 
         } catch (Exception e) {
             e.printStackTrace();
