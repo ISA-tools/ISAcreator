@@ -5,16 +5,13 @@ import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.visualization.graph.GraphView;
-import org.isatools.isacreator.visualization.tree.TreeView;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import prefuse.Constants;
 import prefuse.controls.ControlAdapter;
 import prefuse.data.Graph;
-import prefuse.data.Tree;
 import prefuse.data.io.DataIOException;
 import prefuse.data.io.GraphMLReader;
-import prefuse.data.io.TreeMLReader;
 import prefuse.data.tuple.TupleSet;
 import prefuse.visual.VisualItem;
 
@@ -102,7 +99,15 @@ public class WorkflowVisualization extends AnimatableJFrame {
 
                         @Override
                         public void itemClicked(VisualItem visualItem, MouseEvent mouseEvent) {
+                            if (nodeDetailView == null) {
+                                nodeDetailView = new NodeDetail();
+                                nodeDetailView.createGUI();
+                            }
+
                             setContentForNodeDetail(visualItem);
+                            if (!nodeDetailView.isShowing()) {
+                                nodeDetailView.setVisible(true);
+                            }
                         }
 
                         @Override
@@ -111,7 +116,11 @@ public class WorkflowVisualization extends AnimatableJFrame {
                                 TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("highlighted");
                                 focused.addTuple(visualItem);
                                 view.getDisplay().getVisualization().run("draw");
+                                if (nodeDetailView != null && nodeDetailView.isShowing()) {
+                                    setContentForNodeDetail(visualItem);
+                                }
                             }
+
                         }
 
                         @Override
@@ -136,8 +145,8 @@ public class WorkflowVisualization extends AnimatableJFrame {
     private void setContentForNodeDetail(VisualItem visualItem) {
         try {
             nodeDetailView.setContent(new WorkflowVisualisationNode(visualItem.get("image").toString(),
-                    visualItem.get("type").toString(), visualItem.get("name").toString(),
-                    visualItem.get("workflow").toString()));
+                    visualItem.get("type").toString(), visualItem.get("value").toString(),
+                    visualItem.get("taxonomy").toString()));
         } catch (Exception e) {
             // ignore the error.
         }

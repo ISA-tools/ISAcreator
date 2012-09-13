@@ -6,6 +6,7 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.macros.fileprocessing.isatab.ISAFileFlattener;
 import org.isatools.macros.graph.graphio.GraphCreator;
 import org.isatools.macros.graph.graphio.GraphFunctions;
+import org.isatools.macros.graph.graphio.Neo4JConnector;
 import org.isatools.macros.gui.Experiment;
 import org.isatools.macros.loaders.isa.ISAWorkflowLoader;
 
@@ -58,20 +59,17 @@ public class GraphMLCreator {
             System.out.println("Loaded " + experiments.size() + " experiments");
 
             for (Experiment experiment : experiments) {
-
                 if (isTargetedAssay && experiment.toString().contains(assayInView)) {
-
                     String fileAppender = "";
                     if (selectedSamples != null) {
                         fileAppender += selectedSamples.hashCode();
                     }
-
                     graphMLFile = graphCreator.createGraphMLForExperiment(experiment, fileAppender);
                     System.out.println("GraphML for experiment is in: " + graphMLFile.getAbsolutePath());
                 }
             }
             // we want to shut it down afterwards to avoid having anything running on multiple experiments in view.
-            graphCreator.getNeo4JConnector().shutdown();
+            Neo4JConnector.shutdown();
 
         } catch (Exception e) {
             e.printStackTrace();

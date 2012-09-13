@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
  */
 public class FragmentedGlyphRenderer extends JPanel {
 
-    public static final String FRAGMENT_FILE_DIR = "Data" + File.separator + "images" + File.separator + "fragments" + File.separator;
+    public static final String FRAGMENT_FILE_DIR = "ProgramData" + File.separator + "images" + File.separator + "fragments" + File.separator;
     private static final int EXPECTED_HEIGHT = 50;
     private static final int TARGET_HEIGHT = 200;
     private static final int WIDTH = 250;
@@ -33,7 +34,7 @@ public class FragmentedGlyphRenderer extends JPanel {
     private static TaxonomyLegendRenderer taxonomyLegendRenderer = new TaxonomyLegendRenderer();
     private static EmptyBorder border = new EmptyBorder(0, 15, 0, 0);
 
-    private OrderedMap<String, Integer> taxonomyToRender;
+    private List<String> taxonomyToRender;
 
     private List<Fragment> fragments;
 
@@ -55,7 +56,7 @@ public class FragmentedGlyphRenderer extends JPanel {
 
         fragments = new ArrayList<Fragment>();
 
-        for (String fragment : taxonomyToRender.keySet()) {
+        for (String fragment : taxonomyToRender) {
             Fragment fragmentView = createFragment(fragment);
             fragments.add(fragmentView);
             container.add(fragmentView);
@@ -95,14 +96,18 @@ public class FragmentedGlyphRenderer extends JPanel {
         taxonomyLegendRenderer.setVisible(false);
     }
 
-    private OrderedMap<String, Integer> processTaxonomyString(String taxonomyAsString) {
-        //"protocol(2):in vivo(3):material amplification(5):organism(7)"
-        String[] fragments = taxonomyAsString.split(":");
-        taxonomyToRender = new ListOrderedMap<String, Integer>();
-        for (String fragment : fragments) {
-            String classification = fragment.substring(0, fragment.indexOf("("));
-            taxonomyToRender.put(classification, Integer.valueOf(fragment.replaceAll(classification, "").replaceAll("\\(|\\)", "")));
+    private List<String> processTaxonomyString(String taxonomyAsString) {
+        // protocol-in vivo-material_amplification-organism
+        System.out.println("taxonomyAsString = " + taxonomyAsString);
+        String[] fragments = taxonomyAsString.split("\\-");
+        taxonomyToRender = new ArrayList<String>();
+
+        Collections.addAll(taxonomyToRender, fragments);
+
+        for(String splitTaxonItem : taxonomyToRender){
+            System.out.println("\t" + splitTaxonItem);
         }
+
 
         return taxonomyToRender;
     }
@@ -141,11 +146,11 @@ public class FragmentedGlyphRenderer extends JPanel {
         }
 
         private String getCleanedFragmentName(String fragment) {
-            return fragment.contains("_") ? fragment.substring(fragment.indexOf("_") + 1) : fragment;
+            return fragment.contains("_") ? fragment.replaceAll("_", " ").trim() : fragment.trim();
         }
 
         private ImageIcon getImageForFragment(String fragment) {
-            String actualFragmentImageName = fragment.replaceAll("\\s+", "-");
+            String actualFragmentImageName = fragment.replaceAll("_", "-");
 
             image = FRAGMENT_FILE_DIR + actualFragmentImageName + ".png";
             File fragmentFile = new File(image);
