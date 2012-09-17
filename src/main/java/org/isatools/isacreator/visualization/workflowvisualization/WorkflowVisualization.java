@@ -4,12 +4,15 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.visualization.tree.TreeView;
+import org.isatools.isacreator.visualization.graph.GraphView;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import prefuse.Constants;
 import prefuse.controls.ControlAdapter;
-import prefuse.data.Tree;
-import prefuse.data.io.TreeMLReader;
+import prefuse.data.Graph;
+import prefuse.data.io.DataIOException;
+import prefuse.data.io.GraphMLReader;
+import prefuse.data.tuple.TupleSet;
 import prefuse.visual.VisualItem;
 
 import javax.swing.*;
@@ -44,9 +47,12 @@ public class WorkflowVisualization extends AnimatableJFrame {
 
     @InjectedResource
     private Image workflowVisIcon, workflowVisIconInactive;
+    private File fileName;
+    private GraphView view;
 
 
-    public WorkflowVisualization() {
+    public WorkflowVisualization(File fileName) {
+        this.fileName = fileName;
         ResourceInjector.get("workflow-package.style").inject(this);
     }
 
@@ -69,61 +75,78 @@ public class WorkflowVisualization extends AnimatableJFrame {
     }
 
     private void addTitlePane() {
-        HUDTitleBar titleBar = new HUDTitleBar(workflowVisIcon, workflowVisIconInactive);
+        HUDTitleBar titleBar = new HUDTitleBar(workflowVisIcon, workflowVisIconInactive, false);
         add(titleBar, BorderLayout.NORTH);
         titleBar.installListeners();
     }
 
     private void createCentralPanel() {
-        // should get the graph and render this, for now just display a default image.
-        JPanel centralPanel = new JPanel();
+        String datafile = fileName.getAbsolutePath();
 
-        Tree t = null;
-
-        File treeFile = new File("Data/myfile.xml");
-
+        final Graph g;
         try {
-            t = (Tree) new TreeMLReader().readGraph(treeFile);
-        } catch (Exception e) {
-            e.printStackTrace();
+            g = new GraphMLReader().readGraph(datafile);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    String label = "image";
+                    view = new GraphView(g, label, Constants.ORIENT_TOP_BOTTOM, new Dimension(750, 900));
+                    view.getDisplay().addControlListener(new ControlAdapter() {
+
+                        @Override
+                        public void mousePressed(MouseEvent mouseEvent) {
+                            // do nothing
+                        }
+
+                        @Override
+                        public void itemClicked(VisualItem visualItem, MouseEvent mouseEvent) {
+                            if (nodeDetailView == null) {
+                                nodeDetailView = new NodeDetail();
+                                nodeDetailView.createGUI();
+                            }
+
+                            setContentForNodeDetail(visualItem);
+                            if (!nodeDetailView.isShowing()) {
+                                nodeDetailView.setVisible(true);
+                            }
+                        }
+
+                        @Override
+                        public void itemEntered(VisualItem visualItem, MouseEvent mouseEvent) {
+                            if (visualItem.canGetString("id")) {
+                                TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("highlighted");
+                                focused.addTuple(visualItem);
+                                view.getDisplay().getVisualization().run("draw");
+                                if (nodeDetailView != null && nodeDetailView.isShowing()) {
+                                    setContentForNodeDetail(visualItem);
+                                }
+                            }
+
+                        }
+
+                        @Override
+                        public void itemExited(VisualItem visualItem, MouseEvent mouseEvent) {
+                            if (visualItem.canGetString("id")) {
+                                TupleSet focused = view.getDisplay().getVisualization().getFocusGroup("highlighted");
+                                focused.removeTuple(visualItem);
+                                view.getDisplay().getVisualization().run("draw");
+                            }
+                        }
+                    });
+
+                    add(view, BorderLayout.CENTER);
+                }
+            });
+
+        } catch (DataIOException e) {
+            System.err.println("Graph for " + fileName.getName() + " does not exist.");
         }
-
-        TreeView treeView = new WorkflowVisualisationTreeView(t, new Dimension(800, 800), TreeView.NAME_STRING, 2);
-
-        treeView.addControlListener(new ControlAdapter() {
-            @Override
-            public void itemEntered(VisualItem visualItem, MouseEvent mouseEvent) {
-                // we should show a hover display about the item
-                if (nodeDetailView != null && nodeDetailView.isShowing()) {
-                    setContentForNodeDetail(visualItem);
-                }
-            }
-
-            @Override
-            public void itemClicked(VisualItem visualItem, MouseEvent mouseEvent) {
-                // we should set the fixed panel to be visible (if it is not already) and display information
-                // about the node.
-                if (nodeDetailView == null) {
-                    nodeDetailView = new NodeDetail();
-                    nodeDetailView.createGUI();
-                }
-
-                setContentForNodeDetail(visualItem);
-                if (!nodeDetailView.isShowing()) {
-                    nodeDetailView.setVisible(true);
-                }
-            }
-        });
-
-        centralPanel.add(treeView);
-        add(centralPanel, BorderLayout.CENTER);
     }
 
     private void setContentForNodeDetail(VisualItem visualItem) {
         try {
             nodeDetailView.setContent(new WorkflowVisualisationNode(visualItem.get("image").toString(),
-                    visualItem.get("type").toString(), visualItem.get("name").toString(),
-                    visualItem.get("workflow").toString()));
+                    visualItem.get("type").toString(), visualItem.get("value").toString(),
+                    visualItem.get("taxonomy").toString()));
         } catch (Exception e) {
             // ignore the error.
         }
@@ -134,8 +157,4 @@ public class WorkflowVisualization extends AnimatableJFrame {
         add(footerPanel, BorderLayout.SOUTH);
     }
 
-    public static void main(String[] args) {
-        new WorkflowVisualization().createGUI();
-
-    }
 }

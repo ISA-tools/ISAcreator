@@ -400,6 +400,18 @@
 
         <dependency>
             <groupId>org.isatools</groupId>
+            <artifactId>automacron</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j</artifactId>
+            <version>1.8.M07</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
             <version>1.5</version>
             <exclusions>

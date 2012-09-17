@@ -18,7 +18,6 @@ public class ISAcreatorActivator implements BundleActivator {
 
     private ISAcreator main = null;
 
-    @Override
     public void start(final BundleContext bundleContext) throws Exception {
 
         Thread loadISATask = new Thread(new Runnable() {
@@ -31,7 +30,6 @@ public class ISAcreatorActivator implements BundleActivator {
         loadISATask.start();
     }
 
-    @Override
     public void stop(BundleContext bundleContext) throws Exception {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

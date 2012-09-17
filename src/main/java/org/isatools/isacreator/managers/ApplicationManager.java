@@ -26,6 +26,7 @@ public class ApplicationManager {
 
     private static ISAcreator currentApplicationInstance;
     private static Map<ISASection, DataEntryForm> isaSectionToDataEntryForm = new HashMap<ISASection, DataEntryForm>();
+    private static Object screenInView;
 
     private static DataEntryReferenceObject investigationDataEntryReferenceObject;
 
@@ -100,5 +101,18 @@ public class ApplicationManager {
                     assay.getMeasurementEndpoint(), assay.getTechnologyType());
         }
 
+    }
+
+    public static void resetForNextSession() {
+        isaSectionToDataEntryForm.clear();
+        screenInView = null;
+    }
+
+    public static void setScreenInView(Object objectInView) {
+       screenInView = objectInView;
+    }
+
+    public static Object getScreenInView() {
+        return screenInView;
     }
 }

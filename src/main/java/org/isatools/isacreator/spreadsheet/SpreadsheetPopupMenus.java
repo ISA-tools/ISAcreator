@@ -39,13 +39,17 @@ package org.isatools.isacreator.spreadsheet;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
+import org.isatools.isacreator.visualization.glyphbasedworkflow.GraphMLCreator;
 import org.isatools.isacreator.visualization.workflowvisualization.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -374,15 +378,24 @@ public class SpreadsheetPopupMenus {
             }
         });
 
-//        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for assays");
-//        viewWorkflowForAssays.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent actionEvent) {
-//                SpreadsheetAnalysis analysis = new TranscriptomicSpreadsheetAnalysis(spreadsheet);
-//                analysis.runAnalysis();
-//                analysis.getGraph().outputGraph();
-//                new WorkflowVisualization().createGUI();
-//            }
-//        });
+        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for this assay");
+        viewWorkflowForAssays.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                GraphMLCreator graphMLCreator = new GraphMLCreator();
+                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true);
+                new WorkflowVisualization(graphMLFile).createGUI();
+            }
+        });
+
+        JMenuItem viewWorkflowForSelectedSamples = new JMenuItem("View workflow for selected samples");
+        viewWorkflowForSelectedSamples.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                GraphMLCreator graphMLCreator = new GraphMLCreator();
+                Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
+                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
+                new WorkflowVisualization(graphMLFile).createGUI();
+            }
+        });
 
         JMenuItem mapFilesToDirectory = new JMenuItem("Resolve file names");
         mapFilesToDirectory.setToolTipText("<html>" +
@@ -447,8 +460,9 @@ public class SpreadsheetPopupMenus {
             popup.add(removeHighlight);
         }
 
-//        popup.add(new JSeparator());
-//        popup.add(viewWorkflowForAssays);
+        popup.add(new JSeparator());
+        popup.add(viewWorkflowForAssays);
+        popup.add(viewWorkflowForSelectedSamples);
         popup.show(jc, x, y);
     }
 
