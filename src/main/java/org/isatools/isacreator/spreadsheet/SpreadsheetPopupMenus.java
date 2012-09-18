@@ -713,13 +713,14 @@ public class SpreadsheetPopupMenus {
         popup.add(new JSeparator());
         popup.add(copyData);
         popup.add(clearData);
-        popup.add(new JSeparator());
-        popup.add(close);
-
         if (isSpreadsheetSampleDefinitions()) {
             popup.add(new JSeparator());
             popup.add(viewWorkflowForSelectedSamples);
         }
+        popup.add(new JSeparator());
+        popup.add(close);
+
+
 
         popup.show(jc, x, y);
     }
