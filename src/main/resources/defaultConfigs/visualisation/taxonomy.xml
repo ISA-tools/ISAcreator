@@ -9,7 +9,7 @@
     <level name="inputs-and-outputs">
         <value name="biological" image="ProgramData/images/fragments/biological.png"/>
         <value name="data" image="ProgramData/images/fragments/data.png"/>
-        <value name="chemical" image="ProgramData/images/fragments/chemical.png"/>
+        <value name="chemical entity" image="ProgramData/images/fragments/chemical-entity.png"/>
         <value name="device" image="ProgramData/images/fragments/device.png"/>
     </level>
 
