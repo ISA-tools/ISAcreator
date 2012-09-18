@@ -39,4 +39,12 @@ public class TaxonomyLevel {
     public void addTaxonomyItem(TaxonomyItem item) {
         taxonomyItems.put(item.getFileLocation(), item);
     }
+    
+    public String toString() {
+        StringBuilder toString = new StringBuilder();
+        for(String key : taxonomyItems.keySet()) {
+            toString.append(key).append(";");
+        }
+        return toString.toString();
+    }
 }

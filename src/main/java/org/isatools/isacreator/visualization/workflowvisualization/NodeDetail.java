@@ -2,6 +2,7 @@ package org.isatools.isacreator.visualization.workflowvisualization;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.TaxonomyLevel;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -36,8 +37,10 @@ public class NodeDetail extends JFrame implements WindowListener {
 
     private JLabel glyphImage, typeLabel, valueLabel;
     private FragmentedGlyphRenderer taxonomyRenderer;
+    private List<TaxonomyLevel> taxonomyLevels;
 
-    public NodeDetail() {
+    public NodeDetail(List<TaxonomyLevel> taxonomyLevels) {
+        this.taxonomyLevels = taxonomyLevels;
         ResourceInjector.get("workflow-package.style").inject(this);
     }
 
@@ -93,7 +96,7 @@ public class NodeDetail extends JFrame implements WindowListener {
 
         // ending glyph information container
 
-        taxonomyRenderer = new FragmentedGlyphRenderer();
+        taxonomyRenderer = new FragmentedGlyphRenderer(taxonomyLevels);
         container.add(Box.createVerticalStrut(5));
         container.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Glyph Composition", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR)));
         container.add(taxonomyRenderer);
@@ -106,29 +109,6 @@ public class NodeDetail extends JFrame implements WindowListener {
         setTextInformation(visualisationNode.getType(), visualisationNode.getValue());
         setTaxonomyView(visualisationNode.getTaxonomyHierarchy());
         repaint();
-    }
-
-    public static void main(String[] args) {
-        NodeDetail nodeDetail = new NodeDetail();
-        nodeDetail.createGUI();
-
-        List<WorkflowVisualisationNode> workflowsTest = new ArrayList<WorkflowVisualisationNode>();
-        workflowsTest.add(new WorkflowVisualisationNode("Data/images/glyph_growth.png",
-                "Sample Name", "sample1-homo sapiens",
-                "process(2):in vivo(3):material amplification(5):process_organism(7)"));
-
-        for (WorkflowVisualisationNode node : workflowsTest) {
-            nodeDetail.setContent(node);
-            sleep(6);
-        }
-    }
-
-    private static void sleep(int seconds) {
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private void setGlyphImage(String fileName) {

@@ -3,7 +3,6 @@ package org.isatools.isacreator.visualization.workflowvisualization.taxonomy;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.io.TaxonomyLevelLoader;
 
 import javax.swing.*;
@@ -22,23 +21,21 @@ import java.util.List;
  */
 public class TaxonomyLegendRenderer extends JFrame {
 
-    private static List<TaxonomyLevel> taxonomyLevels;
-
-    static {
-        TaxonomyLevelLoader.loadTaxonomyLevels();
-        taxonomyLevels = TaxonomyLevelLoader.getTaxonomyLevels();
-    }
+    private List<TaxonomyLevel> taxonomyLevels;
 
     private JPanel items;
 
-    public TaxonomyLegendRenderer() {
+    public TaxonomyLegendRenderer(List<TaxonomyLevel> taxonomyLevels) {
+        this.taxonomyLevels = taxonomyLevels;
+        setLayout(new BorderLayout());
+        setBackground(UIHelper.BG_COLOR);
+
+        if (!isDisplayable()) {
+            setUndecorated(true);
+        }
     }
 
     public void createGUI() {
-
-        setLayout(new BorderLayout());
-        setBackground(UIHelper.BG_COLOR);
-        setUndecorated(true);
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
 
         items = new JPanel(new FlowLayout());
@@ -52,7 +49,6 @@ public class TaxonomyLegendRenderer extends JFrame {
 
         addTitlePanel();
         add(itemScroller, BorderLayout.CENTER);
-
         pack();
     }
 
@@ -62,21 +58,23 @@ public class TaxonomyLegendRenderer extends JFrame {
         titleBar.installListeners();
     }
 
-    public void renderLevel(TaxonomyLevel level, Point location) {
+    public void renderLevel(final TaxonomyLevel level, final Point location) {
+
         if (level != null) {
             items.removeAll();
 
             for (TaxonomyItem item : level.getTaxonomyItems().values()) {
                 items.add(item);
             }
+            items.validate();
 
             setLocation(location);
             setVisible(true);
+
         }
     }
 
     public TaxonomyLevel findLevelForImage(String image) {
-        System.out.println("Finding level for " + image);
         for (TaxonomyLevel level : taxonomyLevels) {
             if (level.getTaxonomyItems().containsKey(image)) {
                 return level;
