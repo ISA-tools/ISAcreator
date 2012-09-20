@@ -42,6 +42,9 @@ public class ISAtabFilesImporterFromGUI extends ISAtabImporter {
     public boolean importFile(String parentDir){
         boolean result = commonImportFile(parentDir);
 
+        if (!result)
+            return result;
+
         //GUI related stuff
         attachGUIsToInvestigation();
         dataEntryEnvironment.createGUIFromInvestigation(investigation);
