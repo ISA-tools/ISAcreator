@@ -1,10 +1,9 @@
 package org.isatools.isacreator.visualization.workflowvisualization;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.apache.commons.collections15.OrderedMap;
-import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.TaxonomyLegendRenderer;
+import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.TaxonomyLevel;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -31,8 +30,9 @@ public class FragmentedGlyphRenderer extends JPanel {
     private static final int TARGET_HEIGHT = 200;
     private static final int WIDTH = 250;
 
-    private static TaxonomyLegendRenderer taxonomyLegendRenderer = new TaxonomyLegendRenderer();
+    private TaxonomyLegendRenderer taxonomyLegendRenderer;
     private static EmptyBorder border = new EmptyBorder(0, 15, 0, 0);
+    public static final String SPACE_SEPARATOR = "_";
 
     private List<String> taxonomyToRender;
 
@@ -41,10 +41,11 @@ public class FragmentedGlyphRenderer extends JPanel {
     @InjectedResource
     private ImageIcon arrow;
 
-    public FragmentedGlyphRenderer() {
+    public FragmentedGlyphRenderer(List<TaxonomyLevel> taxonomyLevels) {
         ResourceInjector.get("workflow-package.style").inject(this);
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(250, TARGET_HEIGHT));
+        taxonomyLegendRenderer = new TaxonomyLegendRenderer(taxonomyLevels);
         taxonomyLegendRenderer.createGUI();
 
     }
@@ -98,17 +99,9 @@ public class FragmentedGlyphRenderer extends JPanel {
 
     private List<String> processTaxonomyString(String taxonomyAsString) {
         // protocol-in vivo-material_amplification-organism
-        System.out.println("taxonomyAsString = " + taxonomyAsString);
-        String[] fragments = taxonomyAsString.split("\\-");
+        String[] fragments = taxonomyAsString.split("-");
         taxonomyToRender = new ArrayList<String>();
-
         Collections.addAll(taxonomyToRender, fragments);
-
-        for(String splitTaxonItem : taxonomyToRender){
-            System.out.println("\t" + splitTaxonItem);
-        }
-
-
         return taxonomyToRender;
     }
 
@@ -146,11 +139,11 @@ public class FragmentedGlyphRenderer extends JPanel {
         }
 
         private String getCleanedFragmentName(String fragment) {
-            return fragment.contains("_") ? fragment.replaceAll("_", " ").trim() : fragment.trim();
+            return fragment.contains(SPACE_SEPARATOR) ? fragment.replaceAll(SPACE_SEPARATOR, " ").trim() : fragment.trim();
         }
 
         private ImageIcon getImageForFragment(String fragment) {
-            String actualFragmentImageName = fragment.replaceAll("_", "-");
+            String actualFragmentImageName = fragment.replaceAll(SPACE_SEPARATOR, "-");
 
             image = FRAGMENT_FILE_DIR + actualFragmentImageName + ".png";
             File fragmentFile = new File(image);
@@ -163,10 +156,14 @@ public class FragmentedGlyphRenderer extends JPanel {
         }
 
         public void mouseClicked(MouseEvent mouseEvent) {
-            Point point = new Point(getLocationOnScreen().x + FragmentedGlyphRenderer.WIDTH, getLocationOnScreen().y);
-            taxonomyLegendRenderer.renderLevel(taxonomyLegendRenderer.findLevelForImage(image), point);
-            resetArrow();
-            arrowContainer.setIcon(arrow);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    Point point = new Point(getLocationOnScreen().x + FragmentedGlyphRenderer.WIDTH, getLocationOnScreen().y);
+                    taxonomyLegendRenderer.renderLevel(taxonomyLegendRenderer.findLevelForImage(image), point);
+                    resetArrow();
+                    arrowContainer.setIcon(arrow);
+                }
+            });
         }
 
         public void mousePressed(MouseEvent mouseEvent) {

@@ -5,6 +5,8 @@ import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.visualization.graph.GraphView;
+import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.TaxonomyLevel;
+import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.io.TaxonomyLevelLoader;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import prefuse.Constants;
@@ -20,6 +22,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by the ISA team
@@ -38,11 +41,18 @@ public class WorkflowVisualization extends AnimatableJFrame {
 
     // grouped by pertubation, e.g. factor groups.
 
+    private static List<TaxonomyLevel> taxonomyLevels;
+
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
 
         ResourceInjector.get("workflow-package.style").load(
                 WorkflowVisualization.class.getResource("/dependency-injections/workflow-package.properties"));
+
+
+        TaxonomyLevelLoader.loadTaxonomyLevels();
+        taxonomyLevels = TaxonomyLevelLoader.getTaxonomyLevels();
+
     }
 
     @InjectedResource
@@ -100,7 +110,7 @@ public class WorkflowVisualization extends AnimatableJFrame {
                         @Override
                         public void itemClicked(VisualItem visualItem, MouseEvent mouseEvent) {
                             if (nodeDetailView == null) {
-                                nodeDetailView = new NodeDetail();
+                                nodeDetailView = new NodeDetail(taxonomyLevels);
                                 nodeDetailView.createGUI();
                             }
 
@@ -132,7 +142,6 @@ public class WorkflowVisualization extends AnimatableJFrame {
                             }
                         }
                     });
-
                     add(view, BorderLayout.CENTER);
                 }
             });

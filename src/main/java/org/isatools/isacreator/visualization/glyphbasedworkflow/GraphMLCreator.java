@@ -3,12 +3,12 @@ package org.isatools.isacreator.visualization.glyphbasedworkflow;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
-import org.isatools.macros.fileprocessing.isatab.ISAFileFlattener;
 import org.isatools.macros.graph.graphio.GraphCreator;
 import org.isatools.macros.graph.graphio.GraphFunctions;
 import org.isatools.macros.graph.graphio.Neo4JConnector;
 import org.isatools.macros.gui.Experiment;
 import org.isatools.macros.loaders.isa.ISAWorkflowLoader;
+import org.isatools.macros.loaders.isa.fileprocessing.isatab.ISAFileFlattener;
 
 import java.io.File;
 import java.util.Collection;
