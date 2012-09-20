@@ -31,7 +31,7 @@ public class ProgrammaticISATabCreationTest {
         investigation.addContact(new InvestigationContact("maguire", "eamonn", "J", "eamonnmag@gmail.com", "", "", "", "Oxford University", ""));
         investigation.addPublication(new InvestigationPublication("64654", "doi", "E. Maguire", "", ""));
         investigation.addPublication(new InvestigationPublication("634654", "doi", "P Rocca-Serra", "Stupid paper", ""));
-        investigation.setFileReference("Data/i_investigation.txt");
+        investigation.setFileReference("ProgramData/i_investigation.txt");
 
         Study study = new Study("gis-1");
         Assay studySample = new Assay("s_samples.txt", ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
