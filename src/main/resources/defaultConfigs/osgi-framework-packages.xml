@@ -11,6 +11,8 @@
     <dependency package="org.isatools.isacreator.plugins.host.service"/>
     <dependency package="org.isatools.isacreator.configuration.io"/>
     <dependency package="org.isatools.isacreator.model"/>
+    <dependency package="org.isatools.isacreator.spreadsheet.model"/>
+    <dependency package="org.isatools.isacreator.managers"/>
     <dependency package="org.isatools.isacreator.gui"/>
     <dependency package="org.isatools.isacreator.common"/>
     <dependency package="org.isatools.errorreporter.ui"/>
