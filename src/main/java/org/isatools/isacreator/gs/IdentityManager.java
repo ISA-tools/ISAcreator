@@ -5,6 +5,9 @@ import org.genomespace.client.User;
 import org.genomespace.client.exceptions.InternalServerException;
 import org.genomespace.client.exceptions.ServerNotFoundException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by the ISATeam.
  * User: agbeltran
@@ -15,22 +18,21 @@ import org.genomespace.client.exceptions.ServerNotFoundException;
  */
 public class IdentityManager {
 
-    private GsSession session = null;
-    private User user = null;
+    private static Map<String, GsSession> userSessions = new HashMap<String, GsSession>();
 
-    public GsSession getSession(){
-        return session;
+
+    public static GsSession getSession(String userName){
+        return userSessions.get(userName);
     }
 
-    public String getUsername(){
-        return user.getUsername();
-    }
 
     public boolean login(String username, String password) {
 
         try{
-            session = new GsSession();
-            user = session.login(username, password);
+            GsSession session = new GsSession();
+            User user = session.login(username, password);
+
+            userSessions.put(user.getUsername(),session);
             return true;
 
         }catch(InternalServerException isex){
@@ -40,13 +42,18 @@ public class IdentityManager {
         }
     }
 
-    public boolean isLoggedIn() {
+    public boolean isLoggedIn(String username) {
+        GsSession session = userSessions.get(username);
         if (session==null)
             return false;
         return session.isLoggedIn();
     }
 
     public boolean registerUser(String username, String password, String emailAddress) {
+
+        GsSession session = userSessions.get(username);
+        if (session==null)
+            return false;
 
         try {
             User newUser = session.registerUser(username,
@@ -57,7 +64,8 @@ public class IdentityManager {
         }
     }
 
-    public boolean logout() {
+    public boolean logout(String username) {
+        GsSession session = userSessions.get(username);
         if (session==null)
             return false;
         session.logout();
