@@ -161,10 +161,11 @@ public class InvestigationDataEntry extends DataEntryForm {
 
             System.out.println("Creating field for " + contactField);
 
-            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
-
-            if (generatedField != null) {
-                contactFields.add(generatedField);
+            if (!investigation.getReferenceObject().getFieldDefinition(contactField).isHidden()) {
+                SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
+                if (generatedField != null) {
+                    contactFields.add(generatedField);
+                }
             }
         }
 
@@ -185,10 +186,12 @@ public class InvestigationDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
 
-            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, publicationField);
+            if (!investigation.getReferenceObject().getFieldDefinition(publicationField).isHidden()) {
+                SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, publicationField);
 
-            if (generatedField != null) {
-                publicationFields.add(generatedField);
+                if (generatedField != null) {
+                    publicationFields.add(generatedField);
+                }
             }
         }
 
@@ -208,8 +211,8 @@ public class InvestigationDataEntry extends DataEntryForm {
         StringBuilder output = new StringBuilder();
         output.append(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION, aliasesToRealNames));
 
-        output.append(publicationsSubForm.toString());
-        output.append(contactsSubform.toString());
+        output.append(getISASectionAsString(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(), getPublications()));
+        output.append(getISASectionAsString(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), getContacts()));
 
         return output.toString();
     }
