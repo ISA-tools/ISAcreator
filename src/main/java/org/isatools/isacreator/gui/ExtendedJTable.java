@@ -40,6 +40,7 @@ package org.isatools.isacreator.gui;
 import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
+import org.isatools.isacreator.longtexteditor.TextCellEditor;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 
 import javax.swing.*;
@@ -85,7 +86,8 @@ public class ExtendedJTable extends JTable implements Serializable {
     public boolean editCellAt(int row, int col, EventObject e) {
         final TableCellEditor editor = getCellEditor(row, col);
 
-        if (editor instanceof OntologyCellEditor || editor instanceof FileSelectCellEditor || editor instanceof DateCellEditor) {
+        if (editor instanceof OntologyCellEditor || editor instanceof FileSelectCellEditor || editor instanceof DateCellEditor
+                || editor instanceof TextCellEditor) {
             if (e instanceof MouseEvent && ((MouseEvent) e).getClickCount() == 2) {
                 super.editCellAt(row, col, e);
             }

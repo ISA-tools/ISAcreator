@@ -120,21 +120,24 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Ontology getOntologyById(String ontologyId) {
-        String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
+        if (!ontologyId.isEmpty()) {
 
-        System.out.println(searchString);
-        log.info("Getting ontology by id : query string is " + searchString);
+            String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
 
-        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology" + ontologyId + DownloadUtils.XML_EXT;
+            System.out.println(searchString);
+            log.info("Getting ontology by id : query string is " + searchString);
 
-        DownloadUtils.downloadFile(searchString, downloadLocation);
+            String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology" + ontologyId + DownloadUtils.XML_EXT;
 
-        BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
+            DownloadUtils.downloadFile(searchString, downloadLocation);
 
-        List<Ontology> ontologies = parser.parseFile(downloadLocation, true);
+            BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
-        if (ontologies != null && !ontologies.isEmpty()) {
-            return ontologies.get(0);
+            List<Ontology> ontologies = parser.parseFile(downloadLocation, true);
+
+            if (ontologies != null && !ontologies.isEmpty()) {
+                return ontologies.get(0);
+            }
         }
 
         return null;
@@ -172,9 +175,7 @@ public class BioPortalClient implements OntologyService {
         OntologyTerm ontologyResult = getTermInformation(termAccession, ontology);
         Map<String, String> result = new ListOrderedMap<String, String>();
         result.put("accession", termAccession);
-
         result.putAll(ontologyResult.getComments());
-
         return result;
     }
 
