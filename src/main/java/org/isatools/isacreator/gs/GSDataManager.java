@@ -15,17 +15,17 @@ import java.io.File;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class DataManager {
+public class GSDataManager {
 
 
+    /**
+     * List files in home directory
+     * @param username
+     */
     public void lsHome(String username){
-
         GsSession gsSession = IdentityManager.getSession(username);
-
         DataManagerClient dmClient = gsSession.getDataManagerClient();
-
         GSDirectoryListing homeDirInfo = dmClient.listDefaultDirectory();
-
     }
 
     public boolean uploadFiles() {
@@ -41,6 +41,7 @@ public class DataManager {
         GSDirectoryListing dirListing = dmClient.listDefaultDirectory();
 
         dmClient.downloadFile(fileToDownload, localTargetFile,true);
+        return true;
     }
 
 
