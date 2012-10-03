@@ -38,5 +38,5 @@ package org.isatools.isacreator.gui.modeselection;
  */
 public enum Mode {
 
-    LIGHT_MODE, NORMAL_MODE;
+    LIGHT_MODE, NORMAL_MODE, GS;
 }
