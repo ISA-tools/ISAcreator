@@ -22,8 +22,12 @@ public class ISAcreatorActivator implements BundleActivator {
 
         Thread loadISATask = new Thread(new Runnable() {
             public void run() {
-                main = new ISAcreator(ISAcreatorApplication.mode, bundleContext, ISAcreatorApplication.configDir);
-                main.createGUI(ISAcreatorApplication.configDir, ISAcreatorApplication.username, ISAcreatorApplication.isatabDir);
+                main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
+                if (ISAcreatorCLArgs.noArguments()){
+                    main.createGUI();
+                }else{
+                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir());
+                }
             }
         });
 
