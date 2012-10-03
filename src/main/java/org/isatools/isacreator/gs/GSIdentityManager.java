@@ -14,9 +14,11 @@ import java.util.Map;
  * Date: 26/09/2012
  * Time: 14:41
  *
+ * Identity Manager for Genome Space
+ *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class IdentityManager {
+public class GSIdentityManager {
 
     private static Map<String, GsSession> userSessions = new HashMap<String, GsSession>();
 
