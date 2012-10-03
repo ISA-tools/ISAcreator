@@ -703,6 +703,7 @@ public class SpreadsheetPopupMenus {
                 GraphMLCreator graphMLCreator = new GraphMLCreator();
                 Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
                 File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
+                System.out.println("graph file is " + graphMLFile);
                 new WorkflowVisualization(graphMLFile).createGUI();
             }
         });

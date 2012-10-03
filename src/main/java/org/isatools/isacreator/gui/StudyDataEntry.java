@@ -548,13 +548,13 @@ public class StudyDataEntry extends DataEntryForm {
             output.append(fieldName).append("\t\"").append(StringProcessing.cleanUpString(study.getFieldValues().get(fieldName))).append("\"\n");
         }
 
-        output.append(studyDesignSubform.toString());
-        output.append(studyPublicationsSubForm.toString());
-        output.append(factorSubForm.toString());
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_DESIGN_SECTION.toString(), getStudy().getStudyDesigns()));
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_PUBLICATIONS.toString(), getStudy().getPublications()));
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_FACTORS.toString(), getStudy().getFactors()));
         output.append(new AssayInformationWriter().printAssays(study.getAssays().values(),
                 ConfigurationManager.getMappings()));
-        output.append(protocolSubForm.toString());
-        output.append(contactSubForm.toString());
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_PROTOCOLS.toString(), getStudy().getProtocols()));
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_CONTACTS.toString(), getStudy().getContacts()));
 
         return output.toString();
     }

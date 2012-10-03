@@ -163,6 +163,7 @@ public class TextEditor extends JFrame implements WindowListener {
     }
 
     public void windowClosed(WindowEvent event) {
+        firePropertyChange("reverting", "", textEditor.getEnteredText());
     }
 
     public void windowIconified(WindowEvent event) {
@@ -176,11 +177,6 @@ public class TextEditor extends JFrame implements WindowListener {
 
     public void windowDeactivated(WindowEvent event) {
         firePropertyChange("enteredText", "", textEditor.getEnteredText());
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                setVisible(false);
-            }
-        });
     }
 
     public static void main(String[] args) {

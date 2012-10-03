@@ -173,6 +173,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         }
     }
 
+    public void createGUI() {
+        initialisePanel();
+        setupTableModel(initialNoFields);
+
+        add(setupOptionsPanel(), BorderLayout.NORTH);
+
+        add(getFrozenTable(defaultTableModel, width, height), BorderLayout.CENTER);
+        reformPreviousContent();
+    }
+
     private void generateAliases() {
 
         if (aliasesToRealNames == null) {
@@ -397,186 +407,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         return rowData;
     }
 
-    public String toString() {
-        String data = title.toUpperCase().trim() + "\n";
-        String[] toPrint = new String[calculateNoRows()];
-
-        for (int i = 0; i < toPrint.length; i++) {
-            toPrint[i] = "";
-        }
-
-        Set<Integer> ontologyRows = new HashSet<Integer>();
-
-        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
-
-        for (int col = 0; col < defaultTableModel.getColumnCount(); col++) {
-            String val;
-
-            int count = 0;
-
-            for (int row = 0; row < defaultTableModel.getRowCount(); row++) {
-                String tmpTerm = "";
-                String tmpTermAcc = "";
-                String tmpTermSource = "";
-                val = (defaultTableModel.getValueAt(row, col) != null) ? defaultTableModel.getValueAt(row, col).toString() : "";
-                val = StringProcessing.cleanUpString(val);
-
-                // only check this in the field name column
-                if (col == 0) {
-                    if (aliasesToRealNames.containsKey(val)) {
-                        val = aliasesToRealNames.get(val);
-                    }
-                }
-
-                if (fieldType == FieldTypes.ASSAY) {
-                    if (row == 0) {
-                        if (val.equals("")) {
-                            break;
-                        }
-                    }
-
-                }
-
-                tmpTerm = val;
-
-                if (scrollTable.getCellEditor(row, 0) instanceof OntologyCellEditor || val.contains("Assay Measurement Type")
-                        || val.contains("Assay Technology Type") || ontologyRows.contains(row)) {
-                    ontologyRows.add(row);
-                    if (col == 0) {
-
-                        if (tmpTerm.contains("]")) {
-                            String salientValue = tmpTerm.replaceAll("]", "");
-                            tmpTermAcc = salientValue + " Term Accession Number]";
-                            tmpTermSource = salientValue + " Term Source REF]";
-                        } else {
-                            tmpTermAcc = tmpTerm + " Term Accession Number";
-                            tmpTermSource = tmpTerm + " Term Source REF";
-                        }
-
-                    } else {
-
-                        // change val to not have the ontology source ref anymore, and add the ref to
-                        // the term source!
-                        tmpTerm = val;
-
-                        if (!tmpTerm.equals("")) {
-                            if (tmpTerm.contains(";")) {
-                                // then we have multiple values
-                                String[] ontologies = tmpTerm.split(";");
-
-                                int numberAdded = 0;
-                                for (String ontologyTerm : ontologies) {
-
-                                    OntologyTerm oo = history.get(ontologyTerm);
-
-
-                                    if (oo != null) {
-                                        tmpTerm += oo.getOntologyTermName();
-                                        tmpTermAcc += oo.getOntologySourceAccession();
-                                        tmpTermSource += oo.getOntologySource();
-                                    } else {
-                                        if (ontologyTerm.contains(":")) {
-
-                                            String[] termAndSource = ontologyTerm.split(":");
-
-                                            if (termAndSource.length > 1) {
-                                                tmpTermSource += termAndSource[0];
-                                                tmpTerm += termAndSource[1];
-                                            } else {
-                                                tmpTerm = termAndSource[0];
-                                            }
-                                        }
-                                    }
-
-
-                                    if (numberAdded < ontologies.length - 1) {
-                                        tmpTerm += ";";
-                                        tmpTermAcc += ";";
-                                        tmpTermSource += ";";
-                                    }
-                                    numberAdded++;
-                                }
-
-                            } else {
-                                if (tmpTerm.contains(":")) {
-                                    OntologyTerm oo = history.get(tmpTerm);
-
-                                    if (oo != null) {
-                                        tmpTerm = oo.getOntologyTermName();
-                                        tmpTermAcc = oo.getOntologySourceAccession();
-                                        tmpTermSource = oo.getOntologySource();
-                                    } else {
-                                        if (tmpTerm.contains(":")) {
-                                            String[] termAndSource = tmpTerm.split(":");
-
-                                            if (termAndSource.length > 1) {
-                                                tmpTermSource += termAndSource[0];
-                                                tmpTerm += termAndSource[1];
-                                            } else {
-                                                tmpTerm = termAndSource[0];
-                                            }
-                                        } else {
-
-                                            tmpTermAcc = "";
-                                            tmpTermSource = "";
-                                        }
-                                    }
-                                } else {
-                                    tmpTermAcc = "";
-                                    tmpTermSource = "";
-                                }
-                            }
-                        }
-                    }
-
-                    //add to array
-                    if (col == 0) {
-                        toPrint[count] += tmpTerm;
-                    } else {
-                        toPrint[count] += ("\t\"" + tmpTerm + "\"");
-                    }
-
-                    count++;
-
-                    if (col == 0) {
-                        toPrint[count] += tmpTermAcc;
-                    } else {
-                        toPrint[count] += ("\t\"" + tmpTermAcc + "\"");
-                    }
-
-                    count++;
-
-                    if (col == 0) {
-                        toPrint[count] += tmpTermSource;
-                    } else {
-                        toPrint[count] += ("\t\"" + tmpTermSource + "\"");
-                    }
-
-                    count++;
-
-                } else {
-                    if (col == 0) {
-
-                        toPrint[count] += val;
-                    } else {
-                        toPrint[count] += ("\t\"" + val + "\"");
-                    }
-
-                    count++;
-                }
-            }
-
-        }
-
-
-        for (String line : toPrint) {
-            data += (line + "\n");
-        }
-
-        return data;
-    }
-
-
     private int calculateNoRows() {
         int noOntologyRows = 0;
 
@@ -795,15 +625,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     public abstract boolean doAddColumn(DefaultTableModel model, TableColumn col);
 
-    public void createGUI() {
-        initialisePanel();
-        setupTableModel(initialNoFields);
 
-        add(setupOptionsPanel(), BorderLayout.NORTH);
-
-        add(getFrozenTable(defaultTableModel, width, height), BorderLayout.CENTER);
-        reformPreviousContent();
-    }
 
     public abstract void reformPreviousContent();
 

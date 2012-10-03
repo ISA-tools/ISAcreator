@@ -42,7 +42,7 @@ public class GraphMLCreator {
                     investigation, selectedSamples);
 
             GraphCreator graphCreator = new GraphCreator();
-            String assayInView = getNameOfAssayInView();
+            String assayInView = getNameOfAssayInView().substring(0, getNameOfAssayInView().lastIndexOf("."));
 
             for (File file : flattenedFiles) {
                 String fileName = file.getName();
@@ -59,6 +59,7 @@ public class GraphMLCreator {
             System.out.println("Loaded " + experiments.size() + " experiments");
 
             for (Experiment experiment : experiments) {
+                System.out.println("Experiment.toString() = " + experiment.toString() + " assay in view is " + assayInView );
                 if (isTargetedAssay && experiment.toString().contains(assayInView)) {
                     String fileAppender = "";
                     if (selectedSamples != null) {
