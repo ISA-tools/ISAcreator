@@ -72,6 +72,13 @@
             <url>http://www.mvnsearch.org/maven2/</url>
         </repository>
 
+
+        <!-- Repository for GS code -->
+        <repository>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
+        </repository>
+
     </repositories>
 
     <build>
@@ -426,6 +433,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+
+        <!-- Dependencies for GS code -->
+        <dependency>
+            <groupId>org.clojars.chapmanb</groupId>
+            <artifactId>genomespace-cdk</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
 
     </dependencies>
 
