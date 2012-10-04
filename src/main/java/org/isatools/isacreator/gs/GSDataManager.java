@@ -1,7 +1,5 @@
 package org.isatools.isacreator.gs;
 
-import org.isatools.isacreator.io.DataManager;
-
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
 import org.genomespace.datamanager.core.GSDirectoryListing;
@@ -66,7 +64,6 @@ public class GSDataManager {
         return listing;
     }
 
-
     /**
      * List files in home directory
      * @param username
@@ -87,15 +84,38 @@ public class GSDataManager {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean downloadFiles(GSFileMetadata fileToDownload, File localTargetFile) {
+    public boolean downloadFile(String fileToDownload, String localDirPath) {
+
+        System.out.println("fileToDownload="+fileToDownload);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
-
-        GSDirectoryListing dirListing = dmClient.listDefaultDirectory();
-
-        dmClient.downloadFile(fileToDownload, localTargetFile, true);
+        GSFileMetadata fileToDownloadMetadata = dmClient.getMetadata(fileToDownload);
+        System.out.println("remote file ="+fileToDownloadMetadata);
+        String localFilePath = localDirPath+fileToDownloadMetadata.getName();
+        System.out.println("local file = "+localFilePath);
+        File localTargetFile = new File(localFilePath);
+        dmClient.downloadFile(fileToDownloadMetadata, localTargetFile, true);
         return true;
+
     }
 
+    /*
+    public String getFilePath(String url){
+        System.out.println("url="+url);
+        DataManagerClient dmClient = gsSession.getDataManagerClient();
+        GSFileMetadata fileMetadata = dmClient.getMetadata(url);
+        System.out.println("fileMetadata="+fileMetadata);
+        System.out.println("NAme="+fileMetadata.getName());
+        return fileMetadata.getName();
+    }
+    */
+
+    /**
+     * Given a directory path in GS and a local directory path, it downloads all the files in the GS directory to the local directory.
+     *
+     * @param dirPath
+     * @param localDirPath
+     * @return
+     */
     public boolean downloadAllFilesFromDirectory(String dirPath, String localDirPath) {
 
         DataManagerClient dmClient = gsSession.getDataManagerClient();

@@ -61,19 +61,24 @@ public class ISAcreatorApplication  {
                 GSIdentityManager gsIdentityManager = new GSIdentityManager();
                 boolean loggedIn = gsIdentityManager.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password());
 
+                GSDataManager gsDataManager = new GSDataManager(gsIdentityManager.getSession(ISAcreatorCLArgs.username()));
+
+                String localTempDirectory = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
+                boolean success = new File(localTempDirectory).mkdir();
+                if (success) {
+                    System.out.println("Directory: "+ localTempDirectory + " created");
+                }else{
+                    System.out.println("Could not create "+localTempDirectory);
+                    System.exit(-1);
+                }
 
                 if (ISAcreatorCLArgs.isatabDir()!=null){
 
-                    GSDataManager gsDataManager = new GSDataManager(gsIdentityManager.getSession(ISAcreatorCLArgs.username()));
-
-                    String localTempDirectory = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
-                    boolean success = new File(localTempDirectory).mkdir();
-                    if (success) {
-                        System.out.println("Directory: "+ localTempDirectory + " created");
-                    }else{
-                        System.out.println("Could not create "+localTempDirectory);
+                    if (ISAcreatorCLArgs.isatabFiles()!=null){
+                        System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
                         System.exit(-1);
                     }
+
 
                     gsDataManager.downloadAllFilesFromDirectory(ISAcreatorCLArgs.isatabDir(),localTempDirectory);
 
@@ -83,10 +88,9 @@ public class ISAcreatorApplication  {
 
                 if (ISAcreatorCLArgs.isatabFiles()!=null){
 
-                 if (ISAcreatorCLArgs.isatabDir()!=null){
-                   System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
-                   System.exit(-1);
-                 }
+                  for(String filePath: ISAcreatorCLArgs.isatabFiles()){
+                       gsDataManager.downloadFile(filePath, localTempDirectory);
+                  }
 
 
                 //if isatabFiles is given, create isatabDir in tmp
