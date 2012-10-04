@@ -74,10 +74,12 @@
 
 
         <!-- Repository for GS code -->
+        <!--
         <repository>
             <id>clojars.org</id>
             <url>http://clojars.org/repo</url>
         </repository>
+        -->
 
     </repositories>
 
@@ -444,12 +446,62 @@
 
 
         <!-- Dependencies for GS code -->
+
+        <dependency>
+            <groupId>genomespace</groupId>
+            <artifactId>cdk</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>genomespace</groupId>
+            <artifactId>dm-messages</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+			<groupId>org.jets3t</groupId>
+			<artifactId>com.springsource.org.jets3t</artifactId>
+			<version>0.8.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>
+						com.springsource.org.apache.commons.codec
+					</artifactId>
+					<groupId>org.apache.commons</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+        <!--
+        <dependency>
+            <groupId>net.java.dev.jets3t</groupId>
+            <artifactId>jets3t</artifactId>
+            <version>0.7.4</version>
+        </dependency>
+        -->
+        <!--
+
         <dependency>
             <groupId>org.clojars.chapmanb</groupId>
             <artifactId>genomespace-cdk</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>genomespace</groupId>
+            <artifactId>dm-security</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>genomespace</groupId>
+            <artifactId>cdk</artifactId>
+            <version>1.0</version>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
