@@ -1,5 +1,7 @@
 package org.isatools.isacreator.gs;
 
+import org.isatools.isacreator.io.DataManager;
+
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
 import org.genomespace.datamanager.core.GSDirectoryListing;
@@ -76,11 +78,8 @@ public class GSDataManager {
 
 
     public GSFileMetadata getFileMetadata(String filePath){
-
         DataManagerClient dmClient = gsSession.getDataManagerClient();
-
         GSFileMetadata fileMetadata = dmClient.getMetadata(filePath);
-
         return fileMetadata;
     }
 
@@ -89,13 +88,26 @@ public class GSDataManager {
     }
 
     public boolean downloadFiles(GSFileMetadata fileToDownload, File localTargetFile) {
-
         DataManagerClient dmClient = gsSession.getDataManagerClient();
 
         GSDirectoryListing dirListing = dmClient.listDefaultDirectory();
 
-        dmClient.downloadFile(fileToDownload, localTargetFile,true);
+        dmClient.downloadFile(fileToDownload, localTargetFile, true);
         return true;
+    }
+
+    public boolean downloadAllFilesFromDirectory(String dirPath, String localDirPath) {
+
+        DataManagerClient dmClient = gsSession.getDataManagerClient();
+        GSDirectoryListing dirListing = dmClient.list(dirPath);
+        List<GSFileMetadata> fileMetadataList = dirListing.getContents();
+        for(GSFileMetadata fileToDownload: fileMetadataList){
+            String localFilePath = localDirPath+fileToDownload.getName();
+            File localTargetFile = new File(localFilePath);
+            dmClient.downloadFile(fileToDownload, localTargetFile,true);
+        }
+        return true;
+
     }
 
     public boolean mkDir() {
