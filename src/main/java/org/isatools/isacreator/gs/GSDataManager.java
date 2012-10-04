@@ -22,7 +22,11 @@ import java.util.List;
  */
 public class GSDataManager {
 
+    private GSIdentityManager gsIdentityManager = null;
 
+    public GSDataManager(GSIdentityManager gsIdManager){
+        gsIdentityManager = gsIdManager;
+    }
     /**
      * List files in given directory
      *
@@ -30,7 +34,7 @@ public class GSDataManager {
      * @param dirPath
      */
     public List<String> ls(String username, String dirPath){
-        GsSession gsSession = GSIdentityManager.getSession(username);
+        GsSession gsSession = gsIdentityManager.getSession(username);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
@@ -51,13 +55,17 @@ public class GSDataManager {
      * @return
      */
     public List<InputStream> lsInputStreams(String username, String dirPath){
-        GsSession gsSession = GSIdentityManager.getSession(username);
+        //System.out.println("dirPath="+dirPath);
+        GsSession gsSession = gsIdentityManager.getSession(username);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
         List<InputStream> listing = new ArrayList<InputStream>();
         for(GSFileMetadata fileMetadata:fileMetadataList){
-            listing.add(dmClient.getInputStream(fileMetadata));
+            //System.out.println("fileMetadata="+fileMetadata);
+            InputStream is = dmClient.getInputStream(fileMetadata);
+            //System.out.println("is="+is);
+            listing.add(is);
         }
         return listing;
     }
@@ -68,14 +76,14 @@ public class GSDataManager {
      * @param username
      */
     public void lsHome(String username){
-        GsSession gsSession = GSIdentityManager.getSession(username);
+        GsSession gsSession = gsIdentityManager.getSession(username);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing homeDirInfo = dmClient.listDefaultDirectory();
     }
 
 
     public GSFileMetadata getFileMetadata(String username, String filePath){
-        GsSession gsSession = GSIdentityManager.getSession(username);
+        GsSession gsSession = gsIdentityManager.getSession(username);
 
         DataManagerClient dmClient = gsSession.getDataManagerClient();
 
@@ -90,7 +98,7 @@ public class GSDataManager {
 
     public boolean downloadFiles(String username, GSFileMetadata fileToDownload, File localTargetFile) {
 
-        GsSession gsSession = GSIdentityManager.getSession(username);
+        GsSession gsSession = gsIdentityManager.getSession(username);
 
         DataManagerClient dmClient = gsSession.getDataManagerClient();
 
