@@ -21,7 +21,6 @@ public class ISAcreatorCLArgs {
     private static String configDir = null;
     private static String username = null;
     private static String password = null;
-    //this probably needs to be a set of files...
     private static String isatabDir = null;
     private static String[] isatabFiles = null;
 
