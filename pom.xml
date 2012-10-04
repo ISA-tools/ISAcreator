@@ -473,6 +473,12 @@
 			</exclusions>
 		</dependency>
 
+        <dependency>
+            <groupId>genomespace</groupId>
+            <artifactId>identityServer-messages</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!--
         <dependency>
             <groupId>net.java.dev.jets3t</groupId>
