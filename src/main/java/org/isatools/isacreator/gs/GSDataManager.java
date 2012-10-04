@@ -22,19 +22,17 @@ import java.util.List;
  */
 public class GSDataManager {
 
-    private GSIdentityManager gsIdentityManager = null;
+    private GsSession gsSession = null;
 
-    public GSDataManager(GSIdentityManager gsIdManager){
-        gsIdentityManager = gsIdManager;
+    public GSDataManager(GsSession session){
+        gsSession = session;
     }
     /**
      * List files in given directory
      *
-     * @param username
      * @param dirPath
      */
-    public List<String> ls(String username, String dirPath){
-        GsSession gsSession = gsIdentityManager.getSession(username);
+    public List<String> ls(String dirPath){
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
@@ -50,21 +48,17 @@ public class GSDataManager {
      *
      * This doesn't work at the moment because there is a restriction of two open concurrent connections at a time in GS.
      *
-     * @param username
      * @param dirPath
      * @return
      */
-    public List<InputStream> lsInputStreams(String username, String dirPath){
-        //System.out.println("dirPath="+dirPath);
-        GsSession gsSession = gsIdentityManager.getSession(username);
+    public List<InputStream> lsInputStreams(String dirPath) {
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
         List<InputStream> listing = new ArrayList<InputStream>();
         for(GSFileMetadata fileMetadata:fileMetadataList){
-            //System.out.println("fileMetadata="+fileMetadata);
+            System.out.println("fileMetadata="+fileMetadata);
             InputStream is = dmClient.getInputStream(fileMetadata);
-            //System.out.println("is="+is);
             listing.add(is);
         }
         return listing;
@@ -76,14 +70,12 @@ public class GSDataManager {
      * @param username
      */
     public void lsHome(String username){
-        GsSession gsSession = gsIdentityManager.getSession(username);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing homeDirInfo = dmClient.listDefaultDirectory();
     }
 
 
-    public GSFileMetadata getFileMetadata(String username, String filePath){
-        GsSession gsSession = gsIdentityManager.getSession(username);
+    public GSFileMetadata getFileMetadata(String filePath){
 
         DataManagerClient dmClient = gsSession.getDataManagerClient();
 
@@ -96,9 +88,7 @@ public class GSDataManager {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean downloadFiles(String username, GSFileMetadata fileToDownload, File localTargetFile) {
-
-        GsSession gsSession = gsIdentityManager.getSession(username);
+    public boolean downloadFiles(GSFileMetadata fileToDownload, File localTargetFile) {
 
         DataManagerClient dmClient = gsSession.getDataManagerClient();
 
