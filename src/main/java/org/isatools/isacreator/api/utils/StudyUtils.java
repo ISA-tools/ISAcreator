@@ -1,4 +1,4 @@
-package org.isatools.isacreator.apiutils;
+package org.isatools.isacreator.api.utils;
 
 /**
  ISAcreator is a component of the ISA software suite (http://www.isa-tools.org)
@@ -45,7 +45,6 @@ import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
