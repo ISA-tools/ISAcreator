@@ -3,21 +3,19 @@ package org.isatools.isacreator.launch;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoActivator;
-import org.genomespace.client.utils.WebClientBuilder;
+import org.apache.log4j.Logger;
+import org.osgi.framework.BundleActivator;
+
 import org.isatools.isacreator.gs.GSDataManager;
 import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gui.modeselection.ModeSelector;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.utils.GeneralUtils;
-import org.osgi.framework.BundleActivator;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import java.net.URL;
 
 /**
  * Created by the ISATeam.
@@ -32,6 +30,7 @@ import java.net.URL;
  */
 public class ISAcreatorApplication  {
 
+    private static final Logger log = Logger.getLogger(ISAcreatorApplication.class);
     private static Felix felixFramework = null;
 
     /**
@@ -57,9 +56,8 @@ public class ISAcreatorApplication  {
             //If files come from GS
             if (ISAcreatorCLArgs.mode()==Mode.GS){
 
-                WebClientBuilder.setDefaultMaxConnectionsPerHost(10);
                 GSIdentityManager gsIdentityManager = new GSIdentityManager();
-                boolean loggedIn = gsIdentityManager.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password());
+                boolean loggedIn = gsIdentityManager.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
 
                 GSDataManager gsDataManager = new GSDataManager(gsIdentityManager.getSession(ISAcreatorCLArgs.username()));
 
