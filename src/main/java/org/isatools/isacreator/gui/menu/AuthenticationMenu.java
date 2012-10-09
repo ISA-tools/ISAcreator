@@ -41,9 +41,6 @@ import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.io.UserProfile;
-import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -70,12 +67,15 @@ public class AuthenticationMenu extends MenuUIComponent {
 
     private JLabel createProfile, login, exit;
 
+    private Authentication authentication = null;
+
     @InjectedResource
     public ImageIcon pleaseLogin, loginButton, loginButtonOver, createProfileButton,
             createProfileButtonOver, exitButtonSml, exitButtonSmlOver;
 
-    public AuthenticationMenu(ISAcreatorMenu menu) {
+    public AuthenticationMenu(ISAcreatorMenu menu, Authentication auth) {
         super(menu);
+        authentication = auth;
         status = new JLabel();
         status.setForeground(UIHelper.RED_COLOR);
         setPreferredSize(new Dimension(400, 300));
@@ -89,7 +89,7 @@ public class AuthenticationMenu extends MenuUIComponent {
         username.setText("");
     }
 
-    void createGUI() {
+    public void createGUI() {
         // create username field info
         Box fields = Box.createVerticalBox();
         fields.add(Box.createVerticalStrut(10));
@@ -233,7 +233,7 @@ public class AuthenticationMenu extends MenuUIComponent {
 
 
     public void login(){
-        if (Authentication.login(username.getText(), password.getPassword())){
+        if (authentication.login(username.getText(), password.getPassword())){
             clearFields();
             menu.changeView(menu.getMainMenuGUI());
         } else {
