@@ -108,13 +108,12 @@ public class ISAcreatorMenu extends JLayeredPane {
      * @param username
      * @param isatabDir
      */
-    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, String isatabDir, final int panelToShow) {
-        this(ISAcreator, panelToShow);
+    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, char[] password, String isatabDir, Authentication authentication, String authMenuClassName, final int panelToShow) {
+        this(ISAcreator, authentication, authMenuClassName, panelToShow);
 
         boolean profileCreated = false;
-        authentication = new AuthenticationManager();
         if (username!=null){
-            if (!authentication.login(username, null)) {
+            if (!authentication.login(username, password)) {
                 CreateProfile.createProfile(username);
                 profileCreated = true;
             }
@@ -137,30 +136,8 @@ public class ISAcreatorMenu extends JLayeredPane {
 
     }
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, String isatabDir, final int panelToShow, Authentication auth, String authMenuClassName) {
-        this(ISAcreator,configDir, username, isatabDir, panelToShow);
-        authentication = auth;
 
-        try{
-            Class authMenuUIClass = Class.forName(authMenuClassName);
-            log.debug("authMenuUIClass="+authMenuUIClass);
-            Constructor constructor = authMenuUIClass.getConstructor(ISAcreatorMenu.class);
-            authGUI = (MenuUIComponent) constructor.newInstance(this);
-            isacreator.setGlassPanelContents(authGUI);
-        }catch(ClassNotFoundException e){
-            e.printStackTrace();
-        }catch(NoSuchMethodException e){
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
+    public ISAcreatorMenu(ISAcreator ISAcreator, Authentication authentication, String authMenuClassName, final int panelToShow) {
         this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
@@ -168,7 +145,29 @@ public class ISAcreatorMenu extends JLayeredPane {
         setBackground(UIHelper.BG_COLOR);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        authGUI = new AuthenticationMenu(this, authentication);
+        if (authMenuClassName==null && authentication==null){
+                authentication = new AuthenticationManager();
+                authGUI = new AuthenticationMenu(this, authentication);
+        } else {
+             //authGUI requires this class (ISAcreatorMenu) as parameter for the constructor, thus it is created here with the reflection API
+            try{
+                Class authMenuUIClass = Class.forName(authMenuClassName);
+                log.debug("authMenuUIClass="+authMenuUIClass);
+                Constructor constructor = authMenuUIClass.getConstructor(ISAcreatorMenu.class, Authentication.class);
+                authGUI = (MenuUIComponent) constructor.newInstance(this, authentication);
+            }catch(ClassNotFoundException e){
+                e.printStackTrace();
+            }catch(NoSuchMethodException e){
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
         createISA = new CreateISATABMenu(this);
         createProfileGUI = new CreateProfileMenu(this);
         importISA = new ImportFilesMenu(this);
@@ -229,6 +228,10 @@ public class ISAcreatorMenu extends JLayeredPane {
                 UIHelper.applyBackgroundToSubComponents(ISAcreatorMenu.this, UIHelper.BG_COLOR);
             }
         });
+    }
+
+    public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
+        this(ISAcreator, null, null, panelToShow);
     }
 
 
