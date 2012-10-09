@@ -1,10 +1,9 @@
 package org.isatools.isacreator.protocolselector;
 
-import org.isatools.isacreator.apiutils.StudyUtils;
+import org.isatools.isacreator.api.utils.StudyUtils;
 import org.isatools.isacreator.autofilterfield.AutoCompleteUI;
 import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.model.Protocol;
-import org.isatools.isacreator.sampleselection.SampleSelectionListCellRenderer;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
 /**

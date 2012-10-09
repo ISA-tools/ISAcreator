@@ -37,7 +37,9 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.AuthenticationManager;
 import org.isatools.isacreator.api.CreateProfile;
 import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
@@ -48,13 +50,15 @@ import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.io.importisa.ISAtabFilesImporter;
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -67,6 +71,8 @@ import java.io.File;
  */
 public class ISAcreatorMenu extends JLayeredPane {
 
+    private static final Logger log = Logger.getLogger(ISAcreatorMenu.class);
+
     // todo refactor menu to make this class much smaller!
     public static final int SHOW_MAIN = 0;
     public static final int SHOW_LOGIN = 1;
@@ -76,7 +82,9 @@ public class ISAcreatorMenu extends JLayeredPane {
     public static final int NONE = 5;
 
 
-    private AuthenticationMenu authGUI;
+    private Authentication authentication = null;
+    //TODO create specific super class
+    private MenuUIComponent authGUI;
     private CreateISATABMenu createISA;
     private CreateProfileMenu createProfileGUI;
     private ImportFilesMenu importISA;
@@ -100,12 +108,12 @@ public class ISAcreatorMenu extends JLayeredPane {
      * @param username
      * @param isatabDir
      */
-    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, String isatabDir, final int panelToShow) {
-        this(ISAcreator, panelToShow);
+    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, char[] password, String isatabDir, Authentication authentication, String authMenuClassName, final int panelToShow) {
+        this(ISAcreator, authentication, authMenuClassName, panelToShow);
 
         boolean profileCreated = false;
         if (username!=null){
-            if (!Authentication.login(username, null)) {
+            if (!authentication.login(username, password)) {
                 CreateProfile.createProfile(username);
                 profileCreated = true;
             }
@@ -114,6 +122,8 @@ public class ISAcreatorMenu extends JLayeredPane {
         if (configDir!=null){
             ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
             boolean problem = importConfiguration.loadConfiguration();
+            if (problem)
+                System.out.println("Problem importing the configuration at "+ configDir);
         }
 
         System.out.println("user " + (profileCreated ? "created" : "authenticated") + ", configuration imported");
@@ -126,7 +136,8 @@ public class ISAcreatorMenu extends JLayeredPane {
 
     }
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
+
+    public ISAcreatorMenu(ISAcreator ISAcreator, Authentication authentication, String authMenuClassName, final int panelToShow) {
         this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
@@ -134,7 +145,29 @@ public class ISAcreatorMenu extends JLayeredPane {
         setBackground(UIHelper.BG_COLOR);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        authGUI = new AuthenticationMenu(this);
+        if (authMenuClassName==null && authentication==null){
+                authentication = new AuthenticationManager();
+                authGUI = new AuthenticationMenu(this, authentication);
+        } else {
+             //authGUI requires this class (ISAcreatorMenu) as parameter for the constructor, thus it is created here with the reflection API
+            try{
+                Class authMenuUIClass = Class.forName(authMenuClassName);
+                log.debug("authMenuUIClass="+authMenuUIClass);
+                Constructor constructor = authMenuUIClass.getConstructor(ISAcreatorMenu.class, Authentication.class);
+                authGUI = (MenuUIComponent) constructor.newInstance(this, authentication);
+            }catch(ClassNotFoundException e){
+                e.printStackTrace();
+            }catch(NoSuchMethodException e){
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
         createISA = new CreateISATABMenu(this);
         createProfileGUI = new CreateProfileMenu(this);
         importISA = new ImportFilesMenu(this);
@@ -195,6 +228,10 @@ public class ISAcreatorMenu extends JLayeredPane {
                 UIHelper.applyBackgroundToSubComponents(ISAcreatorMenu.this, UIHelper.BG_COLOR);
             }
         });
+    }
+
+    public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
+        this(ISAcreator, null, null, panelToShow);
     }
 
 
@@ -311,7 +348,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         });
     }
 
-    public AuthenticationMenu getAuthenticationGUI() {
+    public MenuUIComponent getAuthenticationGUI() {
         return authGUI;
     }
 
