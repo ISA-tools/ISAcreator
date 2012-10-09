@@ -1,11 +1,12 @@
 package org.isatools.isacreator.gs;
 
-import org.isatools.isacreator.gs.gui.GSAuthenticationMenu;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+
 
 /**
  * Created by the ISATeam.
@@ -25,7 +26,7 @@ public class GSActivator implements BundleActivator {
             public void run() {
                 main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
                 if (ISAcreatorCLArgs.mode()== Mode.GS){
-                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(),new GSIdentityManager(), "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
+                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(),new GSSingleSignOnManager(), "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
                 }
             }
         });
