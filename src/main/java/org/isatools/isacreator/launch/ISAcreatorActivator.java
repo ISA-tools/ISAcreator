@@ -1,5 +1,6 @@
 package org.isatools.isacreator.launch;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -15,6 +16,8 @@ import javax.swing.*;
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
 public class ISAcreatorActivator implements BundleActivator {
+
+    private static final Logger log = Logger.getLogger(ISAcreatorActivator.class);
 
     private ISAcreator main = null;
 
