@@ -46,12 +46,10 @@ import java.awt.*;
 
 /**
  * MenuUIComponent
+ * Date: Mar 3, 2010
  *
- * @author eamonnmaguire
- * @date Mar 3, 2010
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
  */
-
-
 public abstract class MenuUIComponent extends JPanel {
 
     protected ISAcreatorMenu menu;
