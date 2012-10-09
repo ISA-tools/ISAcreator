@@ -92,24 +92,37 @@ public class ISAcreatorMenu extends JLayeredPane {
     private Component currentPanel = null;
     private GenericPanel background;
 
+    /**
+     *
+     *
+     * @param ISAcreator
+     * @param configDir
+     * @param username
+     * @param isatabDir
+     */
+    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, String isatabDir, final int panelToShow) {
+        this(ISAcreator, panelToShow);
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, String isatabDir) {
-        this(ISAcreator, NONE);
-
-        boolean created = false;
-        if (!Authentication.login(username, null)) {
-            CreateProfile.createProfile(username);
-            created = true;
+        boolean profileCreated = false;
+        if (username!=null){
+            if (!Authentication.login(username, null)) {
+                CreateProfile.createProfile(username);
+                profileCreated = true;
+            }
         }
 
-        ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
-        boolean problem = importConfiguration.loadConfiguration();
+        if (configDir!=null){
+            ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
+            boolean problem = importConfiguration.loadConfiguration();
+        }
 
-        System.out.println("user " + (created ? "created" : "authenticated") + ", configuration imported");
+        System.out.println("user " + (profileCreated ? "created" : "authenticated") + ", configuration imported");
 
 //        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
-        importISA.getSelectedFileAndLoad(new File(isatabDir));
-        System.out.println("ISATAB dataset loaded");
+        if (isatabDir!=null){
+            importISA.getSelectedFileAndLoad(new File(isatabDir));
+            System.out.println("ISATAB dataset loaded");
+        }
 
     }
 

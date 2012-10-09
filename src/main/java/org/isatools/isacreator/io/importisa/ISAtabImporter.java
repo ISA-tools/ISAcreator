@@ -122,7 +122,7 @@ public abstract class ISAtabImporter {
 
 
                 if (!investigationFileFound) {
-                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in this folder. Please create an investigation file and name it " +
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in folder "+parentDir+". Please create an investigation file and name it " +
                             "\"i_<investigation identifier>.txt\""));
 
                     ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);

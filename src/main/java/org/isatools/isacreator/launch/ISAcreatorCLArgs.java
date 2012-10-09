@@ -15,11 +15,12 @@ import sun.jvmstat.perfdata.monitor.MonitorDataException;
  */
 public class ISAcreatorCLArgs {
 
+    private static boolean noArguments = true;
+
     private static Mode mode =  null;
     private static String configDir = null;
     private static String username = null;
     private static String password = null;
-    //this probably needs to be a set of files...
     private static String isatabDir = null;
     private static String[] isatabFiles = null;
 
@@ -52,7 +53,13 @@ public class ISAcreatorCLArgs {
         return isatabFiles;
     }
 
+    public static boolean noArguments(){
+        return noArguments;
+    }
+
     public static void parseArgs(String[] args){
+        noArguments = false;
+
         int i = 0;
         String arg = null, option = null;
         while (i < args.length && args[i].startsWith("--")) {

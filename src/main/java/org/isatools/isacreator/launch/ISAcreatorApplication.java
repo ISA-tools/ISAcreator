@@ -3,17 +3,19 @@ package org.isatools.isacreator.launch;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoActivator;
+import org.apache.log4j.Logger;
+import org.osgi.framework.BundleActivator;
+
+import org.isatools.isacreator.gs.GSDataManager;
+import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gui.modeselection.ModeSelector;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.utils.GeneralUtils;
-import org.osgi.framework.BundleActivator;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import java.net.URL;
 
 /**
  * Created by the ISATeam.
@@ -28,15 +30,8 @@ import java.net.URL;
  */
 public class ISAcreatorApplication  {
 
+    private static final Logger log = Logger.getLogger(ISAcreatorApplication.class);
     private static Felix felixFramework = null;
-
-    public static Mode mode =  null;
-    public static String configDir = null;
-    public static String username = null;
-    //this probably needs to be a set of files...
-    public static String isatabDir = null;
-    public static String[] isatabFiles = null;
-
 
     /**
      * Enables the bundle to run as a stand-alone application. When this
@@ -48,63 +43,82 @@ public class ISAcreatorApplication  {
     public static void main(String[] args)
     {
         BundleActivator activatorClass = null;
+
         //if there are no parameters, use the ModeSelector activator
         if (args==null || args.length==0){
-           activatorClass = new ModeSelector();
-        }else{
-           int i = 0;
-           String arg = null, option = null;
-           while (i < args.length && args[i].startsWith("--")) {
-                option = args[i++];
-                arg = args[i++];
 
-                if (option.equals("--mode"))
-                   mode = arg.equals("NORMAL_MODE")? Mode.NORMAL_MODE: Mode.LIGHT_MODE;
-                else if (option.equals("--configDir"))
-                    configDir = arg;
-                else if (option.equals("--username"))
-                   username = arg;
-                else if (option.equals("--isatabDir"))
-                   isatabDir = arg;
-                else if (option.equals("--isatabFiles")) {
-                   isatabFiles = parseFilenames(arg);
+           activatorClass = new ModeSelector();
+
+        }else{
+
+            ISAcreatorCLArgs.parseArgs(args);
+
+            //If files come from GS
+            if (ISAcreatorCLArgs.mode()==Mode.GS){
+
+                GSIdentityManager gsIdentityManager = new GSIdentityManager();
+                boolean loggedIn = gsIdentityManager.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
+
+                GSDataManager gsDataManager = new GSDataManager(gsIdentityManager.getSession(ISAcreatorCLArgs.username()));
+
+                String localTempDirectory = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
+                boolean success = new File(localTempDirectory).mkdir();
+                if (success) {
+                    System.out.println("Directory: "+ localTempDirectory + " created");
+                }else{
+                    System.out.println("Could not create "+localTempDirectory);
+                    System.exit(-1);
                 }
 
-               if (isatabFiles!=null){
+                if (ISAcreatorCLArgs.isatabDir()!=null){
 
-                 if (isatabDir!=null){
-                   System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
-                   System.exit(-1);
-                 }
-
-                //if isatabFiles is given, create isatabDir in tmp
-                isatabDir = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
-                boolean success = (
-                           new File(isatabDir)).mkdir();
-                   if (success) {
-                       System.out.println("Directory: "
-                               + isatabDir + " created");
-                   }
-
-                //save files in isatabDir
-                for(String filename: isatabFiles){
-
-                    if (filename.startsWith("http")){
-                        int index = filename.lastIndexOf("/");
-                        String fileLocation = filename;
-                        String downloadLocation = File.separator +isatabDir+filename.substring(index+1);
-
-                        GeneralUtils.downloadFile(fileLocation,downloadLocation);
+                    if (ISAcreatorCLArgs.isatabFiles()!=null){
+                        System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
+                        System.exit(-1);
                     }
 
+
+                    gsDataManager.downloadAllFilesFromDirectory(ISAcreatorCLArgs.isatabDir(),localTempDirectory);
+
+                    ISAcreatorCLArgs.isatabDir(localTempDirectory);
+
                 }
-               }
-           }
-           activatorClass = new ISAcreatorActivator();
 
-        }
+                if (ISAcreatorCLArgs.isatabFiles()!=null){
 
-        System.out.println("isatabDir="+isatabDir);
+                  for(String filePath: ISAcreatorCLArgs.isatabFiles()){
+                       gsDataManager.downloadFile(filePath, localTempDirectory);
+                  }
+
+
+                //if isatabFiles is given, create isatabDir in tmp
+                //isatabDir = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
+                //boolean success = (
+                //           new File(ISAcreatorCLArgs.isatabDir())).mkdir();
+                //   if (success) {
+                //       System.out.println("Directory: "
+                //              + ISAcreatorCLArgs.isatabDir() + " created");
+                //   }
+
+                //save files in isatabDir
+                //for(String filename: ISAcreatorCLArgs.isatabFiles()){
+
+                //    if (filename.startsWith("http")){
+                //        int index = filename.lastIndexOf("/");
+                //        String fileLocation = filename;
+                //        String downloadLocation = File.separator + ISAcreatorCLArgs.isatabDir()+filename.substring(index+1);
+
+                //        GeneralUtils.downloadFile(fileLocation,downloadLocation);
+                //    }
+
+                }
+               } //mode==GS
+
+            activatorClass = new ISAcreatorActivator();
+
+           } //arguments are not null
+
+        System.out.println("here ... isatabDir="+ISAcreatorCLArgs.isatabDir());
         System.out.println("\nLaunching ISAcreator Application...");
 
         try

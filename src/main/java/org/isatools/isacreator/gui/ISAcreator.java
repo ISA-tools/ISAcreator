@@ -230,15 +230,18 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     /**
-     * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received
+     * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received.
+     *
+     * @param configDir
+     * @param username
+     * @param isatabDir
      */
     public void createGUI(String configDir, String username, final String isatabDir) {
 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        //TODO move this into a property
-        setTitle("ISAcreator 1.6");
+        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);
@@ -262,7 +265,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             //this can't happen if this is used from java web start
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir);
+            //mode, configuration, user, main
+            int panelToShow = ISAcreatorMenu.NONE;
+            if (configDir==null){
+                panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
+            }
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, panelToShow);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -273,8 +281,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        //TODO move this into a property
-        setTitle("ISAcreator 1.6");
+        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);
@@ -774,7 +781,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         setVisible(false);
         if (getCurrentUser() != null) {
             for (UserProfile up : getUserProfiles()) {
-                if (up.getUsername().equals(getCurrentUser().getUsername())) {
+                if (up.getUsername()!=null && up.getUsername().equals(getCurrentUser().getUsername())) {
                     up.setUserHistory(OntologyManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;
@@ -791,7 +798,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         try {
 
             for (UserProfile up : getUserProfiles()) {
-                if (up.getUsername().equals(getCurrentUser().getUsername())) {
+
+                if (up.getUsername()!=null && up.getUsername().equals(getCurrentUser().getUsername())) {
                     up.setUserHistory(OntologyManager.getUserOntologyHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;

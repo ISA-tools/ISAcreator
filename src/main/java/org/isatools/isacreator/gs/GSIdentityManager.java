@@ -20,16 +20,25 @@ import java.util.Map;
  */
 public class GSIdentityManager {
 
-    private static Map<String, GsSession> userSessions = new HashMap<String, GsSession>();
+    private Map<String, GsSession> userSessions = new HashMap<String, GsSession>();
 
-
-    public static GsSession getSession(String userName){
+    /**
+     * Gets user session.
+     *
+     * @param userName
+     * @return
+     */
+    public GsSession getSession(String userName){
         return userSessions.get(userName);
     }
 
-
+    /**
+     *
+     * @param username
+     * @param password
+     * @return
+     */
     public boolean login(String username, String password) {
-
         try{
             GsSession session = new GsSession();
             User user = session.login(username, password);
@@ -44,6 +53,11 @@ public class GSIdentityManager {
         }
     }
 
+    /**
+     *
+     * @param username
+     * @return
+     */
     public boolean isLoggedIn(String username) {
         GsSession session = userSessions.get(username);
         if (session==null)
@@ -51,6 +65,13 @@ public class GSIdentityManager {
         return session.isLoggedIn();
     }
 
+    /**
+     *
+     * @param username
+     * @param password
+     * @param emailAddress
+     * @return
+     */
     public boolean registerUser(String username, String password, String emailAddress) {
 
         GsSession session = userSessions.get(username);
@@ -66,6 +87,12 @@ public class GSIdentityManager {
         }
     }
 
+    /**
+     *
+     *
+     * @param username
+     * @return
+     */
     public boolean logout(String username) {
         GsSession session = userSessions.get(username);
         if (session==null)

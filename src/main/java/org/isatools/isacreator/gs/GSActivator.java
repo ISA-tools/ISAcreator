@@ -1,20 +1,21 @@
-package org.isatools.isacreator.launch;
+package org.isatools.isacreator.gs;
 
+import org.isatools.isacreator.gs.gui.GSAuthenticationMenu;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-
-import javax.swing.*;
 
 /**
  * Created by the ISATeam.
  * User: agbeltran
- * Date: 21/08/2012
- * Time: 13:44
+ * Date: 08/10/2012
+ * Time: 23:10
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class ISAcreatorActivator implements BundleActivator {
+public class GSActivator implements BundleActivator {
 
     private ISAcreator main = null;
 
@@ -23,10 +24,8 @@ public class ISAcreatorActivator implements BundleActivator {
         Thread loadISATask = new Thread(new Runnable() {
             public void run() {
                 main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
-                if (ISAcreatorCLArgs.noArguments()){
-                    main.createGUI();
-                }else{
-                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir());
+                if (ISAcreatorCLArgs.mode()== Mode.GS){
+                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(),new GSIdentityManager(), "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
                 }
             }
         });
@@ -35,10 +34,6 @@ public class ISAcreatorActivator implements BundleActivator {
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                main.dispose();
-            }
-        });
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
