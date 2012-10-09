@@ -52,7 +52,7 @@ import java.awt.*;
  */
 
 
-public class MenuUIComponent extends JPanel {
+public abstract class MenuUIComponent extends JPanel {
 
     protected ISAcreatorMenu menu;
     protected ExitConfirmationPanel confirmExitPanel;
@@ -89,4 +89,6 @@ public class MenuUIComponent extends JPanel {
         UIHelper.renderComponent(textfield, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         return textfield;
     }
+
+    protected abstract void createGUI();
 }
