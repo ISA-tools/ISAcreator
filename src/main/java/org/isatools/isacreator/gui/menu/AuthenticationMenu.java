@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
@@ -54,12 +55,13 @@ import java.awt.event.MouseEvent;
  * Alternatively, if they haven't yet got a login, they can create a profile using
  * the create profile button.
  *
- * @author eamonnmaguire
- * @date Mar 3, 2010
+ * Date: Mar 3, 2010
+ *
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
  */
-
-
 public class AuthenticationMenu extends MenuUIComponent {
+
+    private static final Logger log = Logger.getLogger(AuthenticationMenu.class);
 
     private JLabel status;
     private JPasswordField password;
@@ -73,6 +75,12 @@ public class AuthenticationMenu extends MenuUIComponent {
     public ImageIcon pleaseLogin, loginButton, loginButtonOver, createProfileButton,
             createProfileButtonOver, exitButtonSml, exitButtonSmlOver;
 
+    /**
+     * Constructor
+     *
+     * @param menu the ISAcreatorMenu to which this authentication menu is associated
+     * @param auth an object implementing the Authentication interface
+     */
     public AuthenticationMenu(ISAcreatorMenu menu, Authentication auth) {
         super(menu);
         authentication = auth;
@@ -83,6 +91,10 @@ public class AuthenticationMenu extends MenuUIComponent {
         setOpaque(false);
     }
 
+    /**
+     * Setting all fields back to empty string
+     *
+     */
     public void clearFields() {
         status.setText("");
         password.setText("");
