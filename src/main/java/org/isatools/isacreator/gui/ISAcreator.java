@@ -39,12 +39,14 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.gui.menu.MenuUIComponent;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.io.UserProfile;
@@ -82,6 +84,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -125,6 +128,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private JPanel glass;
 
     private ISAcreatorMenu isacreatorMenu = null;
+
     private static UserProfile currentUser = null;
     private JMenuBar menuBar;
     private JMenu pluginMenu;
@@ -229,6 +233,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
+    public void createGUI(String configDir, String username, final String isatabDir) {
+            createGUI(configDir, username,isatabDir, null, null);
+    }
+
     /**
      * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received.
      *
@@ -236,7 +244,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
      * @param username
      * @param isatabDir
      */
-    public void createGUI(String configDir, String username, final String isatabDir) {
+    public void createGUI(String configDir, String username, final String isatabDir, Authentication authentication, String authMenuClassName) {
 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
@@ -270,7 +278,14 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             if (configDir==null){
                 panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
             }
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, panelToShow);
+            if (authMenuClassName!=null){
+                    panelToShow = ISAcreatorMenu.SHOW_LOGIN;
+                    //isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, authentication,authMenuClassName, panelToShow);
+                isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, authentication,authMenuClassName, panelToShow);
+            }else {
+                //isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, authentication, null, panelToShow);
+                isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, authentication, null, panelToShow);
+            }
         }
         setCurrentPage(isacreatorMenu);
         pack();
