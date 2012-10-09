@@ -1,6 +1,6 @@
 package org.isatools.isacreator.io.exportisa;
 
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.model.*;
