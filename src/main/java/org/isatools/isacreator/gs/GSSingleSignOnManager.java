@@ -35,87 +35,23 @@ public class GSSingleSignOnManager implements Authentication {
     private static String gsUser = null;
     private static String gsToken = null;
 
+    private GSIdentityManager identityManager = null;
+
+    public GSSingleSignOnManager(){
+        identityManager = new GSIdentityManager();
+
+    }
 
     /*** Interface ***/
-
-
     public boolean login(String username, char[] password) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        if (username==null && password==null){
+            return false;
+        }
+
+        return true;
     }
 
     public boolean logout(String username) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
-     *
-     * Obtain the GS authentication token
-     *
-     * @return a string with the token (or null if not available)
-     */
-    public static String getGSToken() {
-        if (gsToken == null) {
-            File file = GSSingleSignOnManager.getTokenFile();
-            if (file.exists()) {
-                BufferedReader br = null;
-                try {
-                    br = new BufferedReader(new FileReader(file));
-                    gsToken = br.readLine();
-                } catch (IOException e) {
-                    log.error("Error reading GS cookie", e);
-                } finally {
-                    if (br != null) try {
-                        br.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        return gsToken;
-    }
-
-    public static void setGSToken(String newToken) {
-       if (gsToken == null || !gsToken.equals(newToken)) {
-            gsToken = newToken;
-            BufferedWriter bw = null;
-
-            File gsDir = getTokenSaveDir();
-            if (!gsDir.isDirectory()) {
-                log.error("Could not store token for SSO.  File " + gsDir.getAbsolutePath() + "exists and is not a directory.");
-                return; // someone made a file with this name...
-            }
-            File tokenFile = getTokenFile();
-            if (tokenFile.exists()) tokenFile.delete();
-            writeToFile(gsToken, tokenFile);
-        }
-    }
-
-
-    public static void setGSUser(String newUser) {
-
-        if (gsUser == null || !gsUser.equals(newUser)) {
-            gsUser = newUser;
-            BufferedWriter bw = null;
-
-            File gsDir = getTokenSaveDir();
-            if (!gsDir.isDirectory()) {
-                log.error("Could not store token for SSO.  File " + gsDir.getAbsolutePath() + "exists and is not a directory.");
-                return; // someone made a file with this name...
-            }
-            File userFile = getUsernameFile();
-            if (userFile.exists()) userFile.delete();
-            writeToFile(gsUser, userFile);
-        }
-    }
-
-
-    /***
-     *
-     *
-     */
-    public static void logout() {
-
         gsToken = null;
         gsUser = null;
 
@@ -142,14 +78,83 @@ public class GSSingleSignOnManager implements Authentication {
             }
         } catch (URISyntaxException e) {
             log.error("Error creating GS URI", e);
+            return false;
         }
 
+        return true;
 
+    }
+
+    public boolean login(String username){
+        String token = getGSToken();
+        return false;
     }
 
 
     /**********************************************************************************************************************************/
     /*** Private methods ***/
+
+    /**
+     *
+     * Obtain the GS authentication token
+     *
+     * @return a string with the token (or null if not available)
+     */
+    private static String getGSToken() {
+        if (gsToken == null) {
+            File file = GSSingleSignOnManager.getTokenFile();
+            if (file.exists()) {
+                BufferedReader br = null;
+                try {
+                    br = new BufferedReader(new FileReader(file));
+                    gsToken = br.readLine();
+                } catch (IOException e) {
+                    log.error("Error reading GS cookie", e);
+                } finally {
+                    if (br != null) try {
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return gsToken;
+    }
+
+    private void setGSToken(String newToken) {
+        if (gsToken == null || !gsToken.equals(newToken)) {
+            gsToken = newToken;
+            BufferedWriter bw = null;
+
+            File gsDir = getTokenSaveDir();
+            if (!gsDir.isDirectory()) {
+                log.error("Could not store token for SSO.  File " + gsDir.getAbsolutePath() + "exists and is not a directory.");
+                return; // someone made a file with this name...
+            }
+            File tokenFile = getTokenFile();
+            if (tokenFile.exists()) tokenFile.delete();
+            writeToFile(gsToken, tokenFile);
+        }
+    }
+
+
+    private void setGSUser(String newUser) {
+
+        if (gsUser == null || !gsUser.equals(newUser)) {
+            gsUser = newUser;
+            BufferedWriter bw = null;
+
+            File gsDir = getTokenSaveDir();
+            if (!gsDir.isDirectory()) {
+                log.error("Could not store token for SSO.  File " + gsDir.getAbsolutePath() + "exists and is not a directory.");
+                return; // someone made a file with this name...
+            }
+            File userFile = getUsernameFile();
+            if (userFile.exists()) userFile.delete();
+            writeToFile(gsUser, userFile);
+        }
+    }
 
     /**
      * Returns the directory where tokens are saved.
