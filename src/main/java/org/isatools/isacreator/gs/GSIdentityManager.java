@@ -3,6 +3,7 @@ package org.isatools.isacreator.gs;
 import org.apache.log4j.Logger;
 import org.genomespace.client.GsSession;
 import org.genomespace.client.User;
+import org.genomespace.client.exceptions.AuthorizationException;
 import org.genomespace.client.exceptions.InternalServerException;
 import org.genomespace.client.exceptions.ServerNotFoundException;
 import org.isatools.isacreator.api.Authentication;
@@ -39,7 +40,7 @@ public class GSIdentityManager implements Authentication {
      * @return
      */
     public boolean login(String username, char[] pass) {
-        if (username==null)
+        if (username==null || pass==null)
             return false;
 
         try{
@@ -49,7 +50,8 @@ public class GSIdentityManager implements Authentication {
 
             userSessions.put(user.getUsername(),session);
             return true;
-
+        }catch(AuthorizationException e){
+            return false;
         }catch(InternalServerException isex){
             return false;
         }catch(ServerNotFoundException snfex){
