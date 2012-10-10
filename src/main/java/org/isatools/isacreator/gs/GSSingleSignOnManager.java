@@ -43,12 +43,27 @@ public class GSSingleSignOnManager implements Authentication {
     }
 
     /*** Interface ***/
+
+    /**
+     * Login method
+     *
+     * @param username a string
+     * @param password an array of characters
+     * @return true if login was successful, false otherwise
+     */
     public boolean login(String username, char[] password) {
-        if (username==null && password==null){
+        if (username==null || (username!=null && username.trim().equals(""))){
             return false;
         }
+        if (password==null){
+            return false;
+        }
+        boolean successful = identityManager.login(username, password);
+        if (successful){
+            //single sign on stuff
+        }
 
-        return true;
+        return successful;
     }
 
     public boolean logout(String username) {
