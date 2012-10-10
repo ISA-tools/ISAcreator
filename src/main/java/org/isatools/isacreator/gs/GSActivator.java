@@ -3,6 +3,7 @@ package org.isatools.isacreator.gs;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
@@ -24,11 +25,45 @@ public class GSActivator implements BundleActivator {
 
         Thread loadISATask = new Thread(new Runnable() {
             public void run() {
-                main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
-                if (ISAcreatorCLArgs.mode()== Mode.GS){
-                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(),new GSSingleSignOnManager(), "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
+
+                //this shouldn't happen
+                if (ISAcreatorCLArgs.mode()!= Mode.GS){
+                    System.exit(-1);
                 }
-            }
+
+                Authentication gsAuthentication = null;
+
+                //LOGIN
+
+                //main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
+                main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext);
+
+                //if username and password were given as parameters, log in user into GS
+                if (ISAcreatorCLArgs.username()!=null && ISAcreatorCLArgs.password()!=null){
+
+                     gsAuthentication = new GSIdentityManager();
+                     boolean loggedIn = gsAuthentication.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
+                     if (!loggedIn){
+                        System.out.println("Login to GenomeSpace failed for user "+ISAcreatorCLArgs.username());
+                        System.exit(0);
+                     }
+
+
+                     main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir());
+
+                } else if (ISAcreatorCLArgs.username()!=null){
+                    //if username identified, check if token exists
+                    gsAuthentication =  new GSSingleSignOnManager();
+                    boolean loggedIn = gsAuthentication.login(ISAcreatorCLArgs.username());
+
+
+                }else {
+                      //both username and password are null
+                      main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(),gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
+
+                }//else
+            }//run
+
         });
 
         loadISATask.start();
