@@ -247,7 +247,7 @@ public class AuthenticationMenu extends MenuUIComponent {
     public void login(){
         if (authentication.login(username.getText(), password.getPassword())){
             clearFields();
-            menu.changeView(menu.getMainMenuGUI());
+            menu.changeView(menu.getImportConfigurationGUI());
         } else {
             status.setText(
                     "<html><b>Error: </b> Username or password incorrect! </html>");
