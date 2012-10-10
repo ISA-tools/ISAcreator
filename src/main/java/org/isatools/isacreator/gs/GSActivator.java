@@ -59,7 +59,8 @@ public class GSActivator implements BundleActivator {
 
                 }else {
                       //both username and password are null
-                      main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(),gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
+                      gsAuthentication =  new GSSingleSignOnManager();
+                      main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(), gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
 
                 }//else
             }//run
