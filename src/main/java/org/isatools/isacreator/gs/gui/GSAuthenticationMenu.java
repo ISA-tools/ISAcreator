@@ -1,5 +1,6 @@
 package org.isatools.isacreator.gs.gui;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
@@ -25,17 +26,20 @@ import java.awt.event.MouseEvent;
  */
 public class GSAuthenticationMenu extends MenuUIComponent {
 
+    private static final Logger log = Logger.getLogger(GSAuthenticationMenu.class);
     private JLabel status;
     private JPasswordField password;
     private JTextField username;
 
-    private JLabel createProfile, login, exit;
+    private JLabel iconLabel;
+
+    private JLabel register, login, exit;
 
     @InjectedResource
-    public ImageIcon pleaseLogin, loginButton, loginButtonOver, createProfileButton,
-            createProfileButtonOver, exitButtonSml, exitButtonSmlOver;
+    public ImageIcon pleaseLogin, loginButton, loginButtonOver, registerIcon, registerOverIcon,
+             exitButtonSml, exitButtonSmlOver, genomespacelogo;
 
-    public GSAuthenticationMenu(ISAcreatorMenu menu) {
+    public GSAuthenticationMenu(ISAcreatorMenu menu, Authentication authManager) {
         super(menu);
         status = new JLabel();
         status.setForeground(UIHelper.RED_COLOR);
@@ -51,7 +55,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         fields.setOpaque(false);
 
         JPanel userNameCont = new JPanel(new GridLayout(1, 2));
-        JLabel usernameLabel = new JLabel("username ");
+        JLabel usernameLabel = new JLabel("GS username ");
         usernameLabel.setFont(UIHelper.VER_12_BOLD);
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         userNameCont.add(usernameLabel);
@@ -66,7 +70,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         userNameCont.setOpaque(false);
 
         JPanel passwordCont = new JPanel(new GridLayout(1, 2));
-        JLabel passwordLabel = new JLabel("password ");
+        JLabel passwordLabel = new JLabel("GS password ");
         passwordLabel.setFont(UIHelper.VER_12_BOLD);
         passwordLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         passwordCont.add(passwordLabel);
@@ -92,13 +96,13 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         JPanel buttonContainer = new JPanel(new GridLayout(1, 2));
         buttonContainer.setOpaque(false);
 
-        /*
-        createProfile = new JLabel(createProfileButton,
+
+        register = new JLabel(registerIcon,
                 JLabel.LEFT);
-        createProfile.addMouseListener(new MouseAdapter() {
+        register.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
+                register.setIcon(registerIcon);
 
                 clearFields();
 
@@ -108,16 +112,16 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             }
 
             public void mouseEntered(MouseEvent event) {
-                createProfile.setIcon(createProfileButtonOver);
+                register.setIcon(registerOverIcon);
             }
 
             public void mouseExited(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
+                register.setIcon(registerIcon);
             }
         });
-        */
 
-        //buttonContainer.add(createProfile);
+
+        buttonContainer.add(register);
 
         login = new JLabel(loginButton,
                 JLabel.RIGHT);
@@ -153,6 +157,11 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         southPanel.add(status);
         southPanel.add(buttonContainer);
+
+        //gs logo
+        iconLabel = new JLabel();
+        iconLabel.setIcon(genomespacelogo);
+        southPanel.add(iconLabel);
 
         exit = new JLabel(exitButtonSml,
                 JLabel.CENTER);
