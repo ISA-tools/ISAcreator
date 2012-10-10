@@ -4,6 +4,7 @@ import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoActivator;
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.gs.GSActivator;
 import org.osgi.framework.BundleActivator;
 
 import org.isatools.isacreator.gs.GSDataManager;
@@ -55,6 +56,11 @@ public class ISAcreatorApplication  {
 
             //If files come from GS
             if (ISAcreatorCLArgs.mode()==Mode.GS){
+
+                activatorClass = new GSActivator();
+
+                /*
+
 
                 GSIdentityManager gsIdentityManager = new GSIdentityManager();
                 boolean loggedIn = gsIdentityManager.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
@@ -111,10 +117,12 @@ public class ISAcreatorApplication  {
                 //        GeneralUtils.downloadFile(fileLocation,downloadLocation);
                 //    }
 
-                }
-               } //mode==GS
+                }       */
 
-            activatorClass = new ISAcreatorActivator();
+               } else {//mode==GS
+                     activatorClass = new ISAcreatorActivator();
+                }
+
 
            } //arguments are not null
 
