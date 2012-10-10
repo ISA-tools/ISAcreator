@@ -38,11 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.api.ImportConfiguration;
-import org.isatools.isacreator.configuration.io.ConfigXMLParser;
-import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.managers.ConfigurationManager;
-import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -55,18 +51,18 @@ import java.io.File;
  * ImportFilesMenu provides the interface to allow users to import previously saved ISATAB
  * submissions into the software for editing/viewing.
  *
+ * Date: Mar 3, 2010
+ *
  * @author eamonnmaguire
- * @date Mar 3, 2010
+ *
  */
-
-
 public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
             loadButton, loadButtonOver, exitButtonSml, exitButtonSmlOver, filterLeft, filterRight;
 
-    private boolean initialLoadingPassed = false;
+    private boolean initialLoadingPassed = true;
 
     public ImportConfigurationMenu(ISAcreatorMenu menu) {
         super(menu);
