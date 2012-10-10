@@ -62,6 +62,16 @@ public class AuthenticationManager implements Authentication {
         return false;
     }
 
+    /***
+     * Authentication manager doesn't support single sign on, thus this method returns false
+     *
+     * @param username
+     * @return
+     */
+    public boolean login(String username){
+        return false;
+    }
+
     /**
      * Sets current user, ontology history and ftp manager
      *

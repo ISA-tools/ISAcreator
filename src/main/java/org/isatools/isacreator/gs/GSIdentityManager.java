@@ -1,9 +1,11 @@
 package org.isatools.isacreator.gs;
 
+import org.apache.log4j.Logger;
 import org.genomespace.client.GsSession;
 import org.genomespace.client.User;
 import org.genomespace.client.exceptions.InternalServerException;
 import org.genomespace.client.exceptions.ServerNotFoundException;
+import org.isatools.isacreator.api.Authentication;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,28 +20,30 @@ import java.util.Map;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class GSIdentityManager {
+public class GSIdentityManager implements Authentication {
 
     private Map<String, GsSession> userSessions = new HashMap<String, GsSession>();
+    private static final Logger log = Logger.getLogger(GSIdentityManager.class);
 
     /**
-     * Gets user session.
-     *
-     * @param userName
-     * @return
+     * Empty constructor
      */
-    public GsSession getSession(String userName){
-        return userSessions.get(userName);
+    public GSIdentityManager(){
+
     }
 
     /**
      *
      * @param username
-     * @param password
+     * @param pass an array of characters with the user's password
      * @return
      */
-    public boolean login(String username, String password) {
+    public boolean login(String username, char[] pass) {
+        if (username==null)
+            return false;
+
         try{
+            String password = new String(pass);
             GsSession session = new GsSession();
             User user = session.login(username, password);
 
@@ -51,6 +55,30 @@ public class GSIdentityManager {
         }catch(ServerNotFoundException snfex){
             return false;
         }
+    }
+
+    /**
+     *
+     *
+     * @param username
+     * @return
+     */
+    public boolean logout(String username) {
+        GsSession session = userSessions.get(username);
+        if (session==null)
+            return false;
+        session.logout();
+        return true;
+    }
+
+    /**
+     * The GSIdentityManager does not support single sign on, thus it returns false
+     *
+     * @param username
+     * @return
+     */
+    public boolean login(String username){
+        return false;
     }
 
     /**
@@ -87,18 +115,15 @@ public class GSIdentityManager {
         }
     }
 
+
     /**
+     * Gets user session.
      *
-     *
-     * @param username
+     * @param userName
      * @return
      */
-    public boolean logout(String username) {
-        GsSession session = userSessions.get(username);
-        if (session==null)
-            return false;
-        session.logout();
-        return true;
+    public GsSession getSession(String userName){
+        return userSessions.get(userName);
     }
 
 }
