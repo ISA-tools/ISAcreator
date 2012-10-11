@@ -1,6 +1,8 @@
 package org.isatools.isacreator.gs;
 
 import org.apache.log4j.Logger;
+import org.genomespace.client.GsSession;
+import org.genomespace.client.exceptions.InternalServerException;
 import org.isatools.isacreator.api.Authentication;
 
 import java.io.*;
@@ -23,6 +25,8 @@ public class GSSingleSignOnManager implements Authentication {
 
     private static final Logger log = Logger.getLogger(GSSingleSignOnManager.class);
 
+    private boolean sso = false;
+
     /*
     * Directory and filenames to save the token and username to facilitate SSO
     */
@@ -39,7 +43,23 @@ public class GSSingleSignOnManager implements Authentication {
 
     public GSSingleSignOnManager(){
         identityManager = new GSIdentityManager();
+    }
 
+    public GSSingleSignOnManager(boolean b){
+        setSSO(b);
+        identityManager = new GSIdentityManager();
+    }
+
+    public void setSSO(boolean b){
+        sso = b;
+    }
+
+    public GsSession getGSSession(){
+        return identityManager.getSession();//identityManager.getSession(username);
+    }
+
+    public GSDataManager getGSDataManager(){
+        return identityManager.getGsDataManager();
     }
 
     /*** Interface ***/
@@ -59,11 +79,36 @@ public class GSSingleSignOnManager implements Authentication {
             return false;
         }
         boolean successful = identityManager.login(username, password);
-        if (successful){
+
+        if (successful && sso){
             //single sign on stuff
+            GsSession session = identityManager.getSession();//identityManager.getSession(username);
+            String token = session.getAuthenticationToken();
+            setGSToken(token);
         }
 
         return successful;
+    }
+
+    /***
+     *
+     * Login with no username/password, only valid if authentication token has previously been saved.
+     *
+     * @return
+     */
+    public boolean login(){
+        String token = getGSToken();
+        if (token==null)
+            return false;
+        try{
+            GsSession gsSession = new GsSession(token);
+            //identityManager.addSession(gsSession);
+            identityManager.setSession(gsSession);
+            return true;
+        }catch(InternalServerException e){
+            log.debug(e.getMessage());
+            return false;
+        }
     }
 
     public boolean logout(String username) {
@@ -100,10 +145,6 @@ public class GSSingleSignOnManager implements Authentication {
 
     }
 
-    public boolean login(String username){
-        String token = getGSToken();
-        return false;
-    }
 
 
     /**********************************************************************************************************************************/
@@ -137,6 +178,12 @@ public class GSSingleSignOnManager implements Authentication {
         return gsToken;
     }
 
+    /***
+     *
+     * Sets a new token for authentication with GS - if the directory and file do not exist, they are created
+     *
+     * @param newToken authentication token (string) for single sign on
+     */
     private void setGSToken(String newToken) {
         if (gsToken == null || !gsToken.equals(newToken)) {
             gsToken = newToken;
