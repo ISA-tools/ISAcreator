@@ -46,7 +46,6 @@ import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.gui.menu.MenuUIComponent;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.io.UserProfile;
@@ -84,7 +83,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -198,6 +196,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         this(mode, context, null);
     }
 
+    /**
+     * Could this constructor be removed?
+     *
+     * @param mode
+     * @param context
+     * @param configDir
+     */
     public ISAcreator(Mode mode, BundleContext context, String configDir) {
 
         ResourceInjector.get("gui-package.style").inject(this);
@@ -231,7 +236,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         ApplicationManager.setCurrentApplicationInstance(this);
 
+
+
     }
+
 
     public void createGUI(String configDir, String username, final String isatabDir) {
             createGUI(configDir, username,isatabDir, null, null);
@@ -267,6 +275,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         add(fp, BorderLayout.SOUTH);
 
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
+
 
         // check that java version is supported!
         if (!checkSystemRequirements()) {
@@ -319,7 +328,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         if (!checkSystemRequirements()) {
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_LOGIN);
         }
         setCurrentPage(isacreatorMenu);
         pack();
