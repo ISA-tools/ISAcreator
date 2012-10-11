@@ -15,7 +15,7 @@ public interface Authentication {
     public boolean logout(String username);
 
     //to support single sign on
-    public boolean login(String username);
+    public boolean login();
 
 
 }

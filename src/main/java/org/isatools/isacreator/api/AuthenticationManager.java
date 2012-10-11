@@ -64,10 +64,9 @@ public class AuthenticationManager implements Authentication {
     /***
      * Authentication manager doesn't support single sign on, thus this method returns false
      *
-     * @param username
      * @return
      */
-    public boolean login(String username){
+    public boolean login(){
         return false;
     }
 
