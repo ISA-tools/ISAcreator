@@ -2,11 +2,13 @@ package org.isatools.isacreator.gs.gui;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.MenuUIComponent;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -30,13 +32,15 @@ public class GSAuthenticationMenu extends MenuUIComponent {
     private JPasswordField password;
     private JTextField username;
     private JLabel iconLabel;
-    private JLabel register, login, exit;
+    private JLabel register, login, exit, ssoLabel;
+    //checkbox for single sign on
+    private JCheckBox sso;
 
     private Authentication authentication = null;
 
     @InjectedResource
     public ImageIcon pleaseLogin, loginButton, loginButtonOver, registerIcon, registerOverIcon,
-             exitButtonSml, exitButtonSmlOver, genomespacelogo;
+             exitButtonSml, exitButtonSmlOver, genomespacelogo, ssoIcon, ssoOverIcon;
 
     public GSAuthenticationMenu(ISAcreatorMenu menu, Authentication authManager) {
         super(menu);
@@ -119,10 +123,6 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                 JLabel.RIGHT), BorderLayout.NORTH);
         northPanel.add(fields, BorderLayout.CENTER);
 
-        //south panel
-        JPanel southPanel = new JPanel(new GridLayout(4, 1));
-        southPanel.setOpaque(false);
-
         JPanel buttonContainer = new JPanel(new GridLayout(1, 2));
         buttonContainer.setOpaque(false);
 
@@ -135,6 +135,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                 register.setIcon(registerIcon);
                 clearFields();
                 confirmExitPanel.setVisible(false);
+                //TODO change this for registration menu
                 menu.changeView(menu.getCreateProfileGUI());
             }
 
@@ -181,8 +182,25 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         buttonContainer.add(login);
 
-        southPanel.add(status);
-        southPanel.add(buttonContainer);
+        //single sign on checkbox
+        JPanel ssoContainer = new JPanel(new GridLayout(1, 2));
+        ssoContainer.setOpaque(false);
+
+        sso = new JCheckBox();
+        ssoContainer.add(sso, JPanel.RIGHT_ALIGNMENT);
+
+        ssoLabel = new JLabel(ssoIcon, JLabel.LEFT);
+        ssoLabel.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent event) {
+            }
+            public void mouseEntered(MouseEvent event) {
+                ssoLabel.setIcon(ssoOverIcon);
+            }
+            public void mouseExited(MouseEvent event) {
+                ssoLabel.setIcon(ssoIcon);
+            }
+        });
+        ssoContainer.add(ssoLabel);
 
 
         //TODO add GS logo
@@ -211,11 +229,17 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         });
 
         //exit
-        JPanel exitCont = new JPanel(new GridLayout(1, 1));
-        exitCont.setOpaque(false);
-        exitCont.add(exit);
+        JPanel exitContainer = new JPanel(new GridLayout(1, 1));
+        exitContainer.setOpaque(false);
+        exitContainer.add(exit);
 
-        southPanel.add(exitCont);
+        //south panel
+        JPanel southPanel = new JPanel(new GridLayout(5, 1));
+        southPanel.setOpaque(false);
+        southPanel.add(ssoContainer);
+        southPanel.add(status);
+        southPanel.add(buttonContainer);
+        southPanel.add(exitContainer);
         southPanel.add(confirmExitPanel);
 
         northPanel.add(southPanel, BorderLayout.SOUTH);
@@ -229,7 +253,19 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         String passwordString = new String (password.getPassword());
         if (!username.getText().equals("") && passwordString!=null && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())){
             clearFields();
-            menu.changeView(menu.getImportConfigurationGUI());
+            if (ISAcreatorCLArgs.configDir()==null)
+                menu.changeView(menu.getImportConfigurationGUI());
+            else{
+                //load configuration and go to main menu
+                ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
+                boolean problem = importConfiguration.loadConfiguration();
+                if (ISAcreatorCLArgs.isatabDir()!=null){
+                    System.out.println("LOAD FILES!!!");
+                }else{
+                    menu.changeView(menu.getMainMenuGUI());
+                }
+            }
+
         } else {
             status.setText(
                     "<html><b>Error: </b> Username or password incorrect! </html>");
