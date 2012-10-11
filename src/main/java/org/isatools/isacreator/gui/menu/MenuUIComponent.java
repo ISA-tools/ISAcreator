@@ -57,9 +57,7 @@ public abstract class MenuUIComponent extends JPanel {
 
     public MenuUIComponent(ISAcreatorMenu menu) {
         this.menu = menu;
-
         ResourceInjector.get("gui-package.style").inject(this, true);
-
         instantiatePanel();
     }
 
@@ -71,14 +69,12 @@ public abstract class MenuUIComponent extends JPanel {
         JLabel lab = new JLabel(labelName);
         lab.setFont(UIHelper.VER_12_BOLD);
         lab.setForeground(UIHelper.DARK_GREEN_COLOR);
-
         return lab;
     }
 
     protected static JPanel createPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 2));
         panel.setOpaque(false);
-
         return panel;
     }
 
