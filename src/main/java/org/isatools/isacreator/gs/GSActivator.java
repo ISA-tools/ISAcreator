@@ -1,6 +1,5 @@
 package org.isatools.isacreator.gs;
 
-import org.genomespace.client.DataManagerClient;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -10,7 +9,6 @@ import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 
 import java.io.File;
-
 
 /**
  * Created by the ISATeam.
@@ -35,9 +33,9 @@ public class GSActivator implements BundleActivator {
                 }
 
                 Authentication gsAuthentication = null;
+                boolean loggedIn = false;
 
                 //LOGIN
-
                 //main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
                 main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext);
 
@@ -45,7 +43,7 @@ public class GSActivator implements BundleActivator {
                 if (ISAcreatorCLArgs.username()!=null && ISAcreatorCLArgs.password()!=null){
 
                      gsAuthentication = new GSIdentityManager();
-                     boolean loggedIn = gsAuthentication.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
+                     loggedIn = gsAuthentication.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
                      if (!loggedIn){
                         System.out.println("Login to GenomeSpace failed for user "+ISAcreatorCLArgs.username());
                         System.exit(0);
@@ -57,82 +55,39 @@ public class GSActivator implements BundleActivator {
                 } else if (ISAcreatorCLArgs.username()!=null){
                     //if username identified, check if token exists
                     gsAuthentication =  new GSSingleSignOnManager(true);
-                    boolean loggedIn = gsAuthentication.login();
+                    loggedIn = gsAuthentication.login();
 
 
                 }else {
                       //both username and password are null, check if auth token has been saved locally
                       gsAuthentication =  new GSSingleSignOnManager(true);
-                      boolean loggedIn = gsAuthentication.login();
-
+                      loggedIn = gsAuthentication.login();
 
                       if (loggedIn){
                          if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
-
                           //isatabDir not null or isatabFiles not null
                           String localTmpDirectory = createTmpDirectory();
-
                           if (ISAcreatorCLArgs.isatabDir()!=null){
-
                               if (ISAcreatorCLArgs.isatabFiles()!=null){
                                   System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
                                   System.exit(-1);
                               }
-
                               ISAcreatorCLArgs.isatabDir(localTmpDirectory);
-
                               if (ISAcreatorCLArgs.isatabFiles()!=null){
-
                                   GSDataManager gsDataManager = ((GSSingleSignOnManager)gsAuthentication).getGSDataManager();
-
                                   for(String filePath: ISAcreatorCLArgs.isatabFiles()){
                                       gsDataManager.downloadFile(filePath, localTmpDirectory);
                                   }
-
                               }
 
+                            }
                         }
-
-
-                        }
-
                           main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir());
-
 
                       } else { //not logged in
 
                           main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(), gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
                       }
-
-                    /*
-
-
-                     GSIdentityManager gsIdentityManager = new GSIdentityManager();
-                     boolean loggedIn = gsIdentityManager.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
-
-             //if isatabFiles is given, create isatabDir in tmp
-             //isatabDir = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
-             //boolean success = (
-             //           new File(ISAcreatorCLArgs.isatabDir())).mkdir();
-             //   if (success) {
-             //       System.out.println("Directory: "
-             //              + ISAcreatorCLArgs.isatabDir() + " created");
-             //   }
-
-             //save files in isatabDir
-             //for(String filename: ISAcreatorCLArgs.isatabFiles()){
-
-             //    if (filename.startsWith("http")){
-             //        int index = filename.lastIndexOf("/");
-             //        String fileLocation = filename;
-             //        String downloadLocation = File.separator + ISAcreatorCLArgs.isatabDir()+filename.substring(index+1);
-
-             //        GeneralUtils.downloadFile(fileLocation,downloadLocation);
-             //    }
-
-             }       */
-
-
 
                 }//else
             }//run
