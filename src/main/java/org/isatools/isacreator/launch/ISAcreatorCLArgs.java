@@ -1,7 +1,6 @@
 package org.isatools.isacreator.launch;
 
 import org.isatools.isacreator.gui.modeselection.Mode;
-import sun.jvmstat.perfdata.monitor.MonitorDataException;
 
 /**
  * Created by the ISATeam.
@@ -61,7 +60,7 @@ public class ISAcreatorCLArgs {
         noArguments = false;
 
         int i = 0;
-        String arg = null, option = null;
+        String arg = null, option;
         while (i < args.length && args[i].startsWith("--")) {
             option = args[i++];
 
