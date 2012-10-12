@@ -22,8 +22,8 @@ public class AuthenticationManager implements Authentication {
     /**
      * Checks if username/password exist in user profiles, sets current user and updates ontology history
      *
-     * @param username
-     * @param password
+     * @param username a string with the user name
+     * @param password an array of characters with the password
      */
     public boolean login(String username, char[] password) {
 
@@ -40,10 +40,9 @@ public class AuthenticationManager implements Authentication {
                     return true;
                 }
 
-                char[] pwd = password;
                 String pwdAsString = "";
 
-                for (char c : pwd) {
+                for (char c : password) {
                     pwdAsString += c;
                 }
 
@@ -59,6 +58,15 @@ public class AuthenticationManager implements Authentication {
 
     public boolean logout(String username) {
         //TODO
+        return false;
+    }
+
+    /***
+     * Authentication manager doesn't support single sign on, thus this method returns false
+     *
+     * @return
+     */
+    public boolean login(){
         return false;
     }
 

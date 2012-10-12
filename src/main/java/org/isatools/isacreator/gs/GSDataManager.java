@@ -2,6 +2,7 @@ package org.isatools.isacreator.gs;
 
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
+import org.genomespace.client.utils.WebClientBuilder;
 import org.genomespace.datamanager.core.GSDirectoryListing;
 import org.genomespace.datamanager.core.GSFileMetadata;
 
@@ -24,9 +25,16 @@ public class GSDataManager {
 
     private GsSession gsSession = null;
 
+    /***
+     * Constructor. The data manager works for a particular GS session.
+     *
+     * @param session
+     */
     public GSDataManager(GsSession session){
         gsSession = session;
     }
+
+
     /**
      * List files in given directory
      *
@@ -46,12 +54,12 @@ public class GSDataManager {
     /**
      * Get InputStreams for all the files in a directory
      *
-     * This doesn't work at the moment because there is a restriction of two open concurrent connections at a time in GS.
-     *
      * @param dirPath
      * @return
      */
     public List<InputStream> lsInputStreams(String dirPath) {
+        //setting the max number of concurrent connections
+        WebClientBuilder.setDefaultMaxConnectionsPerHost(10);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
@@ -66,6 +74,7 @@ public class GSDataManager {
 
     /**
      * List files in home directory
+     *
      * @param username
      */
     public void lsHome(String username){
@@ -84,6 +93,13 @@ public class GSDataManager {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    /**
+     * Download a file to a given directory
+     *
+     * @param fileToDownload
+     * @param localDirPath
+     * @return
+     */
     public boolean downloadFile(String fileToDownload, String localDirPath) {
 
         System.out.println("fileToDownload="+fileToDownload);

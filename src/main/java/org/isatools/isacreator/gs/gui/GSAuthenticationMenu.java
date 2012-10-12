@@ -1,19 +1,20 @@
 package org.isatools.isacreator.gs.gui;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.gs.GSIdentityManager;
+import org.isatools.isacreator.gs.GSSingleSignOnManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.MenuUIComponent;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 /**
  * Created by the ISATeam.
@@ -25,18 +26,28 @@ import java.awt.event.MouseEvent;
  */
 public class GSAuthenticationMenu extends MenuUIComponent {
 
+    private static final Logger log = Logger.getLogger(GSAuthenticationMenu.class);
+
+    //GUI related fields
     private JLabel status;
     private JPasswordField password;
     private JTextField username;
+    private JLabel iconLabel;
+    private JLabel register, login, exit, ssoLabel;
+    //checkbox for single sign on
+    private JCheckBox sso;
 
-    private JLabel createProfile, login, exit;
+    private Authentication authentication = null;
 
     @InjectedResource
-    public ImageIcon pleaseLogin, loginButton, loginButtonOver, createProfileButton,
-            createProfileButtonOver, exitButtonSml, exitButtonSmlOver;
+    public ImageIcon pleaseLogin, loginButton, loginButtonOver, registerIcon, registerOverIcon,
+             exitButtonSml, exitButtonSmlOver, genomespacelogo, ssoIcon, ssoOverIcon;
 
-    public GSAuthenticationMenu(ISAcreatorMenu menu) {
+    public GSAuthenticationMenu(ISAcreatorMenu menu, Authentication authManager) {
         super(menu);
+
+        authentication = authManager;
+
         status = new JLabel();
         status.setForeground(UIHelper.RED_COLOR);
         setPreferredSize(new Dimension(400, 300));
@@ -50,8 +61,9 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         fields.add(Box.createVerticalStrut(10));
         fields.setOpaque(false);
 
+        //username
         JPanel userNameCont = new JPanel(new GridLayout(1, 2));
-        JLabel usernameLabel = new JLabel("username ");
+        JLabel usernameLabel = new JLabel("GS username ");
         usernameLabel.setFont(UIHelper.VER_12_BOLD);
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         userNameCont.add(usernameLabel);
@@ -59,19 +71,44 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         username.setOpaque(false);
 
-
         UIHelper.renderComponent(username, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         userNameCont.add(username);
         userNameCont.setOpaque(false);
+        username.addFocusListener( new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                status.setText("");
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                //do nothing
+            }
+            }
+        );
 
+
+
+        //password
         JPanel passwordCont = new JPanel(new GridLayout(1, 2));
-        JLabel passwordLabel = new JLabel("password ");
+        JLabel passwordLabel = new JLabel("GS password ");
         passwordLabel.setFont(UIHelper.VER_12_BOLD);
         passwordLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         passwordCont.add(passwordLabel);
         password = new RoundedJPasswordField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         UIHelper.renderComponent(password, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+
+        password.addFocusListener( new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                status.setText("");
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                //do nothing
+            }
+        }
+        );
 
         passwordCont.add(password);
         passwordCont.setOpaque(false);
@@ -80,45 +117,40 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         fields.add(Box.createVerticalStrut(10));
         fields.add(passwordCont);
 
+        //north panel
         JPanel northPanel = new JPanel();
         northPanel.add(new JLabel(
                 pleaseLogin,
                 JLabel.RIGHT), BorderLayout.NORTH);
         northPanel.add(fields, BorderLayout.CENTER);
 
-        JPanel southPanel = new JPanel(new GridLayout(4, 1));
-        southPanel.setOpaque(false);
-
         JPanel buttonContainer = new JPanel(new GridLayout(1, 2));
         buttonContainer.setOpaque(false);
 
-        /*
-        createProfile = new JLabel(createProfileButton,
+        //register
+        register = new JLabel(registerIcon,
                 JLabel.LEFT);
-        createProfile.addMouseListener(new MouseAdapter() {
+        register.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
-
+                register.setIcon(registerIcon);
                 clearFields();
-
                 confirmExitPanel.setVisible(false);
-
+                //TODO change this for registration menu
                 menu.changeView(menu.getCreateProfileGUI());
             }
 
             public void mouseEntered(MouseEvent event) {
-                createProfile.setIcon(createProfileButtonOver);
+                register.setIcon(registerOverIcon);
             }
 
             public void mouseExited(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
+                register.setIcon(registerIcon);
             }
         });
-        */
+        buttonContainer.add(register);
 
-        //buttonContainer.add(createProfile);
-
+        //login
         login = new JLabel(loginButton,
                 JLabel.RIGHT);
         login.addMouseListener(new MouseAdapter() {
@@ -126,6 +158,8 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             public void mousePressed(MouseEvent event) {
                 login.setIcon(GSAuthenticationMenu.this.loginButton);
                 confirmExitPanel.setVisible(false);
+                //login(sso.isSelected());
+                status.setText("");
                 login();
             }
 
@@ -134,12 +168,26 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             }
 
             public void mouseExited(MouseEvent event) {
-                login.setIcon(GSAuthenticationMenu.this.loginButton);
+                login.setIcon(loginButton);
             }
         });
 
+
+        login.addFocusListener( new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                status.setText("");
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                //do nothing
+            }
+        }
+        );
+
         Action loginAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
+                //login(sso.isSelected());
                 login();
             }
         };
@@ -151,8 +199,33 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         buttonContainer.add(login);
 
-        southPanel.add(status);
-        southPanel.add(buttonContainer);
+        /*
+        //single sign on checkbox
+        JPanel ssoContainer = new JPanel(new GridLayout(1, 2));
+        ssoContainer.setOpaque(false);
+
+        sso = new JCheckBox();
+        ssoContainer.add(sso, JPanel.RIGHT_ALIGNMENT);
+
+        ssoLabel = new JLabel(ssoIcon, JLabel.LEFT);
+        ssoLabel.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent event) {
+            }
+            public void mouseEntered(MouseEvent event) {
+                ssoLabel.setIcon(ssoOverIcon);
+            }
+            public void mouseExited(MouseEvent event) {
+                ssoLabel.setIcon(ssoIcon);
+            }
+        });
+        ssoContainer.add(ssoLabel);
+        */
+
+        //TODO add GS logo
+        //gs logo
+        //iconLabel = new JLabel();
+        //iconLabel.setIcon(genomespacelogo);
+
 
         exit = new JLabel(exitButtonSml,
                 JLabel.CENTER);
@@ -173,13 +246,19 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             }
         });
 
-        JPanel exitCont = new JPanel(new GridLayout(1, 1));
-        exitCont.setOpaque(false);
+        //exit
+        JPanel exitContainer = new JPanel(new GridLayout(1, 1));
+        exitContainer.setOpaque(false);
+        exitContainer.add(exit);
 
-        exitCont.add(exit);
-
-        southPanel.add(exitCont);
-
+        //south panel
+        //JPanel southPanel = new JPanel(new GridLayout(5, 1));
+        JPanel southPanel = new JPanel(new GridLayout(4, 1));
+        southPanel.setOpaque(false);
+        //southPanel.add(ssoContainer);
+        southPanel.add(status);
+        southPanel.add(buttonContainer);
+        southPanel.add(exitContainer);
         southPanel.add(confirmExitPanel);
 
         northPanel.add(southPanel, BorderLayout.SOUTH);
@@ -189,16 +268,29 @@ public class GSAuthenticationMenu extends MenuUIComponent {
     }
 
 
-    public void login(){
-        Authentication authentication = new GSIdentityManager();
-        if (authentication.login(username.getText(), password.getPassword())){
+    //private void login(boolean sso){
+    private void login(){
+        String passwordString = new String (password.getPassword());
+       // ((GSSingleSignOnManager)authentication).setSSO(sso);
+        if (!username.getText().equals("") && passwordString!=null && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())){
             clearFields();
-            menu.changeView(menu.getMainMenuGUI());
+            if (ISAcreatorCLArgs.configDir()==null)
+                menu.changeView(menu.getImportConfigurationGUI());
+            else{
+                //load configuration and go to main menu
+                ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
+                boolean problem = importConfiguration.loadConfiguration();
+                if (ISAcreatorCLArgs.isatabDir()!=null){
+                    System.out.println("LOAD FILES!!!");
+                }else{
+                    menu.changeView(menu.getMainMenuGUI());
+                }
+            }
+
         } else {
             status.setText(
                     "<html><b>Error: </b> Username or password incorrect! </html>");
         }
-
     }
 
     public void clearFields() {

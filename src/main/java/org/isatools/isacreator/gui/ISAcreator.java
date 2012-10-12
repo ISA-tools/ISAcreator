@@ -39,6 +39,7 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
@@ -125,6 +126,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private JPanel glass;
 
     private ISAcreatorMenu isacreatorMenu = null;
+
     private static UserProfile currentUser = null;
     private JMenuBar menuBar;
     private JMenu pluginMenu;
@@ -194,6 +196,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         this(mode, context, null);
     }
 
+    /**
+     * Could this constructor be removed?
+     *
+     * @param mode
+     * @param context
+     * @param configDir
+     */
     public ISAcreator(Mode mode, BundleContext context, String configDir) {
 
         ResourceInjector.get("gui-package.style").inject(this);
@@ -227,6 +236,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         ApplicationManager.setCurrentApplicationInstance(this);
 
+
+
+    }
+
+
+    public void createGUI(String configDir, String username, final String isatabDir) {
+            createGUI(configDir, username,isatabDir, null, null);
     }
 
     /**
@@ -236,7 +252,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
      * @param username
      * @param isatabDir
      */
-    public void createGUI(String configDir, String username, final String isatabDir) {
+    public void createGUI(String configDir, String username, final String isatabDir, Authentication authentication, String authMenuClassName) {
 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
@@ -260,6 +276,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
 
+
         // check that java version is supported!
         if (!checkSystemRequirements()) {
             //this can't happen if this is used from java web start
@@ -270,7 +287,14 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             if (configDir==null){
                 panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
             }
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, panelToShow);
+            if (authMenuClassName!=null){
+                    panelToShow = ISAcreatorMenu.SHOW_LOGIN;
+                    //isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, authentication,authMenuClassName, panelToShow);
+                isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, authentication,authMenuClassName, panelToShow);
+            }else {
+                //isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, authentication, null, panelToShow);
+                isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, authentication, null, panelToShow);
+            }
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -304,7 +328,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         if (!checkSystemRequirements()) {
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_LOGIN);
         }
         setCurrentPage(isacreatorMenu);
         pack();

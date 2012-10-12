@@ -64,11 +64,18 @@ public class ISAcreatorCLArgs {
         String arg = null, option = null;
         while (i < args.length && args[i].startsWith("--")) {
             option = args[i++];
-            arg = args[i++];
+
+            if (i<args.length)
+                arg = args[i++];
 
             option.toLowerCase();
 
-            if (option.equals("--mode")){
+            if (option.equals("--help")){
+                System.out.println("usage: ISAcreator.jar [--mode] [--configDir <path>] [--username <username>] [--password <password>] [--isatabDir <path>]\n" +
+                        "\t[--isatabFiles <files>] [--help]\n");
+                System.exit(0);
+
+            }else if (option.equals("--mode")){
                 // mode = arg.equals("NORMAL_MODE")? Mode.NORMAL_MODE: Mode.LIGHT_MODE;
                 if (arg.equals("NORMAL_MODE"))
                     ISAcreatorCLArgs.mode = Mode.NORMAL_MODE;

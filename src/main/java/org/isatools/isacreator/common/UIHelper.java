@@ -125,7 +125,6 @@ public class UIHelper {
         comp.setForeground(foregroundColor);
         comp.setFont(f);
         comp.setBackground(BG_COLOR);
-
         comp.setOpaque(opaque);
     }
 
