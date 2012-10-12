@@ -156,10 +156,10 @@ public class GSSingleSignOnManager implements Authentication {
      *
      * @return a string with the token (or null if not available)
      */
-    private static String getGSToken() {
-        if (gsToken == null) {
-            File file = GSSingleSignOnManager.getTokenFile();
-            if (file.exists()) {
+    private String getGSToken() {
+        if (gsToken == null && sso) {
+            File file = getTokenFile();
+            if (file!=null && file.exists()) {
                 BufferedReader br = null;
                 try {
                     br = new BufferedReader(new FileReader(file));
@@ -185,6 +185,7 @@ public class GSSingleSignOnManager implements Authentication {
      * @param newToken authentication token (string) for single sign on
      */
     private void setGSToken(String newToken) {
+        if (!sso) return;
         if (gsToken == null || !gsToken.equals(newToken)) {
             gsToken = newToken;
             BufferedWriter bw = null;
@@ -202,7 +203,7 @@ public class GSSingleSignOnManager implements Authentication {
 
 
     private void setGSUser(String newUser) {
-
+        if (!sso) return;
         if (gsUser == null || !gsUser.equals(newUser)) {
             gsUser = newUser;
             BufferedWriter bw = null;
@@ -223,13 +224,20 @@ public class GSSingleSignOnManager implements Authentication {
      *
      * @return
      */
-    private static File getTokenSaveDir() {
+    private File getTokenSaveDir() {
         String userDir = System.getProperty("user.home");
-        File gsDir = new File(userDir, tokenSaveDir);
-        if (!gsDir.exists()) {
-            gsDir.mkdir();
-        }
-        return gsDir;
+
+         File gsDir = new File(userDir, tokenSaveDir);
+         if (gsDir.exists()) {
+             //single sign on has been used before
+             sso = true;
+             return gsDir;
+         } else if (sso) {
+             //directory doesn't exist, if sso, create it
+             gsDir.mkdir();
+             return gsDir;
+         }
+         return null;
     }
 
     /**
@@ -237,18 +245,18 @@ public class GSSingleSignOnManager implements Authentication {
      *
      * @return
      */
-    private static File getTokenFile() {
+    private File getTokenFile() {
         File gsDir = getTokenSaveDir();
-        return (gsDir != null && gsDir.exists()) ? new File(gsDir, tokenSaveFileName) : null;
+        return (gsDir != null && gsDir.exists() & sso) ? new File(gsDir, tokenSaveFileName) : null;
     }
 
-    private static File getUsernameFile() {
+    private File getUsernameFile() {
         File gsDir = getTokenSaveDir();
-        return (gsDir != null && gsDir.exists()) ? new File(gsDir, usernameSaveFileName) : null;
+        return (gsDir != null && gsDir.exists() && sso) ? new File(gsDir, usernameSaveFileName) : null;
     }
 
 
-    private static void writeToFile(String line, File aFile) {
+    private void writeToFile(String line, File aFile) {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(aFile));

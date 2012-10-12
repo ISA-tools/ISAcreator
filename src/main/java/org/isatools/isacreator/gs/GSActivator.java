@@ -54,13 +54,13 @@ public class GSActivator implements BundleActivator {
 
                 } else if (ISAcreatorCLArgs.username()!=null){
                     //if username identified, check if token exists
-                    gsAuthentication =  new GSSingleSignOnManager(true);
+                    gsAuthentication =  new GSSingleSignOnManager();
                     loggedIn = gsAuthentication.login();
 
 
                 }else {
                       //both username and password are null, check if auth token has been saved locally
-                      gsAuthentication =  new GSSingleSignOnManager(true);
+                      gsAuthentication =  new GSSingleSignOnManager();
                       loggedIn = gsAuthentication.login();
 
                       if (loggedIn){
