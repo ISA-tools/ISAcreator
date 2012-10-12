@@ -53,6 +53,16 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         setPreferredSize(new Dimension(400, 300));
         setLayout(new BorderLayout());
         setOpaque(false);
+        setClassFields();
+    }
+
+    public GSAuthenticationMenu(ISAcreatorMenu menu, Authentication authManager, String defaultUsername) {
+        this(menu, authManager);
+        username.setText(defaultUsername);
+    }
+
+    private void setClassFields(){
+        username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
     }
 
     public void createGUI() {
@@ -68,7 +78,6 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         userNameCont.add(usernameLabel);
 
-        username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         username.setOpaque(false);
 
         UIHelper.renderComponent(username, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);

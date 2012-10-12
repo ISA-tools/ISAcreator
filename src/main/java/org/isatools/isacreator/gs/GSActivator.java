@@ -54,40 +54,17 @@ public class GSActivator implements BundleActivator {
 
                 } else if (ISAcreatorCLArgs.username()!=null){
                     //if username identified, check if token exists
-                    gsAuthentication =  new GSSingleSignOnManager();
+                    gsAuthentication =  new GSIdentityManager();//new GSSingleSignOnManager();
                     loggedIn = gsAuthentication.login();
 
+                     processFiles(gsAuthentication, loggedIn);
 
                 }else {
                       //both username and password are null, check if auth token has been saved locally
                       gsAuthentication =  new GSIdentityManager();//new GSSingleSignOnManager();
                       loggedIn = gsAuthentication.login();
 
-                      if (loggedIn){
-                         if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
-                          //isatabDir not null or isatabFiles not null
-                          String localTmpDirectory = createTmpDirectory();
-                          if (ISAcreatorCLArgs.isatabDir()!=null){
-                              if (ISAcreatorCLArgs.isatabFiles()!=null){
-                                  System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
-                                  System.exit(-1);
-                              }
-                              ISAcreatorCLArgs.isatabDir(localTmpDirectory);
-                              if (ISAcreatorCLArgs.isatabFiles()!=null){
-                                  GSDataManager gsDataManager = ((GSSingleSignOnManager)gsAuthentication).getGSDataManager();
-                                  for(String filePath: ISAcreatorCLArgs.isatabFiles()){
-                                      gsDataManager.downloadFile(filePath, localTmpDirectory);
-                                  }
-                              }
-
-                            }
-                        }
-                          main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir());
-
-                      } else { //not logged in
-
-                          main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(), gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
-                      }
+                    processFiles(gsAuthentication, loggedIn);
 
                 }//else
             }//run
@@ -95,6 +72,34 @@ public class GSActivator implements BundleActivator {
         });
 
         loadISATask.start();
+    }
+
+    private void processFiles(Authentication gsAuthentication, boolean loggedIn) {
+        if (loggedIn){
+           if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
+            //isatabDir not null or isatabFiles not null
+            String localTmpDirectory = createTmpDirectory();
+            if (ISAcreatorCLArgs.isatabDir()!=null){
+                if (ISAcreatorCLArgs.isatabFiles()!=null){
+                    System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
+                    System.exit(-1);
+                }
+                ISAcreatorCLArgs.isatabDir(localTmpDirectory);
+                if (ISAcreatorCLArgs.isatabFiles()!=null){
+                    GSDataManager gsDataManager = ((GSSingleSignOnManager)gsAuthentication).getGSDataManager();
+                    for(String filePath: ISAcreatorCLArgs.isatabFiles()){
+                        gsDataManager.downloadFile(filePath, localTmpDirectory);
+                    }
+                }
+
+              }
+          }
+            main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir());
+
+        } else { //not logged in
+
+            main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir(), gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
+        }
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
