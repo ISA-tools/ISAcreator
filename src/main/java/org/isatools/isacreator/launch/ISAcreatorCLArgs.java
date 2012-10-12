@@ -20,7 +20,7 @@ public class ISAcreatorCLArgs {
     private static Mode mode =  null;
     private static String configDir = null;
     private static String username = null;
-    private static String password = null;
+    private static char[] password = null;
     private static String isatabDir = null;
     private static String[] isatabFiles = null;
 
@@ -37,7 +37,7 @@ public class ISAcreatorCLArgs {
         return username;
     }
 
-    public static String password(){
+    public static char[] password(){
         return password;
     }
 
@@ -89,7 +89,7 @@ public class ISAcreatorCLArgs {
             else if (option.equals("--username"))
                 ISAcreatorCLArgs.username = arg;
             else if (option.equals("--password"))
-                ISAcreatorCLArgs.password = arg;
+                ISAcreatorCLArgs.password = arg.toCharArray();
             else if (option.equals("--isatabDir"))
                 ISAcreatorCLArgs.isatabDir = arg;
             else if (option.equals("--isatabFiles")) {
