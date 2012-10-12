@@ -158,7 +158,9 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             public void mousePressed(MouseEvent event) {
                 login.setIcon(GSAuthenticationMenu.this.loginButton);
                 confirmExitPanel.setVisible(false);
-                login(sso.isSelected());
+                //login(sso.isSelected());
+                status.setText("");
+                login();
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -166,13 +168,27 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             }
 
             public void mouseExited(MouseEvent event) {
-                login.setIcon(GSAuthenticationMenu.this.loginButton);
+                login.setIcon(loginButton);
             }
         });
 
+
+        login.addFocusListener( new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                status.setText("");
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                //do nothing
+            }
+        }
+        );
+
         Action loginAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                login(sso.isSelected());
+                //login(sso.isSelected());
+                login();
             }
         };
 
@@ -183,6 +199,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         buttonContainer.add(login);
 
+        /*
         //single sign on checkbox
         JPanel ssoContainer = new JPanel(new GridLayout(1, 2));
         ssoContainer.setOpaque(false);
@@ -202,7 +219,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             }
         });
         ssoContainer.add(ssoLabel);
-
+        */
 
         //TODO add GS logo
         //gs logo
@@ -235,9 +252,10 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         exitContainer.add(exit);
 
         //south panel
-        JPanel southPanel = new JPanel(new GridLayout(5, 1));
+        //JPanel southPanel = new JPanel(new GridLayout(5, 1));
+        JPanel southPanel = new JPanel(new GridLayout(4, 1));
         southPanel.setOpaque(false);
-        southPanel.add(ssoContainer);
+        //southPanel.add(ssoContainer);
         southPanel.add(status);
         southPanel.add(buttonContainer);
         southPanel.add(exitContainer);
@@ -250,9 +268,10 @@ public class GSAuthenticationMenu extends MenuUIComponent {
     }
 
 
-    private void login(boolean sso){
+    //private void login(boolean sso){
+    private void login(){
         String passwordString = new String (password.getPassword());
-        ((GSSingleSignOnManager)authentication).setSSO(sso);
+       // ((GSSingleSignOnManager)authentication).setSSO(sso);
         if (!username.getText().equals("") && passwordString!=null && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())){
             clearFields();
             if (ISAcreatorCLArgs.configDir()==null)

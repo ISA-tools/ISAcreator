@@ -42,7 +42,7 @@ public class GSActivator implements BundleActivator {
                 //if username and password were given as parameters, log in user into GS
                 if (ISAcreatorCLArgs.username()!=null && ISAcreatorCLArgs.password()!=null){
 
-                     gsAuthentication = new GSIdentityManager();
+                     gsAuthentication = new GSIdentityManager();//new GSIdentityManager();
                      loggedIn = gsAuthentication.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password().toCharArray());
                      if (!loggedIn){
                         System.out.println("Login to GenomeSpace failed for user "+ISAcreatorCLArgs.username());
@@ -60,7 +60,7 @@ public class GSActivator implements BundleActivator {
 
                 }else {
                       //both username and password are null, check if auth token has been saved locally
-                      gsAuthentication =  new GSSingleSignOnManager();
+                      gsAuthentication =  new GSIdentityManager();//new GSSingleSignOnManager();
                       loggedIn = gsAuthentication.login();
 
                       if (loggedIn){
