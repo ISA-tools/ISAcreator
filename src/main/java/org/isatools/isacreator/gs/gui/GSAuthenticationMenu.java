@@ -6,6 +6,7 @@ import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gs.GSSingleSignOnManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.MenuUIComponent;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
@@ -157,7 +158,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             public void mousePressed(MouseEvent event) {
                 login.setIcon(GSAuthenticationMenu.this.loginButton);
                 confirmExitPanel.setVisible(false);
-                login();
+                login(sso.isSelected());
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -171,7 +172,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         Action loginAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                login();
+                login(sso.isSelected());
             }
         };
 
@@ -249,8 +250,9 @@ public class GSAuthenticationMenu extends MenuUIComponent {
     }
 
 
-    private void login(){
+    private void login(boolean sso){
         String passwordString = new String (password.getPassword());
+        ((GSSingleSignOnManager)authentication).setSSO(sso);
         if (!username.getText().equals("") && passwordString!=null && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())){
             clearFields();
             if (ISAcreatorCLArgs.configDir()==null)
