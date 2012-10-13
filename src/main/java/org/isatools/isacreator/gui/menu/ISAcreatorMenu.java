@@ -109,7 +109,7 @@ public class ISAcreatorMenu extends JLayeredPane {
      * @param isatabDir
      */
     public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, char[] password, String isatabDir, Authentication authentication, String authMenuClassName, final int panelToShow) {
-        this(ISAcreator, authentication, authMenuClassName, panelToShow);
+        this(ISAcreator, username, authentication, authMenuClassName, panelToShow);
 
         boolean profileCreated = false;
         if (username!=null){
@@ -137,7 +137,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, Authentication authentication, String authMenuClassName, final int panelToShow) {
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, Authentication authentication, String authMenuClassName, final int panelToShow) {
         this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
@@ -153,8 +153,8 @@ public class ISAcreatorMenu extends JLayeredPane {
             try{
                 Class authMenuUIClass = Class.forName(authMenuClassName);
                 log.debug("authMenuUIClass="+authMenuUIClass);
-                Constructor constructor = authMenuUIClass.getConstructor(ISAcreatorMenu.class, Authentication.class);
-                authGUI = (MenuUIComponent) constructor.newInstance(this, authentication);
+                Constructor constructor = authMenuUIClass.getConstructor(ISAcreatorMenu.class, Authentication.class, String.class);
+                authGUI = (MenuUIComponent) constructor.newInstance(this, authentication, username);
             }catch(ClassNotFoundException e){
                 e.printStackTrace();
             }catch(NoSuchMethodException e){
@@ -231,7 +231,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
-        this(ISAcreator, null, null, panelToShow);
+        this(ISAcreator, null, null, null, panelToShow);
     }
 
 
