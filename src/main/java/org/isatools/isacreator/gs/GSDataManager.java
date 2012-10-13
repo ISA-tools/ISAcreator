@@ -1,7 +1,9 @@
 package org.isatools.isacreator.gs;
 
+import org.apache.log4j.Logger;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
+import org.genomespace.client.exceptions.NotFoundException;
 import org.genomespace.client.utils.WebClientBuilder;
 import org.genomespace.datamanager.core.GSDirectoryListing;
 import org.genomespace.datamanager.core.GSFileMetadata;
@@ -23,6 +25,8 @@ import java.util.List;
  */
 public class GSDataManager {
 
+    private static Logger log = Logger.getLogger(GSDataManager.class);
+
     private GsSession gsSession = null;
 
     /***
@@ -41,14 +45,20 @@ public class GSDataManager {
      * @param dirPath
      */
     public List<String> ls(String dirPath){
-        DataManagerClient dmClient = gsSession.getDataManagerClient();
-        GSDirectoryListing dirListing = dmClient.list(dirPath);
-        List<GSFileMetadata> fileMetadataList = dirListing.getContents();
-        List<String> listing = new ArrayList<String>();
-        for(GSFileMetadata fileMetadata:fileMetadataList){
-            listing.add(fileMetadata.getName());
+        try{
+            DataManagerClient dmClient = gsSession.getDataManagerClient();
+            GSDirectoryListing dirListing = dmClient.list(dirPath);
+            List<GSFileMetadata> fileMetadataList = dirListing.getContents();
+            List<String> listing = new ArrayList<String>();
+            for(GSFileMetadata fileMetadata:fileMetadataList){
+                listing.add(fileMetadata.getName());
+            }
+            return listing;
+        }catch(NotFoundException e){
+           System.err.println("The directory path "+dirPath+" was not found in Genome Space.");
+           System.exit(-1);
         }
-        return listing;
+        return null;
     }
 
     /**
@@ -101,16 +111,19 @@ public class GSDataManager {
      * @return
      */
     public boolean downloadFile(String fileToDownload, String localDirPath) {
+        //try{
+            log.debug("fileToDownload="+fileToDownload);
+            DataManagerClient dmClient = gsSession.getDataManagerClient();
+            GSFileMetadata fileToDownloadMetadata = dmClient.getMetadata(fileToDownload);
+            System.out.println("remote file ="+fileToDownloadMetadata);
+            String localFilePath = localDirPath+fileToDownloadMetadata.getName();
+            System.out.println("local file = "+localFilePath);
+            File localTargetFile = new File(localFilePath);
+            dmClient.downloadFile(fileToDownloadMetadata, localTargetFile, true);
+            return true;
+        //}catch(){
 
-        System.out.println("fileToDownload="+fileToDownload);
-        DataManagerClient dmClient = gsSession.getDataManagerClient();
-        GSFileMetadata fileToDownloadMetadata = dmClient.getMetadata(fileToDownload);
-        System.out.println("remote file ="+fileToDownloadMetadata);
-        String localFilePath = localDirPath+fileToDownloadMetadata.getName();
-        System.out.println("local file = "+localFilePath);
-        File localTargetFile = new File(localFilePath);
-        dmClient.downloadFile(fileToDownloadMetadata, localTargetFile, true);
-        return true;
+        //}
 
     }
 

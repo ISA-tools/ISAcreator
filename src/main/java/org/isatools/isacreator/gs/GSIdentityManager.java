@@ -34,7 +34,7 @@ public class GSIdentityManager implements Authentication {
     //maintaining a single session
    // private String username = null;
     private GsSession session = null;
-    private GSDataManager gsDataManager = null;
+    //private GSDataManager gsDataManager = null;
 
     //private String gsUser = null;
     private String gsToken = null;
@@ -185,6 +185,7 @@ public class GSIdentityManager implements Authentication {
     }
 
     public GSDataManager getGsDataManager(){
+        log.debug("session: is logged in when retrieving DM?"+session.isLoggedIn());
         return new GSDataManager(session);
     }
 
