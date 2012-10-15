@@ -52,10 +52,11 @@ public class GSActivator implements BundleActivator {
                         System.exit(0);
                      } else {
                         System.out.println("Logged in to GenomeSpace as user "+ISAcreatorCLArgs.username());
+                        GSLocalFilesManager.downloadFiles(gsAuthentication);
                      }
 
 
-                     main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null);
+                     main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn);
 
                 } else if (ISAcreatorCLArgs.username()!=null){
                     //if username identified, check if token exists
@@ -63,10 +64,10 @@ public class GSActivator implements BundleActivator {
                     loggedIn = gsAuthentication.login();
                     if (loggedIn){
                         GSLocalFilesManager.downloadFiles(gsAuthentication);
-                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, null, null);
+                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, null, null,true);
                     }else {
                         //not logged in
-                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
+                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu", false);
 
                     }
 
@@ -77,10 +78,10 @@ public class GSActivator implements BundleActivator {
 
                     if (loggedIn){
                         GSLocalFilesManager.downloadFiles(gsAuthentication);
-                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, null, null);
+                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, gsAuthentication, null, true);
                     }else {
                         //not logged in
-                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu");
+                        main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, gsAuthentication, "org.isatools.isacreator.gs.gui.GSAuthenticationMenu", false);
 
                     }
 

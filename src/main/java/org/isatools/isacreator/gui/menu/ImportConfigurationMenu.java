@@ -177,7 +177,9 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                                 GSLocalFilesManager.downloadFiles(menu.getAuthentication());
                             }  // GS
 
-                            menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                            if (ISAcreatorCLArgs.isatabDir()!=null){
+                                menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                            }
                             menu.changeView(menu.getImportISAGUI());
 
                             }//else

@@ -107,12 +107,12 @@ public class ISAcreatorMenu extends JLayeredPane {
     private GenericPanel background;
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, Authentication authentication, String authMenuClassName, final int panelToShow) {
-        this(ISAcreator, username, null, null,  null, authentication, authMenuClassName, panelToShow);
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, Authentication authentication, String authMenuClassName, final int panelToShow, boolean loggedIn) {
+        this(ISAcreator, username, null, null,  null, authentication, authMenuClassName, panelToShow, loggedIn);
     }
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow) {
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean loggedIn) {
         this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
@@ -127,6 +127,7 @@ public class ISAcreatorMenu extends JLayeredPane {
             if (authentication!=null && ISAcreatorCLArgs.mode()!=Mode.GS && !authentication.login(username, password)) {
                 CreateProfile.createProfile(username);
                 profileCreated = true;
+                loggedIn = true;
             }
         }
 
@@ -137,9 +138,11 @@ public class ISAcreatorMenu extends JLayeredPane {
              //authGUI requires this class (ISAcreatorMenu) as parameter for the constructor, thus it is created here with the reflection API
 
            if (authentication!=null && username!=null && password!=null && ISAcreatorCLArgs.mode()!=Mode.GS){
-                boolean loggedIn = authentication.login(username, password);
-                if (!loggedIn)
-                      System.err.print("Username and/or password are invalid");
+                loggedIn = authentication.login(username, password);
+                if (!loggedIn) {
+                    System.err.print("Username and/or password are invalid");
+                    loggedIn = true;
+                }
            }
 
            //TODO this should not needed anymore
@@ -194,7 +197,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         }
 
         if (panelToShow==SHOW_LOADED_FILES) {
-            if (ISAcreatorCLArgs.mode()== Mode.GS){
+            if (ISAcreatorCLArgs.mode()== Mode.GS  && !loggedIn){
                 GSLocalFilesManager.downloadFiles(getAuthentication());
             }  // GS
             loadFiles(ISAcreatorCLArgs.isatabDir());
@@ -264,7 +267,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
-        this(ISAcreator, null, null, null, panelToShow);
+        this(ISAcreator, null, null, null, panelToShow, false);
     }
 
     public Authentication getAuthentication(){

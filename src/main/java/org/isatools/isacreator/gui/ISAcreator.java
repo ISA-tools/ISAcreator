@@ -252,7 +252,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
      * @param username
      * @param isatabDir
      */
-    public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName) {
+    public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName, boolean loggedIn) {
 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
@@ -293,7 +293,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
             }
 
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow, loggedIn);
         }
         setCurrentPage(isacreatorMenu);
         pack();
