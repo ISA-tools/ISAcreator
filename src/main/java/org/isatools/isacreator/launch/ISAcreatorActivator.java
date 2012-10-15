@@ -30,7 +30,7 @@ public class ISAcreatorActivator implements BundleActivator {
                 if (ISAcreatorCLArgs.noArguments()){
                     main.createGUI();
                 }else{
-                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.isatabDir());
+                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, null, null);
                 }
             }
         });
