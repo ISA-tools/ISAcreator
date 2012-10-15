@@ -54,7 +54,7 @@ public abstract class ISAtabImporter {
     /**
      * Imports ISATab files
      *
-     * @param parentDir
+     * @param parentDir string with the path of the parent directory where ISAtab files are stored
      * @return indicates if import was successful or not
      */
     public abstract boolean importFile(String parentDir);
@@ -94,12 +94,14 @@ public abstract class ISAtabImporter {
 
             File investigationFile = new File(parentDir);
 
+            //TODO remove all comments about parentDirectoryPath
             //parentDirectoryPath should not be a class fields as before, as it is relevant for the method importFile only
-            String parentDirectoryPath = parentDir;
+            //String parentDirectoryPath = parentDir;
 
             if (!investigationFile.isDirectory()) {
                 investigationFile = investigationFile.getParentFile();
-                parentDirectoryPath = investigationFile.getAbsolutePath();
+                //parentDirectoryPath = investigationFile.getAbsolutePath();
+                parentDir = investigationFile.getAbsolutePath();
             }
 
             log.info("Parent directory is -> " + parentDir);
@@ -169,7 +171,8 @@ public abstract class ISAtabImporter {
                             }
                         }
 
-                        if (!processInvestigation(parentDirectoryPath)) {
+                        //if (!processInvestigation(parentDirectoryPath)) {
+                        if (!processInvestigation(parentDir)) {
                             ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                             errors.add(investigationErrorReport);
 
@@ -215,7 +218,7 @@ public abstract class ISAtabImporter {
                     return false;
 
                 }
-            }
+            } // investigation file exists
 
             return true;
 
