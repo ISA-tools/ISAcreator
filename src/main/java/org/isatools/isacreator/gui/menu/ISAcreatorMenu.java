@@ -46,10 +46,14 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.GenericPanel;
 import org.isatools.isacreator.effects.InfiniteImageProgressPanel;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
+import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.io.importisa.ISAtabImporter;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 
@@ -81,6 +85,8 @@ public class ISAcreatorMenu extends JLayeredPane {
     public static final int SHOW_UNSUPPORTED_JAVA = 4;
     public static final int NONE = 5;
 
+    public static final int SHOW_LOADED_FILES = 6;
+
 
     private Authentication authentication = null;
     //TODO create specific super class
@@ -100,56 +106,44 @@ public class ISAcreatorMenu extends JLayeredPane {
     private Component currentPanel = null;
     private GenericPanel background;
 
-    /**
-     *
-     *
-     * @param ISAcreator
-     * @param configDir
-     * @param username
-     * @param isatabDir
-     */
-    public ISAcreatorMenu(ISAcreator ISAcreator, String configDir, String username, char[] password, String isatabDir, Authentication authentication, String authMenuClassName, final int panelToShow) {
-        this(ISAcreator, username, authentication, authMenuClassName, panelToShow);
 
-        boolean profileCreated = false;
-        if (username!=null){
-            if (!authentication.login(username, password)) {
-                CreateProfile.createProfile(username);
-                profileCreated = true;
-            }
-        }
-
-        if (configDir!=null){
-            ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
-            boolean problem = importConfiguration.loadConfiguration();
-            if (problem)
-                System.out.println("Problem importing the configuration at "+ configDir);
-        }
-
-        System.out.println("user " + (profileCreated ? "created" : "authenticated") + ", configuration imported");
-
-//        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
-        if (isatabDir!=null){
-            importISA.getSelectedFileAndLoad(new File(isatabDir));
-            System.out.println("ISATAB dataset loaded");
-        }
-
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, Authentication authentication, String authMenuClassName, final int panelToShow) {
+        this(ISAcreator, username, null, null,  null, authentication, authMenuClassName, panelToShow);
     }
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, Authentication authentication, String authMenuClassName, final int panelToShow) {
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow) {
         this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
         setLayout(new OverlayLayout(this));
         setBackground(UIHelper.BG_COLOR);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+        authentication = auth;
+
+        boolean profileCreated = false;
+        if (username!=null){
+
+            if (authentication!=null && ISAcreatorCLArgs.mode()!=Mode.GS && !authentication.login(username, password)) {
+                CreateProfile.createProfile(username);
+                profileCreated = true;
+            }
+        }
 
         if (authMenuClassName==null && authentication==null){
                 authentication = new AuthenticationManager();
                 authGUI = new AuthenticationMenu(this, authentication);
         } else {
              //authGUI requires this class (ISAcreatorMenu) as parameter for the constructor, thus it is created here with the reflection API
+
+           if (authentication!=null && username!=null && password!=null && ISAcreatorCLArgs.mode()!=Mode.GS){
+                boolean loggedIn = authentication.login(username, password);
+                if (!loggedIn)
+                      System.err.print("Username and/or password are invalid");
+           }
+
+           //TODO this should not needed anymore
+           if (authMenuClassName!=null){
             try{
                 Class authMenuUIClass = Class.forName(authMenuClassName);
                 log.debug("authMenuUIClass="+authMenuUIClass);
@@ -166,7 +160,9 @@ public class ISAcreatorMenu extends JLayeredPane {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        }
+           }
+
+        }//else
 
         createISA = new CreateISATABMenu(this);
         createProfileGUI = new CreateProfileMenu(this);
@@ -181,10 +177,39 @@ public class ISAcreatorMenu extends JLayeredPane {
 
         background = new ISAcreatorBackground();
 
+
+
+        if (configDir!=null){
+            ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
+            boolean problem = importConfiguration.loadConfiguration();
+            if (problem)
+                System.out.println("Problem importing the configuration at "+ configDir);
+        }
+
+        System.out.println("user " + (profileCreated ? "created" : "authenticated") + ", configuration imported");
+
+//        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
+        if (isacreator.getMode()!= Mode.GS && isatabDir!=null){
+            loadFiles(isatabDir);
+        }
+
+        if (panelToShow==SHOW_LOADED_FILES) {
+            if (ISAcreatorCLArgs.mode()== Mode.GS){
+                GSLocalFilesManager.downloadFiles(getAuthentication());
+            }  // GS
+            loadFiles(ISAcreatorCLArgs.isatabDir());
+                //changeView(getImportISAGUI());
+        }
+
+
+
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 
-                authGUI.createGUI();
+                //TODO only create GUIs if necessary
+                if (authGUI!=null)
+                    authGUI.createGUI();
                 createProfileGUI.createGUI();
                 createISA.createGUI();
                 importISA.createGUI();
@@ -208,7 +233,6 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                     case SHOW_CREATE_ISA:
                         isacreator.setGlassPanelContents(createISA);
-
                         break;
 
                     case SHOW_UNSUPPORTED_JAVA:
@@ -218,7 +242,11 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                         break;
 
+
                     case NONE:
+                        break;
+
+                    case SHOW_LOADED_FILES:
                         break;
 
                     default:
@@ -230,8 +258,17 @@ public class ISAcreatorMenu extends JLayeredPane {
         });
     }
 
+    public void loadFiles(String isatabDir) {
+        importISA.getSelectedFileAndLoad(new File(isatabDir));
+        System.out.println("ISATAB dataset loaded");
+    }
+
     public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
         this(ISAcreator, null, null, null, panelToShow);
+    }
+
+    public Authentication getAuthentication(){
+        return authentication;
     }
 
 
