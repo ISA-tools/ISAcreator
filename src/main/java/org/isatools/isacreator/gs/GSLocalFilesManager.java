@@ -6,6 +6,8 @@ import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by the ISATeam.
@@ -18,6 +20,15 @@ import java.util.List;
 public class GSLocalFilesManager {
 
 
+    public static String transformURLtoFilePath(String url){
+        if (url==null) return null;
+        Pattern HOME = Pattern.compile("/Home/");
+        Matcher m = HOME.matcher(url);
+        while (m.find()) {
+            return url.substring(m.start());
+        }
+        return null;
+    }
 
     public static void downloadFiles(Authentication gsAuthentication) {
 
@@ -48,5 +59,12 @@ public class GSLocalFilesManager {
                 ISAcreatorCLArgs.isatabDir(localTmpDirectory);
             }//
 
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(GSLocalFilesManager.transformURLtoFilePath("https://dm.genomespace.org/datamanager/v1.0/file/Home/Public/agbeltran/ISAtab-Datasets/BII-S-3"));
+        System.out.println(GSLocalFilesManager.transformURLtoFilePath("https://dm.genomespace.org/datamanager/v1.0/file/Home/agbeltran/ISAtab-Datasets/BII-S-3"));
+        System.out.println(GSLocalFilesManager.transformURLtoFilePath(null));
     }
 }
