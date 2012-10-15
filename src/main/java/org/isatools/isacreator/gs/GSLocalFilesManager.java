@@ -20,16 +20,6 @@ import java.util.regex.Pattern;
 public class GSLocalFilesManager {
 
 
-    public static String transformURLtoFilePath(String url){
-        if (url==null) return null;
-        Pattern HOME = Pattern.compile("/Home/");
-        Matcher m = HOME.matcher(url);
-        while (m.find()) {
-            return url.substring(m.start());
-        }
-        return null;
-    }
-
     public static void downloadFiles(Authentication gsAuthentication) {
 
             if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
@@ -62,9 +52,11 @@ public class GSLocalFilesManager {
     }
 
 
+    /*
     public static void main(String[] args) {
         System.out.println(GSLocalFilesManager.transformURLtoFilePath("https://dm.genomespace.org/datamanager/v1.0/file/Home/Public/agbeltran/ISAtab-Datasets/BII-S-3"));
         System.out.println(GSLocalFilesManager.transformURLtoFilePath("https://dm.genomespace.org/datamanager/v1.0/file/Home/agbeltran/ISAtab-Datasets/BII-S-3"));
         System.out.println(GSLocalFilesManager.transformURLtoFilePath(null));
     }
+    */
 }

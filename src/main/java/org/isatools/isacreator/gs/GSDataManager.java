@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by the ISATeam.
@@ -113,6 +115,7 @@ public class GSDataManager {
     public boolean downloadFile(String fileToDownload, String localDirPath) {
         //try{
             log.debug("fileToDownload="+fileToDownload);
+            fileToDownload = transformURLtoFilePath(fileToDownload);
             DataManagerClient dmClient = gsSession.getDataManagerClient();
             GSFileMetadata fileToDownloadMetadata = dmClient.getMetadata(fileToDownload);
             System.out.println("remote file ="+fileToDownloadMetadata);
@@ -148,6 +151,14 @@ public class GSDataManager {
     public boolean downloadAllFilesFromDirectory(String dirPath, String localDirPath) {
 
         DataManagerClient dmClient = gsSession.getDataManagerClient();
+        System.out.println("dirPath="+dirPath);
+        dirPath = transformURLtoFilePath(dirPath);
+
+        System.out.println("dirPath="+dirPath);
+
+        if (dirPath==null){
+            System.out.println("dirPath is null!!!");
+        }
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
         for(GSFileMetadata fileToDownload: fileMetadataList){
@@ -159,6 +170,16 @@ public class GSDataManager {
 
     }
 
+    private String transformURLtoFilePath(String url){
+        if (url==null) return null;
+        Pattern HOME = Pattern.compile("/Home/");
+        Matcher m = HOME.matcher(url);
+        while (m.find()) {
+            return url.substring(m.start());
+        }
+        return null;
+    }
+
     public boolean mkDir() {
         return false;
     }
@@ -166,5 +187,7 @@ public class GSDataManager {
     public void ls() {
 
     }
+
+
 
 }
