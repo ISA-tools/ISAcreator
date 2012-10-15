@@ -96,10 +96,19 @@ public class ISAcreatorCLArgs {
             }
 
         } //while
+
+        validate();
     }
 
     private static String[] parseFilenames(String arg){
         return arg.split(",");
+    }
+
+    private static void validate(){
+        if (isatabFiles()!=null && mode()!=Mode.GS){
+            System.out.println("The isatabFiles parameter is only valid for Genome Space mode.");
+            System.exit(-1);
+        }
     }
 
 
