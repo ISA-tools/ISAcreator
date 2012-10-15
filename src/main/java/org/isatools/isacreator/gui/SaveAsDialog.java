@@ -5,7 +5,11 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
+<<<<<<< HEAD
+ �The contents of this file are subject to the CPAL version 1.0 (the �License�);
+=======
  The contents of this file are subject to the CPAL version 1.0 (the License);
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +17,11 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
+<<<<<<< HEAD
+ Software distributed under the License is distributed on an �AS IS� basis,
+=======
  Software distributed under the License is distributed on an AS IS basis,
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -93,11 +101,11 @@ public class SaveAsDialog extends JDialog {
         JPanel fileNamePanel = new JPanel(new GridLayout(1, 2));
         fileNamePanel.setOpaque(false);
 
-        JLabel fileNameLab = new JLabel("file name");
+        JLabel fileNameLab = new JLabel("directory name");
         UIHelper.renderComponent(fileNameLab, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
         final JTextField fileNameTxt = new JTextField(
-                "Please enter a filename...");
+                "Please enter a directory name...");
         fileNameTxt.setBackground(UIHelper.BG_COLOR);
         UIHelper.renderComponent(fileNameTxt, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
@@ -174,19 +182,23 @@ public class SaveAsDialog extends JDialog {
     }
 
     public void save(String fileName) {
-        if (!fileName.equals("") &&
-                !fileName.contains("Please enter a filename...")) {
+        if (!fileName.equals("") && !fileName.contains("Please enter a directory name...") ) {
+            if (fileName.contains("/")) {
+                status.setText("<html><b>Invalid file name<: / are not allowed in directory names</b></html>");
+            }
+            else {
             File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-                    fileName);
+                    fileName.replace("/","_"));
 
             if (!f.exists()) {
                 firePropertyChange("save", "", fileName);
             } else {
                 status.setText(
-                        "<html><b>isatab with same name already exists in \"" + ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + "\" folder</b></html>");
+                        "<html><b>directory name already exists in \"" + ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + "\" folder</b></html>");
             }
-        } else {
-            status.setText("<html><b>Invalid file name</b></html>");
+        }
+    }else {
+            status.setText("<html><b>Invalid directory name</b></html>");
         }
     }
 }
