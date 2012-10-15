@@ -101,7 +101,7 @@ import java.util.List;
  */
 public class ISAcreator extends AnimatableJFrame implements WindowFocusListener {
 
-    private static Logger log = Logger.getLogger(ISAcreator.class.getName());
+    private static Logger log = Logger.getLogger(ISAcreator.class);
 
     public static String DEFAULT_ISATAB_SAVE_DIRECTORY = "isatab files";
     public static String DEFAULT_CONFIGURATIONS_DIRECTORY = "Configurations";
@@ -241,9 +241,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
 
-    public void createGUI(String configDir, String username, final String isatabDir) {
-            createGUI(configDir, username,isatabDir, null, null);
-    }
+    //public void createGUI(String configDir, String username, final String isatabDir) {
+    //        createGUI(configDir, username,isatabDir, null, null);
+    //}
 
     /**
      * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received.
@@ -252,7 +252,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
      * @param username
      * @param isatabDir
      */
-    public void createGUI(String configDir, String username, final String isatabDir, Authentication authentication, String authMenuClassName) {
+    public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName) {
 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
@@ -284,17 +284,16 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         } else {
             //mode, configuration, user, main
             int panelToShow = ISAcreatorMenu.NONE;
-            if (configDir==null){
+
+            if ((username==null || password==null) || authMenuClassName!=null){
+                panelToShow = ISAcreatorMenu.SHOW_LOGIN;
+            }else if (configDir==null){
                 panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
+            } if (isatabDir==null || isatabFiles==null){
+                panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
             }
-            if (authMenuClassName!=null){
-                    panelToShow = ISAcreatorMenu.SHOW_LOGIN;
-                    //isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, authentication,authMenuClassName, panelToShow);
-                isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, authentication,authMenuClassName, panelToShow);
-            }else {
-                //isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir, authentication, null, panelToShow);
-                isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, authentication, null, panelToShow);
-            }
+
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow);
         }
         setCurrentPage(isacreatorMenu);
         pack();
