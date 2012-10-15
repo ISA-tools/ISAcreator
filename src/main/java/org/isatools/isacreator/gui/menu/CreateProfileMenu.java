@@ -58,21 +58,16 @@ import java.awt.event.MouseEvent;
  */
 
 
-public class CreateProfileMenu extends MenuUIComponent {
+public class CreateProfileMenu extends UserCreationMenu {
     @InjectedResource
     private ImageIcon createProfileButton, createProfileButtonOver,
             backButtonSml, backButtonSmlOver;
 
     private JLabel back, createProfile;
 
-    private JLabel status;
-    private JTextField emailVal;
     private JTextField firstnameVal;
     private JTextField institutionVal;
-    private JPasswordField passwordVal;
-    private JPasswordField confirmPasswordVal;
     private JTextField surnameVal;
-    private JTextField usernameVal;
 
     public CreateProfileMenu(ISAcreatorMenu menu) {
         super(menu);
@@ -93,71 +88,14 @@ public class CreateProfileMenu extends MenuUIComponent {
                 createProfile();
             }
         };
+        JPanel userNameCont = createUsernamePanel(createProfileAction);
+        JPanel passwordCont = createPasswordPanel(createProfileAction);
+        JPanel confirmPasswordCont = createConfirmPasswordPanel(createProfileAction);
+        JPanel firstNameCont = createForenamePanel(createProfileAction);
+        JPanel surnameCont = createSurnamePanel(createProfileAction);
+        JPanel institutionCont = createInstitutionPanel(createProfileAction);
+        JPanel emailCont = createEmailPanel(createProfileAction);
 
-        // username
-        JPanel userNameCont = createPanel();
-        JLabel usernameLabel = createLabel("username *");
-        userNameCont.add(usernameLabel);
-
-        usernameVal = createTextField();
-        userNameCont.add(usernameVal);
-        assignKeyActionToComponent(createProfileAction, usernameVal);
-
-        //password
-        JPanel passwordCont = createPanel();
-        JLabel passwordLabel = createLabel("password *");
-        passwordCont.add(passwordLabel);
-
-        passwordVal = new RoundedJPasswordField(10);
-        UIHelper.renderComponent(passwordVal, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
-        passwordCont.add(passwordVal);
-        assignKeyActionToComponent(createProfileAction, passwordVal);
-
-        //password
-        JPanel confirmPasswordCont = createPanel();
-        JLabel confirmPasswordLabel = createLabel("confirm *");
-        confirmPasswordCont.add(confirmPasswordLabel);
-
-        confirmPasswordVal = new RoundedJPasswordField(10);
-        UIHelper.renderComponent(confirmPasswordVal, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
-        confirmPasswordCont.add(confirmPasswordVal);
-        assignKeyActionToComponent(createProfileAction, confirmPasswordVal);
-
-        //forename
-        JPanel firstNameCont = createPanel();
-        JLabel firstNameLabel = createLabel("forename *");
-        firstNameCont.add(firstNameLabel);
-
-        firstnameVal = createTextField();
-        firstNameCont.add(firstnameVal);
-        assignKeyActionToComponent(createProfileAction, firstnameVal);
-
-        //surname
-        JPanel surnameCont = createPanel();
-        JLabel surnameLabel = createLabel("surname *");
-        surnameCont.add(surnameLabel);
-
-        surnameVal = createTextField();
-        surnameCont.add(surnameVal);
-        assignKeyActionToComponent(createProfileAction, surnameVal);
-
-        // institution
-        JPanel institutionCont = createPanel();
-        JLabel institutionLabel = createLabel("institution *");
-        institutionCont.add(institutionLabel);
-
-        institutionVal = createTextField();
-        institutionCont.add(institutionVal);
-        assignKeyActionToComponent(createProfileAction, institutionVal);
-
-        // email
-        JPanel emailCont = createPanel();
-        JLabel emailLabel = createLabel("email *");
-        emailCont.add(emailLabel);
-
-        emailVal = createTextField();
-        emailCont.add(emailVal);
-        assignKeyActionToComponent(createProfileAction, emailVal);
 
         fields.add(userNameCont);
         fields.add(Box.createVerticalStrut(7));
@@ -246,10 +184,42 @@ public class CreateProfileMenu extends MenuUIComponent {
         add(northPanel, BorderLayout.CENTER);
     }
 
-    private void assignKeyActionToComponent(Action action, JComponent field) {
-        field.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "CREATE_PROFILE");
-        field.getActionMap().put("CREATE_PROFILE", action);
+    private JPanel createInstitutionPanel(Action createProfileAction) {
+        // institution
+        JPanel institutionCont = createPanel();
+        JLabel institutionLabel = createLabel("institution *");
+        institutionCont.add(institutionLabel);
+
+        institutionVal = createTextField();
+        institutionCont.add(institutionVal);
+        assignKeyActionToComponent(createProfileAction, institutionVal);
+        return institutionCont;
     }
+
+    private JPanel createSurnamePanel(Action createProfileAction) {
+        //surname
+        JPanel surnameCont = createPanel();
+        JLabel surnameLabel = createLabel("surname *");
+        surnameCont.add(surnameLabel);
+
+        surnameVal = createTextField();
+        surnameCont.add(surnameVal);
+        assignKeyActionToComponent(createProfileAction, surnameVal);
+        return surnameCont;
+    }
+
+    private JPanel createForenamePanel(Action createProfileAction) {
+        //forename
+        JPanel firstNameCont = createPanel();
+        JLabel firstNameLabel = createLabel("forename *");
+        firstNameCont.add(firstNameLabel);
+
+        firstnameVal = createTextField();
+        firstNameCont.add(firstnameVal);
+        assignKeyActionToComponent(createProfileAction, firstnameVal);
+        return firstNameCont;
+    }
+
 
     private void createProfile() {
         // check password is not empty and that the password and the confirmation match!
