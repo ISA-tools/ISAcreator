@@ -173,14 +173,15 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             //In other modes (NORMAL or LIGHT), just load the files
 
                             //TODO dependency with GS stuff
-                            if (ISAcreatorCLArgs.mode()== Mode.GS){
+                            if (ISAcreatorCLArgs.mode()== Mode.GS && !menu.isUserLoggedIn()){
                                 GSLocalFilesManager.downloadFiles(menu.getAuthentication());
                             }  // GS
 
                             if (ISAcreatorCLArgs.isatabDir()!=null){
                                 menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                            } else{
+                                menu.changeView(menu.getMainMenuGUI());
                             }
-                            menu.changeView(menu.getMainMenuGUI());
 
                             }//else
 
