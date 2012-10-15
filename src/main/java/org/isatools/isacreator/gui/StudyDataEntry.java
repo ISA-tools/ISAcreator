@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -51,6 +51,8 @@ import org.isatools.isacreator.gui.formelements.assay.AssayInformationWriter;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -113,9 +115,9 @@ public class StudyDataEntry extends DataEntryForm {
 
     public void createGUI() {
         Map<String, List<String>> measToAllowedTechnologies =
-                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
+                ConfigurationManager.getAllowedTechnologiesPerEndpoint();
 
-        assaySelectionUI = new AssaySelectionDialog(getDataEntryEnvironment().getParentFrame(), measToAllowedTechnologies);
+        assaySelectionUI = new AssaySelectionDialog(measToAllowedTechnologies);
         generateAliases(study.getFieldValues().keySet());
         instantiatePane();
         createFields();
@@ -136,8 +138,7 @@ public class StudyDataEntry extends DataEntryForm {
         northPanel.add(header, BorderLayout.NORTH);
 
         if (study.getReferenceObject() == null) {
-            TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance()
-                    .selectTROForUserSelection(MappingObject.INVESTIGATION);
+            TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
 
             DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
             referenceObject.setFieldDefinition(tro.getTableFields().getFields());
@@ -215,9 +216,9 @@ public class StudyDataEntry extends DataEntryForm {
                     public void run() {
 
                         Map<String, List<String>> measToAllowedTechnologies =
-                                getDataEntryEnvironment().getParentFrame().getAllowedTechnologiesPerEndpoint();
+                                ConfigurationManager.getAllowedTechnologiesPerEndpoint();
 
-                        assaySelectionUI = new AssaySelectionDialog(ApplicationManager.getCurrentApplicationInstance(), measToAllowedTechnologies);
+                        assaySelectionUI = new AssaySelectionDialog(measToAllowedTechnologies);
                         assaySelectionUI.createGUI();
 
                         ApplicationManager.getCurrentApplicationInstance().showJDialogAsSheet(assaySelectionUI);
@@ -492,7 +493,7 @@ public class StudyDataEntry extends DataEntryForm {
     private void removeUnusedProtocols(String assayRef) {
         Assay assay = getStudy().getAssays().get(assayRef);
 
-        Set<String> protocolRefsInAssay = SpreadsheetUtils.findValuesForColumnInSpreadsheet(assay.getSpreadsheetUI().getSpreadsheet(), GeneralFieldTypes.PROTOCOL_REF.name);
+        Set<String> protocolRefsInAssay = SpreadsheetUtils.findValuesForColumnInSpreadsheet(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet(), GeneralFieldTypes.PROTOCOL_REF.name);
 
         Set<String> fieldFocus = Collections.singleton(GeneralFieldTypes.PROTOCOL_REF.name);
 
@@ -501,7 +502,7 @@ public class StudyDataEntry extends DataEntryForm {
             // now check remaining assays to see if the protocol is used elsewhere
             for (String otherAssayRef : getStudy().getAssays().keySet()) {
                 if (!otherAssayRef.equals(assay.getAssayReference())) {
-                    Set<String> foundValues = SpreadsheetUtils.findValueInSheet(getStudy().getAssays().get(otherAssayRef).getSpreadsheetUI().getSpreadsheet(), protocolRefsInAssay, fieldFocus);
+                    Set<String> foundValues = SpreadsheetUtils.findValueInSheet(((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet(), protocolRefsInAssay, fieldFocus);
                     protocolsPresentInOtherAssays.addAll(foundValues);
                 }
             }
@@ -547,13 +548,13 @@ public class StudyDataEntry extends DataEntryForm {
             output.append(fieldName).append("\t\"").append(StringProcessing.cleanUpString(study.getFieldValues().get(fieldName))).append("\"\n");
         }
 
-        output.append(studyDesignSubform.toString());
-        output.append(studyPublicationsSubForm.toString());
-        output.append(factorSubForm.toString());
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_DESIGN_SECTION.toString(), getStudy().getStudyDesigns()));
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_PUBLICATIONS.toString(), getStudy().getPublications()));
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_FACTORS.toString(), getStudy().getFactors()));
         output.append(new AssayInformationWriter().printAssays(study.getAssays().values(),
-                getDataEntryEnvironment().getParentFrame().getMappings()));
-        output.append(protocolSubForm.toString());
-        output.append(contactSubForm.toString());
+                ConfigurationManager.getMappings()));
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_PROTOCOLS.toString(), getStudy().getProtocols()));
+        output.append(getISASectionAsString(InvestigationFileSection.STUDY_CONTACTS.toString(), getStudy().getContacts()));
 
         return output.toString();
     }
@@ -630,25 +631,25 @@ public class StudyDataEntry extends DataEntryForm {
         viewAssayListener = null;
         removeAssayListener = null;
 
-        study.getStudySample().getSpreadsheetUI().setDataEntryEnvironment(null);
+
+        ApplicationManager.getIsaSectionToDataEntryForm().get(study.getStudySample()).setDataEntryEnvironment(null);
 
         for (String assayReference : study.getAssays().keySet()) {
             Assay assay = study.getAssays().get(assayReference);
-            assay.removeReferences();
+            ApplicationManager.removeISASectionAndDataEntryForm(assay);
         }
 
         study.getAssays().clear();
 
-        study.getStudySample().removeReferences();
+
         setDataEntryEnvironment(null);
         study.setAssays(null);
-        study.getUserInterface().removeAll();
-        study.setUI(null);
+        // todo add in previous removals for cleanup.
         study.setStudySamples(null);
         study = null;
 
         fieldContainer.removeAll();
-
+        ApplicationManager.clearUserInterfaceAssignments();
 
         removeAll();
     }

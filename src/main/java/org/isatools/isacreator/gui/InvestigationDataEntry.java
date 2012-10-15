@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -42,14 +42,15 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
-import org.isatools.isacreator.io.IOUtils;
+import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
-import org.isatools.isacreator.utils.StringProcessing;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -59,7 +60,6 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -110,7 +110,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         if (investigation.getReferenceObject() == null) {
             TableReferenceObject tro =
-                    ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.INVESTIGATION);
+                    ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
             DataEntryReferenceObject referenceObject = new DataEntryReferenceObject();
             referenceObject.setFieldDefinition(tro.getTableFields().getFields());
 
@@ -161,10 +161,11 @@ public class InvestigationDataEntry extends DataEntryForm {
 
             System.out.println("Creating field for " + contactField);
 
-            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
-
-            if (generatedField != null) {
-                contactFields.add(generatedField);
+            if (!investigation.getReferenceObject().getFieldDefinition(contactField).isHidden()) {
+                SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
+                if (generatedField != null) {
+                    contactFields.add(generatedField);
+                }
             }
         }
 
@@ -185,10 +186,12 @@ public class InvestigationDataEntry extends DataEntryForm {
         Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
         for (String publicationField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
 
-            SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, publicationField);
+            if (!investigation.getReferenceObject().getFieldDefinition(publicationField).isHidden()) {
+                SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, publicationField);
 
-            if (generatedField != null) {
-                publicationFields.add(generatedField);
+                if (generatedField != null) {
+                    publicationFields.add(generatedField);
+                }
             }
         }
 
@@ -206,40 +209,10 @@ public class InvestigationDataEntry extends DataEntryForm {
     public String toString() {
         update();
         StringBuilder output = new StringBuilder();
-        output.append(InvestigationFileSection.INVESTIGATION_SECTION).append("\n");
-        Set<String> ontologyFields = IOUtils.filterFields(investigation.getFieldValues().keySet(), IOUtils.ACCESSION, IOUtils.SOURCE_REF);
-        Map<Integer, Map<String, String>> ontologyTerms = IOUtils.getOntologyTerms(investigation.getFieldValues().keySet());
-        // now, do ontology processing
-        for (String fieldName : ontologyFields) {
-            int fieldHashCode = fieldName.substring(0, fieldName.toLowerCase().indexOf("term")).trim().hashCode();
-            if (ontologyTerms.containsKey(fieldHashCode)) {
-                Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
-                Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, investigation.getFieldValues());
+        output.append(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION, aliasesToRealNames));
 
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.TERM),
-                        processedOntologyField.get(processedOntologyField.get(IOUtils.TERM)));
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION),
-                        processedOntologyField.get(processedOntologyField.get(IOUtils.ACCESSION)));
-                investigation.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF),
-                        processedOntologyField.get(processedOntologyField.get(IOUtils.SOURCE_REF)));
-            }
-        }
-
-        // now, do output
-        for (String fieldName : investigation.getFieldValues().keySet()) {
-
-            String tmpFieldName = fieldName;
-
-            if (aliasesToRealNames.containsKey(fieldName)) {
-                tmpFieldName = aliasesToRealNames.get(fieldName);
-            }
-
-            output.append(tmpFieldName).append("\t\"").append((StringProcessing.cleanUpString(
-                    investigation.getFieldValues().get(tmpFieldName)))).append("\"\n");
-        }
-
-        output.append(publicationsSubForm.toString());
-        output.append(contactsSubform.toString());
+        output.append(getISASectionAsString(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(), getPublications()));
+        output.append(getISASectionAsString(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), getContacts()));
 
         return output.toString();
     }
@@ -287,12 +260,9 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         for (String s : investigation.getStudies().keySet()) {
             Study tmpStudy = investigation.getStudies().get(s);
-            tmpStudy.getUserInterface().removeReferences();
-            tmpStudy.setUI(null);
+            ApplicationManager.getUserInterfaceForISASection(tmpStudy).removeAll();
         }
-
-        investigation.getUserInterface().removeAll();
-        investigation.setUserInterface(null);
+        ApplicationManager.getUserInterfaceForISASection(investigation).removeAll();
 
         investigation = null;
     }

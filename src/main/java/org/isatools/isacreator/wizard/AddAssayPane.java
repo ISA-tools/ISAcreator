@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -43,9 +43,9 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
@@ -76,7 +76,7 @@ public class AddAssayPane extends JPanel {
 
     private static final Logger log = Logger.getLogger(AddAssayPane.class.getName());
 
-    private static final String ARRAY_DESIGN_FILE = "Data" + File.separator + "AEArrayDesigns.txt";
+    private static final String ARRAY_DESIGN_FILE = "ProgramData" + File.separator + "AEArrayDesigns.txt";
 
     private Collection<Assay> assaysToDefine;
     private List<CreationAlgorithm> algorithmsToRun;
@@ -122,21 +122,21 @@ public class AddAssayPane extends JPanel {
         centerPanel.setOpaque(false);
         centerPanel.add(Box.createVerticalStrut(15));
 
-        String sourceNameFormat = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
+        String sourceNameFormat = ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE).getColumnFormatByName("source name");
 
         String[] arrayDesigns = retrieveArrayDesigns();
 
         for (Assay a : assaysToDefine) {
             if (a.getTechnologyType().equalsIgnoreCase("dna microarray")) {
                 MicroarrayCreationAlgorithm maAlg = new MicroarrayCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(
+                        new TableReferenceObject(ConfigurationManager.selectTROForUserSelection(
                                 a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat, arrayDesigns);
                 algorithmsToRun.add(maAlg);
                 centerPanel.add(maAlg);
             } else {
                 GeneralCreationAlgorithm gca = new GeneralCreationAlgorithm(study, a, factorsToAdd, treatmentGroups,
-                        new TableReferenceObject(ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(a.getMeasurementEndpoint(),
+                        new TableReferenceObject(ConfigurationManager.selectTROForUserSelection(a.getMeasurementEndpoint(),
                                 a.getTechnologyType()).getTableFields()), up.getInstitution(), sourceNameFormat);
                 algorithmsToRun.add(gca);
                 centerPanel.add(gca);

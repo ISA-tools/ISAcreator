@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- ÒThe contents of this file are subject to the CPAL version 1.0 (the ÒLicenseÓ);
+ ï¿½The contents of this file are subject to the CPAL version 1.0 (the ï¿½Licenseï¿½);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an ÒAS ISÓ basis,
+ Software distributed under the License is distributed on an ï¿½AS ISï¿½ basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -66,13 +66,14 @@ public class BioPortalClientTest {
     public void getAllOntologies() {
         System.out.println("_____Testing getAllOntologies()____");
 
-        List<Ontology> ontologies = client.getAllOntologies();
+        List<Ontology> ontologies = client.getAllOntologies(true);
 
         assertTrue("Oh no! No returned ontologies (empty result)! ", ontologies.size() > 0);
 
         System.out.println("Found " + ontologies.size() + " ontologies \n");
         for (Ontology ontology : ontologies) {
-            System.out.println(ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel() + " -> " + ontology.getOntologyVersion() + " - " + ontology.getHomepage() + " " + ontology.getContactName());
+            System.out.println(ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel()
+                + " -> " + ontology.getOntologyVersion() + " - " + ontology.getHomepage() + " " + ontology.getContactName());
         }
     }
 

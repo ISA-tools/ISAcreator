@@ -2,6 +2,7 @@ package org.isatools.isacreator.visualization.workflowvisualization;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.TaxonomyLevel;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -9,6 +10,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +23,7 @@ import java.util.List;
  *         Date: 17/06/2012
  *         Time: 07:33
  */
-public class NodeDetail extends JFrame {
+public class NodeDetail extends JFrame implements WindowListener {
 
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
@@ -33,21 +36,24 @@ public class NodeDetail extends JFrame {
     private Image nodeDetailIcon, nodeDetailIconInactive;
 
     private JLabel glyphImage, typeLabel, valueLabel;
-    private TaxonomyRenderer taxonomyRenderer;
+    private FragmentedGlyphRenderer taxonomyRenderer;
+    private List<TaxonomyLevel> taxonomyLevels;
 
-    public NodeDetail() {
+    public NodeDetail(List<TaxonomyLevel> taxonomyLevels) {
+        this.taxonomyLevels = taxonomyLevels;
         ResourceInjector.get("workflow-package.style").inject(this);
     }
 
     public void createGUI() {
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(250, 300));
+        setPreferredSize(new Dimension(250, 350));
         setBackground(UIHelper.BG_COLOR);
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
         addTitlePane();
         setAlwaysOnTop(true);
         addCentralPanel();
+        addWindowListener(this);
 
         pack();
         setLocationRelativeTo(null);
@@ -90,7 +96,9 @@ public class NodeDetail extends JFrame {
 
         // ending glyph information container
 
-        taxonomyRenderer = new TaxonomyRenderer();
+        taxonomyRenderer = new FragmentedGlyphRenderer(taxonomyLevels);
+        container.add(Box.createVerticalStrut(5));
+        container.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Glyph Composition", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR)));
         container.add(taxonomyRenderer);
 
         add(container, BorderLayout.CENTER);
@@ -101,29 +109,6 @@ public class NodeDetail extends JFrame {
         setTextInformation(visualisationNode.getType(), visualisationNode.getValue());
         setTaxonomyView(visualisationNode.getTaxonomyHierarchy());
         repaint();
-    }
-
-    public static void main(String[] args) {
-        NodeDetail nodeDetail = new NodeDetail();
-        nodeDetail.createGUI();
-
-        List<WorkflowVisualisationNode> workflowsTest = new ArrayList<WorkflowVisualisationNode>();
-        workflowsTest.add(new WorkflowVisualisationNode("Data/images/glyph_organism.png",
-                "Sample Name", "sample1-homo sapiens",
-                "protocol(2):in vivo(3):material amplification(5):organism(7)"));
-
-        for (WorkflowVisualisationNode node : workflowsTest) {
-            nodeDetail.setContent(node);
-            sleep(6);
-        }
-    }
-
-    private static void sleep(int seconds) {
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private void setGlyphImage(String fileName) {
@@ -138,5 +123,28 @@ public class NodeDetail extends JFrame {
     private void setTaxonomyView(String taxonomyAsString) {
         taxonomyRenderer.setTaxonomyToRender(taxonomyAsString);
         taxonomyRenderer.repaint();
+    }
+
+    public void windowOpened(WindowEvent windowEvent) {
+    }
+
+    public void windowClosing(WindowEvent windowEvent) {
+    }
+
+    public void windowClosed(WindowEvent windowEvent) {
+        taxonomyRenderer.closeAll();
+    }
+
+    public void windowIconified(WindowEvent windowEvent) {
+        taxonomyRenderer.closeAll();
+    }
+
+    public void windowDeiconified(WindowEvent windowEvent) {
+    }
+
+    public void windowActivated(WindowEvent windowEvent) {
+    }
+
+    public void windowDeactivated(WindowEvent windowEvent) {
     }
 }

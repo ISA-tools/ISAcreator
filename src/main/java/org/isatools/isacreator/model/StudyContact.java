@@ -23,7 +23,7 @@ public class StudyContact extends Contact {
     public static final String CONTACT_ROLE_TERM_SOURCE_REF = "Study Person Roles Term Source REF";
 
     public StudyContact() {
-        super();
+        this("", "", "", "", "", "", "", "", "");
     }
 
     /**

@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -95,44 +95,36 @@ public class CiteExploreClient {
     public List<CiteExploreResult> performQuery(SearchOption searchOption, String fullQueryString) throws QueryException_Exception, NoPublicationFoundException {
         WSCitationImpl port = service.getWSCitationImplPort();
 
-        ResultListBean resultListBean = port.searchCitations(fullQueryString, "all", 0, "");
-
-        if (resultListBean.getHitCount() > 0) {
-            return createResultList(resultListBean);
+        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString, "metadata", "core", 0, false, "isatools@googlgroups.com");
+        ResultList resultList = responseWrapper.getResultList();
+        if (resultList.getResult().size() > 0) {
+            return createResultList(resultList);
         } else {
             throw new NoPublicationFoundException(searchOption, fullQueryString);
         }
     }
 
-    private List<CiteExploreResult> createResultList(ResultListBean searchResults) {
+    private List<CiteExploreResult> createResultList(ResultList searchResults) {
         List<CiteExploreResult> resultSet = new ArrayList<CiteExploreResult>();
 
-        List<ResultBean> resultBeans = searchResults.getResultBeanCollection();
+        List<Result> resultBeans = searchResults.getResult();
 
-        for (ResultBean result : resultBeans) {
-            Citation citation = result.getCitation();
-            String authorList = "";
-            for (Author author : citation.getAuthorCollection()) {
-                authorList += author.getLastName() + " " + author.getInitials() + ",";
-            }
-            if (authorList.length() > 1) {
-                authorList = authorList.substring(0, authorList.length() - 1);
-            }
+        for (Result result : resultBeans) {
+            CiteExploreResult citexploreRecord = new CiteExploreResult(result.getId(), result.getDOI(), result.getAuthorString(),
+                    result.getTitle().replaceAll("\\[|\\]", ""), result.getAbstractText(), result.getAffiliation());
 
-            String doi = "";
-            for (FullTextURL ftURL : citation.getUrlCollection()) {
-                if (ftURL.getUrl().contains("doi")) {
-                    doi = ftURL.getUrl();
-                    break;
+            resultSet.add(citexploreRecord);
+            if (result.getGrantsList() != null) {
+                String grants = "";
+                int grantCount = 0;
+                for (GrantInfo grantInfo : result.getGrantsList().getGrant()) {
+                    grants += (grantInfo.getAcronym() == null ? "" : grantInfo.getAcronym() + ", ") + grantInfo.getAgency() + " (" + grantInfo.getGrantId() + ")";
+                    grants += grantCount < result.getGrantsList().getGrant().size() - 1 ? ", " : "";
                 }
+                citexploreRecord.setGrants(grants);
             }
-
-            resultSet.add(new CiteExploreResult(citation.getExternalId(), doi, authorList,
-                    citation.getTitle().replaceAll("\\[|\\]", ""), citation.getAbstractText(), citation.getAffiliation()));
         }
 
         return resultSet;
     }
-
-
 }

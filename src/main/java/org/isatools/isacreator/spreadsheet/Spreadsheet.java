@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -49,15 +49,13 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
-import org.isatools.isacreator.gui.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.model.ReferenceData;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.spreadsheet.transposedview.SpreadsheetConverter;
@@ -69,9 +67,7 @@ import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -99,9 +95,8 @@ public class Spreadsheet extends JComponent implements
     private static final Logger log = Logger.getLogger(Spreadsheet.class.getName());
 
     public static final int MAX_ROWS = 32000;
-    public static FileSelectCellEditor fileSelectEditor;
-    private static EmptyBorder emtpyBorder = new EmptyBorder(1, 1, 1, 1);
 
+    public static FileSelectCellEditor fileSelectEditor;
     protected static DateCellEditor dateEditor;
 
     public static final int SWITCH_ABSOLUTE = 0;
@@ -137,8 +132,6 @@ public class Spreadsheet extends JComponent implements
     private CustomTable table;
 
     private List<CopyPasteObserver> observers;
-
-
     private TableGroupInfo tableGroupInformation;
     protected SpreadsheetColumnRenderer columnRenderer = new SpreadsheetColumnRenderer();
     protected SpreadsheetModel spreadsheetModel;
@@ -160,13 +153,11 @@ public class Spreadsheet extends JComponent implements
     protected boolean highlightActive = false;
     private TableConsistencyChecker tableConsistencyChecker;
 
-    private CopyPasteAdaptor copyPasteAdaptor;
     private SpreadsheetPopupMenus spreadsheetPopups;
     private JPanel spreadsheetFunctionPanel;
-
     protected SpreadsheetFunctions spreadsheetFunctions;
 
-    // Objects required for the undo function to work.
+    // Objects required for the undo function.
     protected Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
     protected SpreadsheetHistory spreadsheetHistory = new SpreadsheetHistory();
 
@@ -222,20 +213,17 @@ public class Spreadsheet extends JComponent implements
 
     /**
      * Spreadsheet Constructor.
-     *
-     * @param tableReferenceObject      - Reference Object to build the table with.
-     * @param studyDataEntryEnvironment - StudyDataEntry. Used to retrieve factors and protocols which have been entered.
      * @param spreadsheetTitle          - name to display on the spreadsheet...
      * @param assayDataEntryEnvironment - The assay data entry object :o)
      */
-    public Spreadsheet(TableReferenceObject tableReferenceObject, StudyDataEntry studyDataEntryEnvironment, String spreadsheetTitle, AssaySpreadsheet assayDataEntryEnvironment) {
+    public Spreadsheet(String spreadsheetTitle, AssaySpreadsheet assayDataEntryEnvironment) {
 
-        this.studyDataEntryEnvironment = studyDataEntryEnvironment;
+        this.studyDataEntryEnvironment = assayDataEntryEnvironment.getStudyDataEntry();
         this.parentFrame = studyDataEntryEnvironment.getDataEntryEnvironment().getParentFrame();
         this.assayDataEntryEnvironment = assayDataEntryEnvironment;
 
         this.spreadsheetTitle = spreadsheetTitle;
-        this.tableReferenceObject = tableReferenceObject;
+        this.tableReferenceObject = assayDataEntryEnvironment.getTableReferenceObject();
 
         instantiateSpreadsheet();
     }
@@ -255,6 +243,69 @@ public class Spreadsheet extends JComponent implements
 
         setLayout(new BorderLayout());
 
+        createSpreadsheetModel();
+        populateSpreadsheetWithContent();
+        addOntologyTermsToUserHistory();
+
+
+        // assign copy/paste listener
+        new CopyPasteAdaptor(this);
+
+        JScrollPane pane = new JScrollPane(table,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        pane.setBackground(UIHelper.BG_COLOR);
+        pane.setAutoscrolls(true);
+        pane.getViewport().setBackground(UIHelper.BG_COLOR);
+        pane.setBorder(UIHelper.EMPTY_BORDER);
+
+        IAppWidgetFactory.makeIAppScrollPane(pane);
+
+        add(pane, BorderLayout.CENTER);
+
+        createButtonPanel();
+        addUndoableEditListener(undoManager);
+    }
+
+    private void addOntologyTermsToUserHistory() {
+        if (tableReferenceObject.getDefinedOntologies().size() > 0) {
+            for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
+                OntologyManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
+            }
+        }
+    }
+
+    private void populateSpreadsheetWithContent() {
+        if (tableReferenceObject.getReferenceData() != null) {
+            populateTable(tableReferenceObject.getReferenceData());
+            rebuildDependencies(tableReferenceObject.getColumnDependencies());
+        } else {
+            // populate table with some empty fields.
+            spreadsheetFunctions.addRows(INITIAL_ROWS, true);
+
+            if (studyDataEntryEnvironment != null) {
+
+                List<Protocol> protocols = tableReferenceObject.constructProtocolObjects();
+                if (protocols.size() > 0) {
+                    for (Protocol p : protocols) {
+                        studyDataEntryEnvironment.getStudy().addProtocol(p);
+                    }
+                    studyDataEntryEnvironment.reformProtocols();
+                }
+
+                List<Factor> factors = tableReferenceObject.constructFactorObjects();
+
+                if (factors.size() > 0) {
+                    for (Factor f : factors) {
+                        studyDataEntryEnvironment.getStudy().addFactor(f);
+                    }
+                    studyDataEntryEnvironment.reformFactors();
+                }
+            }
+        }
+    }
+
+    private void createSpreadsheetModel() {
         // create a spreadsheet model which overrides two methods that allow the reference model for the spreadsheet to
         // control which columns can be deleted, and which cannot.
         spreadsheetModel = new SpreadsheetModel(tableReferenceObject) {
@@ -301,62 +352,7 @@ public class Spreadsheet extends JComponent implements
         setupTable();
 
         spreadsheetModel.setTable(table);
-
-        if (tableReferenceObject.getReferenceData() != null) {
-            populateTable(tableReferenceObject.getReferenceData());
-            rebuildDependencies(tableReferenceObject.getColumnDependencies());
-        } else {
-            // populate table with some empty fields.
-            spreadsheetFunctions.addRows(INITIAL_ROWS, true);
-
-            if (studyDataEntryEnvironment != null) {
-
-                List<Protocol> protocols = tableReferenceObject.constructProtocolObjects();
-                if (protocols.size() > 0) {
-                    for (Protocol p : protocols) {
-                        studyDataEntryEnvironment.getStudy().addProtocol(p);
-                    }
-                    studyDataEntryEnvironment.reformProtocols();
-                }
-
-                List<Factor> factors = tableReferenceObject.constructFactorObjects();
-
-                if (factors.size() > 0) {
-                    for (Factor f : factors) {
-                        studyDataEntryEnvironment.getStudy().addFactor(f);
-                    }
-                    studyDataEntryEnvironment.reformFactors();
-                }
-            }
-        }
-
-
-        if (tableReferenceObject.getDefinedOntologies().size() > 0) {
-            for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
-                OntologyManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
-            }
-        }
-
-
         table.setAutoscrolls(true);
-
-        // assign copy/paste listener
-        copyPasteAdaptor = new CopyPasteAdaptor(this);
-
-        JScrollPane pane = new JScrollPane(table,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        pane.setBackground(UIHelper.BG_COLOR);
-        pane.setAutoscrolls(true);
-        pane.getViewport().setBackground(UIHelper.BG_COLOR);
-        pane.setBorder(emtpyBorder);
-
-        IAppWidgetFactory.makeIAppScrollPane(pane);
-
-        add(pane, BorderLayout.CENTER);
-
-        createButtonPanel();
-        addUndoableEditListener(undoManager);
     }
 
     public SpreadsheetFunctions getSpreadsheetFunctions() {
@@ -912,41 +908,41 @@ public class Spreadsheet extends JComponent implements
      * This method is meant to be overridden in the event that one wishes to add in custom functions to the spreadsheet UI
      */
     public void addButtons() {
-        spreadsheetFunctionPanel.add(addRow);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-        spreadsheetFunctionPanel.add(deleteRow);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-        spreadsheetFunctionPanel.add(deleteColumn);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-        spreadsheetFunctionPanel.add(multipleSort);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-        spreadsheetFunctionPanel.add(copyColDown);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-        spreadsheetFunctionPanel.add(copyRowDown);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+
+        addComponentsToContainer(spreadsheetFunctionPanel, true, addRow, deleteRow,
+                deleteColumn, multipleSort, copyColDown, copyRowDown);
 
         //add factor, protocol, parameter and characteristic here!
         if (studyDataEntryEnvironment != null) {
-            spreadsheetFunctionPanel.add(addFactor);
-            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-            spreadsheetFunctionPanel.add(addCharacteristic);
-            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-            spreadsheetFunctionPanel.add(addProtocol);
-            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-            spreadsheetFunctionPanel.add(addParameter);
-            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-            spreadsheetFunctionPanel.add(transpose);
-            spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
+            addComponentsToContainer(spreadsheetFunctionPanel, true, addFactor,
+                    addCharacteristic, addProtocol, addParameter, transpose);
         }
-        spreadsheetFunctionPanel.add(undo);
-        spreadsheetFunctionPanel.add(Box.createHorizontalStrut(5));
-        spreadsheetFunctionPanel.add(redo);
 
+        addComponentsToContainer(spreadsheetFunctionPanel, false, undo, redo);
 
         addProtocol.setEnabled(false);
         addParameter.setEnabled(false);
         addCharacteristic.setEnabled(false);
 
+    }
+
+    /**
+     * Helper method that adds a number of buttons to a panel.
+     *
+     * @param container  - Container to add the components to
+     * @param addSpaceOnLastElement - do you wish to add a space after the last component? If false, there will be no padding added after the last component.
+     * @param components - Components to add. Added in the order they are passed in to the method.
+     */
+    public void addComponentsToContainer(Container container, boolean addSpaceOnLastElement, JComponent... components) {
+        int count = 0;
+        for (Component component : components) {
+            container.add(component);
+
+            if (addSpaceOnLastElement || count != components.length - 1) {
+                container.add(Box.createHorizontalStrut(5));
+            }
+            count++;
+        }
     }
 
     /**
@@ -964,17 +960,6 @@ public class Spreadsheet extends JComponent implements
     public TableConsistencyChecker getTableConsistencyChecker() {
         return tableConsistencyChecker;
     }
-
-
-    /**
-     * Return the current DataEntryEnvironment
-     *
-     * @return DataEntryPanel
-     */
-    public DataEntryEnvironment getDataEntryEnv() {
-        return studyDataEntryEnvironment.getDataEntryEnvironment();
-    }
-
 
     /**
      * Return a list of the current column headers
@@ -1734,48 +1719,6 @@ public class Spreadsheet extends JComponent implements
                 }
             }
         }
-    }
-
-    public void removeReferences() {
-        setStudyDataEntryEnvironment(null);
-        assayDataEntryEnvironment = null;
-        spreadsheetFunctions.cleanReferences();
-        spreadsheetPopups.setSpreadsheet(null);
-        spreadsheetFunctions = null;
-        copyPasteAdaptor.setSpreadsheet(null);
-        copyPasteAdaptor = null;
-        spreadsheetHistory.setTableModel(null);
-        spreadsheetModel = null;
-
-        // first we remove all current cell editors
-        Enumeration<TableColumn> tableColumnEnum = table.getColumnModel().getColumns();
-        while (tableColumnEnum.hasMoreElements()) {
-            TableColumn column = tableColumnEnum.nextElement();
-
-            CellEditor editor = column.getCellEditor();
-            if (editor instanceof OntologyCellEditor) {
-                OntologyCellEditor ontologyCellEditor = (OntologyCellEditor) editor;
-                ontologyCellEditor.cleanupReferences();
-            }
-            editor = null;
-            column.setCellEditor(null);
-        }
-
-        table.getTableHeader().setTable(null);
-        table.getColumnModel().getColumn(0).setCellRenderer(null);
-        table.setModel(new DefaultTableModel());
-        table.removeMouseListener(this);
-        table.getSelectionModel().removeListSelectionListener(this);
-        table.getColumnModel().getSelectionModel().removeListSelectionListener(this);
-        table.getParent().removeAll();
-        table.removeAll();
-        table = null;
-
-        rows.clear();
-        tableReferenceObject.setReferenceData(null);
-
-        getParent().removeAll();
-        removeAll();
     }
 
 }

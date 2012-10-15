@@ -7,7 +7,7 @@ package org.isatools.isacreator.apiutils;
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -15,7 +15,7 @@ package org.isatools.isacreator.apiutils;
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,12 +37,15 @@ package org.isatools.isacreator.apiutils;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.sampleselection.SampleInformation;
+import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,10 +73,11 @@ public class StudyUtils {
      * @return - Map<String, Map<String, String>> -> Sample Name - other Key, Value pairs describing the sample
      */
     public static Map<String, SampleInformation> getStudySampleInformation(final Study study) {
-        final Spreadsheet studySampleSpreadsheet = study.getStudySample().getSpreadsheetUI().getSpreadsheet();
+
+        final Spreadsheet studySampleSpreadsheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(
+                study.getStudySample())).getSpreadsheet();
 
         if (studySampleInformation.get(study.getStudyId()) == null || studySampleFileModifiedFlag.get(study.getStudyId())) {
-
 
             Thread sampleHarvestingThread = new Thread(new Runnable() {
                 public void run() {

@@ -2,7 +2,7 @@
 
 rm -rf Configurations
 
-echo "Retreiving configuration from GitHub repo"
+echo "Retrieving configuration from GitHub repo"
 mkdir Configurations
 cd Configurations
 wget https://github.com/downloads/ISA-tools/Configuration-Files/isaconfig-default_v2011-02-18.zip --no-check-certificate

@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -51,7 +50,7 @@ public class GraphTest {
         analysis.getGraph().outputGraph();
 
         TreeMLGraphOutput graphOutput = new TreeMLGraphOutput();
-        graphOutput.renderGraph(analysis.getGraph(), new File("Data/myfile.xml"));
+        graphOutput.renderGraph(analysis.getGraph(), new File("ProgramData/myfile.xml"));
 
         assertEquals("Number of processes is not what I expected", 3, analysis.getGraph().findInstancesOfNode(NodeType.PROCESS_NODE).size());
         assertEquals("Number of materials is not what I expected", 6, analysis.getGraph().findInstancesOfNode(NodeType.MATERIAL_NODE).size());

@@ -1,12 +1,11 @@
 package org.isatools.isacreator.visualization.workflowvisualization;
 
-import org.isatools.isacreator.visualization.TreeView;
+import org.isatools.isacreator.visualization.tree.TreeView;
 import prefuse.Constants;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
 import prefuse.action.ItemAction;
 import prefuse.action.RepaintAction;
-import prefuse.action.animate.ColorAnimator;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.DataColorAction;
 import prefuse.action.layout.CollapsedSubtreeLayout;
@@ -48,6 +47,7 @@ public class WorkflowVisualisationTreeView extends TreeView {
         m_nodeRenderer = new LabelRenderer(null, "image");
 
         m_edgeRenderer = new EdgeRenderer(Constants.EDGE_TYPE_CURVE);
+        m_edgeRenderer.setDefaultLineWidth(4);
 
         DefaultRendererFactory rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);

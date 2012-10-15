@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -16,6 +16,15 @@
             <organization>ISA tools team</organization>
             <organizationUrl>http://isa-tools.org</organizationUrl>
         </developer>
+
+        <developer>
+            <id>agbeltran</id>
+            <name>Alejandra Gonzalez-Beltran</name>
+            <email>alejandra.gonzalez.beltran@gmail.com</email>
+            <organization>ISA tools team</organization>
+            <organizationUrl>http://isa-tools.org</organizationUrl>
+        </developer>
+
     </developers>
 
     <licenses>
@@ -55,12 +64,19 @@
 
         <repository>
             <id>oerc</id>
-            <url>http://frog.oerc.ox.ac.uk:8080/artifactory/repo/</url>
+            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases/</url>
         </repository>
 
         <repository>
             <id>mvnsearch</id>
             <url>http://www.mvnsearch.org/maven2/</url>
+        </repository>
+
+
+        <!-- Repository for GS code -->
+        <repository>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
         </repository>
 
     </repositories>
@@ -85,6 +101,7 @@
                 </configuration>
             </plugin>
 
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -92,11 +109,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.isatools.isacreator.gui.modeselection.ModeSelector</Bundle-Activator>
+                        <Bundle-Activator>org.isatools.isacreator.launch.ISAcreatorActivator</Bundle-Activator>
                         <Bundle-Vendor>ISA team, http://isa-tools.org</Bundle-Vendor>
                     </instructions>
                 </configuration>
             </plugin>
+
+
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -177,7 +196,7 @@
                         <configuration>
 
                             <wsdlUrls>
-                                <wsdlUrl>http://www.ebi.ac.uk/webservices/citexplore/v1.0/service?wsdl</wsdlUrl>
+                                <wsdlUrl>http://www.ebi.ac.uk/webservices/citexplore/v3.0.1/service?wsdl</wsdlUrl>
                             </wsdlUrls>
                             <packageName>uk.ac.ebi.cdb.client</packageName>
                             <sourceDestDir>target/generated/citexplore</sourceDestDir>
@@ -388,6 +407,18 @@
 
         <dependency>
             <groupId>org.isatools</groupId>
+            <artifactId>automacron</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j</artifactId>
+            <version>1.8.M07</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
             <version>1.5</version>
             <exclusions>
@@ -402,6 +433,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+
+        <!-- Dependencies for GS code -->
+        <dependency>
+            <groupId>org.clojars.chapmanb</groupId>
+            <artifactId>genomespace-cdk</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -439,7 +479,7 @@
         <repository>
             <id>oerc-repo</id>
             <name>OeRC Maven repository</name>
-            <url>http://frog.oerc.ox.ac.uk:8080/artifactory/libs-release-local/</url>
+            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases</url>
         </repository>
     </distributionManagement>
 

@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -106,7 +106,7 @@ public class BioPortalClient implements OntologyService {
             BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
             parser.setLoadAllOntologies(loadAll);
 
-            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
+            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT, false);
 
             if (ontologies != null) {
                 for (Ontology ontology : ontologies) {
@@ -120,20 +120,24 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Ontology getOntologyById(String ontologyId) {
-        String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
+        if (!ontologyId.isEmpty()) {
 
-        log.info("Getting ontology by id : query string is " + searchString);
+            String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
 
-        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology-info-" + ontologyId + DownloadUtils.XML_EXT;
+            System.out.println(searchString);
+            log.info("Getting ontology by id : query string is " + searchString);
 
-        DownloadUtils.downloadFile(searchString, downloadLocation);
+            String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology" + ontologyId + DownloadUtils.XML_EXT;
 
-        BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
+            DownloadUtils.downloadFile(searchString, downloadLocation);
 
-        List<Ontology> ontologies = parser.parseFile(downloadLocation);
+            BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
-        if (ontologies != null && !ontologies.isEmpty()) {
-            return ontologies.get(0);
+            List<Ontology> ontologies = parser.parseFile(downloadLocation, true);
+
+            if (ontologies != null && !ontologies.isEmpty()) {
+                return ontologies.get(0);
+            }
         }
 
         return null;
@@ -171,9 +175,7 @@ public class BioPortalClient implements OntologyService {
         OntologyTerm ontologyResult = getTermInformation(termAccession, ontology);
         Map<String, String> result = new ListOrderedMap<String, String>();
         result.put("accession", termAccession);
-
         result.putAll(ontologyResult.getComments());
-
         return result;
     }
 

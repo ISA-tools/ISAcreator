@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -84,6 +84,8 @@ public class TableReferenceObject implements Serializable {
 
         missingFields = new HashMap<String, FieldObject>();
         definedOntologies = new HashMap<String, OntologyTerm>();
+
+        referenceData = new ReferenceData();
 
         for (FieldObject fo : tableConfig.getFields()) {
             fieldLookup.put(fo.getFieldName(), fo);
@@ -376,11 +378,11 @@ public class TableReferenceObject implements Serializable {
 
 
     public Object[][] getDataAsArray() {
-        List<List<String>> spreadsheetData = this.referenceData.getData();
+        List<List<String>> spreadsheetData = referenceData.getData();
 
         Object[][] ssContents = new Object[spreadsheetData.size() + 1][];
 
-        ssContents[0] = getHeaders().subList(1, getHeaders().size() - 1).toArray(new String[getHeaders().size() - 2]);
+        ssContents[0] = getHeaders().subList(1, getHeaders().size()).toArray(new String[getHeaders().size() - 1]);
 
         int count = 1;
         for (List<String> rowContent : spreadsheetData) {
@@ -396,18 +398,14 @@ public class TableReferenceObject implements Serializable {
     }
 
     public String getDefaultValue(int colNumber) {
-
         if (tableConfig != null) {
             if (preprocessedTableFields == null) {
                 createProcessedTableFields();
             }
-
             FieldObject field = preprocessedTableFields.get(colNumber);
-
             if (field == null) {
                 return "";
             }
-
             return field.getDefaultVal() == null ? "" : field.getDefaultVal();
         }
         return "";

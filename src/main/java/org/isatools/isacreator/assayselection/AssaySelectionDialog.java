@@ -7,7 +7,7 @@ package org.isatools.isacreator.assayselection;
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -15,7 +15,7 @@ package org.isatools.isacreator.assayselection;
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -40,6 +40,7 @@ package org.isatools.isacreator.assayselection;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -64,13 +65,11 @@ public class AssaySelectionDialog extends JDialog {
 
     private AssaySelectionUI assaySelectionUI;
     private Map<String, List<String>> measurementsToTechnologies;
-    private ISAcreator isacreatorEnvironment;
 
-    public AssaySelectionDialog(ISAcreator isacreatorEnvironment, Map<String, List<String>> measurementsToTechnologies) {
+    public AssaySelectionDialog(Map<String, List<String>> measurementsToTechnologies) {
 
         ResourceInjector.get("assayselection-package.style").inject(this);
 
-        this.isacreatorEnvironment = isacreatorEnvironment;
         this.measurementsToTechnologies = measurementsToTechnologies;
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(750, 510));
@@ -148,7 +147,7 @@ public class AssaySelectionDialog extends JDialog {
     private void closeWindow() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                isacreatorEnvironment.hideSheet();
+                ApplicationManager.getCurrentApplicationInstance().hideSheet();
             }
         });
     }

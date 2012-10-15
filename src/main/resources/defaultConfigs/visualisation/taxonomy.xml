@@ -1,0 +1,68 @@
+<taxonomy>
+    <!--Can look up by image name for the fragment to find related fragments at the same level-->
+
+    <level name="root">
+        <value name="Inputs and Outputs" image="ProgramData/images/fragments/inputs-and-outputs.png"/>
+        <value name="Process" image="ProgramData/images/fragments/process.png"/>
+    </level>
+
+    <level name="inputs-and-outputs">
+        <value name="biological" image="ProgramData/images/fragments/biological.png"/>
+        <value name="data" image="ProgramData/images/fragments/data.png"/>
+        <value name="chemical entity" image="ProgramData/images/fragments/chemical-entity.png"/>
+        <value name="device" image="ProgramData/images/fragments/device.png"/>
+    </level>
+
+    <level name="taxonomy">
+        <value name="virus" image="ProgramData/images/fragments/virus.png"/>
+        <value name="bacteria" image="ProgramData/images/fragments/bacteria.png"/>
+        <value name="fungus" image="ProgramData/images/fragments/fungus.png"/>
+        <value name="animal" image="ProgramData/images/fragments/animal.png"/>
+        <value name="insect" image="ProgramData/images/fragments/insect.png"/>
+        <value name="arachnid" image="ProgramData/images/fragments/arachnid.png"/>
+        <value name="plant" image="ProgramData/images/fragments/plant.png"/>
+    </level>
+
+    <level name="parts">
+        <value name="molecular entity" image="ProgramData/images/fragments/molecular-part.png"/>
+        <value name="cellular part" image="ProgramData/images/fragments/cellular-part.png"/>
+        <value name="cell" image="ProgramData/images/fragments/cell.png"/>
+        <value name="tissue" image="ProgramData/images/fragments/tissue.png"/>
+        <value name="organ" image="ProgramData/images/fragments/organ.png"/>
+        <value name="organism" image="ProgramData/images/fragments/organism.png"/>
+        <value name="population" image="ProgramData/images/fragments/population.png"/>
+    </level>
+
+    <level name="process types">
+        <value name="in vivo" image="ProgramData/images/fragments/in-vivo.png"/>
+        <value name="in vitro" image="ProgramData/images/fragments/in-vitro.png"/>
+        <value name="in silico" image="ProgramData/images/fragments/in-silico.png"/>
+    </level>
+
+    <level name="data processing">
+        <value name="data collection" image="ProgramData/images/fragments/data-collection.png"/>
+        <value name="data processing" image="ProgramData/images/fragments/data-processing.png"/>
+        <value name="data analysis" image="ProgramData/images/fragments/data-analysis.png"/>
+    </level>
+
+    <level name="data types">
+        <value name="raw data" image="ProgramData/images/fragments/raw.png"/>
+        <value name="processed data" image="ProgramData/images/fragments/processed.png"/>
+        <value name="analysed data" image="ProgramData/images/fragments/analysed.png"/>
+    </level>
+
+    <level name="material processing">
+        <value name="material perturbation" image="ProgramData/images/fragments/material-perturbation.png"/>
+        <value name="material combination" image="ProgramData/images/fragments/material-combination.png"/>
+        <value name="material separation" image="ProgramData/images/fragments/material-separation.png"/>
+        <value name="material amplification" image="ProgramData/images/fragments/material-amplification.png"/>
+        <value name="material collection" image="ProgramData/images/fragments/material-collection.png"/>
+    </level>
+
+    <level name="perturbation">
+        <value name="material induced perturbation" image="ProgramData/images/fragments/material-perturbation.png"/>
+        <value name="behaviourally induced combination" image="ProgramData/images/fragments/behavioural-perturbation.png"/>
+        <value name="physically induced separation" image="ProgramData/images/fragments/physcial-perturbation.png"/>
+    </level>
+
+</taxonomy>

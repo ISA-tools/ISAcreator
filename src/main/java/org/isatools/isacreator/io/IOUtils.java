@@ -32,37 +32,27 @@ public class IOUtils {
     public static Map<Integer, Map<String, String>> getOntologyTerms(Set<String> fieldNames) {
 
         Map<Integer, Map<String, String>> fields = new HashMap<Integer, Map<String, String>>();
-
         if (fieldNames != null) {
-
             Set<String> ontologyFields = filterFields(fieldNames, ACCESSION, SOURCE_REF);
 
             for (String ontologyValues : ontologyFields) {
                 String actualFieldName = ontologyValues.substring(0, ontologyValues.toLowerCase().indexOf("term")).trim();
-
                 int hash = actualFieldName.hashCode();
 
                 if (!fields.containsKey(hash)) {
-
                     fields.put(hash, new HashMap<String, String>());
-
                     if (actualFieldName.contains("[")) {
                         actualFieldName += "]";
                     }
-
                     fields.get(hash).put(TERM, actualFieldName);
                 }
-
                 if (ontologyValues.toLowerCase().contains(ACCESSION)) {
                     fields.get(hash).put(ACCESSION, ontologyValues);
                 } else if (ontologyValues.toLowerCase().contains(SOURCE_REF)) {
                     fields.get(hash).put(SOURCE_REF, ontologyValues);
                 }
-
             }
         }
-
-
         return fields;
     }
 
@@ -96,7 +86,7 @@ public class IOUtils {
         String tmpAccession = "";
         String tmpSourceRefs = "";
 
-        if (term.contains(";")) {
+        if (term != null && term.contains(";")) {
             // then we have multiple values
             String[] ontologies = term.split(";");
 
@@ -130,31 +120,30 @@ public class IOUtils {
                 numberAdded++;
             }
 
-        } else {
-            if (term.contains(":")) {
-                OntologyTerm oo = OntologyManager.getUserOntologyHistory().get(term);
+        } else if (term != null && term.contains(":")) {
 
-                if (oo.getOntologyTermName() != null) {
-                    tmpTerm = oo.getOntologyTermName();
-                    tmpAccession = oo.getOntologySourceAccession();
-                    tmpSourceRefs = oo.getOntologySource();
-                } else {
-                    if (term.contains(":")) {
-                        String[] termAndSource = term.split(":");
+            OntologyTerm oo = OntologyManager.getUserOntologyHistory().get(term);
 
-                        tmpSourceRefs = termAndSource[0];
-                        tmpTerm = termAndSource[1];
-                    } else {
-                        tmpTerm = term;
-                        tmpAccession = "";
-                        tmpSourceRefs = "";
-                    }
-                }
+            if (oo.getOntologyTermName() != null) {
+                tmpTerm = oo.getOntologyTermName();
+                tmpAccession = oo.getOntologySourceAccession();
+                tmpSourceRefs = oo.getOntologySource();
             } else {
-                tmpTerm = term;
-                tmpAccession = "";
-                tmpSourceRefs = "";
+                if (term.contains(":")) {
+                    String[] termAndSource = term.split(":");
+
+                    tmpSourceRefs = termAndSource[0];
+                    tmpTerm = termAndSource[1];
+                } else {
+                    tmpTerm = term;
+                    tmpAccession = "";
+                    tmpSourceRefs = "";
+                }
             }
+        } else {
+            tmpTerm = term;
+            tmpAccession = ontologyTerms.get(IOUtils.ACCESSION) == null ? "" : ontologyTerms.get(IOUtils.ACCESSION);
+            tmpSourceRefs = ontologyTerms.get(IOUtils.SOURCE_REF) == null ? "" : ontologyTerms.get(IOUtils.SOURCE_REF);
         }
 
         Map<String, String> result = new HashMap<String, String>();
