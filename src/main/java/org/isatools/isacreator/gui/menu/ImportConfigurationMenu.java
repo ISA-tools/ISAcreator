@@ -37,8 +37,15 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.ImportConfiguration;
+import org.isatools.isacreator.gs.GSDataManager;
+import org.isatools.isacreator.gs.GSIdentityManager;
+import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -58,11 +65,13 @@ import java.io.File;
  */
 public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
+    private static Logger log = Logger.getLogger(ImportConfigurationMenu.class);
+
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
             loadButton, loadButtonOver, exitButtonSml, exitButtonSmlOver, filterLeft, filterRight;
 
-    private boolean initialLoadingPassed = true;
+    //private boolean initialLoadingPassed = true;
 
     public ImportConfigurationMenu(ISAcreatorMenu menu) {
         super(menu);
@@ -145,19 +154,40 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
 
+                            //TODO remove
+                            /*
                             if (!initialLoadingPassed) {
-                                System.err.println("loading hasn't been performed before, so now going to authentication screen");
+                                log.info("loading hasn't been performed before, so now going to authentication screen");
                                 menu.changeView(menu.getAuthenticationGUI());
                             } else {
-                                System.err.println("loading has been performed before, so now going to menu");
+
+
+                                log.info("loading has been performed before, so now going to menu");
                                 menu.changeView(menu.getMainMenuGUI());
                             }
+                            */
+
+                            //Assuming this menu was only created, if it was necessary to load the configuration files through the GUI (ie. not given as parameter when launching ISAcreator)
+                            //After loading configuration files, check if the isatabDir or isatabFiles where given as parameter
+                            //If GS mode, download the files and load them
+                            //In other modes (NORMAL or LIGHT), just load the files
+
+                            //TODO dependency with GS stuff
+                            if (ISAcreatorCLArgs.mode()== Mode.GS){
+                                GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+                            }  // GS
+
+                            menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                            menu.changeView(menu.getImportISAGUI());
+
+                            }//else
+
+
 
                             problemScroll.setVisible(false);
 
-                            initialLoadingPassed = true;
+                            //initialLoadingPassed = true;
                         }
-                    }
                 }
                 );
             }
@@ -224,5 +254,8 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
     public ImageIcon getRightFilterImage() {
         return filterRight;
     }
+
+
+
 
 }
