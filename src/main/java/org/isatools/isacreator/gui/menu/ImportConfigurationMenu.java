@@ -180,7 +180,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             if (ISAcreatorCLArgs.isatabDir()!=null){
                                 menu.loadFiles(ISAcreatorCLArgs.isatabDir());
                             }
-                            menu.changeView(menu.getImportISAGUI());
+                            menu.changeView(menu.getMainMenuGUI());
 
                             }//else
 
