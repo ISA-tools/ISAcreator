@@ -285,11 +285,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             //mode, configuration, user, main
             int panelToShow = ISAcreatorMenu.NONE;
 
-            if ((username==null || password==null) || authMenuClassName!=null){
+            if (!loggedIn && (username==null || password==null) || authMenuClassName!=null){
                 panelToShow = ISAcreatorMenu.SHOW_LOGIN;
             }else if (configDir==null){
                 panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
-            } if (isatabDir==null || isatabFiles==null){
+            } else if (isatabDir==null || isatabFiles==null){
                 panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
             }
 
