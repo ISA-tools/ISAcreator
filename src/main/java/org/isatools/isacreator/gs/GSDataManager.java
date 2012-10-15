@@ -7,6 +7,8 @@ import org.genomespace.client.exceptions.NotFoundException;
 import org.genomespace.client.utils.WebClientBuilder;
 import org.genomespace.datamanager.core.GSDirectoryListing;
 import org.genomespace.datamanager.core.GSFileMetadata;
+import org.isatools.errorreporter.model.ErrorLevel;
+import org.isatools.errorreporter.model.ErrorMessage;
 
 import java.io.File;
 import java.io.InputStream;
@@ -29,6 +31,8 @@ public class GSDataManager {
 
     private static Logger log = Logger.getLogger(GSDataManager.class);
 
+    private List<ErrorMessage> messages;
+
     private GsSession gsSession = null;
 
     /***
@@ -38,6 +42,7 @@ public class GSDataManager {
      */
     public GSDataManager(GsSession session){
         gsSession = session;
+        messages = new ArrayList<ErrorMessage>();
     }
 
 
@@ -157,17 +162,24 @@ public class GSDataManager {
         System.out.println("dirPath="+dirPath);
 
         if (dirPath==null){
-            System.out.println("dirPath is null!!!");
+             System.out.println("dirPath is null!!!");
         }
-        GSDirectoryListing dirListing = dmClient.list(dirPath);
+        GSDirectoryListing dirListing = null;
+        try{
+            dirListing = dmClient.list(dirPath);
+        }catch(NotFoundException ex){
+            ex.printStackTrace();
+            messages.add(new ErrorMessage(ErrorLevel.ERROR, "The directory "+dirPath+" was not found"));
+            return false;
+        }
+
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
         for(GSFileMetadata fileToDownload: fileMetadataList){
-            String localFilePath = localDirPath+fileToDownload.getName();
-            File localTargetFile = new File(localFilePath);
-            dmClient.downloadFile(fileToDownload, localTargetFile,true);
+             String localFilePath = localDirPath+fileToDownload.getName();
+             File localTargetFile = new File(localFilePath);
+             dmClient.downloadFile(fileToDownload, localTargetFile,true);
         }
         return true;
-
     }
 
     private String transformURLtoFilePath(String url){
@@ -188,6 +200,9 @@ public class GSDataManager {
 
     }
 
+    public List<ErrorMessage> getMessages() {
+        return messages;
+    }
 
 
 }
