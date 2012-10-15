@@ -87,12 +87,13 @@ public class ISAcreatorMenu extends JLayeredPane {
 
     public static final int SHOW_LOADED_FILES = 6;
 
-
+    private boolean loggedIn;
     private Authentication authentication = null;
     //TODO create specific super class
     private MenuUIComponent authGUI;
     private CreateISATABMenu createISA;
-    private CreateProfileMenu createProfileGUI;
+    //private CreateProfileMenu createProfileGUI;
+    private MenuUIComponent createProfileGUI;
     private ImportFilesMenu importISA;
     private MergeFilesUI mergeStudies;
     private SettingsUtil settings;
@@ -112,7 +113,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean loggedIn) {
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li) {
         this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
@@ -120,6 +121,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         setBackground(UIHelper.BG_COLOR);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
         authentication = auth;
+        loggedIn = li;
 
         boolean profileCreated = false;
         if (username!=null){
@@ -181,15 +183,15 @@ public class ISAcreatorMenu extends JLayeredPane {
         background = new ISAcreatorBackground();
 
 
-
+        boolean importConfigSuccessful = false;
         if (configDir!=null){
             ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
-            boolean problem = importConfiguration.loadConfiguration();
-            if (problem)
+            importConfigSuccessful = importConfiguration.loadConfiguration();
+            if (importConfigSuccessful)
                 System.out.println("Problem importing the configuration at "+ configDir);
         }
 
-        System.out.println("user " + (profileCreated ? "created" : "authenticated") + ", configuration imported");
+        System.out.println("user " + (profileCreated ? "created" : "authenticated") + (importConfigSuccessful ? ", configuration imported": ", configuration not imported yet"));
 
 //        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
         if (isacreator.getMode()!= Mode.GS && isatabDir!=null){
@@ -231,7 +233,6 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                     case SHOW_LOGIN:
                         isacreator.setGlassPanelContents(authGUI);
-
                         break;
 
                     case SHOW_CREATE_ISA:
@@ -242,7 +243,6 @@ public class ISAcreatorMenu extends JLayeredPane {
                         UnSupportedJava noSupport = new UnSupportedJava(ISAcreatorMenu.this);
                         noSupport.createGUI();
                         isacreator.setGlassPanelContents(noSupport);
-
                         break;
 
 
@@ -252,7 +252,7 @@ public class ISAcreatorMenu extends JLayeredPane {
                     case SHOW_LOADED_FILES:
                         break;
 
-                    default:
+                    default:  //SHOW_IMPORT_CONFIGURATION
                         isacreator.setGlassPanelContents(importConfigurationMenu);
                 }
 
@@ -272,6 +272,10 @@ public class ISAcreatorMenu extends JLayeredPane {
 
     public Authentication getAuthentication(){
         return authentication;
+    }
+
+    public boolean isUserLoggedIn(){
+        return loggedIn;
     }
 
 
@@ -396,7 +400,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         return createISA;
     }
 
-    public CreateProfileMenu getCreateProfileGUI() {
+    public MenuUIComponent getCreateProfileGUI() {
         return createProfileGUI;
     }
 
