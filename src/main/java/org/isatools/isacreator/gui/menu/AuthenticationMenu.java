@@ -89,6 +89,14 @@ public class AuthenticationMenu extends MenuUIComponent {
         setPreferredSize(new Dimension(400, 300));
         setLayout(new BorderLayout());
         setOpaque(false);
+
+        username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
+    }
+
+    public AuthenticationMenu(ISAcreatorMenu menu, Authentication auth, String un) {
+        this(menu, auth);
+        if (un!=null)
+            username.setText(un);
     }
 
     /**
@@ -100,6 +108,7 @@ public class AuthenticationMenu extends MenuUIComponent {
         password.setText("");
         username.setText("");
     }
+
 
     public void createGUI() {
         // create username field info
@@ -113,7 +122,7 @@ public class AuthenticationMenu extends MenuUIComponent {
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         userNameCont.add(usernameLabel);
 
-        username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
+
         username.setOpaque(false);
 
 

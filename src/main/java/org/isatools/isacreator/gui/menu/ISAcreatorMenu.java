@@ -50,9 +50,7 @@ import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
-import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
 import org.isatools.isacreator.settings.SettingsUtil;
@@ -92,7 +90,6 @@ public class ISAcreatorMenu extends JLayeredPane {
     //TODO create specific super class
     private MenuUIComponent authGUI;
     private CreateISATABMenu createISA;
-    //private CreateProfileMenu createProfileGUI;
     private MenuUIComponent createProfileGUI;
     private ImportFilesMenu importISA;
     private MergeFilesUI mergeStudies;
@@ -135,7 +132,7 @@ public class ISAcreatorMenu extends JLayeredPane {
 
         if (authMenuClassName==null && authentication==null){
                 authentication = new AuthenticationManager();
-                authGUI = new AuthenticationMenu(this, authentication);
+                authGUI = new AuthenticationMenu(this, authentication, username);
         } else {
              //authGUI requires this class (ISAcreatorMenu) as parameter for the constructor, thus it is created here with the reflection API
 
@@ -201,9 +198,8 @@ public class ISAcreatorMenu extends JLayeredPane {
         if (panelToShow==SHOW_LOADED_FILES) {
             if (ISAcreatorCLArgs.mode()== Mode.GS  && !loggedIn){
                 GSLocalFilesManager.downloadFiles(getAuthentication());
-            }  // GS
+            }
             loadFiles(ISAcreatorCLArgs.isatabDir());
-                //changeView(getImportISAGUI());
         }
 
 
