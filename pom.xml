@@ -513,7 +513,7 @@
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>1.11</version>
-            <scope>runtime</scope>
+            <!--<scope>runtime</scope>-->
         </dependency>
 
         <dependency>
@@ -528,7 +528,7 @@
                     <groupId>org.apache.commons</groupId>
                 </exclusion>
             </exclusions>
-            <scope>runtime</scope>
+            <!--<scope>runtime</scope>-->
         </dependency>
 
 
@@ -536,14 +536,14 @@
             <groupId>com.sun.jersey</groupId>
             <artifactId>org.genomespace.jersey-apache-client</artifactId>
             <version>1.11</version>
-            <scope>runtime</scope>
+           <!-- <scope>runtime</scope> -->
         </dependency>
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
             <version>1.11</version>
-            <scope>runtime</scope>
+            <!--<scope>runtime</scope>-->
         </dependency>
 
 
@@ -561,7 +561,7 @@
                 <groupId>commons-codec</groupId>
             </exclusion>
         </exclusions>
-        <scope>runtime</scope>
+        <!--<scope>runtime</scope>-->
     </dependency>
 
     </dependencies>
