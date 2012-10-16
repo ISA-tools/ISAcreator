@@ -81,13 +81,18 @@ public class ISAcreatorCLArgs {
                 System.exit(0);
 
             }else if (option.equals("--mode")){
-                // mode = arg.equals("NORMAL_MODE")? Mode.NORMAL_MODE: Mode.LIGHT_MODE;
+
                 if (arg.equals("NORMAL"))
                     ISAcreatorCLArgs.mode = Mode.NORMAL_MODE;
                 else if (arg.equals("LIGHT"))
                     ISAcreatorCLArgs.mode = Mode.LIGHT_MODE;
                 else if (arg.equals("GS"))
                     ISAcreatorCLArgs.mode = Mode.GS;
+                else{
+                    System.out.println("Invalid mode argument, the possible modes are: NORMAL, LIGHT or GS");
+                    System.exit(-1);
+                }
+
 
             }else if (option.equals("--configDir"))
                 ISAcreatorCLArgs.configDir = arg;
