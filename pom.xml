@@ -234,6 +234,48 @@
                 </dependencies>
 
             </plugin>
+
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
         </plugins>
 
         <resources>
@@ -511,10 +553,19 @@
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.11</version>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>1.11</version>
-            <!--<scope>runtime</scope>-->
+            <scope>runtime</scope>
         </dependency>
+        -->
+
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -536,15 +587,17 @@
             <groupId>com.sun.jersey</groupId>
             <artifactId>org.genomespace.jersey-apache-client</artifactId>
             <version>1.11</version>
-           <!-- <scope>runtime</scope> -->
+            <scope>runtime</scope>
         </dependency>
+
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
             <version>1.11</version>
-            <!--<scope>runtime</scope>-->
+            <scope>runtime</scope>
         </dependency>
+
 
 
     <dependency>
