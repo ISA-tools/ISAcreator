@@ -134,18 +134,16 @@ public class GSIdentityManager implements Authentication {
      * @param emailAddress
      * @return
      */
-    public boolean registerUser(String username, String password, String emailAddress) {
-
-       // GsSession session = userSessions.get(username);
-        if (session==null)
-            return false;
+    public static String registerUser(String username, String password, String emailAddress) {
 
         try {
+            GsSession session = new GsSession();
             User newUser = session.registerUser(username,
                     password, emailAddress);
-            return true;
+            return "";
         }catch(InternalServerException isex){
-            return false;
+            isex.printStackTrace();
+            return "Error registering user "+isex.getMessage();
         }
     }
 
