@@ -47,6 +47,7 @@ import org.isatools.isacreator.effects.GenericPanel;
 import org.isatools.isacreator.effects.InfiniteImageProgressPanel;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.gs.GSLocalFilesManager;
+import org.isatools.isacreator.gs.gui.GSRegistrationMenu;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
@@ -167,7 +168,11 @@ public class ISAcreatorMenu extends JLayeredPane {
         }//else
 
         createISA = new CreateISATABMenu(this);
-        createProfileGUI = new CreateProfileMenu(this);
+        //if (isacreator.getMode()==Mode.GS){
+        //    createProfileGUI = new GSRegistrationMenu(this);
+        //}else{
+            createProfileGUI = new CreateProfileMenu(this);
+        //}
         importISA = new ImportFilesMenu(this);
         importConfigurationMenu = new ImportConfigurationMenu(this);
         mergeStudies = new MergeFilesUI(this);
