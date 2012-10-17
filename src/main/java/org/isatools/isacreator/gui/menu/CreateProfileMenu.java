@@ -60,10 +60,9 @@ import java.awt.event.MouseEvent;
 
 public class CreateProfileMenu extends UserCreationMenu {
     @InjectedResource
-    private ImageIcon createProfileButton, createProfileButtonOver,
-            backButtonSml, backButtonSmlOver;
+    private ImageIcon createProfileButton, createProfileButtonOver;
 
-    private JLabel back, createProfile;
+    private JLabel createProfile;
 
     private JTextField firstnameVal;
     private JTextField institutionVal;
@@ -125,23 +124,7 @@ public class CreateProfileMenu extends UserCreationMenu {
 
         JPanel buttonContainer = new JPanel(new BorderLayout());
 
-        back = new JLabel(backButtonSml,
-                JLabel.LEFT);
-        back.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                back.setIcon(backButtonSml);
-                menu.changeView(menu.getAuthenticationGUI());
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                back.setIcon(backButtonSmlOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                back.setIcon(backButtonSml);
-            }
-        });
+        createBackJLabel();
 
         buttonContainer.add(back, BorderLayout.WEST);
 
@@ -183,6 +166,8 @@ public class CreateProfileMenu extends UserCreationMenu {
         northPanel.setOpaque(false);
         add(northPanel, BorderLayout.CENTER);
     }
+
+
 
     private JPanel createInstitutionPanel(Action createProfileAction) {
         // institution

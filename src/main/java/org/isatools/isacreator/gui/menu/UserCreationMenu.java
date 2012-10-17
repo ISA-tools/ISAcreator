@@ -2,8 +2,11 @@ package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
+import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by the ISATeam.
@@ -15,7 +18,10 @@ import javax.swing.*;
  */
 public abstract class UserCreationMenu extends MenuUIComponent  {
 
-    protected JLabel status;
+    @InjectedResource
+    public ImageIcon backButtonSml, backButtonSmlOver;
+
+    protected JLabel status, back;
     protected JTextField emailVal;
     protected JPasswordField passwordVal;
     protected JPasswordField confirmPasswordVal;
@@ -74,6 +80,26 @@ public abstract class UserCreationMenu extends MenuUIComponent  {
         userNameCont.add(usernameVal);
         assignKeyActionToComponent(createProfileAction, usernameVal);
         return userNameCont;
+    }
+
+    protected void createBackJLabel() {
+        back = new JLabel(backButtonSml,
+                JLabel.LEFT);
+        back.addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent event) {
+                back.setIcon(backButtonSml);
+                menu.changeView(menu.getAuthenticationGUI());
+            }
+
+            public void mouseEntered(MouseEvent event) {
+                back.setIcon(backButtonSmlOver);
+            }
+
+            public void mouseExited(MouseEvent event) {
+                back.setIcon(backButtonSml);
+            }
+        });
     }
 
     protected void assignKeyActionToComponent(Action action, JComponent field) {
