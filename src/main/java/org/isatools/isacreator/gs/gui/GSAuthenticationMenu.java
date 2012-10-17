@@ -136,6 +136,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         JPanel buttonContainer = new JPanel(new GridLayout(1, 2));
         buttonContainer.setOpaque(false);
 
+        /*
         //register
         register = new JLabel(registerIcon,
                 JLabel.LEFT);
@@ -158,6 +159,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             }
         });
         buttonContainer.add(register);
+        */
 
         //login
         login = new JLabel(loginButton,
