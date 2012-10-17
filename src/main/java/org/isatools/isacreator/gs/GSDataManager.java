@@ -3,6 +3,7 @@ package org.isatools.isacreator.gs;
 import org.apache.log4j.Logger;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
+import org.genomespace.client.exceptions.ForbiddenException;
 import org.genomespace.client.exceptions.NotFoundException;
 import org.genomespace.client.utils.WebClientBuilder;
 import org.genomespace.datamanager.core.GSDirectoryListing;
@@ -31,8 +32,6 @@ public class GSDataManager {
 
     private static Logger log = Logger.getLogger(GSDataManager.class);
 
-    private List<ErrorMessage> messages;
-
     private GsSession gsSession = null;
 
     /***
@@ -42,7 +41,6 @@ public class GSDataManager {
      */
     public GSDataManager(GsSession session){
         gsSession = session;
-        messages = new ArrayList<ErrorMessage>();
     }
 
 
@@ -117,7 +115,7 @@ public class GSDataManager {
      * @param localDirPath
      * @return
      */
-    public boolean downloadFile(String fileToDownload, String localDirPath) {
+    public ErrorMessage downloadFile(String fileToDownload, String localDirPath) {
         //try{
             log.debug("fileToDownload="+fileToDownload);
             fileToDownload = transformURLtoFilePath(fileToDownload);
@@ -128,7 +126,7 @@ public class GSDataManager {
             System.out.println("local file = "+localFilePath);
             File localTargetFile = new File(localFilePath);
             dmClient.downloadFile(fileToDownloadMetadata, localTargetFile, true);
-            return true;
+            return null;
         //}catch(){
 
         //}
@@ -153,24 +151,25 @@ public class GSDataManager {
      * @param localDirPath
      * @return
      */
-    public boolean downloadAllFilesFromDirectory(String dirPath, String localDirPath) {
-
+    public List<ErrorMessage> downloadAllFilesFromDirectory(String dirPath, String localDirPath) {
+        List<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         DataManagerClient dmClient = gsSession.getDataManagerClient();
-        System.out.println("dirPath="+dirPath);
         dirPath = transformURLtoFilePath(dirPath);
 
-        System.out.println("dirPath="+dirPath);
-
-        if (dirPath==null){
-             System.out.println("dirPath is null!!!");
-        }
         GSDirectoryListing dirListing = null;
         try{
             dirListing = dmClient.list(dirPath);
         }catch(NotFoundException ex){
             ex.printStackTrace();
-            messages.add(new ErrorMessage(ErrorLevel.ERROR, "The directory "+dirPath+" was not found"));
-            return false;
+            errors.add(new ErrorMessage(ErrorLevel.ERROR, "The directory "+dirPath+" was not found"));
+             return errors;
+
+        }catch(ForbiddenException e){
+            errors.add(new ErrorMessage(ErrorLevel.ERROR, "Access forbidden to directory "+dirPath));
+            return errors;
+        }catch(IllegalArgumentException e){
+            errors.add(new ErrorMessage(ErrorLevel.ERROR, "The directory "+dirPath+" is not correct"));
+            return errors;
         }
 
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
@@ -179,7 +178,7 @@ public class GSDataManager {
              File localTargetFile = new File(localFilePath);
              dmClient.downloadFile(fileToDownload, localTargetFile,true);
         }
-        return true;
+        return errors;
     }
 
     private String transformURLtoFilePath(String url){
@@ -200,9 +199,9 @@ public class GSDataManager {
 
     }
 
-    public List<ErrorMessage> getMessages() {
-        return messages;
-    }
+   // public List<ErrorMessage> getMessages() {
+   //     return messages;
+   // }
 
 
 }
