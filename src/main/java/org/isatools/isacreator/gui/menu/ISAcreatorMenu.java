@@ -38,6 +38,10 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.errorreporter.model.FileType;
+import org.isatools.errorreporter.model.ISAFileErrorReport;
+import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.api.AuthenticationManager;
 import org.isatools.isacreator.api.CreateProfile;
@@ -54,14 +58,19 @@ import org.isatools.isacreator.gui.ISAcreatorBackground;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.settings.SettingsUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.List;
 
 
 /**
@@ -85,6 +94,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     public static final int NONE = 5;
 
     public static final int SHOW_LOADED_FILES = 6;
+    public static final int SHOW_ERROR = 7;
 
     private boolean loggedIn;
     private Authentication authentication = null;
@@ -106,12 +116,16 @@ public class ISAcreatorMenu extends JLayeredPane {
     private GenericPanel background;
 
 
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li) {
+        this(ISAcreator, username, password, configDir, isatabDir, auth, authMenuClassName, panelToShow, li, null);
+    }
+
     public ISAcreatorMenu(ISAcreator ISAcreator, String username, Authentication authentication, String authMenuClassName, final int panelToShow, boolean loggedIn) {
-        this(ISAcreator, username, null, null,  null, authentication, authMenuClassName, panelToShow, loggedIn);
+        this(ISAcreator, username, null, null,  null, authentication, authMenuClassName, panelToShow, loggedIn, null);
     }
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li) {
+    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li, final java.util.List<ErrorMessage> errors) {
         this.isacreator = ISAcreator;
 
         setSize(ISAcreator.getSize());
@@ -251,6 +265,11 @@ public class ISAcreatorMenu extends JLayeredPane {
                         break;
 
                     case SHOW_LOADED_FILES:
+                        break;
+
+                    case SHOW_ERROR:
+                        captureCurrentGlassPaneContents();
+                        createErrorView(errors, false, mainMenu);
                         break;
 
                     default:  //SHOW_IMPORT_CONFIGURATION
@@ -429,5 +448,41 @@ public class ISAcreatorMenu extends JLayeredPane {
         return settings;
     }
 
+    private void createErrorView(java.util.List<ErrorMessage> errorMessages, boolean showContinue, final MenuUIComponent changeMenu) {
+        ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errorMessages);
+        List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+        list.add(error);
 
+        ErrorReporterView view = new ErrorReporterView(list, true);
+        view.createGUI();
+
+        ErrorReportWrapper errorReportWithControls = new ErrorReportWrapper(view, showContinue);
+        errorReportWithControls.createGUI();
+        errorReportWithControls.setPreferredSize(new Dimension(400, 400));
+
+        errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                changeView(changeMenu);
+                revalidate();
+            }
+        });
+
+        if (showContinue) {
+            errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+
+                    getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(
+                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+                    hideGlassPane();
+                    getMain().setCurrentPage(getMain().getDataEntryEnvironment());
+                }
+            });
+        }
+
+        stopProgressIndicator();
+        resetViewAfterProgress();
+        changeView(errorReportWithControls);
+
+        revalidate();
+    }
 }
