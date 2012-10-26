@@ -39,14 +39,13 @@ package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.errorreporter.model.FileType;
+import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.api.ImportConfiguration;
-import org.isatools.isacreator.gs.GSDataManager;
-import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
-import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -55,6 +54,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,6 +64,7 @@ import java.util.List;
  * Date: Mar 3, 2010
  *
  * @author eamonnmaguire
+ * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  *
  */
 public class ImportConfigurationMenu extends AbstractImportFilesMenu {
@@ -142,11 +143,11 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                     public void run() {
 
                         ImportConfiguration importConfiguration = new ImportConfiguration(dir);
-                        boolean problemEncountered = importConfiguration.loadConfiguration();
+                        boolean successful = importConfiguration.loadConfiguration();
 
                         System.out.println("Loaded configuration");
                         menu.stopProgressIndicator();
-                        if (problemEncountered) {
+                        if (!successful) {
                             menu.resetViewAfterProgress();
                             System.out.println("Problem encountered");
                             problemReport.setText(importConfiguration.getProblemLog());
@@ -177,23 +178,42 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
                             //TODO dependency with GS stuff
                             if (ISAcreatorCLArgs.mode()== Mode.GS && !menu.isUserLoggedIn()){
+
+                               if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
+
                                 List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+
+
                                 if (!errors.isEmpty()){
-                                    problemReport.setText(errors.toString());
-                                    problemScroll.setVisible(true);
-                                    revalidate();
-                                    repaint();
+
+                                    ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
+                                    java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+                                    list.add(error);
+
+                                    ErrorMenu errorMenu = new ErrorMenu(menu, list, false, ImportConfigurationMenu.this);
+                                    errorMenu.createGUI();
+
+                                } else {
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir());
                                 }
-                            } else if (ISAcreatorCLArgs.isatabDir()!=null){
-                                menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+
+                                } else {
+                                   //the ISAtab files were not given as parameter, show main menu
+                                   menu.changeView(menu.getMainMenuGUI());
+                               }
+
                             } else{
-                                menu.changeView(menu.getMainMenuGUI());
+                                //mode is not GS
+                                if (ISAcreatorCLArgs.isatabDir()!=null){
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                                }else {
+                                    menu.changeView(menu.getMainMenuGUI());
+                                }
                             }
 
                             }//else
 
                             problemScroll.setVisible(false);
-
                             //initialLoadingPassed = true;
                         }
                 }
