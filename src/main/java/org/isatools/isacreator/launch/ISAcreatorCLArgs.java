@@ -78,6 +78,7 @@ public class ISAcreatorCLArgs {
                 System.out.println("\t--password\tThe password for the username set by --username can be passed to ISAcreator");
                 System.out.println("\t--isatabDir\tIt sets the directory containing the ISAtab files");
                 System.out.println("\t--isatabFiles <files>\t<files> must be a comma separated list of ISAtab files; this option is only valid for mode GS ");
+                System.out.println("\t--help\tShows this message ");
                 System.exit(0);
 
             }else if (option.equals("--mode")){
@@ -89,7 +90,7 @@ public class ISAcreatorCLArgs {
                 else if (arg.equals("GS"))
                     ISAcreatorCLArgs.mode = Mode.GS;
                 else{
-                    System.out.println("Invalid mode argument, the possible modes are: NORMAL, LIGHT or GS");
+                    System.out.println("Invalid mode argument, the possible modes are: NORMAL, LIGHT or GS (for Genome Space)");
                     System.exit(-1);
                 }
 
@@ -117,7 +118,7 @@ public class ISAcreatorCLArgs {
 
     private static void validate(){
         if (isatabFiles()!=null && mode()!=Mode.GS){
-            System.out.println("The isatabFiles parameter is only valid for Genome Space mode.");
+            System.out.println("The isatabFiles parameter is only valid for the GS (Genome Space) mode.");
             System.exit(-1);
         }
     }
