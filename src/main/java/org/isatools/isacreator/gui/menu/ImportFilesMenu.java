@@ -68,11 +68,9 @@ import java.util.List;
  * @author Eamonn Maguire
  * @date Mar 3, 2010
  */
-
-
 public class ImportFilesMenu extends AbstractImportFilesMenu {
 
-    private static Logger log = Logger.getLogger(ImportFilesMenu.class.getName());
+    private static Logger log = Logger.getLogger(ImportFilesMenu.class);
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
@@ -119,6 +117,27 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         return previousButtonPanel;
     }
 
+    public void getSelectedFileAndLoad(File candidate) {
+        // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
+        menu.captureCurrentGlassPaneContents();
+        // we hide the glass pane which is currently holding the menu items, loading interface etc.
+        menu.hideGlassPane();
+        // add the loading image panel to the view. No need to use the glass pane here.
+        menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
+
+        // Changing this assuming the file is given with full path
+        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+        //        candidate.getName() + File.separator);
+        loadFile(candidate.getAbsolutePath());
+    }
+
+    private Container createLoadingImagePanel() {
+        if(loadingImagePanel == null) {
+            loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
+        }
+        return loadingImagePanel;
+    }
+
     public ImageIcon getSearchButton() {
         return searchButton;
     }
@@ -146,28 +165,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 }
             }
         }
-    }
-
-    public void getSelectedFileAndLoad(File candidate) {
-        // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
-        menu.captureCurrentGlassPaneContents();
-        // we hide the glass pane which is currently holding the menu items, loading interface etc.
-        menu.hideGlassPane();
-        // add the loading image panel to the view. No need to use the glass pane here.
-        menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
-
-        // Changing this assuming the file is given with full path
-        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-        //        candidate.getName() + File.separator);
-        loadFile(candidate.getAbsolutePath());
-    }
-    
-    private Container createLoadingImagePanel() {
-        if(loadingImagePanel == null) {
-            loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
-        }
-
-        return loadingImagePanel;
     }
 
 
