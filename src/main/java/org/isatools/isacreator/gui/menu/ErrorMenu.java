@@ -35,7 +35,8 @@ public class ErrorMenu extends MenuUIComponent {
 
 
     @Override
-    protected void createGUI() {
+    public void createGUI() {
+
         ErrorReporterView view = new ErrorReporterView(errors, true);
         view.createGUI();
 
