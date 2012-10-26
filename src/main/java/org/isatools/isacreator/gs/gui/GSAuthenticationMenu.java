@@ -1,20 +1,24 @@
 package org.isatools.isacreator.gs.gui;
 
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gs.GSSingleSignOnManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.MenuUIComponent;
+import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 /**
  * Created by the ISATeam.
@@ -233,7 +237,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         */
 
         //TODO add GS logo
-        //gs logo
+        //org.isatools.isacreator.gs logo
         //iconLabel = new JLabel();
         //iconLabel.setIcon(genomespacelogo);
 
@@ -284,6 +288,8 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         String passwordString = new String (password.getPassword());
        // ((GSSingleSignOnManager)authentication).setSSO(sso);
         if (!username.getText().equals("") && passwordString!=null && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())){
+
+            //logged in
             clearFields();
             if (ISAcreatorCLArgs.configDir()==null)
                 menu.changeView(menu.getImportConfigurationGUI());
@@ -291,10 +297,29 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                 //load configuration and go to main menu
                 ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
                 boolean problem = importConfiguration.loadConfiguration();
-                if (ISAcreatorCLArgs.isatabDir()!=null){
-                    System.out.println("LOAD FILES!!!");
+                if (!problem) {
+                    if (ISAcreatorCLArgs.isatabDir()!=null){
+
+                            java.util.List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+                            if (!errors.isEmpty()){
+
+                                //load menu to show errors when loading files
+                                System.out.println("Number of errors: "+errors.size());
+                                System.out.println("Showing first one: "+errors.get(0).getMessage());
+
+
+                                status.setText(errors.get(0).getMessage());
+                            }else{
+                                menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                            }
+
+
+                    }else{
+                        menu.changeView(menu.getMainMenuGUI());
+                    }
                 }else{
-                    menu.changeView(menu.getMainMenuGUI());
+                  //TODO display problem!!!
+
                 }
             }
 
