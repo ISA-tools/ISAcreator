@@ -269,7 +269,13 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                     case SHOW_ERROR:
                         captureCurrentGlassPaneContents();
-                        createErrorView(errors, false, mainMenu);
+
+                        ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
+                        List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+                        list.add(error);
+
+                        ErrorMenu errorMenu = new ErrorMenu(ISAcreatorMenu.this, list, false, mainMenu);
+                        errorMenu.createGUI();
                         break;
 
                     default:  //SHOW_IMPORT_CONFIGURATION
@@ -448,41 +454,4 @@ public class ISAcreatorMenu extends JLayeredPane {
         return settings;
     }
 
-    private void createErrorView(java.util.List<ErrorMessage> errorMessages, boolean showContinue, final MenuUIComponent changeMenu) {
-        ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errorMessages);
-        List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
-        list.add(error);
-
-        ErrorReporterView view = new ErrorReporterView(list, true);
-        view.createGUI();
-
-        ErrorReportWrapper errorReportWithControls = new ErrorReportWrapper(view, showContinue);
-        errorReportWithControls.createGUI();
-        errorReportWithControls.setPreferredSize(new Dimension(400, 400));
-
-        errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                changeView(changeMenu);
-                revalidate();
-            }
-        });
-
-        if (showContinue) {
-            errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
-                    getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(
-                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
-                    hideGlassPane();
-                    getMain().setCurrentPage(getMain().getDataEntryEnvironment());
-                }
-            });
-        }
-
-        stopProgressIndicator();
-        resetViewAfterProgress();
-        changeView(errorReportWithControls);
-
-        revalidate();
-    }
 }
