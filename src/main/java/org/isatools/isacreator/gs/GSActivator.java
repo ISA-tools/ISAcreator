@@ -1,5 +1,6 @@
 package org.isatools.isacreator.gs;
 
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.utils.GeneralUtils;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -52,7 +53,14 @@ public class GSActivator implements BundleActivator {
                         System.exit(0);
                      } else {
                         System.out.println("Logged in to GenomeSpace as user "+ISAcreatorCLArgs.username());
-                        GSLocalFilesManager.downloadFiles(gsAuthentication);
+                        List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(gsAuthentication);
+                         if (!errors.isEmpty()){
+                             System.out.println("The files on "+ISAcreatorCLArgs.isatabDir()+" could not be accessed");
+                             for(ErrorMessage errorMessage: errors){
+                                 System.out.println(errorMessage.getMessage());
+                             }
+                             System.exit(-1);
+                         }
                      }
 
 
