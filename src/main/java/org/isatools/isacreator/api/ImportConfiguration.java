@@ -47,7 +47,7 @@ public class ImportConfiguration {
             ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_CONFIGURATION, new File(configDir).getAbsolutePath());
         }
 
-        return configParser.isProblemsEncountered();
+        return !configParser.isProblemsEncountered();
     }
 
     public String getProblemLog(){
