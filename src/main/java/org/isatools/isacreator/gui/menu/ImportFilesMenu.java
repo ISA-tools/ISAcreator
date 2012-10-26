@@ -283,37 +283,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     }
 
     private void createErrorView(List<ISAFileErrorReport> errors, boolean showContinue) {
-        ErrorReporterView view = new ErrorReporterView(errors, true);
-        view.createGUI();
-
-        ErrorReportWrapper errorReportWithControls = new ErrorReportWrapper(view, showContinue);
-        errorReportWithControls.createGUI();
-        errorReportWithControls.setPreferredSize(new Dimension(400, 400));
-
-        errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                menu.changeView(ImportFilesMenu.this);
-                revalidate();
-            }
-        });
-
-        if (showContinue) {
-            errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
-                    menu.getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(
-                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
-                    menu.hideGlassPane();
-                    menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
-                }
-            });
-        }
-
-        menu.stopProgressIndicator();
-        menu.resetViewAfterProgress();
-        menu.changeView(errorReportWithControls);
-
-        revalidate();
+        ErrorMenu errorMenu = new ErrorMenu(menu, errors, showContinue, this);
+        errorMenu.createGUI();
     }
 
     public String getBorderTitle() {
