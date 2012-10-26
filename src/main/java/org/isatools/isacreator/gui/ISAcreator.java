@@ -72,6 +72,7 @@ import org.isatools.isacreator.validateconvert.ui.ValidateUI;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleContext;
+import org.isatools.errorreporter.model.ErrorMessage;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -240,10 +241,43 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
+    public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName, boolean loggedIn, List<ErrorMessage> errors) {
+        setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
+        setIconImage(isacreatorIcon);
+        setBackground(UIHelper.BG_COLOR);
+        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setUndecorated(true);
+        setResizable(true);
+        setLayout(new BorderLayout());
 
-    //public void createGUI(String configDir, String username, final String isatabDir) {
-    //        createGUI(configDir, username,isatabDir, null, null);
-    //}
+        addWindowFocusListener(this);
+        // load user profiles into the system
+        userProfileIO.loadUserProfiles();
+        loadProgramSettings();
+        // create the top menu bar
+
+        createTopPanel();
+
+        FooterPanel fp = new FooterPanel(this);
+        add(fp, BorderLayout.SOUTH);
+
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
+
+        // check that java version is supported!
+        if (!checkSystemRequirements()) {
+            //this can't happen if this is used from java web start
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+        }else{
+            int panelToShow = ISAcreatorMenu.SHOW_ERROR;
+
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, password, configDir, isatabDir, authentication ,authMenuClassName, panelToShow, loggedIn, errors);
+        }
+        setCurrentPage(isacreatorMenu);
+        pack();
+        setVisible(true);
+    }
+
 
     /**
      * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received.
