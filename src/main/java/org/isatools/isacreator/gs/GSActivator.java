@@ -1,7 +1,6 @@
 package org.isatools.isacreator.gs;
 
 import org.isatools.errorreporter.model.ErrorMessage;
-import org.isatools.isacreator.utils.GeneralUtils;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -41,7 +40,7 @@ public class GSActivator implements BundleActivator {
                 //LOGIN
                 //main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
                 main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext);
-                gsAuthentication =  new GSIdentityManager();//new GSSingleSignOnManager();
+                gsAuthentication =  new GSIdentityManager();
 
                 //if username and password were given as parameters, log in user into GS
                 if (ISAcreatorCLArgs.username()!=null && ISAcreatorCLArgs.password()!=null){
@@ -54,17 +53,22 @@ public class GSActivator implements BundleActivator {
                      } else {
                         System.out.println("Logged in to GenomeSpace as user "+ISAcreatorCLArgs.username());
                         List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(gsAuthentication);
-                         if (!errors.isEmpty()){
+
+
+                        if (!errors.isEmpty()){
                              System.out.println("The files on "+ISAcreatorCLArgs.isatabDir()+" could not be accessed");
                              for(ErrorMessage errorMessage: errors){
                                  System.out.println(errorMessage.getMessage());
                              }
-                             System.exit(-1);
-                         }
+                            // System.exit(-1);
+                            main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn, errors);
+                         }else{
+                            main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn);
+                        }
                      }
 
 
-                     main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn);
+
 
                 } else if (ISAcreatorCLArgs.username()!=null){
                     //if username identified, check if token exists
@@ -81,7 +85,7 @@ public class GSActivator implements BundleActivator {
 
                 }else {
                       //both username and password are null, check if auth token has been saved locally
-                      gsAuthentication =  new GSIdentityManager();//new GSSingleSignOnManager();
+                      gsAuthentication =  new GSIdentityManager();
                       loggedIn = gsAuthentication.login();
 
                     if (loggedIn){
