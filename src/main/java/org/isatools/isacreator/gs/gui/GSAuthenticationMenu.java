@@ -2,16 +2,17 @@ package org.isatools.isacreator.gs.gui;
 
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.errorreporter.model.FileType;
+import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gs.GSLocalFilesManager;
-import org.isatools.isacreator.gs.GSSingleSignOnManager;
+import org.isatools.isacreator.gui.menu.ErrorMenu;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.MenuUIComponent;
-import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
@@ -286,7 +287,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
     //private void login(boolean sso){
     private void login(){
         String passwordString = new String (password.getPassword());
-       // ((GSSingleSignOnManager)authentication).setSSO(sso);
+
         if (!username.getText().equals("") && passwordString!=null && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())){
 
             //logged in
@@ -298,17 +299,30 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                 ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
                 boolean problem = importConfiguration.loadConfiguration();
                 if (!problem) {
+
                     if (ISAcreatorCLArgs.isatabDir()!=null){
 
                             java.util.List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
-                            if (!errors.isEmpty()){
+
+                        if (!errors.isEmpty()){
+                                //Problem downloading the files
 
                                 //load menu to show errors when loading files
                                 System.out.println("Number of errors: "+errors.size());
                                 System.out.println("Showing first one: "+errors.get(0).getMessage());
 
 
-                                status.setText(errors.get(0).getMessage());
+                                //status.setText(errors.get(0).getMessage());
+
+
+                            ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
+                            java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+                            list.add(error);
+
+
+                            ErrorMenu errorMenu = new ErrorMenu(menu, list, false, menu.getMainMenuGUI());
+                            errorMenu.createGUI();
+
                             }else{
                                 menu.loadFiles(ISAcreatorCLArgs.isatabDir());
                             }
