@@ -297,8 +297,8 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             else{
                 //load configuration and go to main menu
                 ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
-                boolean problem = importConfiguration.loadConfiguration();
-                if (!problem) {
+                boolean successful = importConfiguration.loadConfiguration();
+                if (successful) {
 
                     if (ISAcreatorCLArgs.isatabDir()!=null){
 
