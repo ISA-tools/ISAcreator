@@ -240,6 +240,9 @@ public class ISAcreatorMenu extends JLayeredPane {
                 add(background, JLayeredPane.DEFAULT_LAYER);
                 startAnimation();
 
+                //Added this here, to set the previousGlassPane
+                captureCurrentGlassPaneContents();
+
                 switch (panelToShow) {
                     case SHOW_MAIN:
                         isacreator.setGlassPanelContents(mainMenu);
@@ -268,11 +271,11 @@ public class ISAcreatorMenu extends JLayeredPane {
                         break;
 
                     case SHOW_ERROR:
-                        captureCurrentGlassPaneContents();
 
                         ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
-                        List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+                        java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
                         list.add(error);
+
 
                         ErrorMenu errorMenu = new ErrorMenu(ISAcreatorMenu.this, list, false, mainMenu);
                         errorMenu.createGUI();
