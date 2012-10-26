@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.gs.GSDataManager;
 import org.isatools.isacreator.gs.GSIdentityManager;
@@ -53,6 +54,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+
+import java.util.List;
 
 /**
  * ImportFilesMenu provides the interface to allow users to import previously saved ISATAB
@@ -174,18 +177,20 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
                             //TODO dependency with GS stuff
                             if (ISAcreatorCLArgs.mode()== Mode.GS && !menu.isUserLoggedIn()){
-                                GSLocalFilesManager.downloadFiles(menu.getAuthentication());
-                            }  // GS
-
-                            if (ISAcreatorCLArgs.isatabDir()!=null){
+                                List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+                                if (!errors.isEmpty()){
+                                    problemReport.setText(errors.toString());
+                                    problemScroll.setVisible(true);
+                                    revalidate();
+                                    repaint();
+                                }
+                            } else if (ISAcreatorCLArgs.isatabDir()!=null){
                                 menu.loadFiles(ISAcreatorCLArgs.isatabDir());
                             } else{
                                 menu.changeView(menu.getMainMenuGUI());
                             }
 
                             }//else
-
-
 
                             problemScroll.setVisible(false);
 
