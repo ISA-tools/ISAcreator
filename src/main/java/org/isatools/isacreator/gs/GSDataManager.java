@@ -165,10 +165,10 @@ public class GSDataManager {
              return errors;
 
         }catch(ForbiddenException e){
-            errors.add(new ErrorMessage(ErrorLevel.ERROR, "Access forbidden to directory "+dirPath));
+            errors.add(new ErrorMessage(ErrorLevel.ERROR, "Access forbidden to directory "+dirPath+" in Genome Space"));
             return errors;
         }catch(IllegalArgumentException e){
-            errors.add(new ErrorMessage(ErrorLevel.ERROR, "The directory "+dirPath+" is not correct"));
+            errors.add(new ErrorMessage(ErrorLevel.ERROR, "The directory "+dirPath+" is not correct in Genome Space"));
             return errors;
         }
 
