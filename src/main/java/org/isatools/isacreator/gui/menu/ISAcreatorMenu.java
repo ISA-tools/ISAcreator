@@ -200,7 +200,7 @@ public class ISAcreatorMenu extends JLayeredPane {
 
 
         boolean importConfigSuccessful = false;
-        if (configDir!=null){
+        if (loggedIn && configDir!=null){
             ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
             importConfigSuccessful = importConfiguration.loadConfiguration();
             if (importConfigSuccessful)
@@ -210,7 +210,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         System.out.println("user " + (profileCreated ? "created" : "authenticated") + (importConfigSuccessful ? ", configuration imported": ", configuration not imported yet"));
 
 //        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
-        if (isacreator.getMode()!= Mode.GS && isatabDir!=null){
+        if (loggedIn && isacreator.getMode()!= Mode.GS && isatabDir!=null){
             loadFiles(isatabDir);
         }
 
