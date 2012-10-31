@@ -5,7 +5,11 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+<<<<<<< HEAD
+ ÔøΩThe contents of this file are subject to the CPAL version 1.0 (the ÔøΩLicenseÔøΩ);
+=======
+ The contents of this file are subject to the CPAL version 1.0 (the License);
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +17,11 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+<<<<<<< HEAD
+ Software distributed under the License is distributed on an ÔøΩAS ISÔøΩ basis,
+=======
+ Software distributed under the License is distributed on an AS IS basis,
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -39,6 +47,7 @@ package org.isatools.isacreator.gui;
 
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -47,6 +56,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import static org.isatools.isacreator.gui.DataEntryEnvironment.isValidName;
 
 
 /**
@@ -73,13 +84,22 @@ public class AddStudyDialog extends JDialog {
     }
 
     private void addStudy() {
-        if (!dataEntryEnvironment.checkForDuplicateName(name.getText(), "Study")) {
-            if (dataEntryEnvironment.addStudy(name.getText())) {
+        
+        if (!isValidName(name.getText())) {
+            status.setText("<html><b>Invalid file name: can not start with COM#|LPT#</b></br> or contain \\<\\>\\/</html>");
+            status.setVisible(true);
+        }
+        else  if (!dataEntryEnvironment.checkForDuplicateName(name.getText(), "Study")) {
+
+             if (dataEntryEnvironment.addStudy(name.getText())) {
                 status.setVisible(false);
                 hideMe();
-            } else {
+                }
+
+            else {
                 status.setVisible(true);
-            }
+
+             }
         } else {
             status.setVisible(true);
         }
@@ -159,7 +179,7 @@ public class AddStudyDialog extends JDialog {
 
         add(headerCont, BorderLayout.NORTH);
 
-        JLabel exHeaderLab = UIHelper.createLabel("Please enter name of " + type + ":");
+        JLabel exHeaderLab = UIHelper.createLabel("Please enter " + type + " name: ");
         JPanel topCont = new JPanel(new GridLayout(2, 1));
         topCont.setBackground(UIHelper.BG_COLOR);
         topCont.add(exHeaderLab);
@@ -175,7 +195,10 @@ public class AddStudyDialog extends JDialog {
         };
 
         name.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "ADDSTUDY");
+
+
         name.getActionMap().put("ADDSTUDY", addStudyAction);
+
 
         topCont.add(name);
 

@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -51,6 +51,7 @@ import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -170,6 +171,16 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         } else {
             dataEntryEnvironment = null;
         }
+    }
+
+    public void createGUI() {
+        initialisePanel();
+        setupTableModel(initialNoFields);
+
+        add(setupOptionsPanel(), BorderLayout.NORTH);
+
+        add(getFrozenTable(defaultTableModel, width, height), BorderLayout.CENTER);
+        reformPreviousContent();
     }
 
     private void generateAliases() {
@@ -396,186 +407,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         return rowData;
     }
 
-    public String toString() {
-        String data = title.toUpperCase().trim() + "\n";
-        String[] toPrint = new String[calculateNoRows()];
-
-        for (int i = 0; i < toPrint.length; i++) {
-            toPrint[i] = "";
-        }
-
-        Set<Integer> ontologyRows = new HashSet<Integer>();
-
-        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
-
-        for (int col = 0; col < defaultTableModel.getColumnCount(); col++) {
-            String val;
-
-            int count = 0;
-
-            for (int row = 0; row < defaultTableModel.getRowCount(); row++) {
-                String tmpTerm = "";
-                String tmpTermAcc = "";
-                String tmpTermSource = "";
-                val = (defaultTableModel.getValueAt(row, col) != null) ? defaultTableModel.getValueAt(row, col).toString() : "";
-                val = StringProcessing.cleanUpString(val);
-
-                // only check this in the field name column
-                if (col == 0) {
-                    if (aliasesToRealNames.containsKey(val)) {
-                        val = aliasesToRealNames.get(val);
-                    }
-                }
-
-                if (fieldType == FieldTypes.ASSAY) {
-                    if (row == 0) {
-                        if (val.equals("")) {
-                            break;
-                        }
-                    }
-
-                }
-
-                tmpTerm = val;
-
-                if (scrollTable.getCellEditor(row, 0) instanceof OntologyCellEditor || val.contains("Assay Measurement Type")
-                        || val.contains("Assay Technology Type") || ontologyRows.contains(row)) {
-                    ontologyRows.add(row);
-                    if (col == 0) {
-
-                        if (tmpTerm.contains("]")) {
-                            String salientValue = tmpTerm.replaceAll("]", "");
-                            tmpTermAcc = salientValue + " Term Accession Number]";
-                            tmpTermSource = salientValue + " Term Source REF]";
-                        } else {
-                            tmpTermAcc = tmpTerm + " Term Accession Number";
-                            tmpTermSource = tmpTerm + " Term Source REF";
-                        }
-
-                    } else {
-
-                        // change val to not have the ontology source ref anymore, and add the ref to
-                        // the term source!
-                        tmpTerm = val;
-
-                        if (!tmpTerm.equals("")) {
-                            if (tmpTerm.contains(";")) {
-                                // then we have multiple values
-                                String[] ontologies = tmpTerm.split(";");
-
-                                int numberAdded = 0;
-                                for (String ontologyTerm : ontologies) {
-
-                                    OntologyTerm oo = history.get(ontologyTerm);
-
-
-                                    if (oo != null) {
-                                        tmpTerm += oo.getOntologyTermName();
-                                        tmpTermAcc += oo.getOntologySourceAccession();
-                                        tmpTermSource += oo.getOntologySource();
-                                    } else {
-                                        if (ontologyTerm.contains(":")) {
-
-                                            String[] termAndSource = ontologyTerm.split(":");
-
-                                            if (termAndSource.length > 1) {
-                                                tmpTermSource += termAndSource[0];
-                                                tmpTerm += termAndSource[1];
-                                            } else {
-                                                tmpTerm = termAndSource[0];
-                                            }
-                                        }
-                                    }
-
-
-                                    if (numberAdded < ontologies.length - 1) {
-                                        tmpTerm += ";";
-                                        tmpTermAcc += ";";
-                                        tmpTermSource += ";";
-                                    }
-                                    numberAdded++;
-                                }
-
-                            } else {
-                                if (tmpTerm.contains(":")) {
-                                    OntologyTerm oo = history.get(tmpTerm);
-
-                                    if (oo != null) {
-                                        tmpTerm = oo.getOntologyTermName();
-                                        tmpTermAcc = oo.getOntologySourceAccession();
-                                        tmpTermSource = oo.getOntologySource();
-                                    } else {
-                                        if (tmpTerm.contains(":")) {
-                                            String[] termAndSource = tmpTerm.split(":");
-
-                                            if (termAndSource.length > 1) {
-                                                tmpTermSource += termAndSource[0];
-                                                tmpTerm += termAndSource[1];
-                                            } else {
-                                                tmpTerm = termAndSource[0];
-                                            }
-                                        } else {
-
-                                            tmpTermAcc = "";
-                                            tmpTermSource = "";
-                                        }
-                                    }
-                                } else {
-                                    tmpTermAcc = "";
-                                    tmpTermSource = "";
-                                }
-                            }
-                        }
-                    }
-
-                    //add to array
-                    if (col == 0) {
-                        toPrint[count] += tmpTerm;
-                    } else {
-                        toPrint[count] += ("\t\"" + tmpTerm + "\"");
-                    }
-
-                    count++;
-
-                    if (col == 0) {
-                        toPrint[count] += tmpTermAcc;
-                    } else {
-                        toPrint[count] += ("\t\"" + tmpTermAcc + "\"");
-                    }
-
-                    count++;
-
-                    if (col == 0) {
-                        toPrint[count] += tmpTermSource;
-                    } else {
-                        toPrint[count] += ("\t\"" + tmpTermSource + "\"");
-                    }
-
-                    count++;
-
-                } else {
-                    if (col == 0) {
-
-                        toPrint[count] += val;
-                    } else {
-                        toPrint[count] += ("\t\"" + val + "\"");
-                    }
-
-                    count++;
-                }
-            }
-
-        }
-
-
-        for (String line : toPrint) {
-            data += (line + "\n");
-        }
-
-        return data;
-    }
-
-
     private int calculateNoRows() {
         int noOntologyRows = 0;
 
@@ -794,15 +625,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     public abstract boolean doAddColumn(DefaultTableModel model, TableColumn col);
 
-    public void createGUI() {
-        initialisePanel();
-        setupTableModel(initialNoFields);
 
-        add(setupOptionsPanel(), BorderLayout.NORTH);
-
-        add(getFrozenTable(defaultTableModel, width, height), BorderLayout.CENTER);
-        reformPreviousContent();
-    }
 
     public abstract void reformPreviousContent();
 

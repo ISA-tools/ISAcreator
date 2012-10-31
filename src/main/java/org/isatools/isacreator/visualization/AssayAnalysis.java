@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.visualization;
 
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
@@ -67,7 +69,7 @@ public class AssayAnalysis {
     }
 
     private Spreadsheet getAssayContent() {
-        return a.getSpreadsheetUI().getSpreadsheet();
+        return ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(a)).getSpreadsheet();
     }
 
     public Map<String, List<Object>> performTreatmentGroupAnalysis() {

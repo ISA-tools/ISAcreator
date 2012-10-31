@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -40,18 +40,19 @@ package org.isatools.isacreator.apiutils;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
+import org.isatools.isacreator.sampleselection.SampleInformation;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
-import org.isatools.isacreator.sampleselection.SampleInformation;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import java.util.*;
 
 /**
- * SpreadsheetUtils
+ * SpreadsheetUtils - focused on providing ways to manipulate the spreadsheet object provided in the ISAcreator GUI.
  *
  * @author eamonnmaguire
  * @date Sep 30, 2010
@@ -178,6 +179,11 @@ public class SpreadsheetUtils {
         return columnContents;
     }
 
+    /**
+     * Returns the spreadsheet in its entirety as a 2D String array
+     * @param targetSheet - Spreadsheet to work on
+     * @return - String[][]
+     */
     public static String[][] getSpreadsheetDataSubset(Spreadsheet targetSheet) {
         // initalise array to be the number of columns -1 to account for Row No. column.
         int rowCount = targetSheet.getTable().getRowCount();
@@ -383,5 +389,19 @@ public class SpreadsheetUtils {
             }
         }
         return values;
+    }
+
+    public static StringBuilder outputAssayAsString(Assay assay) {
+        StringBuilder output = new StringBuilder();
+        Object[][] content = assay.getTableReferenceObject().getDataAsArray();
+
+        for (Object[] row : content) {
+            for (int columnIndex = 0; columnIndex < row.length; columnIndex++) {
+                output.append(row[columnIndex].toString());
+                output.append(columnIndex != row.length - 1 ? "\t" : "\n");
+            }
+        }
+
+        return output;
     }
 }

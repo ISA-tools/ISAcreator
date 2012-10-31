@@ -12,6 +12,8 @@ public class CiteExploreResult {
 
     public String id, doi, authors, title, abstractText, affiliation;
 
+    private String grants = "";
+
     public CiteExploreResult(String id, String doi, String authors, String title, String abstractText, String affiliation) {
         this.id = id;
         this.doi = doi;
@@ -43,5 +45,13 @@ public class CiteExploreResult {
 
     public String getAffiliation() {
         return affiliation;
+    }
+
+    public String getGrants() {
+        return grants;
+    }
+
+    public void setGrants(String grants) {
+        this.grants = grants;
     }
 }

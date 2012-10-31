@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -57,15 +57,17 @@ import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.loader.Loader;
 import org.isatools.isacreator.formatmappingutility.logic.MappingLogic;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.WorkingScreen;
-import org.isatools.isacreator.visualization.TreeView;
+import org.isatools.isacreator.visualization.tree.TreeView;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import prefuse.data.Tree;
@@ -180,10 +182,10 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private TableReferenceObject getTableReferenceObject(String technology, String endpoint) {
 
         if (endpoint.equalsIgnoreCase("[sample]")) {
-            return menuPanels.getMain().selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
+            return ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
         } else {
             technology = technology.equalsIgnoreCase(AssaySelectionUI.NO_TECHNOLOGY_TEXT) ? "" : technology;
-            return menuPanels.getMain().selectTROForUserSelection(endpoint, technology);
+            return ConfigurationManager.selectTROForUserSelection(endpoint, technology);
         }
     }
 
@@ -384,7 +386,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
      */
     private JLayeredPane createAssayUsedPanel(final String fileToMap) {
 
-        Map<String, List<String>> measToAllowedTechnologies = menuPanels.getMain().getAllowedTechnologiesPerEndpoint();
+        Map<String, List<String>> measToAllowedTechnologies = ConfigurationManager.getAllowedTechnologiesPerEndpoint();
 
         final AssaySelectionUI assaySelection = new AssaySelectionUI(measToAllowedTechnologies);
         assaySelection.createGUI();
@@ -913,12 +915,12 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                     public void run() {
                         investigation = MappingLogic.createInvestigation(definitions, assaySelections, dataEntryEnvironment);
                         // now we need to construct the investigation from the defined table reference objects and the
-                        investigation.setUserInterface(new InvestigationDataEntry(investigation, dataEntryEnvironment));
+                        ApplicationManager.assignDataEntryToISASection(investigation, new InvestigationDataEntry(investigation, dataEntryEnvironment));
 
                         investigation.setConfigurationCreateWith(menuPanels.getMain().getLoadedConfiguration());
                         investigation.setLastConfigurationUsed(menuPanels.getMain().getLoadedConfiguration());
 
-                        dataEntryEnvironment.createGUIFromInvestigatio(investigation);
+                        dataEntryEnvironment.createGUIFromInvestigation(investigation);
 
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
                         menuPanels.getMain().hideGlassPane();

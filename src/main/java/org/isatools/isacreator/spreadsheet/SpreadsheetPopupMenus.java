@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -40,12 +40,14 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
-import org.isatools.isacreator.visualization.workflowvisualization.*;
+import org.isatools.isacreator.visualization.glyphbasedworkflow.GraphMLCreator;
+import org.isatools.isacreator.visualization.workflowvisualization.WorkflowVisualization;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -374,15 +376,24 @@ public class SpreadsheetPopupMenus {
             }
         });
 
-//        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for assays");
-//        viewWorkflowForAssays.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent actionEvent) {
-//                SpreadsheetAnalysis analysis = new TranscriptomicSpreadsheetAnalysis(spreadsheet);
-//                analysis.runAnalysis();
-//                analysis.getGraph().outputGraph();
-//                new WorkflowVisualization().createGUI();
-//            }
-//        });
+        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for this assay");
+        viewWorkflowForAssays.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                GraphMLCreator graphMLCreator = new GraphMLCreator();
+                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true);
+                new WorkflowVisualization(graphMLFile).createGUI();
+            }
+        });
+
+        JMenuItem viewWorkflowForSelectedSamples = new JMenuItem("View workflow for selected samples");
+        viewWorkflowForSelectedSamples.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                GraphMLCreator graphMLCreator = new GraphMLCreator();
+                Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
+                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
+                new WorkflowVisualization(graphMLFile).createGUI();
+            }
+        });
 
         JMenuItem mapFilesToDirectory = new JMenuItem("Resolve file names");
         mapFilesToDirectory.setToolTipText("<html>" +
@@ -447,8 +458,11 @@ public class SpreadsheetPopupMenus {
             popup.add(removeHighlight);
         }
 
-//        popup.add(new JSeparator());
-//        popup.add(viewWorkflowForAssays);
+        if (isSpreadsheetSampleDefinitions()) {
+            popup.add(new JSeparator());
+            popup.add(viewWorkflowForAssays);
+            popup.add(viewWorkflowForSelectedSamples);
+        }
         popup.show(jc, x, y);
     }
 
@@ -683,16 +697,37 @@ public class SpreadsheetPopupMenus {
             }
         });
 
+        JMenuItem viewWorkflowForSelectedSamples = new JMenuItem("View workflow for selected samples");
+        viewWorkflowForSelectedSamples.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                GraphMLCreator graphMLCreator = new GraphMLCreator();
+                Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
+                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
+                System.out.println("graph file is " + graphMLFile);
+                new WorkflowVisualization(graphMLFile).createGUI();
+            }
+        });
+
         popup.add(autoIncrementCells);
         popup.add(new JSeparator());
         popup.add(mapFilesToDirectory);
         popup.add(new JSeparator());
         popup.add(copyData);
         popup.add(clearData);
+        if (isSpreadsheetSampleDefinitions()) {
+            popup.add(new JSeparator());
+            popup.add(viewWorkflowForSelectedSamples);
+        }
         popup.add(new JSeparator());
         popup.add(close);
 
+
+
         popup.show(jc, x, y);
+    }
+
+    private boolean isSpreadsheetSampleDefinitions() {
+        return !spreadsheet.getSpreadsheetTitle().contains("Sample Def");
     }
 
     /**

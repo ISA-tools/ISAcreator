@@ -7,23 +7,16 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.gui.InvestigationDataEntry;
-import org.isatools.isacreator.gui.StudyDataEntry;
-import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import uk.ac.ebi.utils.collections.Pair;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -31,206 +24,206 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by the ISA team
+ * Created Created by the ISA team
  *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 09/03/2011
- *         Time: 14:27
+ *
+ * Abstract class for importing ISATab files
+ *
+ * Date: 11/07/2012
+ * Time: 16:08
+ *
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
+ * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class ISAtabImporter {
-    private static final Logger log = Logger.getLogger(ISAtabImporter.class.getName());
-
-    private Investigation investigation;
-
-    private DataEntryEnvironment dataEntryEnvironment;
-    private List<ISAFileErrorReport> errors;
-
-    private String parentDirectoryPath;
-    private ISAcreator isacreator;
-    private Boolean constructWithGUIs;
+public abstract class ISAtabImporter {
 
 
-    /**
-     * ImportISAFiles provides a facility for you to import ISATAB files
-     * and convert these files into Java Objects for you to use.
-     *
-     * @param configDir - the directory containing the configuration files you wish to use.
-     */
-    public ISAtabImporter(String configDir) {
-        this(new ISAcreator(Mode.LIGHT_MODE, null, configDir), false);
-    }
+    private static final Logger log = Logger.getLogger(ISAtabImporter.class);
 
-    /**
-     * ImportISAFiles provides a facility for you to import ISATAB files
-     * and convert these files into Java Objects for you to use.
-     *
-     * @param isacreator - a reference to the Main entry point of the Application
-     */
-    public ISAtabImporter(ISAcreator isacreator) {
-        this(isacreator, true);
-    }
+    protected Investigation investigation;
+    protected List<ISAFileErrorReport> errors;
+    private  List<ErrorMessage> messages;
+    protected StructureToInvestigationMapper mapper;
 
-    /**
-     * ImportISAFiles provides a facility for you to import ISATAB files
-     * and convert these files into Java Objects for you to use.
-     *
-     * @param isacreator        - a reference to the Main entry point of the Application
-     * @param constructWithGUIs - whether or not to construct the Study/Assay Objects with User Interfaces. There would be no point creating GUIs for those accessing features through the API for example.
-     */
-    public ISAtabImporter(ISAcreator isacreator, Boolean constructWithGUIs) {
-        this.isacreator = isacreator;
-        this.constructWithGUIs = constructWithGUIs;
+
+    public ISAtabImporter(){
         errors = new ArrayList<ISAFileErrorReport>();
-
-        this.dataEntryEnvironment = new DataEntryEnvironment();
-        isacreator.setCurDataEntryPanel(dataEntryEnvironment);
+        messages = new ArrayList<ErrorMessage>();
     }
 
+    /**
+     * Imports ISATab files
+     *
+     * @param parentDir
+     * @return indicates if import was successful or not
+     */
+    public abstract boolean importFile(String parentDir);
+
+    /**
+     * Retrieves errors of the import process
+     *
+     * @return list of ISAFileErrorReports
+     */
+    public List<ISAFileErrorReport> getMessages() {
+        return errors;
+    }
+
+    public String getMessagesAsString(){
+        StringBuilder builder = new StringBuilder();
+        for(ISAFileErrorReport errorReport: errors){
+            builder.append("Error filename: "+errorReport.getFileName());
+            builder.append("\n Error messages: ");
+            for(ErrorMessage error: errorReport.getMessages()){
+                builder.append("\n"+error.getMessage());
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Retrieves the investigation object
+     *
+     * @return investigation
+     */
     public Investigation getInvestigation() {
         return investigation;
     }
 
+    protected boolean commonImportFile(String parentDir){
 
-    /**
-     * Import an ISATAB file set!
-     *
-     * @param parentDir - Directory containing the ISATAB files. Should include a file of type
-     * @return boolean if successful or not!
-     */
-    public boolean importFile(String parentDir) {
-        File investigationFile = new File(parentDir);
 
-        this.parentDirectoryPath = parentDir;
+            File investigationFile = new File(parentDir);
 
-        if (!investigationFile.isDirectory()) {
-            investigationFile = investigationFile.getParentFile();
-            this.parentDirectoryPath = investigationFile.getAbsolutePath();
-        }
+            //parentDirectoryPath should not be a class fields as before, as it is relevant for the method importFile only
+            String parentDirectoryPath = parentDir;
 
-        log.info("Parent directory is -> " + parentDir);
+            if (!investigationFile.isDirectory()) {
+                investigationFile = investigationFile.getParentFile();
+                parentDirectoryPath = investigationFile.getAbsolutePath();
+            }
 
-        boolean investigationFileFound = false;
+            log.info("Parent directory is -> " + parentDir);
 
-        List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
+            boolean investigationFileFound = false;
 
-        if (investigationFile.exists()) {
 
-            File[] isaDirectorFiles = investigationFile.listFiles();
 
-            for (File isaFile : isaDirectorFiles) {
-                if (isaFile.getName().toLowerCase().startsWith("i_")) {
-                    investigationFileFound = true;
-                    investigationFile = isaFile;
-                    break;
+            if (investigationFile.exists()) {
+
+                File[] isaDirectorFiles = investigationFile.listFiles();
+
+                for (File isaFile : isaDirectorFiles) {
+                    if (isaFile.getName().toLowerCase().startsWith("i_")) {
+                        investigationFileFound = true;
+                        investigationFile = isaFile;
+                        break;
+                    }
                 }
-            }
 
 
-            if (!investigationFileFound) {
-                messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in this folder. Please create an investigation file and name it " +
-                        "\"i_<investigation identifier>.txt\""));
+                if (!investigationFileFound) {
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in this folder. Please create an investigation file and name it " +
+                            "\"i_<investigation identifier>.txt\""));
 
-                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                errors.add(investigationErrorReport);
-                return false;
-            }
+                    ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                    errors.add(investigationErrorReport);
+                    return false;
+                }
 
-            try {
+                try {
 
-                InvestigationImport investigationFileImporter = new InvestigationImport();
-                Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
+                    InvestigationImport investigationFileImporter = new InvestigationImport();
+                    Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
 
-                messages.addAll(investigationFileImporter.getMessages());
+                    messages.addAll(investigationFileImporter.getMessages());
 
-                if (investigationFileImport.fst) {
-                    log.info("Import of Investigation in " + investigationFile.getPath() + " was successful...");
-                    log.info("Proceeding to map to Investigation...");
+                    if (investigationFileImport.fst) {
+                        log.info("Import of Investigation in " + investigationFile.getPath() + " was successful...");
+                        log.info("Proceeding to map to Investigation...");
 
-                    StructureToInvestigationMapper mapper = new StructureToInvestigationMapper();
+                        mapper = new StructureToInvestigationMapper();
 
-                    Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
+                        Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
 
-                    messages.addAll(mapper.getMessages());
+                        messages.addAll(mapper.getMessages());
 
-                    if (!mappingResult.fst) {
-                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                        errors.add(investigationErrorReport);
-                        return false;
-                    }
-
-
-                    investigation = mappingResult.snd;
-                    investigation.setFileReference(investigationFile.getPath());
-
-                    if (investigation.getReferenceObject() != null) {
-                        TableReferenceObject tro = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(MappingObject.INVESTIGATION);
-
-                        DataEntryReferenceObject referenceObject = investigation.getReferenceObject();
-
-                        referenceObject.setFieldDefinition(tro.getTableFields().getFields());
-
-                        for (Study study : investigation.getStudies().values()) {
-                            study.getReferenceObject().setFieldDefinition(tro.getTableFields().getFields());
-                        }
-                    }
-
-                    if (!processInvestigation()) {
-                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                        errors.add(investigationErrorReport);
-
-                        return false;
-                    }
-
-                    if (constructWithGUIs) {
-                        attachGUIsToInvestigation();
-                        dataEntryEnvironment.createGUIFromInvestigatio(investigation);
-                        assignOntologiesToSession(mapper.getOntologyTermsDefined());
-                    }
-
-
-                    String lastConfigurationUsed = ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION);
-
-                    if (lastConfigurationUsed.contains(File.separator)) {
-                        lastConfigurationUsed = lastConfigurationUsed.substring(lastConfigurationUsed.lastIndexOf(File.separator) + 1);
-                    }
-
-                    if (!investigation.getLastConfigurationUsed().equals("")) {
-                        if (!lastConfigurationUsed.equals(investigation.getLastConfigurationUsed())) {
-                            messages.add(new ErrorMessage(ErrorLevel.WARNING, "The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
-                                    "the settings from " + investigation.getLastConfigurationUsed() + " may be important."));
-
+                        if (!mappingResult.fst) {
                             ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                             errors.add(investigationErrorReport);
+                            return false;
                         }
-                    } else {
-                        investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
-                    }
 
-                } else {
-                    messages.addAll(investigationFileImporter.getMessages());
+
+                        investigation = mappingResult.snd;
+                        investigation.setFileReference(investigationFile.getPath());
+
+                        if (investigation.getReferenceObject() != null) {
+                            TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
+
+                            DataEntryReferenceObject referenceObject = investigation.getReferenceObject();
+
+                            referenceObject.setFieldDefinition(tro.getTableFields().getFields());
+
+                            for (Study study : investigation.getStudies().values()) {
+                                study.getReferenceObject().setFieldDefinition(tro.getTableFields().getFields());
+                            }
+                        }
+
+                        if (!processInvestigation(parentDirectoryPath)) {
+                            ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                            errors.add(investigationErrorReport);
+
+                            return false;
+                        }
+
+
+                        String lastConfigurationUsed = ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION);
+
+                        if (lastConfigurationUsed.contains(File.separator)) {
+                            lastConfigurationUsed = lastConfigurationUsed.substring(lastConfigurationUsed.lastIndexOf(File.separator) + 1);
+                        }
+
+                        if (!investigation.getLastConfigurationUsed().equals("") && !lastConfigurationUsed.equals("")) {
+                            if (!lastConfigurationUsed.equals(investigation.getLastConfigurationUsed())) {
+                                messages.add(new ErrorMessage(ErrorLevel.WARNING, "The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
+                                        "the settings from " + investigation.getLastConfigurationUsed() + " may be important."));
+
+                                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                                errors.add(investigationErrorReport);
+                            }
+                        } else {
+                            //if (isacreator!=null){
+                            //    investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
+                            //}
+                        }
+
+                    } else {
+                        messages.addAll(investigationFileImporter.getMessages());
+
+                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                        errors.add(investigationErrorReport);
+
+                        return false;
+                    }
+                } catch (IOException e) {
+
+                    messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
 
                     ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                     errors.add(investigationErrorReport);
 
                     return false;
+
                 }
-            } catch (IOException e) {
-
-                messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
-
-                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                errors.add(investigationErrorReport);
-
-                return false;
-
             }
-        }
 
-        return true;
+            return true;
+
+
     }
 
-    private boolean processInvestigation() {
+
+    protected boolean processInvestigation(String parentDirectoryPath) {
 
         SpreadsheetImport spreadsheetImporter = new SpreadsheetImport();
 
@@ -243,7 +236,7 @@ public class ISAtabImporter {
             System.out.println("Processing " + studyIdentifier);
 
             // here we process the study sample file
-            TableReferenceObject studySampleReference = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(
+            TableReferenceObject studySampleReference = ConfigurationManager.selectTROForUserSelection(
                     MappingObject.STUDY_SAMPLE);
 
             if (studySampleReference != null) {
@@ -283,15 +276,14 @@ public class ISAtabImporter {
 
                 Assay assay = study.getAssays().get(assayReference);
 
-                TableReferenceObject assayTableReferenceObject = dataEntryEnvironment.getParentFrame().selectTROForUserSelection(assay.getMeasurementEndpoint(),
-                        assay.getTechnologyType());
+                TableReferenceObject assayTableReferenceObject = ConfigurationManager.selectTROForUserSelection(
+                        assay.getMeasurementEndpoint(), assay.getTechnologyType());
 
                 if (assayTableReferenceObject != null) {
                     try {
 
                         TableReferenceObject builtReference = spreadsheetImporter.loadInTables(parentDirectoryPath + File.separator +
                                 assay.getAssayReference(), assayTableReferenceObject);
-
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
                         }
@@ -333,39 +325,7 @@ public class ISAtabImporter {
         return !errorsFound;
     }
 
-    private void attachGUIsToInvestigation() {
-        investigation.setUserInterface(new InvestigationDataEntry(investigation, dataEntryEnvironment));
-
-        for (String studyIdentifier : investigation.getStudies().keySet()) {
-            Study study = investigation.getStudies().get(studyIdentifier);
-
-            study.setUI(new StudyDataEntry(dataEntryEnvironment, study));
-
-            study.getStudySample().setUserInterface(study.getUserInterface());
-
-            for (String assay : study.getAssays().keySet()) {
-
-                study.getAssays().get(assay).setUserInterface(study.getUserInterface());
-            }
-        }
-    }
-
-    private void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
-
-        for (OntologyTerm oo : ontologiesUsed) {
-            if (!oo.getOntologyTermName().trim().equals("")) {
-                OntologyManager.addToUserHistory(oo);
-            }
-        }
-
-    }
-
-    public List<ISAFileErrorReport> getMessages() {
-        return errors;
-    }
-
-    private FileType inferISAFileType(Assay assay) {
-
+    protected FileType inferISAFileType(Assay assay) {
 
         String assayDescription = assay.getTechnologyType().toLowerCase() + " " + assay.getMeasurementEndpoint().toLowerCase();
 
@@ -389,4 +349,7 @@ public class ISAtabImporter {
             return FileType.STUDY_SAMPLE;
         }
     }
+
 }
+
+

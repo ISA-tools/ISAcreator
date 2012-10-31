@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,12 +37,10 @@
 
 package org.isatools.isacreator.model;
 
-import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
-import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import java.util.*;
 
@@ -71,8 +69,6 @@ public class Study extends ISASection {
     private List<StudyDesign> studyDesigns;
     private Set<String> previousProtocols;
     private Set<String> previousFactors;
-
-    private StudyDataEntry studyDataEntryEnvironment;
 
     private Map<String, Set<String>> termsToBeReplaced;
     private Map<String, Set<String>> termsToReplaceWith;
@@ -359,10 +355,6 @@ public class Study extends ISASection {
         return getValue(STUDY_TITLE);
     }
 
-    public StudyDataEntry getUserInterface() {
-        return studyDataEntryEnvironment;
-    }
-
     /**
      * Remove assay from references.
      *
@@ -381,11 +373,11 @@ public class Study extends ISASection {
      */
     public void removeFactor(String factorName) {
         for (String key : assays.keySet()) {
-            assays.get(key).getSpreadsheetUI().getSpreadsheet().getSpreadsheetFunctions()
-                    .removeColumnByName("Factor Value[" + factorName + "]");
+            ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assays.get(key))).getSpreadsheet()
+                    .getSpreadsheetFunctions().removeColumnByName("Factor Value[" + factorName + "]");
         }
 
-        studySampleRecord.getSpreadsheetUI().getSpreadsheet()
+        ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(studySampleRecord)).getSpreadsheet()
                 .getSpreadsheetFunctions().removeColumnByName("Factor Value[" + factorName + "]");
 
         Factor toRemove = null;
@@ -458,14 +450,12 @@ public class Study extends ISASection {
         newFactorName = "Factor Value[" + newFactorName + "]";
 
         for (String key : assays.keySet()) {
-            assays.get(key).getSpreadsheetUI().getSpreadsheet()
+            ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assays.get(key))).getSpreadsheet()
                     .getSpreadsheetFunctions().substituteHeaderNames(previousFactorName, newFactorName);
-            System.out.print(".");
         }
-
-        studySampleRecord.getSpreadsheetUI().getSpreadsheet()
-                .getSpreadsheetFunctions().substituteHeaderNames(previousFactorName,
-                newFactorName);
+        // update for the sample record
+        ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(studySampleRecord)).getSpreadsheet()
+                .getSpreadsheetFunctions().substituteHeaderNames(previousFactorName, newFactorName);
     }
 
     /**
@@ -477,12 +467,12 @@ public class Study extends ISASection {
     public void replaceProtocols(String previousProtocolName,
                                  String newProtocolName) {
         for (String key : assays.keySet()) {
-            assays.get(key).getSpreadsheetUI().getSpreadsheet()
+            ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assays.get(key))).getSpreadsheet()
                     .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                     previousProtocolName, newProtocolName);
         }
 
-        studySampleRecord.getSpreadsheetUI().getSpreadsheet()
+        ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(studySampleRecord)).getSpreadsheet()
                 .getSpreadsheetFunctions().substituteTermsInColumn("Protocol REF",
                 previousProtocolName, newProtocolName);
 
@@ -657,10 +647,6 @@ public class Study extends ISASection {
 
     public void setStudyTitle(String studyTitle) {
         fieldValues.put(STUDY_TITLE, studyTitle);
-    }
-
-    public void setUI(StudyDataEntry ui) {
-        this.studyDataEntryEnvironment = ui;
     }
 
     public String toString() {
