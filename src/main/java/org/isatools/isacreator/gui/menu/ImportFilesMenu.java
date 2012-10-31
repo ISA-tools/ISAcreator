@@ -155,8 +155,11 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         menu.hideGlassPane();
         // add the loading image panel to the view. No need to use the glass pane here.
         menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
-        loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-                candidate.getName() + File.separator);
+
+        // Changing this assuming the file is given with full path
+        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+        //        candidate.getName() + File.separator);
+        loadFile(candidate.getAbsolutePath());
     }
     
     private Container createLoadingImagePanel() {
@@ -253,7 +256,12 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                     createErrorView(reports, false);
                 } finally {
-                    menu.remove(loadingImagePanel);
+                    if(menu != null) {
+                        menu.remove(loadingImagePanel);
+                    } else {
+                        menu.getMain().hideGlassPane();
+                    }
+
                 }
             }
         });

@@ -120,7 +120,7 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
 
             Map<String, String> record = getRecord(recordNumber);
 
-            record.put(Factor.FACTOR_TYPE, record.get(Factor.FACTOR_NAME));
+//            record.put(Factor.FACTOR_TYPE, record.get(Factor.FACTOR_NAME));
 
             Factor factor = new Factor();
             factor.addToFields(record);

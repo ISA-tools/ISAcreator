@@ -276,7 +276,7 @@ public class Spreadsheet extends JComponent implements
     }
 
     private void populateSpreadsheetWithContent() {
-        if (tableReferenceObject.getReferenceData() != null) {
+        if (!tableReferenceObject.getReferenceData().getData().isEmpty()) {
             populateTable(tableReferenceObject.getReferenceData());
             rebuildDependencies(tableReferenceObject.getColumnDependencies());
         } else {

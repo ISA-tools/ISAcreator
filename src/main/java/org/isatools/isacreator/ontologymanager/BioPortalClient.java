@@ -295,9 +295,10 @@ public class BioPortalClient implements OntologyService {
 
         term = correctTermForHTTPTransport(term);
 
-        String searchString = REST_URL + "search/" + term + "/?ontologyids=" +
-                (((source == null) || source.trim().equalsIgnoreCase("") || source.trim().equalsIgnoreCase("all"))
-                        ? constructSourceStringFromAllowedOntologies() : source);
+        String searchString = REST_URL + "search/" + term +
+                (((source == null) || source.trim().equalsIgnoreCase("")
+                        || source.trim().equalsIgnoreCase("all"))
+                        ? "" : "/?ontologyids=" +source);
 
         searchString += "&" + API_KEY;
 

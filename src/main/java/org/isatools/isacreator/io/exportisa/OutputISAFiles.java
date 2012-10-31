@@ -15,7 +15,6 @@ import java.util.List;
  * Created by the ISA team
  *
  * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
  *         Date: 01/07/2012
  *         Time: 14:13
  */

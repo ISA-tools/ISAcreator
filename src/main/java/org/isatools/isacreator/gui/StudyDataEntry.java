@@ -548,6 +548,8 @@ public class StudyDataEntry extends DataEntryForm {
             output.append(fieldName).append("\t\"").append(StringProcessing.cleanUpString(study.getFieldValues().get(fieldName))).append("\"\n");
         }
 
+        populateEmptySections();
+
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_DESIGN_SECTION.toString(), getStudy().getStudyDesigns()));
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_PUBLICATIONS.toString(), getStudy().getPublications()));
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_FACTORS.toString(), getStudy().getFactors()));
@@ -557,6 +559,28 @@ public class StudyDataEntry extends DataEntryForm {
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_CONTACTS.toString(), getStudy().getContacts()));
 
         return output.toString();
+    }
+
+    private void populateEmptySections() {
+        if(getStudy().getStudyDesigns().size() == 0) {
+            getStudy().getStudyDesigns().add(new StudyDesign());
+        }
+
+        if(getStudy().getFactors().size() == 0) {
+            getStudy().addFactor(new Factor());
+        }
+
+        if(getStudy().getProtocols().size() == 0) {
+            getStudy().addProtocol(new Protocol());
+        }
+
+        if(getStudy().getPublications().size() == 0) {
+            getStudy().addPublication(new StudyPublication());
+        }
+
+        if(getStudy().getContacts().size() == 0) {
+            getStudy().addContact(new StudyContact());
+        }
     }
 
     /**

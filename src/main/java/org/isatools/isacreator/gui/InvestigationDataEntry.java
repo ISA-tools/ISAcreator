@@ -46,10 +46,7 @@ import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdapt
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.managers.ConfigurationManager;
-import org.isatools.isacreator.model.Contact;
-import org.isatools.isacreator.model.Investigation;
-import org.isatools.isacreator.model.Publication;
-import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -89,6 +86,8 @@ public class InvestigationDataEntry extends DataEntryForm {
         createInvestigationSectionFields();
         finalisePane();
     }
+
+
 
     private void createInvestigationSectionFields() {
         JPanel container = new JPanel(new BorderLayout());
@@ -211,11 +210,23 @@ public class InvestigationDataEntry extends DataEntryForm {
         StringBuilder output = new StringBuilder();
         output.append(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION, aliasesToRealNames));
 
+        populateEmptySections();
         output.append(getISASectionAsString(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(), getPublications()));
         output.append(getISASectionAsString(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), getContacts()));
 
         return output.toString();
     }
+
+    private void populateEmptySections() {
+        if(getInvestigation().getPublications().size() == 0) {
+            getInvestigation().addPublication(new InvestigationPublication());
+        }
+
+        if(getInvestigation().getContacts().size() == 0) {
+            getInvestigation().addContact(new InvestigationContact());
+        }
+    }
+
 
     public List<Contact> getContacts() {
         return investigation.getContacts();
