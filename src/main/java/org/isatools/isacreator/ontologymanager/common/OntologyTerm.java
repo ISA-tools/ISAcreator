@@ -146,6 +146,11 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return comments == null ? new HashMap<String, String>() : comments;
     }
 
+    /***
+     * TODO: Change this to return the PURL instead, if not null or empty
+     *
+     * @return
+     */
     public String getUniqueId() {
 
         String ontologySource = getOntologySource();

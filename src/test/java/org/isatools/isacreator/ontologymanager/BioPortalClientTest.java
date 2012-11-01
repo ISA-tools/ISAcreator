@@ -78,8 +78,8 @@ public class BioPortalClientTest {
     }
 
     @Test
-    public void getTermMetadata() {
-        System.out.println("_____Testing getTermMetadata()____");
+    public void getTermInformation() {
+        System.out.println("_____Testing getTermInformation()____");
 
         OntologyTerm term = client.getTermInformation(testTermAccession, testOntologyVersion);
 
@@ -87,7 +87,25 @@ public class BioPortalClientTest {
 
         System.out.println("Found " + term.getComments().size() + " properties for " + term.getOntologyTermName());
 
+        System.out.println("Comments " + term.getComments());
+
+        System.out.println("Ontology PURL "+term.getOntologyPurl());
+
     }
+
+
+    @Test
+    public void getTermMetadata() {
+        System.out.println("_____Testing getTermMetadata()____");
+
+        Map<String, String> map = client.getTermMetadata(testTermAccession, testOntologyVersion);
+
+        assertTrue("No metadata found for " + testOntologyID, map != null);
+
+        System.out.println("Map " + map);
+
+    }
+
 
     @Test
     public void getOntologyById() {
