@@ -41,6 +41,7 @@ public class ImportConfiguration {
 
             ConfigurationManager.setAssayDefinitions(configParser.getTables());
             ConfigurationManager.setMappings(configParser.getMappings());
+            ConfigurationManager.loadConfigurations(configDir);
 
             ApplicationManager.setCurrentDataReferenceObject();
 

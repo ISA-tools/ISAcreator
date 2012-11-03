@@ -118,6 +118,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     }
 
     public void getSelectedFileAndLoad(File candidate) {
+        settingISAcreatorPane();
+        // Changing this assuming the file is given with full path
+        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+        //        candidate.getName() + File.separator);
+        loadFile(candidate.getAbsolutePath());
+    }
+
+    private void settingISAcreatorPane(){
         // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
         menu.captureCurrentGlassPaneContents();
         // we hide the glass pane which is currently holding the menu items, loading interface etc.
@@ -125,10 +133,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         // add the loading image panel to the view. No need to use the glass pane here.
         menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
 
-        // Changing this assuming the file is given with full path
-        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-        //        candidate.getName() + File.separator);
-        loadFile(candidate.getAbsolutePath());
     }
 
     private Container createLoadingImagePanel() {
@@ -175,6 +179,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         Thread performer = new Thread(new Runnable() {
             public void run() {
                 try {
+
+                    //settingISAcreatorPane();
 
                     final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(menu.getMain());
                     boolean successfulImport = iISA.importFile(dir);
@@ -253,7 +259,10 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                     createErrorView(reports, false);
                 } finally {
-                    menu.remove(loadingImagePanel);
+                    if (loadingImagePanel!=null)
+                        menu.remove(loadingImagePanel);
+                    else
+                        menu.hideGlassPane();
                 }
             }
         });

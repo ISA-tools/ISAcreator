@@ -50,7 +50,10 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.GenericPanel;
 import org.isatools.isacreator.effects.InfiniteImageProgressPanel;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gs.GSLocalFilesManager;
+import org.isatools.isacreator.gs.gui.GSAuthenticationMenu;
+import org.isatools.isacreator.gs.gui.GSImportFilesMenu;
 import org.isatools.isacreator.gs.gui.GSRegistrationMenu;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
@@ -102,7 +105,8 @@ public class ISAcreatorMenu extends JLayeredPane {
     private MenuUIComponent authGUI;
     private CreateISATABMenu createISA;
     private MenuUIComponent createProfileGUI;
-    private ImportFilesMenu importISA;
+    //private ImportFilesMenu importISA;
+    private AbstractImportFilesMenu importISA;
     private MergeFilesUI mergeStudies;
     private SettingsUtil settings;
     private ImportConfigurationMenu importConfigurationMenu;
@@ -145,7 +149,7 @@ public class ISAcreatorMenu extends JLayeredPane {
             }
         }
 
-        if (authMenuClassName==null && authentication==null){
+        if (isacreator.getMode()!=Mode.GS && authMenuClassName==null && authentication==null){
                 authentication = new AuthenticationManager();
                 authGUI = new AuthenticationMenu(this, authentication, username);
         } else {
@@ -159,6 +163,13 @@ public class ISAcreatorMenu extends JLayeredPane {
                 }
            }
 
+
+            if (isacreator.getMode()==Mode.GS){
+                authentication = new GSIdentityManager();
+                authGUI = new GSAuthenticationMenu(this,authentication);
+
+            }
+            /*
            //TODO this should not needed anymore
            if (authMenuClassName!=null){
             try{
@@ -178,6 +189,7 @@ public class ISAcreatorMenu extends JLayeredPane {
                 e.printStackTrace();
             }
            }
+           */
 
         }//else
 
@@ -187,7 +199,12 @@ public class ISAcreatorMenu extends JLayeredPane {
         //}else{
             createProfileGUI = new CreateProfileMenu(this);
         //}
-        importISA = new ImportFilesMenu(this);
+
+        if (isacreator.getMode()==Mode.GS){
+            importISA = new GSImportFilesMenu(this);
+        }else{
+            importISA = new ImportFilesMenu(this);
+        }
         importConfigurationMenu = new ImportConfigurationMenu(this);
         mergeStudies = new MergeFilesUI(this);
 
@@ -227,7 +244,6 @@ public class ISAcreatorMenu extends JLayeredPane {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 
-                //TODO only create GUIs if necessary
                 if (authGUI!=null)
                     authGUI.createGUI();
                 createProfileGUI.createGUI();
@@ -291,7 +307,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     public void loadFiles(String isatabDir) {
-        importISA.getSelectedFileAndLoad(new File(isatabDir));
+        ((ImportFilesMenu)importISA).getSelectedFileAndLoad(new File(isatabDir));
         System.out.println("ISATAB dataset loaded");
     }
 
@@ -336,7 +352,7 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
 
-    protected void showProgressPanel(ImageIcon image) {
+    public void showProgressPanel(ImageIcon image) {
         System.out.println("==================== Show progress panel");
         captureCurrentGlassPaneContents();
         System.out.println("previousGlassPane=" + previousGlassPane);
@@ -381,7 +397,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         isacreator.setGlassPane(previousGlassPane);
     }
 
-    protected void hideGlassPane() {
+    public void hideGlassPane() {
         System.out.println("============Hiding glass pane");
         isacreator.hideGlassPane();
     }
@@ -437,7 +453,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         return importConfigurationMenu;
     }
 
-    public ImportFilesMenu getImportISAGUI() {
+    public AbstractImportFilesMenu getImportISAGUI() {
         return importISA;
     }
 

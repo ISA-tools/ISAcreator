@@ -1,46 +1,16 @@
-/**
- ISAcreator is a component of the ISA software suite (http://www.isa-tools.org)
-
- License:
- ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
-
- EXHIBIT A. CPAL version 1.0
- The contents of this file are subject to the CPAL version 1.0 (the License);
- you may not use this file except in compliance with the License. You may obtain a
- copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
- The License is based on the Mozilla Public License version 1.1 but Sections
- 14 and 15 have been added to cover use of software over a computer network and
- provide for limited attribution for the Original Developer. In addition, Exhibit
- A has been modified to be consistent with Exhibit B.
-
- Software distributed under the License is distributed on an AS IS basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- the specific language governing rights and limitations under the License.
-
- The Original Code is ISAcreator.
- The Original Developer is the Initial Developer. The Initial Developer of the
- Original Code is the ISA Team (Eamonn Maguire, eamonnmag@gmail.com;
- Philippe Rocca-Serra, proccaserra@gmail.com; Susanna-Assunta Sansone, sa.sanson@gmail.com;
- http://www.isa-tools.org). All portions of the code written by the ISA Team are
- Copyright (c) 2007-2011 ISA Team. All Rights Reserved.
-
- EXHIBIT B. Attribution Information
- Attribution Copyright Notice: Copyright (c) 2008-2011 ISA Team
- Attribution Phrase: Developed by the ISA Team
- Attribution URL: http://www.isa-tools.org
- Graphic Image provided in the Covered Code as file: http://isa-tools.org/licenses/icons/poweredByISAtools.png
- Display of Attribution Information is required in Larger Works which are defined in the CPAL as a work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
-
- Sponsors:
- The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
- */
-
-package org.isatools.isacreator.gui.menu;
+package org.isatools.isacreator.gs.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.gui.menu.AbstractImportFilesMenu;
+import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.gui.menu.ImportFilesMenu;
+import org.isatools.isacreator.gui.menu.MenuUIComponent;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -51,41 +21,29 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 
 /**
- * AbstractImportFilesMenu
+ * Created by the ISATeam.
+ * User: agbeltran
+ * Date: 10/10/2012
+ * Time: 15:13
  *
- * @author eamonnmaguire
- * @date Mar 4, 2010
+ * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
+public class GSImportFilesMenu extends AbstractImportFilesMenu {
+
+    private static Logger log = Logger.getLogger(GSImportFilesMenu.class);
+
+    @InjectedResource
+    private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
+            backButton, backButtonOver, filterLeft, filterRight, searchButtonGS, searchButtonGSOver;
+
+    private JLabel back;
+    private Container loadingImagePanel;
+    private JLabel chooseFromGS;
 
 
-public abstract class AbstractImportFilesMenu extends MenuUIComponent {
-    protected static ImageIcon loadISAanimation = new ImageIcon(ImportFilesMenu.class.getResource("/images/gui/isa_load.gif"));
-
-    protected JEditorPane problemReport;
-    protected JScrollPane problemScroll;
-    protected File[] previousFiles = null;
-    protected ExtendedJList previousFileList;
-
-    protected JFileChooser jfc;
-
-    protected long timeButtonLastClicked = System.currentTimeMillis();
-
-    protected JLabel chooseFromElsewhere, loadSelected;
-    protected boolean showProblemArea;
-
-    public AbstractImportFilesMenu(ISAcreatorMenu menu) {
-        this(menu, true);
-    }
-
-    public AbstractImportFilesMenu(ISAcreatorMenu menu, boolean showProblemArea) {
-        super(menu);
-        this.showProblemArea = showProblemArea;
-
-        jfc = new JFileChooser();
-        jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-        setLayout(new BorderLayout());
-        setOpaque(false);
+    public GSImportFilesMenu(ISAcreatorMenu menu){
+        super(menu, true);
+        setPreferredSize(new Dimension(400, 400));
     }
 
     public void createGUI() {
@@ -174,6 +132,108 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
     }
 
+    @Override
+    public File[] getPreviousFiles() {
+        return new File[0];  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void getSelectedFileAndLoad() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setListRenderer() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getBorderTitle() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ImageIcon getPanelHeaderImage() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void loadFile(String dir) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public JPanel createAlternativeExitDisplay() {
+
+        JPanel previousButtonPanel = new JPanel(new GridLayout(1, 1));
+        previousButtonPanel.setOpaque(false);
+
+        back = new JLabel(backButton, JLabel.LEFT);
+        back.addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent event) {
+
+                if (problemScroll != null)
+                    problemScroll.setVisible(false);
+
+                ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(menu.getMainMenuGUI());
+            }
+
+            public void mouseEntered(MouseEvent event) {
+                back.setIcon(backButtonOver);
+            }
+
+            public void mouseExited(MouseEvent event) {
+                back.setIcon(backButton);
+            }
+        });
+
+        back.setOpaque(false);
+
+        previousButtonPanel.add(back);
+
+        return previousButtonPanel;
+    }
+
+    @Override
+    public ImageIcon getSearchButton() {
+        return searchButton;
+    }
+
+    @Override
+    public ImageIcon getSearchButtonOver() {
+        return searchButtonOver;
+    }
+
+    public ImageIcon getSearchButtonGS() {
+        return searchButtonGS;
+    }
+
+    public ImageIcon getSearchButtonGSOver() {
+        return searchButtonGSOver;
+    }
+
+    @Override
+    public ImageIcon getLoadButton() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ImageIcon getLoadButtonOver() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ImageIcon getLeftFilterImage() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ImageIcon getRightFilterImage() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
     private JPanel createButtonPanel() {
         JPanel selectionPanel = new JPanel(new BorderLayout());
         selectionPanel.setOpaque(false);
@@ -195,12 +255,15 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
                         File dirFile = new File(directory);
 
+                        menu.showProgressPanel(loadISAanimation);
+                        /*
                         if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
                             menu.showProgressPanel(loadISAanimation);
                         } else {
                             menu.showProgressPanel("attempting to load configuration files in directory " +
                                     dirFile.getName());
                         }
+                        */
                         loadFile(directory + File.separator);
                     }
 
@@ -215,6 +278,50 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
             public void mouseExited(MouseEvent event) {
                 chooseFromElsewhere.setIcon(getSearchButton());
+            }
+        });
+
+
+        chooseFromGS = new JLabel(getSearchButtonGS(),
+                JLabel.CENTER);
+        chooseFromGS.addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent event) {
+
+                // precautionary meaaure to stop double execution of action...
+
+                if (timeButtonLastClicked != System.currentTimeMillis()) {
+
+                    chooseFromGS.setIcon(getSearchButtonGS());
+
+                    if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
+                        String directory = jfc.getSelectedFile().toString();
+
+                        File dirFile = new File(directory);
+
+                        menu.showProgressPanel(loadISAanimation);
+                        /*
+                        if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
+                            menu.showProgressPanel(loadISAanimation);
+                        } else {
+                            menu.showProgressPanel("attempting to load configuration files in directory " +
+                                    dirFile.getName());
+                        }
+                        */
+                        loadFile(directory + File.separator);
+                    }
+
+                    timeButtonLastClicked = System.currentTimeMillis();
+                }
+            }
+
+
+            public void mouseEntered(MouseEvent event) {
+                chooseFromGS.setIcon(getSearchButtonGSOver());
+            }
+
+            public void mouseExited(MouseEvent event) {
+                chooseFromGS.setIcon(getSearchButtonGS());
             }
         });
 
@@ -236,60 +343,11 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
             }
         });
 
-        selectionPanel.add(chooseFromElsewhere, BorderLayout.WEST);
+
+        selectionPanel.add(chooseFromElsewhere, BorderLayout.CENTER);
+        selectionPanel.add(chooseFromGS, BorderLayout.WEST);
         selectionPanel.add(loadSelected, BorderLayout.EAST);
 
         return selectionPanel;
     }
-
-    protected JPanel createProblemDisplay() {
-        // todo change with table view from validator etc.
-        JPanel problemCont = new JPanel(new GridLayout(1, 1));
-        problemCont.setOpaque(false);
-
-        problemReport = new JEditorPane();
-        UIHelper.renderComponent(problemReport, UIHelper.VER_11_BOLD, UIHelper.RED_COLOR, false);
-        problemReport.setOpaque(false);
-        problemReport.setContentType("text/html");
-        problemReport.setEditable(false);
-
-
-        problemScroll = new JScrollPane(problemReport, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        problemScroll.setPreferredSize(new Dimension(350, 90));
-        problemScroll.setBorder(null);
-        problemScroll.setOpaque(false);
-        problemScroll.getViewport().setOpaque(false);
-
-        IAppWidgetFactory.makeIAppScrollPane(problemScroll);
-
-        problemCont.add(problemScroll);
-
-        return problemCont;
-    }
-
-    public abstract File[] getPreviousFiles();
-
-    public abstract void getSelectedFileAndLoad();
-
-    public abstract void setListRenderer();
-
-    public abstract String getBorderTitle();
-
-    public abstract ImageIcon getPanelHeaderImage();
-
-    public abstract void loadFile(final String dir);
-
-    public abstract JPanel createAlternativeExitDisplay();
-
-    public abstract ImageIcon getSearchButton();
-
-    public abstract ImageIcon getSearchButtonOver();
-
-    public abstract ImageIcon getLoadButton();
-
-    public abstract ImageIcon getLoadButtonOver();
-
-    public abstract ImageIcon getLeftFilterImage();
-
-    public abstract ImageIcon getRightFilterImage();
 }

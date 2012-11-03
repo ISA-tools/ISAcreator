@@ -223,7 +223,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         userProfileIO = new UserProfileIO(this);
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
-
         gridbagConstraints = new GridBagConstraints();
         gridbagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridbagConstraints.weightx = 0.0;
@@ -236,9 +235,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         ConfigurationManager.loadConfigurations(configDir);
 
         ApplicationManager.setCurrentApplicationInstance(this);
-
-
-
     }
 
     public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName, boolean loggedIn, List<ErrorMessage> errors) {
