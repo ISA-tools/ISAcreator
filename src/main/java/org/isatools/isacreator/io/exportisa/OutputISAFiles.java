@@ -31,22 +31,13 @@ public class OutputISAFiles extends ISAFileOutput {
         try {
             investigationFilePrintStream = new PrintStream(file);
 
-            // print section defining the Ontologies Used
-            investigationFilePrintStream.println(getOntologiesUsedOutput());
-            // print the Investigation section.
-            investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION));
-            investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation.getPublications(), InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION));
-            investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation.getContacts(), InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION));
+            printInvestigation(investigation, investigationFilePrintStream);
+
 
             File fileToSave;
 
             for (Study study : investigation.getStudies().values()) {
-                investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study, InvestigationFileSection.STUDY_SECTION));
-                investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getStudyDesigns(), InvestigationFileSection.STUDY_DESIGN_SECTION));
-                investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getFactors(), InvestigationFileSection.STUDY_FACTORS));
-                investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(getAssaysAsList(study), InvestigationFileSection.STUDY_ASSAYS));
-                investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getPublications(), InvestigationFileSection.STUDY_PUBLICATIONS));
-                investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getContacts(), InvestigationFileSection.STUDY_CONTACTS));
+                printStudy(investigationFilePrintStream, study);
 
                 fileToSave = new File(file.getParentFile().getPath() +
                         File.separator + study.getStudySampleFileIdentifier());
@@ -69,6 +60,24 @@ public class OutputISAFiles extends ISAFileOutput {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public void printStudy(PrintStream investigationFilePrintStream, Study study) {
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study, InvestigationFileSection.STUDY_SECTION));
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getStudyDesigns(), InvestigationFileSection.STUDY_DESIGN_SECTION));
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getFactors(), InvestigationFileSection.STUDY_FACTORS));
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(getAssaysAsList(study), InvestigationFileSection.STUDY_ASSAYS));
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getPublications(), InvestigationFileSection.STUDY_PUBLICATIONS));
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getContacts(), InvestigationFileSection.STUDY_CONTACTS));
+    }
+
+    public void printInvestigation(Investigation investigation, PrintStream investigationFilePrintStream) {
+        // print section defining the Ontologies Used
+        investigationFilePrintStream.println(getOntologiesUsedOutput());
+        // print the Investigation section.
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION));
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation.getPublications(), InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION));
+        investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation.getContacts(), InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION));
     }
 
     /**

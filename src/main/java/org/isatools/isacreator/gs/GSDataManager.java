@@ -43,6 +43,9 @@ public class GSDataManager {
         gsSession = session;
     }
 
+    public DataManagerClient getDataManagerClient(){
+        return gsSession.getDataManagerClient();
+    }
 
     /**
      * List files in given directory

@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  *
- * Based on org.broad.igv.gs.GSUtils
+ * Based on org.broad.igv.org.isatools.isacreator.gs.GSUtils
  *
  */
 public class GSSingleSignOnManager implements Authentication {

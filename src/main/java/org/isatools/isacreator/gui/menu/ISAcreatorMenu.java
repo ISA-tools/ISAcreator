@@ -383,7 +383,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         isacreator.validate();
     }
 
-    protected void captureCurrentGlassPaneContents() {
+    public void captureCurrentGlassPaneContents() {
         previousGlassPane = (JPanel) isacreator.getGlassPane();
     }
 

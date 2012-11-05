@@ -116,35 +116,33 @@ public class AuthenticationMenu extends MenuUIComponent {
         fields.add(Box.createVerticalStrut(10));
         fields.setOpaque(false);
 
-        JPanel userNameCont = new JPanel(new GridLayout(1, 2));
+        JPanel userNameContainer = new JPanel(new GridLayout(1, 2));
         JLabel usernameLabel = new JLabel("username ");
         usernameLabel.setFont(UIHelper.VER_12_BOLD);
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
-        userNameCont.add(usernameLabel);
-
+        userNameContainer.add(usernameLabel);
 
         username.setOpaque(false);
 
-
         UIHelper.renderComponent(username, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        userNameCont.add(username);
-        userNameCont.setOpaque(false);
+        userNameContainer.add(username);
+        userNameContainer.setOpaque(false);
 
-        JPanel passwordCont = new JPanel(new GridLayout(1, 2));
+        JPanel passwordContainer = new JPanel(new GridLayout(1, 2));
         JLabel passwordLabel = new JLabel("password ");
         passwordLabel.setFont(UIHelper.VER_12_BOLD);
         passwordLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
-        passwordCont.add(passwordLabel);
+        passwordContainer.add(passwordLabel);
         password = new RoundedJPasswordField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         UIHelper.renderComponent(password, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        passwordCont.add(password);
-        passwordCont.setOpaque(false);
+        passwordContainer.add(password);
+        passwordContainer.setOpaque(false);
 
-        fields.add(userNameCont);
+        fields.add(userNameContainer);
         fields.add(Box.createVerticalStrut(10));
-        fields.add(passwordCont);
+        fields.add(passwordContainer);
 
         JPanel northPanel = new JPanel();
         northPanel.add(new JLabel(
@@ -237,12 +235,12 @@ public class AuthenticationMenu extends MenuUIComponent {
             }
         });
 
-        JPanel exitCont = new JPanel(new GridLayout(1, 1));
-        exitCont.setOpaque(false);
+        JPanel exitContainer = new JPanel(new GridLayout(1, 1));
+        exitContainer.setOpaque(false);
 
-        exitCont.add(exit);
+        exitContainer.add(exit);
 
-        southPanel.add(exitCont);
+        southPanel.add(exitContainer);
 
         southPanel.add(confirmExitPanel);
 

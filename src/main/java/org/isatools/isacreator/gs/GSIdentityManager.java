@@ -45,12 +45,26 @@ public class GSIdentityManager implements Authentication {
 
     private static final Logger log = Logger.getLogger(GSIdentityManager.class);
 
+    private static GSIdentityManager instance = null;
+
+    public static GSIdentityManager getInstance(){
+        if (instance==null){
+            instance = new GSIdentityManager();
+        }
+        return instance;
+    }
+
     /**
      * Empty constructor
      */
     public GSIdentityManager(){
-
+        try{
+            session = new GsSession();
+        }catch(InternalServerException e){
+            e.printStackTrace();
+        }
     }
+
 
     /**
      *

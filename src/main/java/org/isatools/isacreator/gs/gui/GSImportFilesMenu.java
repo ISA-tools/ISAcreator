@@ -2,14 +2,16 @@ package org.isatools.isacreator.gs.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.log4j.Logger;
+import org.genomespace.client.ui.GSFileBrowserDialog;
+import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.menu.AbstractImportFilesMenu;
-import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.gui.menu.ImportFilesMenu;
-import org.isatools.isacreator.gui.menu.MenuUIComponent;
+import org.isatools.isacreator.gs.GSDataManager;
+import org.isatools.isacreator.gs.GSIdentityManager;
+import org.isatools.isacreator.gui.menu.*;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -18,6 +20,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 /**
@@ -28,22 +32,31 @@ import java.io.File;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class GSImportFilesMenu extends AbstractImportFilesMenu {
+public class GSImportFilesMenu extends ImportFilesMenu {
 
     private static Logger log = Logger.getLogger(GSImportFilesMenu.class);
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
-            backButton, backButtonOver, filterLeft, filterRight, searchButtonGS, searchButtonGSOver;
+            backButton, backButtonOver, loadButton, loadButtonOver, filterLeft, filterRight, searchButtonGS, searchButtonGSOver;
 
     private JLabel back;
     private Container loadingImagePanel;
     private JLabel chooseFromGS;
 
+    //GSFileBrowserDialog gsFileChooser = null;
+    GSFileChooser gsFileChooser = null;
+    GSDataManager gsDataManager = null;
+
+
 
     public GSImportFilesMenu(ISAcreatorMenu menu){
-        super(menu, true);
+        super(menu);
         setPreferredSize(new Dimension(400, 400));
+        GSIdentityManager gsIdentityManager = GSIdentityManager.getInstance();
+        gsDataManager = gsIdentityManager.getGsDataManager();
+
+
     }
 
     public void createGUI() {
@@ -144,22 +157,17 @@ public class GSImportFilesMenu extends AbstractImportFilesMenu {
 
     @Override
     public void setListRenderer() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        previousFileList.setCellRenderer(new ImportFilesListCellRenderer(listImage));
     }
 
     @Override
     public String getBorderTitle() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return "select ISA-TAB to load";
     }
 
     @Override
     public ImageIcon getPanelHeaderImage() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void loadFile(String dir) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        return panelHeader;
     }
 
     @Override
@@ -215,27 +223,29 @@ public class GSImportFilesMenu extends AbstractImportFilesMenu {
 
     @Override
     public ImageIcon getLoadButton() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return loadButton;
     }
 
     @Override
     public ImageIcon getLoadButtonOver() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return loadButtonOver;
     }
 
     @Override
     public ImageIcon getLeftFilterImage() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return filterLeft;
     }
 
     @Override
     public ImageIcon getRightFilterImage() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return filterRight;
     }
 
 
     private JPanel createButtonPanel() {
-        JPanel selectionPanel = new JPanel(new BorderLayout());
+
+        //selection panel
+        JPanel selectionPanel = new JPanel(new GridLayout(1, 2));
         selectionPanel.setOpaque(false);
 
         chooseFromElsewhere = new JLabel(getSearchButton(),
@@ -294,22 +304,33 @@ public class GSImportFilesMenu extends AbstractImportFilesMenu {
 
                     chooseFromGS.setIcon(getSearchButtonGS());
 
-                    if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
-                        String directory = jfc.getSelectedFile().toString();
+                    gsFileChooser = new GSFileChooser(menu,gsDataManager);
 
-                        File dirFile = new File(directory);
 
-                        menu.showProgressPanel(loadISAanimation);
-                        /*
-                        if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
-                            menu.showProgressPanel(loadISAanimation);
-                        } else {
-                            menu.showProgressPanel("attempting to load configuration files in directory " +
-                                    dirFile.getName());
+
+                    gsFileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent event) {
+                            System.out.println("PropertyChangeEvent "+event);
+
+                            GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
+                            if (fileMetadata == null)
+                                return;
+                            System.out.println("fileMetadata===>"+fileMetadata);
+
+                            //menu.showProgressPanel(loadISAanimation);
+
+                            String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+                            System.out.println("Downloading files to local tmp directory "+localTmpDirectory);
+                            gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory);
+                            System.out.println("Importing file...");
+
+                            loadFile(localTmpDirectory);
+
+
                         }
-                        */
-                        loadFile(directory + File.separator);
-                    }
+                    });
+
+                    gsFileChooser.showOpenDialog();
 
                     timeButtonLastClicked = System.currentTimeMillis();
                 }
@@ -326,7 +347,7 @@ public class GSImportFilesMenu extends AbstractImportFilesMenu {
         });
 
         loadSelected = new JLabel(getLoadButton(),
-                JLabel.RIGHT);
+                JLabel.CENTER);
         loadSelected.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
@@ -343,11 +364,19 @@ public class GSImportFilesMenu extends AbstractImportFilesMenu {
             }
         });
 
+        selectionPanel.add(chooseFromElsewhere);
+        selectionPanel.add(chooseFromGS);
 
-        selectionPanel.add(chooseFromElsewhere, BorderLayout.CENTER);
-        selectionPanel.add(chooseFromGS, BorderLayout.WEST);
-        selectionPanel.add(loadSelected, BorderLayout.EAST);
+        JPanel loadPanel = new JPanel(new GridLayout(1, 1));
+        loadPanel.setOpaque(false);
+        loadPanel.add(loadSelected);
 
-        return selectionPanel;
+
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(selectionPanel);
+        buttonPanel.add(loadPanel);
+
+        return buttonPanel;
     }
 }

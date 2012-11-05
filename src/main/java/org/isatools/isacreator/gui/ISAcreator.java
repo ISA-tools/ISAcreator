@@ -320,6 +320,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }else if (configDir==null){
                 panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
             } else if (isatabDir==null || isatabFiles==null){
+                panelToShow = ISAcreatorMenu.SHOW_MAIN;
+            }else{
                 panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
             }
 

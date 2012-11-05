@@ -72,15 +72,6 @@
             <url>http://www.mvnsearch.org/maven2/</url>
         </repository>
 
-
-        <!-- Repository for GS code -->
-        <!--
-        <repository>
-            <id>clojars.org</id>
-            <url>http://clojars.org/repo</url>
-        </repository>
-        -->
-
     </repositories>
 
     <build>
@@ -234,27 +225,6 @@
                 </dependencies>
 
             </plugin>
-
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -489,10 +459,18 @@
 
         <!-- Dependencies for GS code -->
 
+        <!--
         <dependency>
             <groupId>genomespace</groupId>
             <artifactId>cdk</artifactId>
             <version>1.0</version>
+        </dependency>
+        -->
+
+        <dependency>
+            <groupId>org.genomespace</groupId>
+            <artifactId>clientdevelopmentkit</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
