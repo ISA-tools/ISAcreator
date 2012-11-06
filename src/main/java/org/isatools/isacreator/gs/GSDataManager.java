@@ -77,7 +77,7 @@ public class GSDataManager {
      */
     public List<InputStream> lsInputStreams(String dirPath) {
         //setting the max number of concurrent connections
-        WebClientBuilder.setDefaultMaxConnectionsPerHost(10);
+       WebClientBuilder.setDefaultMaxConnectionsPerHost(10);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();

@@ -459,19 +459,20 @@
 
         <!-- Dependencies for GS code -->
 
-        <!--
+
         <dependency>
             <groupId>genomespace</groupId>
             <artifactId>cdk</artifactId>
             <version>1.0</version>
         </dependency>
-        -->
 
+        <!--
         <dependency>
             <groupId>org.genomespace</groupId>
             <artifactId>clientdevelopmentkit</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
+        -->
 
         <dependency>
             <groupId>genomespace</groupId>

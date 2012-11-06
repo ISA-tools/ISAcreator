@@ -29,12 +29,8 @@ import java.util.Map;
  */
 public class GSIdentityManager implements Authentication {
 
-    //private Map<String, GsSession> userSessions = new HashMap<String, GsSession>();
-
     //maintaining a single session
-   // private String username = null;
     private GsSession session = null;
-    //private GSDataManager gsDataManager = null;
 
     //private String gsUser = null;
     private String gsToken = null;
@@ -79,10 +75,7 @@ public class GSIdentityManager implements Authentication {
         try{
             String password = new String(pass);
 
-            //when creating a new session, .gs folder for SSO is created automatically
-            session = new GsSession();
             User user = session.login(username, password);
-            //userSessions.put(user.getUsername(),session);
 
             log.info("Logged into GenomeSpace as "+username);
             return true;
@@ -102,7 +95,6 @@ public class GSIdentityManager implements Authentication {
      * @return
      */
     public boolean logout(String username) {
-        //GsSession session = userSessions.get(username);
         if (session==null)
             return false;
         session.logout();
@@ -119,11 +111,13 @@ public class GSIdentityManager implements Authentication {
         if (token==null)
             return false;
         try{
+
             GsSession gsSession = new GsSession(token);
-            //identityManager.addSession(gsSession);
             setSession(gsSession);
             return true;
+
         }catch(InternalServerException e){
+            e.printStackTrace();
             log.debug(e.getMessage());
             return false;
         }
@@ -131,11 +125,10 @@ public class GSIdentityManager implements Authentication {
 
     /**
      *
-     * @param username
+     *
      * @return
      */
-    public boolean isLoggedIn(String username) {
-       // GsSession session = userSessions.get(username);
+    public boolean isLoggedIn() {
         if (session==null)
             return false;
         return session.isLoggedIn();
@@ -197,7 +190,7 @@ public class GSIdentityManager implements Authentication {
     }
 
     public GSDataManager getGsDataManager(){
-        log.debug("session: is logged in when retrieving DM?"+session.isLoggedIn());
+        System.out.println("session: is logged in when retrieving DM?"+session.isLoggedIn());
         return new GSDataManager(session);
     }
 

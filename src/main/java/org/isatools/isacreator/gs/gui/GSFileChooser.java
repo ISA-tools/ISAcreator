@@ -5,6 +5,7 @@ import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gs.GSDataManager;
+import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.ImportFilesMenu;
 import org.isatools.isacreator.managers.ApplicationManager;
@@ -43,7 +44,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     private JLabel status;
     private Container loadingImagePanel;
     private GSFileMetadata selectedFileMetadata;
-    private GSDataManager gsDataManager = null;
     private GSFileMetadataTreeNode currentNode;
     private JLabel selectDirLabel = null;
     private GSTree tree = null;
@@ -56,9 +56,8 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     private int retval = NOT_SELECTED;
 
 
-    public GSFileChooser(ISAcreatorMenu m, GSDataManager dm){
+    public GSFileChooser(ISAcreatorMenu m){
         menu = m;
-        gsDataManager = dm;
         ResourceInjector.get("gui-package.style").inject(this);
     }
 
@@ -82,6 +81,12 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         dialog.add(topPanel, BorderLayout.NORTH);
 
         //set up central panel with files - treePane
+
+        GSIdentityManager identityManager = GSIdentityManager.getInstance();
+        System.out.println("identityManager.isLoggedIn()="+identityManager.isLoggedIn());
+        GSDataManager gsDataManager = identityManager.getGsDataManager();
+
+
         tree = new GSTree(gsDataManager.getDataManagerClient(),  new ArrayList<String>());
         this.currentNode = (GSFileMetadataTreeNode)tree.getModel().getRoot();
         tree.setEditable(true);
@@ -187,7 +192,7 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         return loadingImagePanel;
     }
 
-@Override
+//    @Override
     public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
 
         System.out.println("VALUE CHANGED!!! "+treeSelectionEvent);
