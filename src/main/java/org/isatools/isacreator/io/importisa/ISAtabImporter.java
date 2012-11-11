@@ -14,6 +14,8 @@ import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import uk.ac.ebi.utils.collections.Pair;
@@ -36,7 +38,6 @@ import java.util.List;
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
 public abstract class ISAtabImporter {
-
 
     private static final Logger log = Logger.getLogger(ISAtabImporter.class);
 
@@ -89,140 +90,136 @@ public abstract class ISAtabImporter {
         return investigation;
     }
 
+    /**
+     *
+     * Given the folder containing the ISAtab dataset, it loads the content in objects according to the ISA model
+     *
+     * @param parentDir directory containing the ISAtab dataset
+     * @return true if successful, false otherwise
+     */
     protected boolean commonImportFile(String parentDir){
 
 
-            File investigationFile = new File(parentDir);
+        File investigationFile = new File(parentDir);
 
-            //TODO remove all comments about parentDirectoryPath
-            //parentDirectoryPath should not be a class fields as before, as it is relevant for the method importFile only
-            //String parentDirectoryPath = parentDir;
+        if (!investigationFile.isDirectory()) {
+            investigationFile = investigationFile.getParentFile();
+            parentDir = investigationFile.getAbsolutePath();
+        }
 
-            if (!investigationFile.isDirectory()) {
-                investigationFile = investigationFile.getParentFile();
-                //parentDirectoryPath = investigationFile.getAbsolutePath();
-                parentDir = investigationFile.getAbsolutePath();
+        log.info("Parent directory is -> " + parentDir);
+
+        boolean investigationFileFound = false;
+
+        if (investigationFile.exists()) {
+
+            File[] isaDirectorFiles = investigationFile.listFiles();
+
+            for (File isaFile : isaDirectorFiles) {
+                if (isaFile.getName().toLowerCase().startsWith("i_")) {
+                    investigationFileFound = true;
+                    investigationFile = isaFile;
+                    break;
+                }
             }
 
-            log.info("Parent directory is -> " + parentDir);
 
-            boolean investigationFileFound = false;
+            if (!investigationFileFound) {
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in folder "+parentDir+". Please create an investigation file and name it " +
+                    "\"i_<investigation identifier>.txt\""));
 
+                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                errors.add(investigationErrorReport);
+                return false;
+            }
 
+            try {
 
-            if (investigationFile.exists()) {
+                InvestigationImport investigationFileImporter = new InvestigationImport();
+                Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
 
-                File[] isaDirectorFiles = investigationFile.listFiles();
+                messages.addAll(investigationFileImporter.getMessages());
 
-                for (File isaFile : isaDirectorFiles) {
-                    if (isaFile.getName().toLowerCase().startsWith("i_")) {
-                        investigationFileFound = true;
-                        investigationFile = isaFile;
-                        break;
+                if (investigationFileImport.fst) {
+                    log.info("Import of Investigation in " + investigationFile.getPath() + " was successful...");
+                    log.info("Proceeding to map to Investigation...");
+
+                    mapper = new StructureToInvestigationMapper();
+
+                    Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
+
+                    messages.addAll(mapper.getMessages());
+
+                    if (!mappingResult.fst) {
+                        ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                        errors.add(investigationErrorReport);
+                        return false;
                     }
-                }
 
+                    investigation = mappingResult.snd;
+                    investigation.setFileReference(investigationFile.getPath());
 
-                if (!investigationFileFound) {
-                    messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in folder "+parentDir+". Please create an investigation file and name it " +
-                            "\"i_<investigation identifier>.txt\""));
+                    if (investigation.getReferenceObject() != null) {
 
-                    ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                    errors.add(investigationErrorReport);
-                    return false;
-                }
+                        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
+                        DataEntryReferenceObject referenceObject = investigation.getReferenceObject();
+                        referenceObject.setFieldDefinition(tro.getTableFields().getFields());
 
-                try {
-
-                    InvestigationImport investigationFileImporter = new InvestigationImport();
-                    Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
-
-                    messages.addAll(investigationFileImporter.getMessages());
-
-                    if (investigationFileImport.fst) {
-                        log.info("Import of Investigation in " + investigationFile.getPath() + " was successful...");
-                        log.info("Proceeding to map to Investigation...");
-
-                        mapper = new StructureToInvestigationMapper();
-
-                        Pair<Boolean, Investigation> mappingResult = mapper.createInvestigationFromDataStructure(investigationFileImport.snd);
-
-                        messages.addAll(mapper.getMessages());
-
-                        if (!mappingResult.fst) {
-                            ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                            errors.add(investigationErrorReport);
-                            return false;
+                        for (Study study : investigation.getStudies().values()) {
+                            study.getReferenceObject().setFieldDefinition(tro.getTableFields().getFields());
                         }
+                    }
 
-
-                        investigation = mappingResult.snd;
-                        investigation.setFileReference(investigationFile.getPath());
-
-                        if (investigation.getReferenceObject() != null) {
-                            TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.INVESTIGATION);
-
-                            DataEntryReferenceObject referenceObject = investigation.getReferenceObject();
-
-                            referenceObject.setFieldDefinition(tro.getTableFields().getFields());
-
-                            for (Study study : investigation.getStudies().values()) {
-                                study.getReferenceObject().setFieldDefinition(tro.getTableFields().getFields());
-                            }
-                        }
-
-                        //if (!processInvestigation(parentDirectoryPath)) {
-                        if (!processInvestigation(parentDir)) {
-                            ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                            errors.add(investigationErrorReport);
-
-                            return false;
-                        }
-
-
-                        String lastConfigurationUsed = ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION);
-
-                        if (lastConfigurationUsed.contains(File.separator)) {
-                            lastConfigurationUsed = lastConfigurationUsed.substring(lastConfigurationUsed.lastIndexOf(File.separator) + 1);
-                        }
-
-                        if (!investigation.getLastConfigurationUsed().equals("") && !lastConfigurationUsed.equals("")) {
-                            if (!lastConfigurationUsed.equals(investigation.getLastConfigurationUsed())) {
-                                messages.add(new ErrorMessage(ErrorLevel.WARNING, "The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
-                                        "the settings from " + investigation.getLastConfigurationUsed() + " may be important."));
-
-                                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
-                                errors.add(investigationErrorReport);
-                            }
-                        } else {
-                            //if (isacreator!=null){
-                            //    investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
-                            //}
-                        }
-
-                    } else {
-                        messages.addAll(investigationFileImporter.getMessages());
-
+                    if (!processInvestigation(parentDir)) {
                         ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                         errors.add(investigationErrorReport);
 
                         return false;
                     }
-                } catch (IOException e) {
 
-                    messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
+
+                    String lastConfigurationUsed = ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION);
+
+                    if (lastConfigurationUsed.contains(File.separator)) {
+                        lastConfigurationUsed = lastConfigurationUsed.substring(lastConfigurationUsed.lastIndexOf(File.separator) + 1);
+                    }
+
+                    if (!investigation.getLastConfigurationUsed().equals("") && !lastConfigurationUsed.equals("")) {
+                        if (!lastConfigurationUsed.equals(investigation.getLastConfigurationUsed())) {
+                            messages.add(new ErrorMessage(ErrorLevel.WARNING, "The last configuration used to load this ISAtab file was " + investigation.getLastConfigurationUsed() + ". The currently loaded configuration is " + lastConfigurationUsed + ". You can continue to load, but " +
+                                    "the settings from " + investigation.getLastConfigurationUsed() + " may be important."));
+
+                            ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                            errors.add(investigationErrorReport);
+                        }
+                    } else {
+                        //if (isacreator!=null){
+                        //    investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
+                        //}
+                    }
+
+                } else {
+                    messages.addAll(investigationFileImporter.getMessages());
 
                     ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                     errors.add(investigationErrorReport);
 
                     return false;
-
                 }
-            } // investigation file exists
+            } catch (IOException e) {
 
-            return true;
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
 
+                ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
+                errors.add(investigationErrorReport);
 
+                return false;
+
+            }
+        } // investigation file exists
+
+        assignOntologiesToSession(mapper.getOntologyTermsDefined());
+        return true;
     }
 
 
@@ -350,6 +347,14 @@ public abstract class ISAtabImporter {
             return FileType.HISTOLOGY;
         } else {
             return FileType.STUDY_SAMPLE;
+        }
+    }
+
+    protected void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
+        for (OntologyTerm oo : ontologiesUsed) {
+            if (!oo.getOntologyTermName().trim().equals("")) {
+                OntologyManager.addToUserHistory(oo);
+            }
         }
     }
 
