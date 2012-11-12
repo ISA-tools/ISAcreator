@@ -27,10 +27,10 @@ import java.util.List;
 
 /**
  * Created Created by the ISA team
- *
- *
+ * <p/>
+ * <p/>
  * Abstract class for importing ISATab files
- *
+ * <p/>
  * Date: 11/07/2012
  * Time: 16:08
  *
@@ -43,11 +43,11 @@ public abstract class ISAtabImporter {
 
     protected Investigation investigation;
     protected List<ISAFileErrorReport> errors;
-    private  List<ErrorMessage> messages;
+    private List<ErrorMessage> messages;
     protected StructureToInvestigationMapper mapper;
 
 
-    public ISAtabImporter(){
+    public ISAtabImporter() {
         errors = new ArrayList<ISAFileErrorReport>();
         messages = new ArrayList<ErrorMessage>();
     }
@@ -69,13 +69,13 @@ public abstract class ISAtabImporter {
         return errors;
     }
 
-    public String getMessagesAsString(){
+    public String getMessagesAsString() {
         StringBuilder builder = new StringBuilder();
-        for(ISAFileErrorReport errorReport: errors){
-            builder.append("Error filename: "+errorReport.getFileName());
+        for (ISAFileErrorReport errorReport : errors) {
+            builder.append("Error filename: " + errorReport.getFileName());
             builder.append("\n Error messages: ");
-            for(ErrorMessage error: errorReport.getMessages()){
-                builder.append("\n"+error.getMessage());
+            for (ErrorMessage error : errorReport.getMessages()) {
+                builder.append("\n" + error.getMessage());
             }
         }
         return builder.toString();
@@ -91,13 +91,12 @@ public abstract class ISAtabImporter {
     }
 
     /**
-     *
      * Given the folder containing the ISAtab dataset, it loads the content in objects according to the ISA model
      *
      * @param parentDir directory containing the ISAtab dataset
      * @return true if successful, false otherwise
      */
-    protected boolean commonImportFile(String parentDir){
+    protected boolean commonImportFile(String parentDir) {
 
 
         File investigationFile = new File(parentDir);
@@ -125,8 +124,8 @@ public abstract class ISAtabImporter {
 
 
             if (!investigationFileFound) {
-                messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in folder "+parentDir+". Please create an investigation file and name it " +
-                    "\"i_<investigation identifier>.txt\""));
+                messages.add(new ErrorMessage(ErrorLevel.ERROR, "Investigation file does not exist in folder " + parentDir + ". Please create an investigation file and name it " +
+                        "\"i_<investigation identifier>.txt\""));
 
                 ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                 errors.add(investigationErrorReport);
@@ -218,7 +217,7 @@ public abstract class ISAtabImporter {
             }
         } // investigation file exists
 
-        assignOntologiesToSession(mapper.getOntologyTermsDefined());
+
         return true;
     }
 
@@ -249,6 +248,7 @@ public abstract class ISAtabImporter {
 
                     if (builtReference != null) {
                         study.setStudySamples(new Assay(study.getStudySampleFileIdentifier(), builtReference));
+                        OntologyManager.getOntologySelectionHistory().putAll(builtReference.getDefinedOntologies());
                     }
                 } catch (MalformedInvestigationException mie) {
                     messages.add(new ErrorMessage(ErrorLevel.ERROR, mie.getMessage()));
@@ -286,6 +286,7 @@ public abstract class ISAtabImporter {
                                 assay.getAssayReference(), assayTableReferenceObject);
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
+                            OntologyManager.getOntologySelectionHistory().putAll(builtReference.getDefinedOntologies());
                         }
                     } catch (IOException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
@@ -321,7 +322,7 @@ public abstract class ISAtabImporter {
                 study.removeAssay(toRemove.getAssayReference());
             }
         }
-
+        assignOntologiesToSession(mapper.getOntologyTermsDefined());
         return !errorsFound;
     }
 
@@ -350,7 +351,7 @@ public abstract class ISAtabImporter {
         }
     }
 
-    protected void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
+    private void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
         for (OntologyTerm oo : ontologiesUsed) {
             if (!oo.getOntologyTermName().trim().equals("")) {
                 OntologyManager.addToUserHistory(oo);
