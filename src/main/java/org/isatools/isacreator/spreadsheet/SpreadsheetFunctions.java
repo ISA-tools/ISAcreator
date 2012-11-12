@@ -232,7 +232,7 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
 
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
