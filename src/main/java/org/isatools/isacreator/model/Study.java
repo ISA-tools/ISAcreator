@@ -132,13 +132,13 @@ public class Study extends ISASection {
     }
 
     public boolean addAssay(Assay assay) {
+
         if (!assays.containsKey(assay.getAssayReference())) {
             assays.put(assay.getAssayReference(), assay);
-
             return true;
         }
-
         return false;
+
     }
 
     /**
@@ -148,12 +148,13 @@ public class Study extends ISASection {
      * @return - true if the contact was added, false otherwise.
      */
     public boolean addContact(StudyContact contact) {
+
         if (!checkContactExists(contact.getFirstName(), contact.getLastName(), contact.getEmail())) {
             contacts.add(contact);
             return true;
         }
-
         return false;
+
     }
 
     /**
@@ -163,13 +164,13 @@ public class Study extends ISASection {
      * @return true if the publication was added, false otherwise.
      */
     public boolean addPublication(Publication publication) {
+
         if (!checkPublicationExists(publication.getPubmedId())) {
             publications.add(publication);
-
             return true;
         }
-
         return false;
+
     }
 
     /**
@@ -336,10 +337,6 @@ public class Study extends ISASection {
     }
 
     public Assay getStudySample() {
-        if (studySampleRecord == null) {
-            return null;
-        }
-
         return studySampleRecord;
     }
 
