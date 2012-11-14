@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- �The contents of this file are subject to the CPAL version 1.0 (the �License�);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an �AS IS� basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -47,16 +47,15 @@ import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedFormattedTextField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
-import org.isatools.isacreator.gui.DataEntryEnvironment;
-import org.isatools.isacreator.gui.InvestigationDataEntry;
-import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.gui.formelements.AssaySubForm;
 import org.isatools.isacreator.gui.formelements.FactorSubForm;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Investigation;
@@ -171,7 +170,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         for (String[] aData : data) {
             if ((aData[0] != null) && !aData[0].trim().equals("") && (aData[1] != null)) {
                 String techType = aData[1].equals("--Blank--") ? "" : aData[1];
-                TableReferenceObject tro = dep.getParentFrame().selectTROForUserSelection(aData[0],
+                TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(aData[0],
                         techType);
                 if (tro == null) {
                     String techTypeText = " and technology type <i>" + aData[1] + "</i> does not exist!</html>";
@@ -938,9 +937,9 @@ public class Wizard extends AbstractDataEntryEnvironment {
         List<SubFormField> assayFields = new ArrayList<SubFormField>();
 
         assayFields.add(new SubFormField("measurement type *",
-                SubFormField.COMBOLIST, mainMenu.getMain().getMeasurementEndpoints()));
+                SubFormField.COMBOLIST, ConfigurationManager.getMeasurementEndpoints()));
         assayFields.add(new SubFormField("technology type *",
-                SubFormField.COMBOLIST, mainMenu.getMain().getTechnologyTypes()));
+                SubFormField.COMBOLIST, ConfigurationManager.getTechnologyTypes()));
         assayFields.add(new SubFormField("assay platform", SubFormField.STRING));
         assayFields.add(new SubFormField("assay file name *",
                 SubFormField.STRING));
@@ -1073,27 +1072,30 @@ public class Wizard extends AbstractDataEntryEnvironment {
                     StudySampleCreationAlgorithm ssca = new StudySampleCreationAlgorithm(studyBeingEdited,
                             studySample, factorsToAdd, addAssayUI.getSampleNameValues(),
                             organism.getText(),
-                            dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
+                            ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
                     ssca.runAlgorithm();
                 } else {
-                    studySample.setTableReferenceObject(dep.getParentFrame().selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
+                    studySample.setTableReferenceObject(ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
                 }
 
                 studyBeingEdited.setStudySamples(studySample);
 
-                studyBeingEdited.getStudySample().setUserInterface(studyBeingEdited.getUserInterface());
+                // todo need to generate the view better.
+                StudyDataEntry studyDataEntryUI = (StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(studyBeingEdited);
 
-                for (Assay a : studyBeingEdited.getAssays().values()) {
-                    investigationDefinition.addToAssays(a.getAssayReference(),
+                ApplicationManager.assignDataEntryToISASection(studySample, ApplicationManager.getUserInterfaceForAssay(studySample, studyDataEntryUI));
+
+                for (Assay assay : studyBeingEdited.getAssays().values()) {
+                    investigationDefinition.addToAssays(assay.getAssayReference(),
                             studyBeingEdited.getStudyId());
 
-                    if (a.getTableReferenceObject() == null) {
-                        TableReferenceObject temp = dep.getParentFrame().selectTROForUserSelection(a.getMeasurementEndpoint(),
-                                a.getTechnologyType());
+                    if (assay.getTableReferenceObject() == null) {
+                        TableReferenceObject temp = ConfigurationManager.selectTROForUserSelection(assay.getMeasurementEndpoint(),
+                                assay.getTechnologyType());
 
                         if (temp != null) {
                             TableReferenceObject assayRef = new TableReferenceObject(temp.getTableFields());
-                            a.setTableReferenceObject(assayRef);
+                            assay.setTableReferenceObject(assayRef);
                         } else {
                             status.setText(
                                     "the selected combination of endpoint and technology type does not exist!");
@@ -1102,11 +1104,11 @@ public class Wizard extends AbstractDataEntryEnvironment {
                             return;
                         }
                     }
-
-                    a.setUserInterface(studyBeingEdited.getUserInterface());
+                    ApplicationManager.assignDataEntryToISASection(assay,
+                            ApplicationManager.getUserInterfaceForAssay(assay, studyDataEntryUI));
                 }
 
-                studyBeingEdited.getUserInterface().reformProtocols();
+                ((StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(studyBeingEdited)).reformProtocols();
                 investigationDefinition.addStudy(studyBeingEdited);
 
                 //if more studies to define, then define them, else show created thing!
@@ -1237,13 +1239,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
             public void mousePressed(MouseEvent mouseEvent) {
                 // go back to define assay page.
-
-                // todo may need to investigate the inclusion of ontology information
                 mainMenu.getMain().setCurDataEntryPanel(dep);
-                investigationDefinition.setUserInterface(new InvestigationDataEntry(
+
+                ApplicationManager.assignDataEntryToISASection(investigationDefinition, new InvestigationDataEntry(
                         investigationDefinition, dep));
 
-                dep.createGUIFromInvestigatio(investigationDefinition);
+                dep.createGUIFromInvestigation(investigationDefinition);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         mainMenu.getMain().setCurrentPage(dep);
@@ -1425,10 +1426,8 @@ public class Wizard extends AbstractDataEntryEnvironment {
         Thread createStudyThread = new Thread(new Runnable() {
             public void run() {
                 if (assayDefinitionRequired()) {
-                    studyBeingEdited.setUI(new StudyDataEntry(dep, studyBeingEdited));
+                    ApplicationManager.assignDataEntryToISASection(studyBeingEdited, new StudyDataEntry(dep, studyBeingEdited));
 
-                    System.out.println("about to create add assay pane, dep is null? " + (studyBeingEdited.getUserInterface() == null));
-                    System.out.println("DataEntryEnvironment parent frame is null? " + (studyBeingEdited.getUserInterface().getDataEntryEnvironment().getParentFrame() == null));
                     addAssayUI = new AddAssayPane(Wizard.this, studyBeingEdited, factorsToAdd, treatmentGroups, currentUser);
                     addAssayUI.createGUI();
                     addAssayUI.addPropertyChangeListener("finishedAssayCreation", finaliseStudy);

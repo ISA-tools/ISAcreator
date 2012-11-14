@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -78,13 +78,14 @@ public class GeneralUtils {
             return true;
 
         } catch (MalformedURLException e) {
-            log.error("url malformed: " + e.getMessage());
+            System.err.println("The URL is malformed: " + e.getMessage());
         } catch (FileNotFoundException e) {
-            log.error("file not found: " + e.getMessage());
+            System.err.println("File not found: " + e.getMessage());
         } catch (IOException e) {
-            log.error("io exception caught: " + e.getMessage());
+            System.err.println("io exception caught: " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
-            log.error("unexpected error occurred: " + e.getMessage());
+            System.err.println("Unexpected error occurred: " + e.getMessage());
         } finally {
             try {
 
@@ -97,7 +98,7 @@ public class GeneralUtils {
                 }
 
             } catch (IOException ioe) {
-                log.error("io exception caught: " + ioe.getMessage());
+                System.err.println("io exception caught: " + ioe.getMessage());
             }
         }
         return false;

@@ -5,7 +5,11 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+<<<<<<< HEAD
+ ÔøΩThe contents of this file are subject to the CPAL version 1.0 (the ÔøΩLicenseÔøΩ);
+=======
+ The contents of this file are subject to the CPAL version 1.0 (the License);
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +17,11 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+<<<<<<< HEAD
+ Software distributed under the License is distributed on an ÔøΩAS ISÔøΩ basis,
+=======
+ Software distributed under the License is distributed on an AS IS basis,
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -43,6 +51,8 @@ import org.isatools.isacreator.apiutils.StudyUtils;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.help.Controller;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -74,6 +84,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -129,7 +141,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                           String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-        TableReferenceObject tro = getParentFrame().selectTROForUserSelection(measurementEndpoint,
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,
                 techType);
 
         if (tro != null) {
@@ -141,7 +153,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                     DefaultMutableTreeNode entryPoint = locateStudySampleNode(selectedNode);
 
                     Assay newAssay = new Assay(assayName, measurementEndpoint,
-                            techType, assayPlatform, s.getUserInterface(), tro);
+                            techType, assayPlatform, tro);
                     DefaultMutableTreeNode newField = new DefaultMutableTreeNode(newAssay);
                     newField.setAllowsChildren(false);
 
@@ -149,6 +161,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                             entryPoint == null ? selectedNode.getChildCount() : entryPoint.getChildCount());
 
                     ((Study) selectedNode.getUserObject()).addAssay(newAssay);
+                    ApplicationManager.assignDataEntryToISASection(newAssay, ApplicationManager.getUserInterfaceForAssay(newAssay,
+                            (StudyDataEntry) ApplicationManager.getUserInterfaceForISASection(s)));
+
                     investigation.addToAssays(newAssay.getAssayReference(),
                             s.getStudyId());
 
@@ -194,7 +209,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             StudyUtils.studySampleFileModified(((StudyDataEntry) currentPage).getStudy(), true);
         }
 
-        setCurrentPage(assay.getSpreadsheetUI());
+
+        setCurrentPage(ApplicationManager.getUserInterfaceForISASection(assay));
         DefaultMutableTreeNode node = locateNodeWithName((DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent(), assay.getAssayReference());
         overviewTree.setSelectionPath(new TreePath(node.getPath()));
     }
@@ -249,16 +265,18 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
     public boolean addStudy(String studyName) {
-        TableReferenceObject tro = ApplicationManager.getCurrentApplicationInstance().selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE);
 
         if (tro != null) {
             Study newStudy = new Study(studyName);
             StudyDataEntry ui = new StudyDataEntry(this, newStudy);
-            newStudy.setUI(ui);
+
+            ApplicationManager.assignDataEntryToISASection(newStudy, ui);
 
             Assay studySampleRec = new Assay("s_" + studyName + ".txt",
                     tro);
-            studySampleRec.setUserInterface(ui);
+
+            ApplicationManager.assignDataEntryToISASection(studySampleRec, new AssaySpreadsheet(ui, tro));
 
             newStudy.setSampleFileName(studySampleRec.getAssayReference());
             newStudy.setStudySamples(studySampleRec);
@@ -291,36 +309,37 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     /**
      * build up a tree and the associated gui from an Investigation object
      *
-     * @param inv - Investigation to use to build the tree.
+     * @param investigation - Investigation to use to build the tree.
      * @return - DefaultMutableTreeNode. The root node with all nodes contained within it.
      */
-    private DefaultMutableTreeNode buildTreeFromInvestigation(Investigation inv) {
+    private DefaultMutableTreeNode buildTreeFromInvestigation(Investigation investigation) {
         boolean alwaysShowInvestigation = Boolean.valueOf(ISAcreatorProperties.getProperty("alwaysShowInvestigation"));
         System.out.println("Should I always show the investigation? " + alwaysShowInvestigation);
-        if (inv.getStudies().size() > 1 || alwaysShowInvestigation) {
-            inv.getUserInterface().update();
-            overviewTreeRoot = new DefaultMutableTreeNode(inv);
+        if (investigation.getStudies().size() > 1 || alwaysShowInvestigation) {
+
+            ApplicationManager.getUserInterfaceForISASection(investigation).update();
+            overviewTreeRoot = new DefaultMutableTreeNode(investigation);
 
             Study lastAddedStudy = null;
 
-            for (Study s : inv.getStudies().values()) {
-                s.getUserInterface().update();
-                DefaultMutableTreeNode studyNode = createStudyNode(inv, s);
+            for (Study s : investigation.getStudies().values()) {
+                ApplicationManager.getUserInterfaceForISASection(s).update();
+                DefaultMutableTreeNode studyNode = createStudyNode(investigation, s);
                 overviewTreeRoot.add(studyNode);
                 lastAddedStudy = s;
                 lastAddedNode = studyNode;
             }
 
             if (lastAddedStudy != null) {
-                setCurrentPage(lastAddedStudy.getUserInterface());
+                setCurrentPage(ApplicationManager.getUserInterfaceForISASection(lastAddedStudy));
             }
 
             return overviewTreeRoot;
-        } else if (inv.getStudies().size() > 0) {
+        } else if (investigation.getStudies().size() > 0) {
             // there's only one node in any case, but it's easier to iterate around the value than to try and call it explicitly!
-            for (Study s : inv.getStudies().values()) {
-                overviewTreeRoot = createStudyNode(inv, s);
-                setCurrentPage(s.getUserInterface());
+            for (Study s : investigation.getStudies().values()) {
+                overviewTreeRoot = createStudyNode(investigation, s);
+                setCurrentPage(ApplicationManager.getUserInterfaceForISASection(s));
                 lastAddedNode = overviewTreeRoot;
             }
 
@@ -359,6 +378,26 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return false;
     }
 
+    public static boolean isValidName(String text)
+    {
+        Pattern pattern = Pattern.compile(
+                "# Match a valid Windows filename (unspecified file system).          \n" +
+                        "^                                # Anchor to start of string.        \n" +
+                        "(?!                              # Assert filename is not: CON, PRN, \n" +
+                        "  (?:                            # AUX, NUL, COM1, COM2, COM3, COM4, \n" +
+                        "    CON|PRN|AUX|NUL|             # COM5, COM6, COM7, COM8, COM9,     \n" +
+                        "    COM[1-9]|LPT[1-9]            # LPT1, LPT2, LPT3, LPT4, LPT5,     \n" +
+                        "  )                              # LPT6, LPT7, LPT8, and LPT9...     \n" +
+                        "  (?:\\.[^.]*)?                  # followed by optional extension    \n" +
+                        "  $                              # and end of string                 \n" +
+                        ")                                # End negative lookahead assertion. \n" +
+                        "[^<>:\"/\\\\|?*\\x00-\\x1F]*     # Zero or more valid filename chars.\n" +
+                        "[^<>:\"/\\\\|?*\\x00-\\x1F\\ .]  # Last char is not a space or dot.  \n" +
+                        "$                                # Anchor to end of string.            ",
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.COMMENTS);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
+    }
 
     public void createGUI() {
         setSize(ApplicationManager.getCurrentApplicationInstance().getSize());
@@ -374,13 +413,12 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     // need to create data entry panel which has already been formed by the import layer
     // take investigation and iterate through it, adding all nodes including investigation, study, and assay nodes
 
-    public void createGUIFromInvestigatio(Investigation inv) {
+    public void createGUIFromInvestigation(Investigation newInvestigation) {
         // investigation should have all the studies, assays, etc. in place, ready to be added to the panel
         setSize(ApplicationManager.getCurrentApplicationInstance().getSize());
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
-        // change this!
-        this.investigation = inv;
+        this.investigation = newInvestigation;
         setupWestPanel(investigation);
 
         // change view pane to initially show the view for whatever node is currently the top node in the tree.
@@ -389,15 +427,15 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         Object nodeInfo = rootNode.getUserObject();
 
         if (nodeInfo instanceof Investigation) {
-            setCurrentPage(((Investigation) nodeInfo).getUserInterface());
+            setCurrentPage(ApplicationManager.getUserInterfaceForISASection((Investigation) nodeInfo));
         } else if (nodeInfo instanceof Study) {
-            setCurrentPage(((Study) nodeInfo).getUserInterface());
+            setCurrentPage(ApplicationManager.getUserInterfaceForISASection((Study) nodeInfo));
         }
         setVisible(true);
     }
 
 
-    private JPanel createNavPanel(Investigation inv) {
+    private JPanel createNavPanel(Investigation investigation) {
         navigationPanel = new JPanel(new BorderLayout());
         navigationPanel.setBackground(UIHelper.DARK_GREEN_COLOR);
         navigationPanel.setBorder(null);
@@ -407,18 +445,20 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         navPanelHeader.setBackground(UIHelper.DARK_GREEN_COLOR);
         navigationPanel.add(navPanelHeader, BorderLayout.NORTH);
 
-        if (inv.getUserInterface() == null) {
-            investigation.setUserInterface(new InvestigationDataEntry(investigation, DataEntryEnvironment.this));
+
+        if (ApplicationManager.getUserInterfaceForISASection(investigation) == null) {
+            ApplicationManager.assignDataEntryToISASection(investigation,
+                    new InvestigationDataEntry(this.investigation, DataEntryEnvironment.this));
         }
 
-        overviewTreeModel = new DefaultTreeModel(buildTreeFromInvestigation(investigation));
+
+        overviewTreeModel = new DefaultTreeModel(buildTreeFromInvestigation(this.investigation));
 
         overviewTree = new JTree(overviewTreeModel);
         overviewTree.setAutoscrolls(true);
         overviewTree.setShowsRootHandles(false);
         overviewTree.setCellRenderer(new ISAOverviewTreeRenderer());
         overviewTree.addTreeSelectionListener(this);
-
 
         BasicTreeUI ui = new BasicTreeUI() {
             public Icon getCollapsedIcon() {
@@ -506,7 +546,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             public void mousePressed(MouseEvent event) {
                 closeEditors();
 
-                ExperimentVisualization expViz = new ExperimentVisualization(investigation);
+                ExperimentVisualization expViz = new ExperimentVisualization(DataEntryEnvironment.this.investigation);
                 expViz.createGUI();
 
                 expViz.addPropertyChangeListener("reducedFunctionality", new PropertyChangeListener() {
@@ -552,16 +592,16 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return navigationPanel;
     }
 
-    private DefaultMutableTreeNode createStudyNode(Investigation inv, Study s) {
-        if (s.getUserInterface() == null) {
-            s.setUI(new StudyDataEntry(DataEntryEnvironment.this, s));
+    private DefaultMutableTreeNode createStudyNode(Investigation inv, Study study) {
+        if (ApplicationManager.getUserInterfaceForISASection(study) == null) {
+            ApplicationManager.assignDataEntryToISASection(study, new StudyDataEntry(DataEntryEnvironment.this, study));
         }
 
-        DefaultMutableTreeNode studyNode = new DefaultMutableTreeNode(s);
-        DefaultMutableTreeNode studySampleNode = new DefaultMutableTreeNode(s.getStudySample());
+        DefaultMutableTreeNode studyNode = new DefaultMutableTreeNode(study);
+        DefaultMutableTreeNode studySampleNode = new DefaultMutableTreeNode(study.getStudySample());
 
-        for (Assay a : s.getAssays().values()) {
-            inv.addToAssays(a.getAssayReference(), s.getStudyId());
+        for (Assay a : study.getAssays().values()) {
+            inv.addToAssays(a.getAssayReference(), study.getStudyId());
             studySampleNode.add(new DefaultMutableTreeNode(a));
         }
 
@@ -682,9 +722,9 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     /**
      * Setup the navigation panel
      *
-     * @param inv - The investigation to be added. Required to instantiate upper level of investigation.
+     * @param investigation - The investigation to be added. Required to instantiate upper level of investigation.
      */
-    private void setupWestPanel(Investigation inv) {
+    private void setupWestPanel(Investigation investigation) {
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(UIHelper.BG_COLOR);
         westPanel.setBorder(BorderFactory.createEmptyBorder());
@@ -707,7 +747,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         statusInfo.setPreferredSize(new Dimension(175, 160));
 
         // setup tree
-        westPanel.add(createNavPanel(inv), BorderLayout.CENTER);
+        westPanel.add(createNavPanel(investigation), BorderLayout.CENTER);
 
         JScrollPane scroller = new JScrollPane(statusInfo,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -755,10 +795,10 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         }
 
         if (nodeInfo instanceof Investigation) {
-            setCurrentPage(((Investigation) nodeInfo).getUserInterface());
+            setCurrentPage(ApplicationManager.getUserInterfaceForISASection((Investigation) nodeInfo));
             setStatusPaneInfo(investigationHelp);
         } else if (nodeInfo instanceof Study) {
-            setCurrentPage(((Study) nodeInfo).getUserInterface());
+            setCurrentPage(ApplicationManager.getUserInterfaceForISASection((Study) nodeInfo));
             setStatusPaneInfo(studyHelp);
             removeStudyButton.setIcon(removeStudyIcon);
             // expand underlying nodes
@@ -772,12 +812,15 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                     StudyUtils.studySampleFileModified(getParentStudy(selectedNode), true);
                 }
             }
-            setCurrentPage(assay.getSpreadsheetUI());
+            setCurrentPage(ApplicationManager.getUserInterfaceForISASection(assay));
+
             setStatusPaneInfo("");
         } else {
             setStatusPaneInfo("");
             setCurrentPage(newSubmission);
         }
+
+        ApplicationManager.setScreenInView(nodeInfo);
 
         if (curDataEntry instanceof StudyDataEntry) {
 
@@ -869,7 +912,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         if (investigation != null) {
             System.out.println("Removing everything from memory");
-            investigation.getUserInterface().removeReferences();
+            ApplicationManager.clearUserInterfaceAssignments();
             investigation = null;
             currentPage = null;
             newSubmission = null;

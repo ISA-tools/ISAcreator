@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,9 +37,10 @@
 
 package org.isatools.isacreator.model;
 
-import org.isatools.isacreator.gui.AssaySpreadsheet;
-import org.isatools.isacreator.gui.StudyDataEntry;
+import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.StudySubData;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 
@@ -51,14 +52,17 @@ import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 public class Assay extends ISASection implements StudySubData {
     public static final String ASSAY_REFERENCE = "Study Assay File Name";
     public static final String MEASUREMENT_ENDPOINT = "Study Assay Measurement Type";
+    public static final String MEASUREMENT_ENDPOINT_TERM_ACCESSION = "Study Assay Measurement Type Term Accession Number";
+    public static final String MEASUREMENT_ENDPOINT_TERM_SOURCE_REF = "Study Assay Measurement Type Term Source REF";
     public static final String TECHNOLOGY_TYPE = "Study Assay Technology Type";
+    public static final String TECHNOLOGY_TYPE_TERM_ACCESSION = "Study Assay Technology Type Term Accession Number";
+    public static final String TECHNOLOGY_TYPE_TERM_SOURCE_REF = "Study Assay Technology Type Term Source REF";
     public static final String ASSAY_PLATFORM = "Study Assay Technology Platform";
 
     private TableReferenceObject tableReferenceObject = null;
-    private AssaySpreadsheet spreadsheet;
 
     public Assay() {
-        super();
+        this("", null);
     }
 
     /**
@@ -72,7 +76,6 @@ public class Assay extends ISASection implements StudySubData {
         super();
 
         fieldValues.put(ASSAY_REFERENCE, assayReference);
-
         this.tableReferenceObject = tableReferenceObject;
     }
 
@@ -87,40 +90,12 @@ public class Assay extends ISASection implements StudySubData {
      */
     public Assay(String assayReference, String measurementEndpoint,
                  String technologyType, String assayPlatform) {
-        super();
 
-        fieldValues.put(ASSAY_REFERENCE, assayReference);
-        fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
-        fieldValues.put(TECHNOLOGY_TYPE, technologyType);
-        fieldValues.put(ASSAY_PLATFORM, assayPlatform);
+        this(assayReference, measurementEndpoint, technologyType, assayPlatform,
+                new TableReferenceObject(ConfigurationManager.selectTROForUserSelection(
+                        measurementEndpoint, technologyType).getTableFields()));
     }
 
-    /**
-     * The Assay object represents the Spreadsheet/Matrix defining the processes involved
-     * to get data files from a Sample
-     *
-     * @param assayReference       - A Reference to be given to the Assay
-     * @param measurementEndpoint  - the measurement being made in this Assay (e.g. transcription profiling)
-     * @param technologyType       - the technology being used to make the measurement in this Assay (e.g. DNA microarray)
-     * @param assayPlatform        - the technology platform used (e.g. Agilent, Affymetrix, Bruker, etc.)
-     * @param studyDataEntry       - the StudyDataEntry object relating to the parent Study Object.
-     * @param tableReferenceObject - the Table Reference Object which contains all the properties of a an Assay, in particular defining which Columns are required, Which are Ontology terms, etc. These files are provided via the ISAConfiguration Tool.
-     */
-    public Assay(String assayReference, String measurementEndpoint,
-                 String technologyType, String assayPlatform, StudyDataEntry studyDataEntry,
-                 TableReferenceObject tableReferenceObject) {
-        super();
-
-        fieldValues.put(ASSAY_REFERENCE, assayReference);
-        fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
-        fieldValues.put(TECHNOLOGY_TYPE, technologyType);
-        fieldValues.put(ASSAY_PLATFORM, assayPlatform);
-
-        // we copy the table reference object, otherwise all modifications
-        // to this object will be carried through to all other assays too!
-        TableReferenceObject newTRO = new TableReferenceObject(tableReferenceObject.getTableFields());
-        spreadsheet = new AssaySpreadsheet(studyDataEntry, newTRO, getMeasurementEndpoint(), getTechnologyType());
-    }
 
     /**
      * The Assay object represents the Spreadsheet/Matrix defining the processes involved
@@ -136,12 +111,18 @@ public class Assay extends ISASection implements StudySubData {
                  String technologyType, String assayPlatform, TableReferenceObject tableReferenceObject) {
         super();
 
+        this.tableReferenceObject = tableReferenceObject;
+
+        MappingObject mappingObject = ConfigurationManager.getMappingObjectForMeasurementAndTechnology(measurementEndpoint, technologyType);
+
         fieldValues.put(ASSAY_REFERENCE, assayReference);
         fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_ACCESSION, mappingObject.getMeasurementAccession());
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_SOURCE_REF, mappingObject.getMeasurementSource());
         fieldValues.put(TECHNOLOGY_TYPE, technologyType);
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_ACCESSION, mappingObject.getTechnologyAccession());
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_SOURCE_REF, mappingObject.getTechnologySource());
         fieldValues.put(ASSAY_PLATFORM, assayPlatform);
-
-        this.tableReferenceObject = tableReferenceObject;
     }
 
 
@@ -173,14 +154,6 @@ public class Assay extends ISASection implements StudySubData {
         return tableReferenceObject;
     }
 
-    public AssaySpreadsheet getSpreadsheetUI() {
-        return spreadsheet;
-    }
-
-    public void setSpreadsheet(AssaySpreadsheet spreadsheet) {
-        this.spreadsheet = spreadsheet;
-    }
-
     /**
      * Returns a 2D Array representation of the Data contained inside this Assay.
      *
@@ -194,25 +167,9 @@ public class Assay extends ISASection implements StudySubData {
         this.tableReferenceObject = tro;
     }
 
-    public void setUserInterface(StudyDataEntry sde) {
-        if (getMeasurementEndpoint().equals("") && getTechnologyType().equals("")) {
-            if (tableReferenceObject != null) {
-                this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject);
-            }
-        } else {
-            this.spreadsheet = new AssaySpreadsheet(sde, tableReferenceObject, getMeasurementEndpoint(), getTechnologyType());
-        }
-    }
 
     public String toString() {
         return getValue(ASSAY_REFERENCE);
-    }
-
-    public void removeReferences() {
-        getSpreadsheetUI().setDataEntryEnvironment(null);
-        getSpreadsheetUI().getSpreadsheet().removeReferences();
-        getSpreadsheetUI().setSpreadsheet(null);
-        setSpreadsheet(null);
     }
 
 }

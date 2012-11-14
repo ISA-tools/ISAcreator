@@ -14,7 +14,7 @@ f.write('<dict>'\
         '<key>CFBundleName</key>'\
         '<string>ISAcreator</string>'\
         '<key>CFBundleIdentifier</key>'\
-        '<string>org.isatools.isacreator.gui.modeselection.ModeSelector</string>'\
+        '<string>org.isatools.isacreator.launch.ISAcreatorApplication</string>'\
         '<key>CFBundleVersion</key>'\
         '<string>1.6</string>'\
         '<key>CFBundleAllowMixedLocalizations</key>'\
@@ -40,7 +40,7 @@ f.write('<dict>'\
         '<key>VMOptions</key>'\
         '<string>-Xms256mm -Xmx1024mm</string>'\
         '<key>MainClass</key>'\
-        '<string>org.isatools.isacreator.gui.modeselection.ModeSelector</string>'\
+        '<string>org.isatools.isacreator.launch.ISAcreatorApplication</string>'\
         '<key>JVMVersion</key>'\
         '<string>1.5+</string>'\
         '<key>ClassPath</key>'\

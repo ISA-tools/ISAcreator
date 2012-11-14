@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -39,20 +39,18 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
-import org.isatools.isacreator.archiveoutput.ArchiveOutputUtil;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
-import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.configuration.io.ConfigXMLParser;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.io.OutputISAFiles;
+import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileIO;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
@@ -66,7 +64,6 @@ import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 import org.isatools.isacreator.utils.PropertyFileIO;
 import org.isatools.isacreator.validateconvert.ui.OperatingMode;
@@ -122,9 +119,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private AboutPanel aboutPanel;
     private Properties programSettings;
 
-    private List<TableReferenceObject> assayDefinitions;
-    private List<MappingObject> mappings;
-
     private DataEntryEnvironment curDataEntryEnvironment;
     private GridBagConstraints gridbagConstraints;
     private JLayeredPane currentPage = null;
@@ -137,7 +131,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private Map<String, JMenu> menusRequiringStudyIds;
 
-    private OutputISAFiles outputISATAB;
+    private OutputISAFilesFromGUI outputISATABFromGUI;
     private IncorrectColumnOrderGUI incorrectGUI;
     private UserProfileIO userProfileIO;
     private Mode mode;
@@ -215,7 +209,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             ontologyPluginTracker.open();
         }
 
-        outputISATAB = new OutputISAFiles(this);
+        outputISATABFromGUI = new OutputISAFilesFromGUI(this);
         userProfileIO = new UserProfileIO(this);
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
@@ -229,21 +223,21 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         gridbagConstraints.gridy = 3;
 
         // this is a way of loading the Configurations through the API.
-        if (configDir != null) {
-            ConfigXMLParser cp = new ConfigXMLParser(configDir);
-            cp.loadConfiguration();
-            mappings = cp.getMappings();
-            assayDefinitions = cp.getTables();
-        }
+        ConfigurationManager.loadConfigurations(configDir);
 
         ApplicationManager.setCurrentApplicationInstance(this);
 
     }
 
-    public void createGUI() {
+    /**
+     * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received
+     */
+    public void createGUI(String configDir, String username, final String isatabDir) {
+
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
+        //TODO move this into a property
         setTitle("ISAcreator 1.6");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
@@ -263,7 +257,42 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
 
-//        setupAboutPanel();
+        // check that java version is supported!
+        if (!checkSystemRequirements()) {
+            //this can't happen if this is used from java web start
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+        } else {
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir);
+        }
+        setCurrentPage(isacreatorMenu);
+        pack();
+        setVisible(true);
+    }
+
+    public void createGUI() {
+        setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
+        setIconImage(isacreatorIcon);
+        setBackground(UIHelper.BG_COLOR);
+        //TODO move this into a property
+        setTitle("ISAcreator 1.6");
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setUndecorated(true);
+        setResizable(true);
+        setLayout(new BorderLayout());
+
+        addWindowFocusListener(this);
+        // load user profiles into the system
+        userProfileIO.loadUserProfiles();
+        loadProgramSettings();
+        // create the top menu bar
+
+        createTopPanel();
+
+        FooterPanel fp = new FooterPanel(this);
+        add(fp, BorderLayout.SOUTH);
+
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
+
         // check that java version is supported!
         if (!checkSystemRequirements()) {
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
@@ -276,20 +305,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
-    public void setMappings(List<MappingObject> mappings) {
-        this.mappings = mappings;
-    }
-
-    public void setAssayDefinitions(List<TableReferenceObject> assayDefinitions) {
-        this.assayDefinitions = assayDefinitions;
-    }
-
-
     private void checkMenuRequired() {
         boolean menuRequired = currentPage instanceof DataEntryEnvironment;
         menuBar.getParent().setVisible(menuRequired);
     }
-
 
     private void setupAboutPanel() {
         aboutPanel = new AboutPanel();
@@ -740,20 +759,19 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         return currentUser;
     }
 
-    public List<MappingObject> getMappings() {
-        return mappings;
-    }
 
     public List<UserProfile> getUserProfiles() {
         return userProfileIO.getUserProfiles();
     }
 
     public void hideGlassPane() {
-        glass.setVisible(false);
+        if (glass != null) {
+            glass.setVisible(false);
+        }
     }
 
     private void saveProfilesAndExit() {
-
+        setVisible(false);
         if (getCurrentUser() != null) {
             for (UserProfile up : getUserProfiles()) {
                 if (up.getUsername().equals(getCurrentUser().getUsername())) {
@@ -895,9 +913,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             final JOptionPane[] optionPane = new JOptionPane[1];
             final ImageIcon[] icon = new ImageIcon[1];
+
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-
                     String leaveText = "";
 
                     switch (type) {
@@ -905,21 +923,14 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                             leaveText = "Are you sure you want to logout without saving?";
                             icon[0] = confirmLogout;
                             break;
-
                         case MAIN:
                             leaveText = "Are you sure you want to go to the main menu without saving?";
                             icon[0] = confirmMenu;
                             break;
-
                         case EXIT:
-
                             leaveText = "Are you sure you want to exit ISAcreator?";
                             icon[0] = confirmExit;
                             break;
-
-                        default:
-
-                            //
                     }
 
                     optionPane[0] = new JOptionPane(leaveText,
@@ -929,8 +940,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                     UIHelper.applyOptionPaneBackground(optionPane[0], UIHelper.BG_COLOR);
                     optionPane[0].addPropertyChangeListener(LeaveAction.this);
 
-                    showJDialogAsSheet(optionPane[0].createDialog(
-                            ISAcreator.this, "Confirm"));
+                    showJDialogAsSheet(optionPane[0].createDialog(ISAcreator.this, "Confirm"));
                 }
             });
         }
@@ -943,6 +953,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                         .toString());
                 hideSheet();
                 if (lastOptionAnswer == JOptionPane.YES_OPTION) {
+
+                    ApplicationManager.resetForNextSession();
                     closeWindowTimer.start();
                 }
             }
@@ -1094,12 +1106,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
 
-                        if (outputISATAB.isShouldShowIncorrectOrderGUI()) {
+                        if (outputISATABFromGUI.isShouldShowIncorrectOrderGUI()) {
 
 
                             Map<String, List<String>> report = new HashMap<String, List<String>>();
                             // highlight columns in each affected spreadsheet
-                            for (Spreadsheet s : outputISATAB.getErrorSheets()) {
+                            for (Spreadsheet s : outputISATABFromGUI.getErrorSheets()) {
                                 // highlight the columns in the spreadsheet
                                 report.putAll(s.getTableConsistencyChecker().getErrorReport());
                                 Map<Integer, Color> colorcoding = new HashMap<Integer, Color>();
@@ -1116,7 +1128,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
                         } else {
                             // IF EVERYTHING IS OK, RESET ROW COLORS!
-                            for (Spreadsheet s : outputISATAB.getAllSheets()) {
+                            for (Spreadsheet s : outputISATABFromGUI.getAllSheets()) {
                                 s.setRowsToDefaultColor();
                             }
                             // proceed to subsequent tasks...
@@ -1141,7 +1153,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
     public void saveISATab() {
-        outputISATAB.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
+        outputISATABFromGUI.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
     }
 
     class ScreenResizeAction extends AbstractAction {
@@ -1192,106 +1204,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         }
     }
-
-    public String[] getMeasurementEndpoints() {
-        List<MappingObject> assayToTypeMapping = getMappings();
-        Set<String> measTypeSet = new HashSet<String>();
-
-        for (MappingObject mo : assayToTypeMapping) {
-            if (!mo.getTechnologyType().equals("n/a") &&
-                    !mo.getMeasurementEndpointType().equalsIgnoreCase("[sample]") && !mo.getMeasurementEndpointType().equalsIgnoreCase("[investigation]")) {
-                measTypeSet.add(mo.getMeasurementEndpointType());
-            }
-        }
-
-        List<String> tempMeasTypes = new ArrayList<String>();
-        tempMeasTypes.addAll(measTypeSet);
-
-        Collections.sort(tempMeasTypes);
-
-        return tempMeasTypes.toArray(new String[tempMeasTypes.size()]);
-
-    }
-
-    public String[] getTechnologyTypes() {
-        List<MappingObject> assayToTypeMapping = getMappings();
-        Set<String> techTypeSet = new HashSet<String>();
-
-        for (MappingObject mo : assayToTypeMapping) {
-            if (!mo.getTechnologyType().equals("n/a") && !mo.getTechnologyType().equals("")) {
-                techTypeSet.add(mo.getTechnologyType());
-            }
-        }
-
-        List<String> tempTechTypes = new ArrayList<String>();
-        tempTechTypes.addAll(techTypeSet);
-
-        Collections.sort(tempTechTypes);
-
-        tempTechTypes.add(0, AutoFilterComboCellEditor.BLANK_VALUE);
-
-        return tempTechTypes.toArray(new String[tempTechTypes.size()]);
-    }
-
-    public Map<String, List<String>> getAllowedTechnologiesPerEndpoint() {
-        Map<String, List<String>> measToAllowedTechs = new HashMap<String, List<String>>();
-
-        for (MappingObject mo : mappings) {
-            if (!measToAllowedTechs.containsKey(mo.getMeasurementEndpointType())) {
-                measToAllowedTechs.put(mo.getMeasurementEndpointType(), new ArrayList<String>());
-            }
-            measToAllowedTechs.get(mo.getMeasurementEndpointType()).add(mo.getTechnologyType());
-        }
-
-        return measToAllowedTechs;
-    }
-
-    /**
-     * Select the TableReferenceObject which is required for a given measurement endpoint
-     * and technology type using the MappingObject.
-     *
-     * @param measurementEndpoint - e.g. Gene Expression
-     * @param techType            e.g. DNA Microarray
-     * @return TableReferenceObject if one exists, null otherwise.
-     */
-    public synchronized TableReferenceObject selectTROForUserSelection(
-            String measurementEndpoint, String techType) {
-        for (MappingObject mo : mappings) {
-            if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
-                    mo.getTechnologyType().equalsIgnoreCase(techType)) {
-                for (TableReferenceObject tro : assayDefinitions) {
-                    if (tro.getTableName().equalsIgnoreCase(mo.getAssayName())) {
-                        return tro;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Select the TableReferenceObject which is required for a given tableType
-     *
-     * @param tableType - e.g. study sample or investigation
-     * @return TableReferenceObject if one exists, null otherwise.
-     */
-    public synchronized TableReferenceObject selectTROForUserSelection(
-            String tableType) {
-        for (MappingObject mo : mappings) {
-
-            if (mo.getTableType().equals(tableType)) {
-                for (TableReferenceObject tro : assayDefinitions) {
-                    if (tro.getTableName().equalsIgnoreCase(mo.getAssayName())) {
-                        return new TableReferenceObject(tro.getTableFields());
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
 
     public IncorrectColumnOrderGUI getIncorrectGUI() {
         return incorrectGUI;

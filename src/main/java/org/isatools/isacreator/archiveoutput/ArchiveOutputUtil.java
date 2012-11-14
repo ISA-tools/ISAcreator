@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -40,9 +40,11 @@ package org.isatools.isacreator.archiveoutput;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.ApplicationManager;
-import org.isatools.isacreator.io.OutputISAFiles;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.gui.AssaySpreadsheet;
+import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.ISASection;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
@@ -75,7 +77,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
 
     private ViewErrorPane browseViewErrorPane;
-    private OutputISAFiles outputISATAB;
+    private OutputISAFilesFromGUI outputISATABFromGUI;
     private File archiveLocation;
 
     private ArchivingStatistics statistics;
@@ -94,7 +96,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
         archiveLocation = null;
         localFiles = null;
         browseViewErrorPane = new ViewErrorPane(ApplicationManager.getCurrentApplicationInstance());
-        outputISATAB = new OutputISAFiles(ApplicationManager.getCurrentApplicationInstance());
+        outputISATABFromGUI = new OutputISAFilesFromGUI(ApplicationManager.getCurrentApplicationInstance());
         createProgressLabel();
         setOpaque(false);
     }
@@ -132,36 +134,37 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             missingData = new HashMap<String, List<ArchiveOutputError>>();
 
             log.info("Gathering datafiles to be zipped");
-            for (Study s : inv.getStudies().values()) {
+            for (Study study : inv.getStudies().values()) {
                 List<ArchiveOutputError> missingDataResult;
 
-                if ((missingDataResult = s.getStudySample().getSpreadsheetUI().getSpreadsheet().checkForCompleteness()).size() > 0) {
+                if ((missingDataResult = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(study.getStudySample())).getSpreadsheet().checkForCompleteness()).size() > 0) {
                     log.info("Missing " + missingDataResult.size() + " files in the study sample file...");
 
-                    missingData.put(s.getStudySample().getAssayReference(), missingDataResult);
+                    missingData.put(study.getStudySample().getAssayReference(), missingDataResult);
                 }
 
-                for (Assay a : s.getAssays().values()) {
+                for (Assay a : study.getAssays().values()) {
                     localFiles.put(a.getAssayReference(), new ArrayList<String>());
                     // getFilesDefinedInTable will get all files and directory paths listed in each file column in the table!
-                    for (String file : a.getSpreadsheetUI().getSpreadsheet().getSpreadsheetFunctions().getFilesDefinedInTable()) {
+                    AssaySpreadsheet assaySpreadsheet = (AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(a);
+                    for (String file : assaySpreadsheet.getSpreadsheet().getSpreadsheetFunctions().getFilesDefinedInTable()) {
                         if (!file.startsWith("ftp") && !file.startsWith("http")) {
 
                             localFiles.get(a.getAssayReference()).add(file);
                         }
                     }
 
-                    if ((missingDataResult = a.getSpreadsheetUI().getSpreadsheet().checkForCompleteness()).size() > 0) {
+                    if ((missingDataResult = assaySpreadsheet.getSpreadsheet().checkForCompleteness()).size() > 0) {
                         log.info("Missing " + missingDataResult.size() + " files in file " + a.getAssayReference());
                         missingData.put(a.getAssayReference(), missingDataResult);
                     }
 
-                    a.getSpreadsheetUI().getSpreadsheet().changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_RELATIVE);
+                    assaySpreadsheet.getSpreadsheet().changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_RELATIVE);
                 }
             }
 
 
-            outputISATAB.saveISAFiles(true, inv);
+            outputISATABFromGUI.saveISAFiles(true, inv);
 
             File parentFile = new File(new File(inv.getReference()).getParent());
 
@@ -179,12 +182,12 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             // reset file names back to absolute locations.
             for (Study study : inv.getStudies().values()) {
                 for (Assay assay : study.getAssays().values()) {
-                    assay.getSpreadsheetUI().getSpreadsheet()
-                            .changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_ABSOLUTE);
+                    AssaySpreadsheet assaySpreadsheet = (AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay);
+                    assaySpreadsheet.getSpreadsheet().changeFilesToRelativeOrAbsolute(Spreadsheet.SWITCH_ABSOLUTE);
                 }
             }
 
-            outputISATAB.saveISAFiles(false, inv);
+            outputISATABFromGUI.saveISAFiles(false, inv);
         } catch (OutOfMemoryError ome) {
             // this will happen only with very large assays! if it does, inform the user to increase the memory allowance to ISAcreator
             log.info("The system ran out of memory whilst trying to zip the files. Ensure that overall archive size is below 4GB.");
@@ -213,8 +216,12 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
     }
 
     private JLayeredPane getAssayByRef(String assayRef) {
-        Investigation investigation = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
-        return investigation.getStudies().get(investigation.getAssays().get(assayRef)).getAssays().get(assayRef).getSpreadsheetUI();
+        for (ISASection isaSection : ApplicationManager.getIsaSectionToDataEntryForm().keySet()) {
+            if (isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE).equals(assayRef)) {
+                return ApplicationManager.getUserInterfaceForISASection(isaSection);
+            }
+        }
+        return null;
     }
 
     public void zipDir(String sourceDir, File dirToZip, ZipOutputStream zos, byte[] buffer) {

@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -63,6 +63,10 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -421,6 +425,37 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         }
 
         return null;
+    }
+
+    protected String getISASectionAsString(String sectionTitle, List<? extends ISASection> sectionToOutput) {
+
+        StringBuilder representation = new StringBuilder();
+
+        representation.append(sectionTitle.toUpperCase().trim()).append("\n");
+
+        if (sectionToOutput.size() > 0) {
+
+            for (String fieldName : sectionToOutput.get(0).getFieldValues().keySet()) {
+                representation.append(fieldName);
+                
+                if(sectionToOutput.size() > 0) {
+                    representation.append("\t");
+                }
+
+                // now add the field values in
+                int count = 0;
+                for (ISASection section : sectionToOutput) {
+                    String value = section.getFieldValues().get(fieldName);
+                    representation.append(value);
+                    if(count != sectionToOutput.size()-1) {
+                        representation.append("\t");
+                    }
+                    count++;
+                }
+                representation.append("\n");
+            }
+        }
+        return representation.toString();
     }
 
 

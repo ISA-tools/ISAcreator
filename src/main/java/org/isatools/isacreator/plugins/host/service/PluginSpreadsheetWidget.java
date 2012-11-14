@@ -1,6 +1,5 @@
 package org.isatools.isacreator.plugins.host.service;
 
-import javax.swing.table.TableCellEditor;
 import java.util.Set;
 
 /**

@@ -5,7 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -51,6 +51,7 @@ import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.formatmappingutility.loader.FileLoader;
 import org.isatools.isacreator.formatmappingutility.ui.*;
 import org.isatools.isacreator.formatmappingutility.utils.TableReferenceObjectWrapper;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.*;
@@ -198,10 +199,12 @@ public class MappingLogic {
 
 
         StudyDataEntry sde = new StudyDataEntry(dep, study);
-        study.setUI(sde);
+        ApplicationManager.assignDataEntryToISASection(study, sde);
+
         Assay studySample = new Assay("s_study_sample.txt", mappings.get(MappingObject.STUDY_SAMPLE));
 
-        studySample.setUserInterface(sde);
+        ApplicationManager.assignDataEntryToISASection(studySample, ApplicationManager.getUserInterfaceForAssay(studySample, sde));
+
         study.setStudySamples(studySample);
 
         for (String assayName : mappings.keySet()) {
@@ -213,7 +216,7 @@ public class MappingLogic {
                 Assay mappedAssay = new Assay("a_" + assayName.replaceAll("\\s+", "") + ".txt",
                         measurement, technology, "", mappings.get(assayName));
 
-                mappedAssay.setUserInterface(sde);
+                ApplicationManager.assignDataEntryToISASection(mappedAssay, ApplicationManager.getUserInterfaceForAssay(mappedAssay, sde));
                 study.addAssay(mappedAssay);
                 inv.addToAssays(mappedAssay.getAssayReference(), study.getStudyId());
             }

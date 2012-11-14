@@ -6,7 +6,7 @@ package org.isatools.isacreator.gui.modeselection;
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
- “The contents of this file are subject to the CPAL version 1.0 (the “License”);
+ The contents of this file are subject to the CPAL version 1.0 (the License);
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -14,7 +14,7 @@ package org.isatools.isacreator.gui.modeselection;
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
- Software distributed under the License is distributed on an “AS IS” basis,
+ Software distributed under the License is distributed on an AS IS basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -37,27 +37,16 @@ package org.isatools.isacreator.gui.modeselection;
  */
 
 import com.sun.awt.AWTUtilities;
-import org.apache.felix.framework.Felix;
-import org.apache.felix.framework.util.FelixConstants;
-import org.apache.felix.main.AutoActivator;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.io.osgi.OSGiDependencyImport;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by the ISA team
@@ -84,10 +73,19 @@ public class ModeSelector extends JFrame implements BundleActivator {
     @InjectedResource
     private ImageIcon lightIcon, lightIconOver, normalIcon, normalIconOver, loadingIcon;
 
+    /**
+     * Constructor
+     */
     public ModeSelector() {
         ResourceInjector.get("gui-package.style").inject(this);
     }
 
+
+    /**
+     * Creates GUI for mode selection
+     *
+     * @param context
+     */
     private void createGUI(final BundleContext context) {
         setLayout(new BorderLayout());
         setAlwaysOnTop(true);
@@ -168,6 +166,12 @@ public class ModeSelector extends JFrame implements BundleActivator {
         setVisible(true);
     }
 
+    /**
+     * Loads the ISAcreator main GUI.
+     *
+     * @param mode
+     * @param context
+     */
     private void loadISAcreator(final Mode mode, final BundleContext context) {
 
         optionContainer.setVisible(false);
@@ -225,71 +229,5 @@ public class ModeSelector extends JFrame implements BundleActivator {
         });
     }
 
-    public static void main(String[] args) throws Exception {
 
-        ModeSelector isacreatorModeSelection = new ModeSelector();
-        // Create a temporary bundle cache directory and
-        // make sure to clean it up on exit.
-        final File cachedir = File.createTempFile("isacreator.servicebase", null);
-        System.out.println(cachedir.getAbsolutePath());
-        cachedir.delete();
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                cachedir.delete();
-            }
-        });
-
-        Map<String, Object> configMap = new HashMap<String, Object>();
-        String osgiDependencies = OSGiDependencyImport.getDependencies();
-        System.out.println("Loaded the following system packages:\n" + osgiDependencies);
-        configMap.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, OSGiDependencyImport.getDependencies());
-
-        File pluginsDirectory = new File("Plugins");
-        if (!pluginsDirectory.exists()) {
-            pluginsDirectory.mkdir();
-        } else {
-            File[] plugins = pluginsDirectory.listFiles();
-            StringBuilder toLoad = new StringBuilder();
-            for (File plugin : plugins) {
-                if (plugin.isDirectory()) {
-                    for (File jarFile : plugin.listFiles()) {
-                        if (jarFile.getName().contains(".jar")) {
-                            toLoad.append("file:").append(jarFile.getAbsolutePath()).append(" ");
-                        }
-                    }
-                } else {
-                    if (plugin.getName().contains(".jar")) {
-                        toLoad.append("file:").append(plugin.getAbsolutePath()).append(" ");
-                    }
-                }
-            }
-            configMap.put(AutoActivator.AUTO_START_PROP + ".1",
-                    toLoad.toString());
-        }
-
-        configMap.put(FelixConstants.LOG_LEVEL_PROP, "4");
-        configMap.put(Constants.FRAMEWORK_STORAGE, cachedir.getAbsolutePath());
-
-        // Create list to hold custom framework activators.
-        List<BundleActivator> list = new ArrayList<BundleActivator>();
-        // Add activator to process auto-start/install properties.
-        list.add(new AutoActivator(configMap));
-        // Add our own activator.
-        list.add(isacreatorModeSelection);
-        // Add our custom framework activators to the configuration map.
-        configMap.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
-
-        try {
-            System.out.println("Starting up OSGi framework....");
-            Felix felix = new Felix(configMap);
-            felix.start();
-            System.out.println("....Framework started successfully!");
-        } catch (Exception ex) {
-            System.err.println("Could not create framework: " + ex);
-            ex.printStackTrace();
-            System.exit(-1);
-        }
-    }
 }
