@@ -38,8 +38,8 @@ public class GSLocalFilesManager {
                         System.err.println("Either a directory containing the ISA-Tab dataset or the set of ISA-Tab files should be passed as parameters, but not both.");
                         System.exit(-1);
                     }
-
-                    errors.addAll(gsDataManager.downloadAllFilesFromDirectory(ISAcreatorCLArgs.isatabDir(), localTmpDirectory));
+                    String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
+                    errors.addAll(gsDataManager.downloadAllFilesFromDirectory(ISAcreatorCLArgs.isatabDir(), localTmpDirectory, pattern));
                     if (!errors.isEmpty()){
                         return errors;
                     }
@@ -47,7 +47,6 @@ public class GSLocalFilesManager {
                 }//isatabDir not null
 
                 if (ISAcreatorCLArgs.isatabFiles()!=null){
-
 
                     for(String filePath: ISAcreatorCLArgs.isatabFiles()){
                         errors.add(gsDataManager.downloadFile(filePath, localTmpDirectory));

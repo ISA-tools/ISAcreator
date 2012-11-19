@@ -319,7 +319,8 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                             String localTmpDirectory = GeneralUtils.createISATmpDirectory();
                             System.out.println("Downloading files to local tmp directory "+localTmpDirectory);
-                            gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory);
+                            String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
+                            gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory, pattern);
                             System.out.println("Importing file...");
 
                             loadFile(localTmpDirectory);
