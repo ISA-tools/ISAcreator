@@ -588,10 +588,11 @@
                <artifactId>httpclient</artifactId>
                <groupId>org.apache.httpcomponents</groupId>
             </exclusion>
-            <exclusion>
+            <!--<exclusion>
                 <artifactId>commons-codec</artifactId>
                 <groupId>commons-codec</groupId>
             </exclusion>
+            -->
         </exclusions>
         <!--<scope>runtime</scope>-->
     </dependency>
