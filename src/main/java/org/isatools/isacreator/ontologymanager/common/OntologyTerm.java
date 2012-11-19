@@ -61,6 +61,12 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
     public OntologyTerm() {
     }
 
+    /***
+     *
+     * @param termName
+     * @param accession
+     * @param ontologySourceRefObject
+     */
     public OntologyTerm(String termName, String accession, OntologySourceRefObject ontologySourceRefObject) {
         ontologyTermName = termName;
         ontologySourceAccession = accession;
