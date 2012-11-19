@@ -68,6 +68,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ *
+ *
+ */
 public class DataEntryForm extends JLayeredPane implements Serializable {
 
     private DataEntryEnvironment dataEntryEnvironment;
@@ -423,6 +427,13 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         return null;
     }
 
+    /**
+     * Given a list of ISASections, it returns them as a String
+     *
+     * @param sectionTitle a string that is the section title
+     * @param sectionToOutput a list of objects that are subclasses of ISASection
+     * @return a string with the serialization of the ISASection
+     */
     protected String getISASectionAsString(String sectionTitle, List<? extends ISASection> sectionToOutput) {
 
         StringBuilder representation = new StringBuilder();

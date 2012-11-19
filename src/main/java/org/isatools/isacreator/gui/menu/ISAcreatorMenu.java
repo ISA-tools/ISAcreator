@@ -38,42 +38,44 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
+
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.errorreporter.ui.ErrorReporterView;
+
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.api.AuthenticationManager;
 import org.isatools.isacreator.api.CreateProfile;
 import org.isatools.isacreator.api.ImportConfiguration;
+
 import org.isatools.isacreator.common.UIHelper;
+
 import org.isatools.isacreator.effects.GenericPanel;
 import org.isatools.isacreator.effects.InfiniteImageProgressPanel;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
-import org.isatools.isacreator.gs.GSIdentityManager;
-import org.isatools.isacreator.gs.GSLocalFilesManager;
-import org.isatools.isacreator.gs.gui.GSAuthenticationMenu;
-import org.isatools.isacreator.gs.gui.GSImportFilesMenu;
-import org.isatools.isacreator.gs.gui.GSRegistrationMenu;
+
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
 import org.isatools.isacreator.gui.modeselection.Mode;
+
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
-import org.isatools.isacreator.settings.ISAcreatorProperties;
+
 import org.isatools.isacreator.settings.SettingsUtil;
+
+//GS imports
+import org.isatools.isacreator.gs.GSIdentityManager;
+import org.isatools.isacreator.gs.GSLocalFilesManager;
+import org.isatools.isacreator.gs.gui.GSAuthenticationMenu;
+import org.isatools.isacreator.gs.gui.GSImportFilesMenu;
+
 
 import javax.swing.*;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.List;
 
 
 /**

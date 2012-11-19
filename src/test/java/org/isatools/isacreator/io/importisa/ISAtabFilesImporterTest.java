@@ -34,11 +34,11 @@ import java.util.Map;
  */
 public class ISAtabFilesImporterTest {
 
+    private String configDir = null;
     private static Logger log = Logger.getLogger(ISAtabFilesImporterTest.class);
 
 
     private ISAtabFilesImporter importer = null;
-    private String configDir = null;
     private String isatabParentDir = null;
 
     @Before
@@ -74,16 +74,18 @@ public class ISAtabFilesImporterTest {
         assert(inv!=null);
 
         //if import worked ok, there should not be error messages
-        //assert(importer.getMessages().size()==0);
+        assert(importer.getMessages().size()==0);
 
-        List<ISAFileErrorReport> errors = importer.getMessages();
-        for(ISAFileErrorReport error: errors){
-            System.out.println(error.getProblemSummary());
-            List<ErrorMessage> messages = error.getMessages();
-            for(ErrorMessage message: messages){
-                System.out.println(message.getMessage());
-            }
-        }
+//        List<ISAFileErrorReport> errors = importer.getMessages();
+//        for(ISAFileErrorReport error: errors){
+//            System.out.println(error.getProblemSummary());
+//            List<ErrorMessage> messages = error.getMessages();
+//            for(ErrorMessage message: messages){
+//                System.out.println(message.getMessage());
+//            }
+//        }
+
+
 
         System.out.println("ontologies used="+OntologyManager.getOntologiesUsed());
         System.out.println("ontology description="+OntologyManager.getOntologyDescription("OBI"));
@@ -94,27 +96,30 @@ public class ISAtabFilesImporterTest {
         Map<String, Study> studyMap = inv.getStudies();
         for(String studyId: studyMap.keySet()){
             Study study = studyMap.get(studyId);
-            TableReferenceObject tableReferenceObject = study.getStudySample().getTableReferenceObject();
-            FieldObject fieldObject = tableReferenceObject.getFieldByName("Characteristics[organism]");
 
-            System.out.println("recommended ontology source for fieldobject=" +fieldObject.getRecommmendedOntologySource());
-            System.out.println("fieldobject name=" +fieldObject.getFieldName());
 
-            ReferenceData data = tableReferenceObject.getReferenceData();
 
-            for(List<String> row : data.getData()) {
-                System.out.println("row="+row);
-                for(String column : row) {
-                    System.out.println("column="+column);
-                    if(OntologyManager.getOntologySelectionHistory().containsKey(column)) {
-                        System.out.println("source accession="+OntologyManager.getOntologySelectionHistory().get(column).getOntologySourceAccession());
-                        System.out.println("purl="+OntologyManager.getOntologySelectionHistory().get(column).getOntologyPurl());
-                    }
-                }
-                System.out.println();
-            }
-            System.out.println();
-
+//            TableReferenceObject tableReferenceObject = study.getStudySample().getTableReferenceObject();
+//            FieldObject fieldObject = tableReferenceObject.getFieldByName("Characteristics[organism]");
+//
+//            System.out.println("recommended ontology source for fieldobject=" +fieldObject.getRecommmendedOntologySource());
+//            System.out.println("fieldobject name=" +fieldObject.getFieldName());
+//
+//            ReferenceData data = tableReferenceObject.getReferenceData();
+//
+//            for(List<String> row : data.getData()) {
+//                System.out.println("row="+row);
+//                for(String column : row) {
+//                    System.out.println("column="+column);
+//                    if(OntologyManager.getOntologySelectionHistory().containsKey(column)) {
+//                        System.out.println("source accession="+OntologyManager.getOntologySelectionHistory().get(column).getOntologySourceAccession());
+//                        System.out.println("purl="+OntologyManager.getOntologySelectionHistory().get(column).getOntologyPurl());
+//                    }
+//                }
+//                System.out.println();
+//            }
+//            System.out.println();
+//
         }
 
     }
