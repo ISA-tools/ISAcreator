@@ -199,6 +199,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                             }
                         }
 
+
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
 
                         SwingUtilities.invokeLater(new Runnable() {
