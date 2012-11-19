@@ -57,7 +57,7 @@ public class Study extends ISASection {
     public static final String STUDY_DESC = "Study Description";
     public static final String STUDY_DATE_OF_SUBMISSION = "Study Submission Date";
     public static final String STUDY_DATE_OF_PUBLIC_RELEASE = "Study Public Release Date";
-    public static final String STUDY_SAMPLE_FILE = "Study File Name";
+    public static final String STUDY_FILE_NAME = "Study File Name";
 
     private Assay studySampleRecord;
 
@@ -110,7 +110,7 @@ public class Study extends ISASection {
         fieldValues.put(STUDY_DATE_OF_SUBMISSION, dateOfSubmission);
         fieldValues.put(STUDY_DATE_OF_PUBLIC_RELEASE, publicReleaseDate);
         fieldValues.put(STUDY_DESC, studyDesc);
-        fieldValues.put(STUDY_SAMPLE_FILE, studySample);
+        fieldValues.put(STUDY_FILE_NAME, studySample);
 
         initialise();
     }
@@ -132,13 +132,13 @@ public class Study extends ISASection {
     }
 
     public boolean addAssay(Assay assay) {
+
         if (!assays.containsKey(assay.getAssayReference())) {
             assays.put(assay.getAssayReference(), assay);
-
             return true;
         }
-
         return false;
+
     }
 
     /**
@@ -148,12 +148,13 @@ public class Study extends ISASection {
      * @return - true if the contact was added, false otherwise.
      */
     public boolean addContact(StudyContact contact) {
+
         if (!checkContactExists(contact.getFirstName(), contact.getLastName(), contact.getEmail())) {
             contacts.add(contact);
             return true;
         }
-
         return false;
+
     }
 
     /**
@@ -163,13 +164,13 @@ public class Study extends ISASection {
      * @return true if the publication was added, false otherwise.
      */
     public boolean addPublication(Publication publication) {
+
         if (!checkPublicationExists(publication.getPubmedId())) {
             publications.add(publication);
-
             return true;
         }
-
         return false;
+
     }
 
     /**
@@ -336,19 +337,15 @@ public class Study extends ISASection {
     }
 
     public Assay getStudySample() {
-        if (studySampleRecord == null) {
-            return null;
-        }
-
         return studySampleRecord;
     }
 
     public String getStudySampleFileIdentifier() {
-        if (getValue(STUDY_SAMPLE_FILE).equals("")) {
+        if (getValue(STUDY_FILE_NAME).equals("")) {
             return "s_" + getStudyId() + ".txt";
         }
 
-        return getValue(STUDY_SAMPLE_FILE);
+        return getValue(STUDY_FILE_NAME);
     }
 
     public String getStudyTitle() {
@@ -630,7 +627,7 @@ public class Study extends ISASection {
             studySampleName += ".txt";
         }
 
-        fieldValues.put(STUDY_SAMPLE_FILE, studySampleName);
+        fieldValues.put(STUDY_FILE_NAME, studySampleName);
     }
 
     public void setStudyDesc(String studyDesc) {
@@ -726,7 +723,7 @@ public class Study extends ISASection {
     }
 
     private boolean checkProtocolExists(String n) {
-        for (Protocol p : protocols) {
+        for (Protocol p :  protocols) {
             if (p.getProtocolName().equals(n)) {
                 return true;
             }
@@ -739,4 +736,17 @@ public class Study extends ISASection {
         setReferenceObject(referenceObject, InvestigationFileSection.STUDY_SECTION);
     }
 
+
+    public boolean equals(Object other) {
+        if (other==null)
+            return false;
+        if (!(other instanceof Study))
+            return false;
+        Study study = (Study) other;
+        return (study.getStudyId().equals(this.getStudyId()));
+    }
+
+    public int hashCode(){
+        return this.getStudyId().hashCode();
+    }
 }

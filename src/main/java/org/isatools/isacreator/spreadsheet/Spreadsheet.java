@@ -41,7 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputError;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.UIHelper;
@@ -270,7 +270,7 @@ public class Spreadsheet extends JComponent implements
     private void addOntologyTermsToUserHistory() {
         if (tableReferenceObject.getDefinedOntologies().size() > 0) {
             for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
-                OntologyManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
+                OntologyManager.getOntologySelectionHistory().put(oo.getUniqueId(), oo);
             }
         }
     }
@@ -1288,7 +1288,7 @@ public class Spreadsheet extends JComponent implements
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
     private OntologyTerm searchUserHistory(String uniqueId) {
-        return OntologyManager.getUserOntologyHistory().get(uniqueId);
+        return OntologyManager.getOntologySelectionHistory().get(uniqueId);
     }
 
     /**

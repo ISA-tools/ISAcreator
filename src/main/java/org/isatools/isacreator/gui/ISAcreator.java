@@ -39,6 +39,7 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
@@ -71,6 +72,7 @@ import org.isatools.isacreator.validateconvert.ui.ValidateUI;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleContext;
+import org.isatools.errorreporter.model.ErrorMessage;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -100,7 +102,7 @@ import java.util.List;
  */
 public class ISAcreator extends AnimatableJFrame implements WindowFocusListener {
 
-    private static Logger log = Logger.getLogger(ISAcreator.class.getName());
+    private static Logger log = Logger.getLogger(ISAcreator.class);
 
     public static String DEFAULT_ISATAB_SAVE_DIRECTORY = "isatab files";
     public static String DEFAULT_CONFIGURATIONS_DIRECTORY = "Configurations";
@@ -125,6 +127,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private JPanel glass;
 
     private ISAcreatorMenu isacreatorMenu = null;
+
     private static UserProfile currentUser = null;
     private JMenuBar menuBar;
     private JMenu pluginMenu;
@@ -194,6 +197,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         this(mode, context, null);
     }
 
+    /**
+     * Could this constructor be removed?
+     *
+     * @param mode
+     * @param context
+     * @param configDir
+     */
     public ISAcreator(Mode mode, BundleContext context, String configDir) {
 
         ResourceInjector.get("gui-package.style").inject(this);
@@ -213,7 +223,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         userProfileIO = new UserProfileIO(this);
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
-
         gridbagConstraints = new GridBagConstraints();
         gridbagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridbagConstraints.weightx = 0.0;
@@ -226,19 +235,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         ConfigurationManager.loadConfigurations(configDir);
 
         ApplicationManager.setCurrentApplicationInstance(this);
-
     }
 
-    /**
-     * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received
-     */
-    public void createGUI(String configDir, String username, final String isatabDir) {
-
+    public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName, boolean loggedIn, List<ErrorMessage> errors) {
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        //TODO move this into a property
-        setTitle("ISAcreator 1.6");
+        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);
@@ -261,8 +264,68 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         if (!checkSystemRequirements()) {
             //this can't happen if this is used from java web start
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+        }else{
+            int panelToShow = ISAcreatorMenu.SHOW_ERROR;
+
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, password, configDir, isatabDir, authentication ,authMenuClassName, panelToShow, loggedIn, errors);
+        }
+        setCurrentPage(isacreatorMenu);
+        pack();
+        setVisible(true);
+    }
+
+
+    /**
+     * Creates GUI bypassing the load of configuration files, user profile creation, and load of ISATAB files according to parameters received.
+     *
+     * @param configDir
+     * @param username
+     * @param isatabDir
+     */
+    public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName, boolean loggedIn) {
+
+        setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
+        setIconImage(isacreatorIcon);
+        setBackground(UIHelper.BG_COLOR);
+        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setUndecorated(true);
+        setResizable(true);
+        setLayout(new BorderLayout());
+
+        addWindowFocusListener(this);
+        // load user profiles into the system
+        userProfileIO.loadUserProfiles();
+        loadProgramSettings();
+        // create the top menu bar
+
+        createTopPanel();
+
+        FooterPanel fp = new FooterPanel(this);
+        add(fp, BorderLayout.SOUTH);
+
+        ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
+
+
+        // check that java version is supported!
+        if (!checkSystemRequirements()) {
+            //this can't happen if this is used from java web start
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, configDir, username, isatabDir);
+            //mode, configuration, user, main
+            int panelToShow = ISAcreatorMenu.NONE;
+
+            if (!loggedIn && (username==null || password==null) || authMenuClassName!=null){
+                panelToShow = ISAcreatorMenu.SHOW_LOGIN;
+            }else if (configDir==null){
+                panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
+            } else if (isatabDir==null || isatabFiles==null){
+                panelToShow = ISAcreatorMenu.SHOW_MAIN;
+            }else{
+                panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
+            }
+
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow, loggedIn);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -273,8 +336,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        //TODO move this into a property
-        setTitle("ISAcreator 1.6");
+        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);
@@ -297,7 +359,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         if (!checkSystemRequirements()) {
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_LOGIN);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -774,8 +836,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         setVisible(false);
         if (getCurrentUser() != null) {
             for (UserProfile up : getUserProfiles()) {
-                if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(OntologyManager.getUserOntologyHistory());
+                if (up.getUsername()!=null && up.getUsername().equals(getCurrentUser().getUsername())) {
+                    up.setUserHistory(OntologyManager.getOntologySelectionHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;
                 }
@@ -791,8 +853,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         try {
 
             for (UserProfile up : getUserProfiles()) {
-                if (up.getUsername().equals(getCurrentUser().getUsername())) {
-                    up.setUserHistory(OntologyManager.getUserOntologyHistory());
+
+                if (up.getUsername()!=null && up.getUsername().equals(getCurrentUser().getUsername())) {
+                    up.setUserHistory(OntologyManager.getOntologySelectionHistory());
                     userProfileIO.updateUserProfileInformation(up);
                     break;
                 }

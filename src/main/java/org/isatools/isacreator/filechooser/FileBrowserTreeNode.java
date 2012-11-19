@@ -46,9 +46,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * in the tree is different. e.g. a node of Type DIRECTORY will have a directory image as it's node image.
  */
 public class FileBrowserTreeNode extends DefaultMutableTreeNode {
-    final static int FILE_TYPE = 0;
-    final static int DIRECTORY = 1;
-    final static int ITEM_LIST = 2;
+    public final static int FILE_TYPE = 0;
+    public final static int DIRECTORY = 1;
+    public final static int ITEM_LIST = 2;
     private int type;
 
     /**

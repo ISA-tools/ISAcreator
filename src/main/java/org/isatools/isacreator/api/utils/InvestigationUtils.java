@@ -1,4 +1,4 @@
-package org.isatools.isacreator.apiutils;
+package org.isatools.isacreator.api.utils;
 
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;

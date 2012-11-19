@@ -62,6 +62,9 @@ public class BioPortalClientTest {
     public static String testOntologyVersion = "45781";
     public static String testSearchTerm = "dose";
 
+    public static String obiID = "1123";
+    public static String obiVersion = "47893";
+
     @Test
     public void getAllOntologies() {
         System.out.println("_____Testing getAllOntologies()____");
@@ -72,14 +75,14 @@ public class BioPortalClientTest {
 
         System.out.println("Found " + ontologies.size() + " ontologies \n");
         for (Ontology ontology : ontologies) {
-            System.out.println(ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel()
+            System.out.println(ontology.getOntologyID() + " - " + ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel()
                 + " -> " + ontology.getOntologyVersion() + " - " + ontology.getHomepage() + " " + ontology.getContactName());
         }
     }
 
     @Test
-    public void getTermMetadata() {
-        System.out.println("_____Testing getTermMetadata()____");
+    public void getTermInformation() {
+        System.out.println("_____Testing getTermInformation()____");
 
         OntologyTerm term = client.getTermInformation(testTermAccession, testOntologyVersion);
 
@@ -87,7 +90,42 @@ public class BioPortalClientTest {
 
         System.out.println("Found " + term.getComments().size() + " properties for " + term.getOntologyTermName());
 
+        System.out.println("Comments " + term.getComments());
+
+        System.out.println("Ontology PURL "+term.getOntologyPurl());
+
     }
+
+
+    @Test
+    public void getOBITermInformation() {
+        System.out.println("_____Testing getTermInformation()____");
+
+        OntologyTerm term = client.getTermInformation("obo:OBI_0500006", obiVersion);
+
+        assert(term!=null);
+
+        System.out.println("Found " + term.getComments().size() + " properties for " + term.getOntologyTermName());
+
+        System.out.println("Comments " + term.getComments());
+
+        System.out.println("Ontology PURL "+term.getOntologyPurl());
+
+    }
+
+
+    @Test
+    public void getTermMetadata() {
+        System.out.println("_____Testing getTermMetadata()____");
+
+        Map<String, String> map = client.getTermMetadata(testTermAccession, testOntologyVersion);
+
+        assertTrue("No metadata found for " + testOntologyID, map != null);
+
+        System.out.println("Map " + map);
+
+    }
+
 
     @Test
     public void getOntologyById() {

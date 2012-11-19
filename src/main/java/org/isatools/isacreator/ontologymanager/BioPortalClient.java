@@ -179,22 +179,22 @@ public class BioPortalClient implements OntologyService {
         return result;
     }
 
-    public OntologyTerm getTermInformation(String termAccession, String ontology) {
+    public OntologyTerm getTermInformation(String termAccession, String ontologyVersion) {
         OntologyTerm bpo;
-        if (searchResults.containsKey(ontology + "-" + termAccession)) {
-            bpo = searchResults.get(ontology + "-" + termAccession);
+        if (searchResults.containsKey(ontologyVersion + "-" + termAccession)) {
+            bpo = searchResults.get(ontologyVersion + "-" + termAccession);
             if (bpo != null) {
                 if (bpo.getOntologyPurl() == null ||
                         bpo.getOntologyPurl().trim().equals("")) {
-                    bpo = performMetadataQuery(termAccession, ontology);
-                    searchResults.put(ontology + "-" + termAccession, bpo);
+                    bpo = performMetadataQuery(termAccession, ontologyVersion);
+                    searchResults.put(ontologyVersion + "-" + termAccession, bpo);
                 } else {
                     return bpo;
                 }
             }
         } else {
-            bpo = performMetadataQuery(termAccession, ontology);
-            searchResults.put(ontology + "-" + termAccession,
+            bpo = performMetadataQuery(termAccession, ontologyVersion);
+            searchResults.put(ontologyVersion + "-" + termAccession,
                     bpo);
         }
         return bpo;

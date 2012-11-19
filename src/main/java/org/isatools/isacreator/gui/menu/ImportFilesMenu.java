@@ -42,7 +42,6 @@ import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
@@ -55,8 +54,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +65,9 @@ import java.util.List;
  * @author Eamonn Maguire
  * @date Mar 3, 2010
  */
-
-
 public class ImportFilesMenu extends AbstractImportFilesMenu {
 
-    private static Logger log = Logger.getLogger(ImportFilesMenu.class.getName());
+    private static Logger log = Logger.getLogger(ImportFilesMenu.class);
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
@@ -119,6 +114,32 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         return previousButtonPanel;
     }
 
+    public void getSelectedFileAndLoad(File candidate) {
+        settingISAcreatorPane();
+        // Changing this assuming the file is given with full path
+        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+        //        candidate.getName() + File.separator);
+        loadFile(candidate.getAbsolutePath());
+    }
+
+    private void settingISAcreatorPane(){
+        // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
+        menu.captureCurrentGlassPaneContents();
+        // we hide the glass pane which is currently holding the menu items, loading interface etc.
+        menu.hideGlassPane();
+        // add the loading image panel to the view. No need to use the glass pane here.
+        menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
+
+    }
+
+    private Container createLoadingImagePanel() {
+        if(loadingImagePanel == null) {
+            loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
+        }
+        return loadingImagePanel;
+    }
+
+
     public ImageIcon getSearchButton() {
         return searchButton;
     }
@@ -148,36 +169,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         }
     }
 
-    public void getSelectedFileAndLoad(File candidate) {
-        // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
-        menu.captureCurrentGlassPaneContents();
-        // we hide the glass pane which is currently holding the menu items, loading interface etc.
-        menu.hideGlassPane();
-        // add the loading image panel to the view. No need to use the glass pane here.
-        menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
-
-        // Changing this assuming the file is given with full path
-        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-        //        candidate.getName() + File.separator);
-        loadFile(candidate.getAbsolutePath());
-    }
-    
-    private Container createLoadingImagePanel() {
-        if(loadingImagePanel == null) {
-            loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
-        }
-
-        return loadingImagePanel;
-    }
-
 
     public void loadFile(final String dir) {
-
-
         // show infinite panel. if successful, hide glass panel and show either the errors, or the data entry panel containing the submission
         Thread performer = new Thread(new Runnable() {
             public void run() {
                 try {
+
+                    //settingISAcreatorPane();
 
                     final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(menu.getMain());
                     boolean successfulImport = iISA.importFile(dir);
@@ -199,6 +198,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                                 }
                             }
                         }
+
+                        ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
 
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
@@ -256,12 +257,11 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                     createErrorView(reports, false);
                 } finally {
-                    if(menu != null) {
-                        menu.remove(loadingImagePanel);
-                    } else {
-                        menu.getMain().hideGlassPane();
-                    }
 
+                    if (loadingImagePanel!=null)
+                        menu.remove(loadingImagePanel);
+                    else
+                        menu.hideGlassPane();
                 }
             }
         });
@@ -291,37 +291,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     }
 
     private void createErrorView(List<ISAFileErrorReport> errors, boolean showContinue) {
-        ErrorReporterView view = new ErrorReporterView(errors, true);
-        view.createGUI();
-
-        ErrorReportWrapper errorReportWithControls = new ErrorReportWrapper(view, showContinue);
-        errorReportWithControls.createGUI();
-        errorReportWithControls.setPreferredSize(new Dimension(400, 400));
-
-        errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.BACK_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                menu.changeView(ImportFilesMenu.this);
-                revalidate();
-            }
-        });
-
-        if (showContinue) {
-            errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
-                    menu.getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(
-                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
-                    menu.hideGlassPane();
-                    menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
-                }
-            });
-        }
-
-        menu.stopProgressIndicator();
-        menu.resetViewAfterProgress();
-        menu.changeView(errorReportWithControls);
-
-        revalidate();
+        ErrorMenu errorMenu = new ErrorMenu(menu, errors, showContinue, this);
+        errorMenu.createGUI();
     }
 
     public String getBorderTitle() {

@@ -66,12 +66,12 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     protected File[] previousFiles = null;
     protected ExtendedJList previousFileList;
 
-    private JFileChooser jfc;
+    protected JFileChooser jfc;
 
-    private long timeButtonLastClicked = System.currentTimeMillis();
+    protected long timeButtonLastClicked = System.currentTimeMillis();
 
-    private JLabel chooseFromElsewhere, loadSelected;
-    private boolean showProblemArea;
+    protected JLabel chooseFromElsewhere, loadSelected;
+    protected boolean showProblemArea;
 
     public AbstractImportFilesMenu(ISAcreatorMenu menu) {
         this(menu, true);
@@ -242,7 +242,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         return selectionPanel;
     }
 
-    private JPanel createProblemDisplay() {
+    protected JPanel createProblemDisplay() {
         // todo change with table view from validator etc.
         JPanel problemCont = new JPanel(new GridLayout(1, 1));
         problemCont.setOpaque(false);

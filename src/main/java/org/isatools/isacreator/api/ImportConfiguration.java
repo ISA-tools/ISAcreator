@@ -41,13 +41,14 @@ public class ImportConfiguration {
 
             ConfigurationManager.setAssayDefinitions(configParser.getTables());
             ConfigurationManager.setMappings(configParser.getMappings());
+            ConfigurationManager.loadConfigurations(configDir);
 
             ApplicationManager.setCurrentDataReferenceObject();
 
             ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_CONFIGURATION, new File(configDir).getAbsolutePath());
         }
 
-        return configParser.isProblemsEncountered();
+        return !configParser.isProblemsEncountered();
     }
 
     public String getProblemLog(){

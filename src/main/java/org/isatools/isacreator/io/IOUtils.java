@@ -92,7 +92,7 @@ public class IOUtils {
 
             int numberAdded = 0;
             for (String ontologyTerm : ontologies) {
-                OntologyTerm oo = OntologyManager.getUserOntologyHistory().get(ontologyTerm);
+                OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(ontologyTerm);
 
 
                 if (oo != null) {
@@ -122,7 +122,7 @@ public class IOUtils {
 
         } else if (term != null && term.contains(":")) {
 
-            OntologyTerm oo = OntologyManager.getUserOntologyHistory().get(term);
+            OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(term);
 
             if (oo.getOntologyTermName() != null) {
                 tmpTerm = oo.getOntologyTermName();

@@ -101,4 +101,19 @@ public abstract class Publication extends ISASection implements StudySubData {
                 publicationAuthorList.equals("") &&
                 publicationTitle.equals(""));
     }
+
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (!(other instanceof Publication))
+            return false;
+        Publication publication = (Publication) other;
+        return (((publication.getPubmedId()!=null && publication.getPubmedId().equals(this.getPubmedId()))) ||
+                (publication.getPublicationDOI()!=null && publication.getPublicationDOI().equals(this.getPublicationDOI())));
+    }
+
+
+    public int hashCode(){
+        return this.getPublicationDOI().hashCode()+getPubmedId().hashCode();
+    }
 }

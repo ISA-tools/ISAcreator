@@ -46,8 +46,8 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
-import org.isatools.isacreator.apiutils.StudyUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.StudyUtils;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.help.Controller;
