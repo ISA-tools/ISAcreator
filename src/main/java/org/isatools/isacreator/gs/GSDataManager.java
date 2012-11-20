@@ -131,16 +131,6 @@ public class GSDataManager {
         return null;
     }
 
-    /*
-    public String getFilePath(String url){
-        System.out.println("url="+url);
-        DataManagerClient dmClient = gsSession.getDataManagerClient();
-        GSFileMetadata fileMetadata = dmClient.getMetadata(url);
-        System.out.println("fileMetadata="+fileMetadata);
-        System.out.println("NAme="+fileMetadata.getName());
-        return fileMetadata.getName();
-    }
-    */
 
     /**
      * Given a directory path in GS and a local directory path, it downloads all the files in the GS directory to the local directory.
@@ -230,17 +220,21 @@ public class GSDataManager {
         return null;
     }
 
-    public boolean mkDir() {
-        return false;
+    public GSFileMetadata mkDir(String newDirectoryName) {
+        DataManagerClient dmClient = gsSession.getDataManagerClient();
+        GSFileMetadata homeDirMeta = dmClient.listDefaultDirectory().getDirectory();
+        GSFileMetadata newDirMeta = dmClient.createDirectory(homeDirMeta,newDirectoryName);
+        return newDirMeta;
+
     }
 
-    public void ls() {
-
+    public boolean saveFile(File localFile, GSFileMetadata parentDirectory){
+        DataManagerClient dmClient = gsSession.getDataManagerClient();
+        dmClient.uploadFile(localFile, parentDirectory);
+        return true;
     }
 
-   // public List<ErrorMessage> getMessages() {
-   //     return messages;
-   // }
+
 
 
 }

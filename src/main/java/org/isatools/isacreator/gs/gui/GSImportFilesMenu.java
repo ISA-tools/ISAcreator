@@ -1,27 +1,34 @@
 package org.isatools.isacreator.gs.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+
 import org.apache.log4j.Logger;
-import org.genomespace.client.ui.GSFileBrowserDialog;
+
 import org.genomespace.datamanager.core.GSFileMetadata;
+
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gs.GSDataManager;
-import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gui.menu.*;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.utils.GeneralUtils;
+
+import org.isatools.isacreator.gs.GSDataManager;
+import org.isatools.isacreator.gs.GSIdentityManager;
+
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import java.io.File;
 
 /**
@@ -44,7 +51,6 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     private Container loadingImagePanel;
     private JLabel chooseFromGS;
 
-    //GSFileBrowserDialog gsFileChooser = null;
     GSFileChooser gsFileChooser = null;
     GSDataManager gsDataManager = null;
 
@@ -254,7 +260,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
             public void mousePressed(MouseEvent event) {
 
-                // precautionary meaaure to stop double execution of action...
+                // precautionary measure to stop double execution of action...
 
                 if (timeButtonLastClicked != System.currentTimeMillis()) {
 

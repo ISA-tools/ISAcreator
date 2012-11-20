@@ -1,7 +1,6 @@
 package org.isatools.isacreator.gs.gui;
 
 import org.apache.log4j.Logger;
-import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gs.GSDataManager;
@@ -16,12 +15,8 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 /**
@@ -47,8 +42,7 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     private GSFileMetadataTreeNode currentNode;
     private JLabel selectDirLabel = null;
     private GSTree tree = null;
-    private ISAcreatorMenu menu = null;
-   // private JDialog dialog = null;
+    protected ISAcreatorMenu menu = null;
 
     public static final int SELECTED = 0;
     public static final int NOT_SELECTED = 1;
@@ -81,7 +75,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         dialog.add(topPanel, BorderLayout.NORTH);
 
         //set up central panel with files - treePane
-
         GSIdentityManager identityManager = GSIdentityManager.getInstance();
         System.out.println("identityManager.isLoggedIn()="+identityManager.isLoggedIn());
         GSDataManager gsDataManager = identityManager.getGsDataManager();
@@ -156,15 +149,13 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
     }
 
-
-
     public int showOpenDialog(){
         JDialog dialog = createDialog();
 
         dialog.pack();
         dialog.setLocationRelativeTo(ApplicationManager.getCurrentApplicationInstance());
         dialog.setVisible(true);
-        dialog.setDefaultCloseOperation(dialog.DISPOSE_ON_CLOSE);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         return retval;
 
@@ -195,7 +186,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 //    @Override
     public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
 
-        System.out.println("VALUE CHANGED!!! "+treeSelectionEvent);
         status.setText("");
 
         currentNode = (GSFileMetadataTreeNode)tree.getLastSelectedPathComponent();
@@ -207,13 +197,12 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
             final boolean isFolder = currentNode.getFileMetadata().isDirectory();
             if (!isFolder){
                 status.setText("Please, select a folder with an ISA-tab dataset");
-                selectDirLabel.setEnabled(true);
+                selectDirLabel.setEnabled(false);
                 return;
             }else{
                 selectedFileMetadata = currentNode.getFileMetadata();
-                selectDirLabel.setEnabled(false);
+                selectDirLabel.setEnabled(true);
                 return;
-            // setVisible(false);
             }
 
         }
