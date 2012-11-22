@@ -684,7 +684,7 @@ public class StudyDataEntry extends DataEntryForm {
                 final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
 
                 String removalText = "<html>" + "<b>Confirm deletion of assay</b>" + "<p>Deleting this will result " +
-                        "in it's complete removal from this experiment annotation!</p>" +
+                        "in its complete removal from this experiment annotation!</p>" +
                         "<p>Do you wish to continue?</p>" + "</html>";
 
                 JOptionPane optionPane = new JOptionPane(removalText,

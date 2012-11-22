@@ -1,8 +1,10 @@
 package org.isatools.isacreator.gs.gui;
 
+import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -11,6 +13,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Created by the ISATeam.
@@ -28,7 +32,7 @@ public class GSSaveAsDialog extends JDialog {
 
     @InjectedResource
     private ImageIcon dialogHeader, closeButton, closeButtonOver,
-            saveSubmission, saveSubmissionOver;
+            saveSubmission, saveSubmissionOver, newFolderButton, newFolderButtonOver;
 
     public GSSaveAsDialog(ISAcreatorMenu m) {
         menu = m;
@@ -55,7 +59,7 @@ public class GSSaveAsDialog extends JDialog {
         add(topPanel, BorderLayout.NORTH);
 
         // setup center panel to contain data entry facility for user.
-        JPanel centerPanel = new JPanel(new GridLayout(2, 1));
+        JPanel centerPanel = new JPanel(new GridLayout(2, 2));
         centerPanel.setBackground(UIHelper.BG_COLOR);
 
         JPanel fileNamePanel = new JPanel(new GridLayout(1, 2));
@@ -74,7 +78,30 @@ public class GSSaveAsDialog extends JDialog {
 
         centerPanel.add(fileNamePanel);
 
-        fileChooser.createDialog();
+        fileChooser.instantiatePanel(this);
+        fileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent event) {
+                System.out.println("PropertyChangeEvent "+event);
+
+                GSFileMetadata fileMetadata = fileChooser.getSelectedFileMetadata();
+                if (fileMetadata == null)
+                    return;
+                System.out.println("fileMetadata===>"+fileMetadata);
+
+                //menu.showProgressPanel(loadISAanimation);
+
+                String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+                System.out.println("Downloading files to local tmp directory "+localTmpDirectory);
+                String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
+                //gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory, pattern);
+                System.out.println("Importing file...");
+
+                //loadFile(localTmpDirectory);
+
+
+            }
+        });
+
         centerPanel.add(fileChooser);
 
         JPanel statusPanel = new JPanel(new GridLayout(1, 1));
@@ -111,6 +138,25 @@ public class GSSaveAsDialog extends JDialog {
             }
         });
 
+        final JLabel newFolder = new JLabel(newFolderButton,
+                JLabel.CENTER);
+
+        newFolder.setOpaque(false);
+        newFolder.addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent event) {
+                System.out.println("create new folder here!");
+            }
+
+            public void mouseEntered(MouseEvent event) {
+                newFolder.setIcon(newFolderButtonOver);
+            }
+
+            public void mouseExited(MouseEvent event) {
+                newFolder.setIcon(newFolderButton);
+            }
+        });
+
         Action saveAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 save(fileNameTxt.getText().trim());
@@ -139,6 +185,7 @@ public class GSSaveAsDialog extends JDialog {
         });
 
         southPanel.add(close, BorderLayout.WEST);
+        southPanel.add(newFolder, BorderLayout.CENTER);
         southPanel.add(save, BorderLayout.EAST);
 
         add(southPanel, BorderLayout.SOUTH);

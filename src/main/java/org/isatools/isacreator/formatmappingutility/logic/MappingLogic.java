@@ -179,7 +179,7 @@ public class MappingLogic {
         }
 
         // now, with each mapping unit column we need to construct a field or fields (if a unit is used/required!) and we also need to
-        // point each Field to where it needs to take it's data from!
+        // point each Field to where it needs to take its data from!
 
         TableReferenceObject tro = new TableReferenceObject(referenceTRO.getTableFields());
         return manufactureReferenceObject(fullTable, substitutions, tro);

@@ -76,7 +76,7 @@ public class UserProfile implements Serializable {
     private String surname;
     private String username;
 
-    // password is stored as it's hashvalue
+    // password is stored as its hashvalue
     private long password;
 
     private static final long serialVersionUID = -1;

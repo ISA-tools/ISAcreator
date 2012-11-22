@@ -88,7 +88,7 @@ public class ConfigXMLParser {
         try {
             definitions = getTableDefinitions();
 
-            // do check for presence of the Investigation file, if it's not there, this method will load in a default file as well
+            // do check for presence of the Investigation file, if it is not there, this method will load in a default file as well
             checkInvestigationFileDefinitionFound(definitions);
 
             for (IsaTabConfigFileType isa : definitions) {

@@ -64,7 +64,7 @@ public class FileImage extends JPanel {
     private String extension;
 
     /**
-     * File Image class accepts a String called extension as it's only parameter.
+     * File Image class accepts a String called extension as its only parameter.
      * The extension string is used for painting to the image and to uniquely identify the image
      * for use in the program.
      *
@@ -86,7 +86,7 @@ public class FileImage extends JPanel {
     }
 
     /**
-     * Paint the Component, which involves painting the file icon and it's associated text.
+     * Paint the Component, which involves painting the file icon and its associated text.
      *
      * @param g - Graphics Object
      */

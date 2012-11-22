@@ -62,6 +62,18 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         return dialog;
     }
 
+    public int showOpenDialog(){
+        JDialog dialog = createDialog();
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(ApplicationManager.getCurrentApplicationInstance());
+        dialog.setVisible(true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        return retval;
+
+    }
+
     public void instantiatePanel(final JDialog dialog){
 
         JPanel topPanel = new JPanel(new GridLayout(1, 1));
@@ -146,18 +158,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         southPanel.add(selectDirLabel, BorderLayout.EAST);
         dialog.add(southPanel, BorderLayout.SOUTH);
 
-
-    }
-
-    public int showOpenDialog(){
-        JDialog dialog = createDialog();
-
-        dialog.pack();
-        dialog.setLocationRelativeTo(ApplicationManager.getCurrentApplicationInstance());
-        dialog.setVisible(true);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        return retval;
 
     }
 

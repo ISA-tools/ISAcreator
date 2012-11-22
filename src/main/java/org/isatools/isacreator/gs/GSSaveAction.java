@@ -98,7 +98,7 @@ public class GSSaveAction extends AbstractAction {
             sad.addPropertyChangeListener("windowClosed",
                     new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent event) {
-                            //hideSheet();
+                            frame.hideSheet();
                         }
                     });
 
