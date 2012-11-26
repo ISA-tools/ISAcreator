@@ -4,6 +4,7 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import java.util.ArrayList;
@@ -55,18 +56,11 @@ public class GSLocalFilesManager {
                 }//if
 
                 ISAcreatorCLArgs.isatabDir(localTmpDirectory);
+                ApplicationManager.setCurrentISATABFolder(localTmpDirectory);
             }// if
 
         return errors;
 
     }
 
-
-    /*
-    public static void main(String[] args) {
-        System.out.println(GSLocalFilesManager.transformURLtoFilePath("https://dm.genomespace.org/datamanager/v1.0/file/Home/Public/agbeltran/ISAtab-Datasets/BII-S-3"));
-        System.out.println(GSLocalFilesManager.transformURLtoFilePath("https://dm.genomespace.org/datamanager/v1.0/file/Home/agbeltran/ISAtab-Datasets/BII-S-3"));
-        System.out.println(GSLocalFilesManager.transformURLtoFilePath(null));
-    }
-    */
 }

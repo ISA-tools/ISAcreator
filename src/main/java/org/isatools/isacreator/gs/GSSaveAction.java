@@ -2,15 +2,9 @@ package org.isatools.isacreator.gs;
 
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.gs.gui.GSFileChooser;
-import org.isatools.isacreator.gs.gui.GSSaveAsDialog;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.settings.ISAcreatorProperties;
-import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
-import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.utils.GeneralUtils;
-import org.isatools.isacreator.utils.IncorrectColumnPositioning;
+import org.isatools.isacreator.managers.ApplicationManager;
 
 import javax.swing.*;
 
@@ -18,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 
 /**
  * Created by the ISATeam.
@@ -67,61 +62,49 @@ public class GSSaveAction extends AbstractAction {
 
 
     public void actionPerformed(ActionEvent actionEvent) {
-        /*
-        Calendar c = Calendar.getInstance();
+        if (type == SAVE_ONLY){
 
+            //save all the local files into GS
+            String localISATABFolder = ApplicationManager.getCurrentLocalISAtabFolder();
+            System.out.println("locaISATABFolder="+localISATABFolder);
 
-        if ((type != SAVE_AS) && curDataEntryEnvironment.getInvestigation().getReference() != null && !curDataEntryEnvironment.getInvestigation().getReference().trim()
-                .equals("")) {
-
-            if (curDataEntryEnvironment.getInvestigation().getReference().trim()
-                    .equals("")) {
-                curDataEntryEnvironment.getInvestigation()
-                        .setFileReference(DEFAULT_ISATAB_SAVE_DIRECTORY +
-                                File.separator + "SubmissionOn" +
-                                c.get(Calendar.DAY_OF_MONTH) + "-" +
-                                c.get(Calendar.MONTH) + "-" +
-                                c.get(Calendar.HOUR_OF_DAY) + ":" +
-                                c.get(Calendar.MINUTE) + File.separator +
-                                "Investigation");
-                createSubmissionDirectory(DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-                        "SubmissionOn" + c.get(Calendar.DAY_OF_MONTH) + "-" +
-                        c.get(Calendar.MONTH) + "-" +
-                        c.get(Calendar.HOUR_OF_DAY) + ":" +
-                        c.get(Calendar.MINUTE));
+            File folder = new File(localISATABFolder);
+            File[] files = folder.listFiles();
+            for(File file: files){
+              //  gsDataManager.saveFile(file, fileMetadata);
             }
 
-            saveISATab();
 
-            closeWindowTimer.start();
+        }else{
 
-            if (type != SAVE_ONLY) {
-                OntologyManager.clearReferencedOntologySources();
-            }
-        } else {
-        */
+            final GSFileChooser gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.SAVE);
+            gsFileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent event) {
+                    System.out.println("PropertyChangeEvent "+event);
 
-        final GSFileChooser gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.SAVE);
-        gsFileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent event) {
-                System.out.println("PropertyChangeEvent "+event);
+                    GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
+                    if (fileMetadata == null)
+                        return;
+                    System.out.println("fileMetadata===>"+fileMetadata);
 
-                GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
-                if (fileMetadata == null)
-                    return;
-                System.out.println("fileMetadata===>"+fileMetadata);
+                    //save all the local files into GS
+                    String localISATABFolder = ApplicationManager.getCurrentLocalISAtabFolder();
+                    System.out.println("locaISATABFolder="+localISATABFolder);
 
-                //save all the local files into GS
-                System.out.println();
-                //gsDataManager.saveFile(, fileMetadata);
+                    File folder = new File(localISATABFolder);
+                    File[] files = folder.listFiles();
+                    for(File file: files){
+                        gsDataManager.saveFile(file, fileMetadata);
+                    }
 
 
-            }
-        });
+                }
+            });
 
-        gsFileChooser.showOpenDialog();
-
+            gsFileChooser.showOpenDialog();
         }
+
+    }
 
 
 

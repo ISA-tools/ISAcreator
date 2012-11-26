@@ -31,6 +31,16 @@ public class ApplicationManager {
     private static DataEntryReferenceObject investigationDataEntryReferenceObject;
 
     private static String currentlySelectedFieldName;
+    private static String currentLocalISAtabFolder;
+
+    public static String getCurrentLocalISAtabFolder(){
+        return currentLocalISAtabFolder;
+    }
+
+    public static void setCurrentISATABFolder(String folder){
+        currentLocalISAtabFolder = folder;
+    }
+
 
     public static void setCurrentApplicationInstance(ISAcreator isacreatorEnvironment) {
         ApplicationManager.currentApplicationInstance = isacreatorEnvironment;

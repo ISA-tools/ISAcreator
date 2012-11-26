@@ -14,10 +14,15 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by the ISATeam.
@@ -90,14 +95,9 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         JPanel topPanel = null;
         status = new JLabel();
 
-        //if (mode == GSFileChooserMode.OPEN) {
-            topPanel = new JPanel();
-            topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        //}else{
-        //    topPanel = new JPanel(new GridLayout(3, 1));
-        //}
+        topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBackground(UIHelper.BG_COLOR);
-
 
         JLabel chooseFileLabel;
         if (mode == GSFileChooserMode.OPEN){
@@ -172,10 +172,48 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
                         status.setText("Please, select the parent directory");
                     }else{
                         String newFolderName = fileNameTxt.getText();
+
                         if (newFolderName.equals("Please enter a directory name...")){
                             status.setText("Please, enter a valid directory name");
+                            return;
+                        }else if (newFolderName.indexOf('/') != -1) {
+                                status.setText("Folder names must not contain slashes.  No folder was created.");
+                                return;
                         }
-                        gsDataManager.mkDir(newFolderName, selectedFileMetadata);
+
+
+                        GSFileMetadata newDirMetadata = gsDataManager.mkDir(newFolderName, selectedFileMetadata);
+
+                        status.setText("Folder "+newFolderName+" created.");
+
+                        final TreePath path = tree.getSelectionPath();
+                        java.util.List<String> acceptableExtensions = new ArrayList<String>();
+                        acceptableExtensions.add("txt");
+                        if (tree.isExpanded(path) || currentNode.childrenHaveBeenInitialised()) {
+                            final GSFileMetadataTreeNode newDirNode =
+                                    new GSFileMetadataTreeNode(newDirMetadata, gsDataManager.getDataManagerClient(),
+                                            acceptableExtensions);
+                            final DefaultTreeModel treeModel = (DefaultTreeModel)tree.getModel();
+
+                            final GSFileMetadataTreeNode parent =
+                                    path == null ? (GSFileMetadataTreeNode)treeModel.getRoot()
+                                            : (GSFileMetadataTreeNode)path.getLastPathComponent();
+
+                            final int insertionPoint = getTreeIndex(parent, treeModel, newDirNode, false);
+                            if (insertionPoint == -1) {
+                                status.setText("Duplicate folder name");
+                                System.err.println("GenomeSpace error: duplicate folder name");
+                                return;
+                            }
+                            treeModel.insertNodeInto(newDirNode, parent, insertionPoint);
+
+                            // Make sure the user can see the new directory node:
+                            tree.scrollPathToVisible(new TreePath(newDirNode.getPath()));
+                        }
+
+                        if (tree.isCollapsed(path))
+                            tree.expandPath(path);
+
                     }
                 }
 
@@ -248,9 +286,8 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     private JPanel getTreePanel() {
         //set up central panel with files - treePanel
         GSIdentityManager identityManager = GSIdentityManager.getInstance();
-        System.out.println("identityManager.isLoggedIn()="+identityManager.isLoggedIn());
+        //System.out.println("identityManager.isLoggedIn()="+identityManager.isLoggedIn());
         GSDataManager gsDataManager = identityManager.getGsDataManager();
-
 
         tree = new GSTree(gsDataManager.getDataManagerClient(),  new ArrayList<String>());
         this.currentNode = (GSFileMetadataTreeNode)tree.getModel().getRoot();
@@ -310,7 +347,36 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         }
     }
 
+    private int getTreeIndex(final GSFileMetadataTreeNode parent,
+                             final DefaultTreeModel treeModel,
+                             final GSFileMetadataTreeNode newDirNode,
+                             final boolean allowDups)
+    {
+        final String newFolderName = newDirNode.toString();
+        int insertIndex = 0;
 
+        final Enumeration iter = parent.children();
+        final Set<String> alreadySeen = new HashSet<String>();
+        while (iter.hasMoreElements()) {
+            final GSFileMetadataTreeNode childNode = (GSFileMetadataTreeNode)iter.nextElement();
+            final GSFileMetadata childMetadata = childNode.getFileMetadata();
+            if (!childMetadata.isDirectory())
+                continue;
+            final String folderName = childMetadata.getName();
+
+            if (alreadySeen.contains(folderName))
+                continue;
+            alreadySeen.add(folderName);
+
+            final int comp = folderName.compareToIgnoreCase(newFolderName);
+            if (comp == 0 && !allowDups)
+                return -1; // We don't allow duplicate names!
+            if (comp < 0)
+                ++insertIndex;
+        }
+
+        return insertIndex;
+    }
 
 
 }

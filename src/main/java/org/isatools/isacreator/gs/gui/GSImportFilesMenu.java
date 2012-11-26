@@ -329,6 +329,8 @@ public class GSImportFilesMenu extends ImportFilesMenu {
                             gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory, pattern);
                             System.out.println("Importing file...");
 
+                            ApplicationManager.setCurrentISATABFolder(localTmpDirectory);
+
                             loadFile(localTmpDirectory);
 
 
