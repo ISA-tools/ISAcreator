@@ -33,9 +33,14 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
     private static Logger log = Logger.getLogger(GSFileChooser.class);
 
-    @InjectedResource
-    private ImageIcon dialogHeader, listImage, closeButton, closeButtonOver, selectDir, selectDirOver;
+    //the file chooser works in two modes: open and save
+    public enum GSFileChooserMode {OPEN, SAVE};
 
+    @InjectedResource
+    private ImageIcon loadHeader, saveAsHeader, listImage, closeButton, closeButtonOver, selectDir, selectDirOver,
+            saveSubmission, saveSubmissionOver, newFolderButton, newFolderButtonOver;;
+
+    private GSFileChooserMode mode;
     private JLabel status;
     private Container loadingImagePanel;
     private GSFileMetadata selectedFileMetadata;
@@ -43,6 +48,7 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     private JLabel selectDirLabel = null;
     private GSTree tree = null;
     protected ISAcreatorMenu menu = null;
+    private GSDataManager gsDataManager = null;
 
     public static final int SELECTED = 0;
     public static final int NOT_SELECTED = 1;
@@ -50,9 +56,12 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     private int retval = NOT_SELECTED;
 
 
-    public GSFileChooser(ISAcreatorMenu m){
-        menu = m;
+    public GSFileChooser(ISAcreatorMenu me, GSFileChooserMode mo){
+        menu = me;
+        mode = mo;
         ResourceInjector.get("gui-package.style").inject(this);
+        GSIdentityManager gsIdentityManager = GSIdentityManager.getInstance();
+        gsDataManager = gsIdentityManager.getGsDataManager();
     }
 
     public JDialog createDialog(){
@@ -76,36 +85,61 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
     public void instantiatePanel(final JDialog dialog){
 
-        JPanel topPanel = new JPanel(new GridLayout(1, 1));
+        System.out.println("Instantiating panel... mode="+mode);
+
+        JPanel topPanel = null;
+        status = new JLabel();
+
+        //if (mode == GSFileChooserMode.OPEN) {
+            topPanel = new JPanel();
+            topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        //}else{
+        //    topPanel = new JPanel(new GridLayout(3, 1));
+        //}
         topPanel.setBackground(UIHelper.BG_COLOR);
 
-        JLabel chooseFileLabel = new JLabel(dialogHeader,
+
+        JLabel chooseFileLabel;
+        if (mode == GSFileChooserMode.OPEN){
+            chooseFileLabel = new JLabel(loadHeader,
                 JLabel.RIGHT);
+        }else{
+            chooseFileLabel = new JLabel(saveAsHeader,
+                    JLabel.RIGHT);
+        }
+        chooseFileLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         chooseFileLabel.setBackground(UIHelper.BG_COLOR);
         topPanel.add(chooseFileLabel);
 
-        dialog.add(topPanel, BorderLayout.NORTH);
+        JPanel fileNamePanel = new JPanel(new GridLayout(1, 2));
+        final JTextField fileNameTxt = new JTextField(
+                "Please enter a directory name...");
+        if (mode == GSFileChooserMode.SAVE){
 
-        //set up central panel with files - treePane
-        GSIdentityManager identityManager = GSIdentityManager.getInstance();
-        System.out.println("identityManager.isLoggedIn()="+identityManager.isLoggedIn());
-        GSDataManager gsDataManager = identityManager.getGsDataManager();
+            fileNamePanel.setOpaque(false);
 
-
-        tree = new GSTree(gsDataManager.getDataManagerClient(),  new ArrayList<String>());
-        this.currentNode = (GSFileMetadataTreeNode)tree.getModel().getRoot();
-        tree.setEditable(true);
-        tree.addTreeSelectionListener(this);
-        final JScrollPane treeScrollPane = new JScrollPane(tree);
-        treeScrollPane.setPreferredSize(new Dimension(450, 300));
-        final JPanel treePane = new JPanel();
-        treePane.add(treeScrollPane);
-        dialog.add(treePane, BorderLayout.NORTH);
+            JLabel fileNameLabel = new JLabel("directory name");
+            UIHelper.renderComponent(fileNameLabel, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
 
-        // setup south panel with buttons
-        JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.setBackground(UIHelper.BG_COLOR);
+            fileNameTxt.setBackground(UIHelper.BG_COLOR);
+            UIHelper.renderComponent(fileNameTxt, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+
+            fileNamePanel.add(fileNameLabel);
+            fileNamePanel.add(fileNameTxt);
+
+            topPanel.add(fileNamePanel);
+        }
+
+
+        final JPanel treePanel = getTreePanel();
+        topPanel.add(treePanel);
+        dialog.add(topPanel, BorderLayout.PAGE_START);
+
+
+        // setup center panel with buttons
+        JPanel centrePanel = new JPanel(new BorderLayout());
+        centrePanel.setBackground(UIHelper.BG_COLOR);
 
         final JLabel cancelLabel = new JLabel(closeButton,
                 JLabel.LEFT);
@@ -125,8 +159,43 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
             }
         });
 
-        selectDirLabel = new JLabel(selectDir,
+        final JLabel newFolder = new JLabel(newFolderButton,
+                JLabel.CENTER);
+
+        if (mode == GSFileChooserMode.SAVE){
+
+            newFolder.setOpaque(false);
+            newFolder.addMouseListener(new MouseAdapter() {
+
+                public void mousePressed(MouseEvent event) {
+                    if (selectedFileMetadata == null){
+                        status.setText("Please, select the parent directory");
+                    }else{
+                        String newFolderName = fileNameTxt.getText();
+                        if (newFolderName.equals("Please enter a directory name...")){
+                            status.setText("Please, enter a valid directory name");
+                        }
+                        gsDataManager.mkDir(newFolderName, selectedFileMetadata);
+                    }
+                }
+
+                public void mouseEntered(MouseEvent event) {
+                    newFolder.setIcon(newFolderButtonOver);
+                }
+
+                public void mouseExited(MouseEvent event) {
+                    newFolder.setIcon(newFolderButton);
+                }
+            });
+        }
+
+        if (mode == GSFileChooserMode.OPEN){
+            selectDirLabel = new JLabel(selectDir,
                 JLabel.RIGHT);
+        }else{
+            selectDirLabel = new JLabel(saveSubmission,
+                    JLabel.RIGHT);
+        }
         selectDirLabel.setOpaque(false);
 
         selectDirLabel.addMouseListener(new MouseAdapter() {
@@ -143,22 +212,55 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
             }
 
             public void mouseEntered(MouseEvent event) {
-                selectDirLabel.setIcon(selectDirOver);
+                if (mode == GSFileChooserMode.SAVE){
+                    selectDirLabel.setIcon(saveSubmissionOver);
+                }   else {
+                    selectDirLabel.setIcon(selectDirOver);
+                }
             }
 
             public void mouseExited(MouseEvent event) {
-                selectDirLabel.setIcon(selectDir);
+                if (mode == GSFileChooserMode.SAVE){
+                    selectDirLabel.setIcon(saveSubmission);
+                }else{
+                    selectDirLabel.setIcon(selectDir);
+                }
             }
         });
 
 
-        status = new JLabel();
-        southPanel.add(cancelLabel, BorderLayout.WEST);
-        southPanel.add(status, BorderLayout.CENTER);
-        southPanel.add(selectDirLabel, BorderLayout.EAST);
+        centrePanel.add(cancelLabel, BorderLayout.WEST);
+
+        if (mode == GSFileChooserMode.SAVE){
+            centrePanel.add(newFolder, BorderLayout.CENTER);
+        }
+
+        centrePanel.add(selectDirLabel, BorderLayout.EAST);
+        dialog.add(centrePanel, BorderLayout.CENTER);
+
+        JPanel southPanel = new JPanel();
+        status.setOpaque(false);
+        southPanel.add(status, BorderLayout.SOUTH);
         dialog.add(southPanel, BorderLayout.SOUTH);
 
+    }
 
+    private JPanel getTreePanel() {
+        //set up central panel with files - treePanel
+        GSIdentityManager identityManager = GSIdentityManager.getInstance();
+        System.out.println("identityManager.isLoggedIn()="+identityManager.isLoggedIn());
+        GSDataManager gsDataManager = identityManager.getGsDataManager();
+
+
+        tree = new GSTree(gsDataManager.getDataManagerClient(),  new ArrayList<String>());
+        this.currentNode = (GSFileMetadataTreeNode)tree.getModel().getRoot();
+        tree.setEditable(true);
+        tree.addTreeSelectionListener(this);
+        final JScrollPane treeScrollPane = new JScrollPane(tree);
+        treeScrollPane.setPreferredSize(new Dimension(450, 300));
+        final JPanel treePanel = new JPanel();
+        treePanel.add(treeScrollPane);
+        return treePanel;
     }
 
     public GSFileMetadata getSelectedFileMetadata(){

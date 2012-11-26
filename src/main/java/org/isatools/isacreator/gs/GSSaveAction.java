@@ -1,5 +1,7 @@
 package org.isatools.isacreator.gs;
 
+import org.genomespace.datamanager.core.GSFileMetadata;
+import org.isatools.isacreator.gs.gui.GSFileChooser;
 import org.isatools.isacreator.gs.gui.GSSaveAsDialog;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
@@ -7,6 +9,7 @@ import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.IncorrectColumnOrderGUI;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
+import org.isatools.isacreator.utils.GeneralUtils;
 import org.isatools.isacreator.utils.IncorrectColumnPositioning;
 
 import javax.swing.*;
@@ -34,6 +37,7 @@ public class GSSaveAction extends AbstractAction {
 
     private ISAcreator frame = null;
     private ISAcreatorMenu menu = null;
+    private GSDataManager gsDataManager = null;
 
     /**
      * SaveAction constructor.
@@ -55,6 +59,9 @@ public class GSSaveAction extends AbstractAction {
         closeWindowTimer = new Timer(500, new CloseEvent());
         menu = m;
         frame = f;
+
+        GSIdentityManager gsIdentityManager = GSIdentityManager.getInstance();
+        gsDataManager = gsIdentityManager.getGsDataManager();
 
     }
 
@@ -93,40 +100,27 @@ public class GSSaveAction extends AbstractAction {
             }
         } else {
         */
-            // need to get a new reference from the user!
-            GSSaveAsDialog sad = new GSSaveAsDialog(menu);
-            sad.addPropertyChangeListener("windowClosed",
-                    new PropertyChangeListener() {
-                        public void propertyChange(PropertyChangeEvent event) {
-                            frame.hideSheet();
-                        }
-                    });
 
-            sad.addPropertyChangeListener("save",
-                    new PropertyChangeListener() {
-                        public void propertyChange(PropertyChangeEvent event) {
-//                            String baseDirectory = DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-//                                    event.getNewValue().toString();
-//
-//                            String fileName = baseDirectory + File.separator + "Investigation";
-//                            createSubmissionDirectory(DEFAULT_ISATAB_SAVE_DIRECTORY +
-//                                    File.separator +
-//                                    event.getNewValue().toString());
-//                            curDataEntryEnvironment.getInvestigation()
-//                                    .setFileReference(fileName);
-//
-//                            ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, baseDirectory);
-//
-//                            saveISATab();
-//                            userProfileIO.saveUserProfiles();
-//
-//                            hideSheet();
-//                            closeWindowTimer.start();
-                        }
-                    });
-            sad.createGUI();
+        final GSFileChooser gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.SAVE);
+        gsFileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent event) {
+                System.out.println("PropertyChangeEvent "+event);
 
-            frame.showJDialogAsSheet(sad);
+                GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
+                if (fileMetadata == null)
+                    return;
+                System.out.println("fileMetadata===>"+fileMetadata);
+
+                //save all the local files into GS
+                System.out.println();
+                //gsDataManager.saveFile(, fileMetadata);
+
+
+            }
+        });
+
+        gsFileChooser.showOpenDialog();
+
         }
 
 

@@ -220,12 +220,10 @@ public class GSDataManager {
         return null;
     }
 
-    public GSFileMetadata mkDir(String newDirectoryName) {
+    public GSFileMetadata mkDir(String newDirectoryName, GSFileMetadata parentDirectoryName) {
         DataManagerClient dmClient = gsSession.getDataManagerClient();
-        GSFileMetadata homeDirMeta = dmClient.listDefaultDirectory().getDirectory();
-        GSFileMetadata newDirMeta = dmClient.createDirectory(homeDirMeta,newDirectoryName);
+        GSFileMetadata newDirMeta = dmClient.createDirectory(parentDirectoryName,newDirectoryName);
         return newDirMeta;
-
     }
 
     public boolean saveFile(File localFile, GSFileMetadata parentDirectory){

@@ -1,10 +1,7 @@
 package org.isatools.isacreator.gs.gui;
 
-import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -13,8 +10,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * Created by the ISATeam.
@@ -37,7 +32,7 @@ public class GSSaveAsDialog extends JDialog {
     public GSSaveAsDialog(ISAcreatorMenu m) {
         menu = m;
         ResourceInjector.get("gui-package.style").inject(this);
-        fileChooser = new GSFileChooser(menu);
+        fileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.SAVE);
     }
 
     public void createGUI() {
@@ -58,10 +53,11 @@ public class GSSaveAsDialog extends JDialog {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // setup center panel to contain data entry facility for user.
-        JPanel centerPanel = new JPanel(new GridLayout(2, 2));
+        //setup center panel to contain data entry facility for user.
+        JPanel centerPanel = new JPanel(new GridLayout(2, 1));
         centerPanel.setBackground(UIHelper.BG_COLOR);
 
+        //grid layout (1,2)
         JPanel fileNamePanel = new JPanel(new GridLayout(1, 2));
         fileNamePanel.setOpaque(false);
 
@@ -78,31 +74,33 @@ public class GSSaveAsDialog extends JDialog {
 
         centerPanel.add(fileNamePanel);
 
-        fileChooser.instantiatePanel(this);
-        fileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent event) {
-                System.out.println("PropertyChangeEvent "+event);
+        //JPanel treePanel = fileChooser.getTreePanel();
 
-                GSFileMetadata fileMetadata = fileChooser.getSelectedFileMetadata();
-                if (fileMetadata == null)
-                    return;
-                System.out.println("fileMetadata===>"+fileMetadata);
+//        fileChooser.instantiatePanel(this);
+//        fileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
+//            public void propertyChange(PropertyChangeEvent event) {
+//                System.out.println("PropertyChangeEvent "+event);
+//
+//                GSFileMetadata fileMetadata = fileChooser.getSelectedFileMetadata();
+//                if (fileMetadata == null)
+//                    return;
+//                System.out.println("fileMetadata===>"+fileMetadata);
+//
+//                //menu.showProgressPanel(loadISAanimation);
+//
+//                String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+//                System.out.println("Downloading files to local tmp directory "+localTmpDirectory);
+//                String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
+//                //gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory, pattern);
+//                System.out.println("Importing file...");
+//
+//                //loadFile(localTmpDirectory);
+//
+//
+//            }
+//        });
 
-                //menu.showProgressPanel(loadISAanimation);
-
-                String localTmpDirectory = GeneralUtils.createISATmpDirectory();
-                System.out.println("Downloading files to local tmp directory "+localTmpDirectory);
-                String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
-                //gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory, pattern);
-                System.out.println("Importing file...");
-
-                //loadFile(localTmpDirectory);
-
-
-            }
-        });
-
-        centerPanel.add(fileChooser);
+        //centerPanel.add(treePanel);
 
         JPanel statusPanel = new JPanel(new GridLayout(1, 1));
         statusPanel.setBackground(UIHelper.BG_COLOR);

@@ -310,7 +310,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                     chooseFromGS.setIcon(getSearchButtonGS());
 
-                    gsFileChooser = new GSFileChooser(menu);
+                    gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.OPEN);
 
                     gsFileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent event) {
