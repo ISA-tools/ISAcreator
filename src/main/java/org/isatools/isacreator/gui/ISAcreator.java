@@ -485,7 +485,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         fileMenu.add(saveAs);
 
-        //GenomsSpace related code
+        //GenomeSpace related code
         if (mode.equals(Mode.GS)){
 
             JMenuItem saveGS = new JMenuItem(new GSSaveAction(GSSaveAction.SAVE_ONLY,
