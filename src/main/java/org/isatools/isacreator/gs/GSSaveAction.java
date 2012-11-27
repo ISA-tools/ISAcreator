@@ -70,8 +70,12 @@ public class GSSaveAction extends AbstractAction {
 
             File folder = new File(localISATABFolder);
             File[] files = folder.listFiles();
+
+            String folderPath = ApplicationManager.getCurrentRemoteISAtabFolder();
+            GSFileMetadata folderMetadata = gsDataManager.getFileMetadata(folderPath);
+
             for(File file: files){
-              //  gsDataManager.saveFile(file, fileMetadata);
+                gsDataManager.saveFile(file, folderMetadata);
             }
 
 

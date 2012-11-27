@@ -44,6 +44,7 @@ public class GSLocalFilesManager {
                     if (!errors.isEmpty()){
                         return errors;
                     }
+                    ApplicationManager.setCurrentRemoteISATABFolder(ISAcreatorCLArgs.isatabDir());
 
                 }//isatabDir not null
 
@@ -56,7 +57,8 @@ public class GSLocalFilesManager {
                 }//if
 
                 ISAcreatorCLArgs.isatabDir(localTmpDirectory);
-                ApplicationManager.setCurrentISATABFolder(localTmpDirectory);
+                ApplicationManager.setCurrentLocalISATABFolder(localTmpDirectory);
+
             }// if
 
         return errors;
