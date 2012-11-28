@@ -45,27 +45,27 @@ public class GSActivator implements BundleActivator {
                 //if username and password were given as parameters, log in user into GS
                 if (ISAcreatorCLArgs.username()!=null && ISAcreatorCLArgs.password()!=null){
 
-                     gsAuthentication = GSIdentityManager.getInstance();
-                     loggedIn = gsAuthentication.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password());
-                     if (!loggedIn){
+                    gsAuthentication = GSIdentityManager.getInstance();
+                    loggedIn = gsAuthentication.login(ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password());
+                    if (!loggedIn){
                         System.out.println("Login to GenomeSpace failed for user "+ISAcreatorCLArgs.username());
                         System.exit(0);
-                     } else {
+                    } else {
                         System.out.println("Logged in to GenomeSpace as user "+ISAcreatorCLArgs.username());
                         List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(gsAuthentication);
 
 
                         if (!errors.isEmpty()){
-                             System.out.println("The files on "+ISAcreatorCLArgs.isatabDir()+" could not be accessed");
-                             for(ErrorMessage errorMessage: errors){
-                                 System.out.println(errorMessage.getMessage());
-                             }
+                            System.out.println("The files on "+ISAcreatorCLArgs.isatabDir()+" could not be accessed");
+                            for(ErrorMessage errorMessage: errors){
+                                System.out.println(errorMessage.getMessage());
+                            }
                             // System.exit(-1);
                             main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn, errors);
-                         }else{
+                        }else{
                             main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn);
                         }
-                     }
+                    }
 
 
 
@@ -84,9 +84,9 @@ public class GSActivator implements BundleActivator {
                     }
 
                 }else {
-                      //both username and password are null, check if auth token has been saved locally
-                      gsAuthentication =  GSIdentityManager.getInstance();
-                      loggedIn = gsAuthentication.login("");
+                    //both username and password are null, check if auth token has been saved locally
+                    gsAuthentication =  GSIdentityManager.getInstance();
+                    loggedIn = gsAuthentication.login("");
 
                     if (loggedIn){
                         GSLocalFilesManager.downloadFiles(gsAuthentication);

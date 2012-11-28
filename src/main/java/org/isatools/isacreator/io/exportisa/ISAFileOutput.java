@@ -2,6 +2,7 @@ package org.isatools.isacreator.io.exportisa;
 
 import org.apache.axis.utils.StringUtils;
 import org.isatools.isacreator.api.utils.SpreadsheetUtils;
+import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.managers.ApplicationManager;
@@ -105,7 +106,9 @@ public abstract class ISAFileOutput {
 
     protected void printStudy(PrintStream investigationFilePrintStream, Study study) {
 
-        ApplicationManager.getUserInterfaceForISASection(study).update();
+        DataEntryForm def = ApplicationManager.getUserInterfaceForISASection(study);
+        if (def!=null)
+            def.update();
 
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study, InvestigationFileSection.STUDY_SECTION));
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getStudyDesigns(), InvestigationFileSection.STUDY_DESIGN_SECTION));
@@ -118,7 +121,11 @@ public abstract class ISAFileOutput {
 
     protected void printInvestigation(Investigation investigation, PrintStream investigationFilePrintStream) {
 
-        ApplicationManager.getUserInterfaceForISASection(investigation).update();
+        DataEntryForm def = ApplicationManager.getUserInterfaceForISASection(investigation);
+        if (def!=null){
+            def.update();
+        }
+
         // print section defining the Ontologies Used
         //investigationFilePrintStream.println(getOntologiesUsedOutput());
 

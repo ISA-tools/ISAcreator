@@ -227,17 +227,17 @@ public class GSSingleSignOnManager implements Authentication {
     private File getTokenSaveDir() {
         String userDir = System.getProperty("user.home");
 
-         File gsDir = new File(userDir, tokenSaveDir);
-         if (gsDir.exists()) {
-             //single sign on has been used before
-             sso = true;
-             return gsDir;
-         } else if (sso) {
-             //directory doesn't exist, if sso, create it
-             gsDir.mkdir();
-             return gsDir;
-         }
-         return null;
+        File gsDir = new File(userDir, tokenSaveDir);
+        if (gsDir.exists()) {
+            //single sign on has been used before
+            sso = true;
+            return gsDir;
+        } else if (sso) {
+            //directory doesn't exist, if sso, create it
+            gsDir.mkdir();
+            return gsDir;
+        }
+        return null;
     }
 
     /**
