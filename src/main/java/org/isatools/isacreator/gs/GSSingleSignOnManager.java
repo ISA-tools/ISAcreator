@@ -96,7 +96,7 @@ public class GSSingleSignOnManager implements Authentication {
      *
      * @return
      */
-    public boolean login(){
+    public boolean login(String u){
         String token = getGSToken();
         if (token==null)
             return false;

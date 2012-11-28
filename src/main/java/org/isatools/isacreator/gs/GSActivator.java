@@ -73,7 +73,7 @@ public class GSActivator implements BundleActivator {
                 } else if (ISAcreatorCLArgs.username()!=null){
                     //if username identified, check if token exists
 
-                    loggedIn = gsAuthentication.login();
+                    loggedIn = gsAuthentication.login("");
                     if (loggedIn){
                         GSLocalFilesManager.downloadFiles(gsAuthentication);
                         main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, null, null,true);
@@ -86,7 +86,7 @@ public class GSActivator implements BundleActivator {
                 }else {
                       //both username and password are null, check if auth token has been saved locally
                       gsAuthentication =  GSIdentityManager.getInstance();
-                      loggedIn = gsAuthentication.login();
+                      loggedIn = gsAuthentication.login("");
 
                     if (loggedIn){
                         GSLocalFilesManager.downloadFiles(gsAuthentication);

@@ -58,15 +58,35 @@ public class AuthenticationManager implements Authentication {
 
     public boolean logout(String username) {
         //TODO
+
         return false;
     }
 
     /***
-     * Authentication manager doesn't support single sign on, thus this method returns false
+     *
+     * Used to login user (locally) when it is logged in in GenomeSpace
      *
      * @return
      */
-    public boolean login(){
+    public boolean login(String username){
+
+        if (username==null)
+            return false;
+
+        for (UserProfile up : main.getUserProfiles()) {
+
+            //user exists
+            if (up.getUsername()!=null && up.getUsername().equals(username)) {
+
+                if ( up.getPassword()==0) {
+                    setCurrentUser(up);
+                    return true;
+                }
+
+
+
+            }
+        }
         return false;
     }
 
@@ -80,4 +100,6 @@ public class AuthenticationManager implements Authentication {
         ISAcreator.setUserOntologyHistory(up.getUserHistory());
         Spreadsheet.fileSelectEditor.setFtpManager(up.getFtpManager());
     }
+
+
 }
