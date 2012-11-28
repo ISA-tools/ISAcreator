@@ -63,8 +63,8 @@ public class GSDataManager {
             }
             return listing;
         }catch(NotFoundException e){
-           System.err.println("The directory path "+dirPath+" was not found in Genome Space.");
-           System.exit(-1);
+            System.err.println("The directory path "+dirPath+" was not found in Genome Space.");
+            System.exit(-1);
         }
         return null;
     }
@@ -77,7 +77,7 @@ public class GSDataManager {
      */
     public List<InputStream> lsInputStreams(String dirPath) {
         //setting the max number of concurrent connections
-       WebClientBuilder.setDefaultMaxConnectionsPerHost(10);
+        WebClientBuilder.setDefaultMaxConnectionsPerHost(10);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSDirectoryListing dirListing = dmClient.list(dirPath);
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
@@ -155,7 +155,7 @@ public class GSDataManager {
         }catch(NotFoundException ex){
             ex.printStackTrace();
             errors.add(new ErrorMessage(ErrorLevel.ERROR, "The directory "+dirPath+" was not found"));
-             return errors;
+            return errors;
 
         }catch(ForbiddenException e){
             errors.add(new ErrorMessage(ErrorLevel.ERROR, "Access forbidden to directory "+dirPath+" in Genome Space"));
@@ -167,11 +167,11 @@ public class GSDataManager {
 
         List<GSFileMetadata> fileMetadataList = dirListing.getContents();
         for(GSFileMetadata fileToDownload: fileMetadataList){
-             if (pattern!=null && !fileToDownload.getName().matches(pattern))
-                 continue;
-             String localFilePath = localDirPath+fileToDownload.getName();
-             File localTargetFile = new File(localFilePath);
-             dmClient.downloadFile(fileToDownload, localTargetFile,true);
+            if (pattern!=null && !fileToDownload.getName().matches(pattern))
+                continue;
+            String localFilePath = localDirPath+fileToDownload.getName();
+            File localTargetFile = new File(localFilePath);
+            dmClient.downloadFile(fileToDownload, localTargetFile,true);
         }
         return errors;
     }
