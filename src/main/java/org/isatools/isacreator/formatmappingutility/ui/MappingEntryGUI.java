@@ -104,7 +104,7 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
     private JLabel statusUI;
 
     private List<String> addedFields;
-    // maintain the mapping from a tree element to it's respective mapping entry screen.
+    // maintain the mapping from a tree element to its respective mapping entry screen.
     private List<MappedElement> mappingRef;
     private Map<String, MappedElement> fixedMappings;
     private Set<String> fixedMappingsAdded;

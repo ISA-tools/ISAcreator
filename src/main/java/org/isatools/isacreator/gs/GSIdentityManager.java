@@ -8,6 +8,8 @@ import org.genomespace.client.exceptions.AuthorizationException;
 import org.genomespace.client.exceptions.InternalServerException;
 import org.genomespace.client.exceptions.ServerNotFoundException;
 import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.AuthenticationManager;
+import org.isatools.isacreator.api.CreateProfile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,6 +40,8 @@ public class GSIdentityManager implements Authentication {
     private String tokenSaveDir = ".gs";
     private String tokenSaveFileName = ".gstoken";
     private String usernameSaveFileName = ".gsusername";
+
+    private AuthenticationManager authenticationManager = new AuthenticationManager();
 
     private static final Logger log = Logger.getLogger(GSIdentityManager.class);
 
@@ -78,6 +82,16 @@ public class GSIdentityManager implements Authentication {
             User user = session.login(username, password);
 
             log.info("Logged into GenomeSpace as "+username);
+
+            //local login
+            boolean result = authenticationManager.login(username, pass);
+
+            if (!result){
+                //create user
+                CreateProfile.createProfile(username, pass, "", "", "", "");
+
+            }
+
             return true;
         }catch(AuthorizationException e){
             return false;
@@ -106,7 +120,7 @@ public class GSIdentityManager implements Authentication {
      *
      * @return
      */
-    public boolean login(){
+    public boolean login(String u){
         String token = getGSToken();
         if (token==null)
             return false;
@@ -114,6 +128,21 @@ public class GSIdentityManager implements Authentication {
 
             GsSession gsSession = new GsSession(token);
             setSession(gsSession);
+
+            String username = gsSession.getUserManagerClient().getTokenUsername(token);
+
+            //local login
+            boolean result = authenticationManager.login(username);
+
+            if (!result){
+                //create user
+                CreateProfile.createProfile(username, username.toCharArray(), "", "", "", "");
+
+            }
+
+
+
+
             return true;
 
         }catch(InternalServerException e){

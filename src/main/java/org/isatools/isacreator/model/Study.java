@@ -456,7 +456,7 @@ public class Study extends ISASection {
     }
 
     /**
-     * Replaces all previously entered protocols with it's substituted value.
+     * Replaces all previously entered protocols with its substituted value.
      *
      * @param previousProtocolName - protocol with the name to find
      * @param newProtocolName      - new protocol to be used

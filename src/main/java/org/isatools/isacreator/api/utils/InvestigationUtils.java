@@ -25,7 +25,7 @@ public class InvestigationUtils {
      * Method return all the unannotated freetext found in the Investigation
      *
      * @param investigation @see Investigation
-     * @return Map from Assay object (general container for spreadsheet) to a Map from the Column Name to it's unannotated values
+     * @return Map from Assay object (general container for spreadsheet) to a Map from the Column Name to its unannotated values
      */
     public static Map<Assay, Map<String, Set<String>>> getFreeTextInInvestigationSpreadsheets(Investigation investigation) {
 

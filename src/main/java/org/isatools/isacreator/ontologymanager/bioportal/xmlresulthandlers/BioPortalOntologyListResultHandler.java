@@ -25,7 +25,7 @@ import java.util.List;
 public class BioPortalOntologyListResultHandler {
 
     private static final Logger log = Logger.getLogger(BioPortalOntologyListResultHandler.class.getName());
-    // maps an ontology with it's name to a Search result object
+    // maps an ontology with its name to a Search result object
 
     private boolean loadAllOntologies = false;
 

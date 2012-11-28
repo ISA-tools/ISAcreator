@@ -342,7 +342,7 @@ public class BioPortalClient implements OntologyService {
     /**
      * Finds the root in an ontology
      *
-     * @param ontology - ontology to search in as it's version ID e.g. 39002 for BRO
+     * @param ontology - ontology to search in as its version ID e.g. 39002 for BRO
      * @return Map<String,String> representing ontology term accession to term label mappings.
      */
     public Map<String, OntologyTerm> getOntologyRoots(String ontology) {
