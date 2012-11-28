@@ -206,7 +206,7 @@ public class GSIdentityManager implements Authentication {
                     String username = gsSession.getCachedUsernameForSSO();
                     //Collection<String> users = userManagerClient.getAllUsernames();
                     //for(String username: users){
-                        //userSessions.put(username, gsSession);
+                    //userSessions.put(username, gsSession);
                     session = gsSession;
                     //}
                 }
