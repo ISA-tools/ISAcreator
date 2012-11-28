@@ -409,7 +409,7 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
                                             }
                                         }
                                     } else if (tableStructure.get(columnIndex)[0].equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
-                                        // we have a protocol. Do two things: set value to it's default value and add it to the study protocols
+                                        // we have a protocol. Do two things: set value to its default value and add it to the study protocols
                                         row.append(buildingModel.getDefaultValue(columnIndex + 1)).append("\t");
                                     } else {
                                         // just empty row data

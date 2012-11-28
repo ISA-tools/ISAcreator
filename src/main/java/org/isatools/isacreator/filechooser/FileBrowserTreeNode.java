@@ -43,7 +43,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * CustomTreeNode provides an additional method and an extra constructor to the DefaultMutableTreeNode. These are
  * required to identify the type of node being added to the tree. Depending on the type of the node, the node image
- * in the tree is different. e.g. a node of Type DIRECTORY will have a directory image as it's node image.
+ * in the tree is different. e.g. a node of Type DIRECTORY will have a directory image as its node image.
  */
 public class FileBrowserTreeNode extends DefaultMutableTreeNode {
     public final static int FILE_TYPE = 0;

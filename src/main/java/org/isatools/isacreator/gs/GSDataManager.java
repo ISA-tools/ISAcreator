@@ -101,9 +101,14 @@ public class GSDataManager {
     }
 
 
-    public GSFileMetadata getFileMetadata(String filePath){
+    public GSFileMetadata getFileMetadata(String url){
+        //System.out.println("at getFileMetadata -> url="+url);
+        //System.out.println("is logged in?="+gsSession.isLoggedIn());
+        String filePath = transformURLtoFilePath(url) ;
+        //System.out.println("filePath="+filePath);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSFileMetadata fileMetadata = dmClient.getMetadata(filePath);
+        //System.out.println("fileMetadata="+fileMetadata);
         return fileMetadata;
     }
 
@@ -131,16 +136,6 @@ public class GSDataManager {
         return null;
     }
 
-    /*
-    public String getFilePath(String url){
-        System.out.println("url="+url);
-        DataManagerClient dmClient = gsSession.getDataManagerClient();
-        GSFileMetadata fileMetadata = dmClient.getMetadata(url);
-        System.out.println("fileMetadata="+fileMetadata);
-        System.out.println("NAme="+fileMetadata.getName());
-        return fileMetadata.getName();
-    }
-    */
 
     /**
      * Given a directory path in GS and a local directory path, it downloads all the files in the GS directory to the local directory.
@@ -230,17 +225,19 @@ public class GSDataManager {
         return null;
     }
 
-    public boolean mkDir() {
-        return false;
+    public GSFileMetadata mkDir(String newDirectoryName, GSFileMetadata parentDirectoryName) {
+        DataManagerClient dmClient = gsSession.getDataManagerClient();
+        GSFileMetadata newDirMeta = dmClient.createDirectory(parentDirectoryName,newDirectoryName);
+        return newDirMeta;
     }
 
-    public void ls() {
-
+    public boolean saveFile(File localFile, GSFileMetadata parentDirectory){
+        DataManagerClient dmClient = gsSession.getDataManagerClient();
+        dmClient.uploadFile(localFile, parentDirectory);
+        return true;
     }
 
-   // public List<ErrorMessage> getMessages() {
-   //     return messages;
-   // }
+
 
 
 }

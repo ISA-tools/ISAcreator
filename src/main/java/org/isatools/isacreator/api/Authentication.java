@@ -1,5 +1,9 @@
 package org.isatools.isacreator.api;
 
+import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.spreadsheet.Spreadsheet;
+
 /**
  * Created by the ISATeam.
  * User: agbeltran
@@ -15,7 +19,7 @@ public interface Authentication {
     public boolean logout(String username);
 
     //to support single sign on
-    public boolean login();
+    public boolean login(String username);
 
 
 }

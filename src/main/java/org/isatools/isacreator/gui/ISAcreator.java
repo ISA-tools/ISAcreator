@@ -39,6 +39,7 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
+
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
@@ -73,6 +74,7 @@ import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleContext;
 import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.isacreator.gs.GSSaveAction;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -90,7 +92,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * ISAcreator is a container for the Whole ISAcreator application.
+ * ISAcreator is a container for the whole ISAcreator application.
  * Each section of the application is a JLayeredPane which is swapped in and out
  * of the JFrame depending on what the USER wants to do.
  * For example, the data entry pane will contain everything required for the user to enter
@@ -467,31 +469,45 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         };
 
-        JMenu file = new JMenu("file");
-        file.addMouseListener(cleanUpDisplayedEditors);
+        JMenu fileMenu = new JMenu("file");
+        fileMenu.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem save = new JMenuItem(new SaveAction(SaveAction.SAVE_ONLY,
-                "save", saveIcon, "save ISA files", KeyEvent.VK_S));
+                "save", saveIcon, mode != Mode.GS ? "save ISA files": "save ISA files locally", KeyEvent.VK_S));
 
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 KeyEvent.CTRL_MASK));
-        file.add(save);
+        fileMenu.add(save);
         JMenuItem saveAs = new JMenuItem(new SaveAction(SaveAction.SAVE_AS,
-                "save as", saveIcon, "save as a different set of ISA files",
+                "save as", saveIcon, mode != Mode.GS ? "save as a different set of ISA files" : "save as a different set of local ISA files",
                 KeyEvent.VK_A));
 
 
-        file.add(saveAs);
+        fileMenu.add(saveAs);
 
-        file.add(new JSeparator());
+        //GenomeSpace related code
+        if (mode.equals(Mode.GS)){
+
+            JMenuItem saveGS = new JMenuItem(new GSSaveAction(GSSaveAction.SAVE_ONLY,
+                    "save in GenomeSpace", saveIcon, "save ISA files in GenomeSpace", KeyEvent.VK_I, this, isacreatorMenu));
+
+            fileMenu.add(saveGS);
+
+            JMenuItem saveAsGS = new JMenuItem(new GSSaveAction(GSSaveAction.SAVE_AS,
+                    "save in GenomeSpace as", saveIcon, "save as a different set of ISA files in GenomeSpace", KeyEvent.VK_G, this, isacreatorMenu));
+
+            fileMenu.add(saveAsGS);
+        }
+
+        fileMenu.add(new JSeparator());
 
         JMenuItem main = new JMenuItem(new LeaveAction(LeaveAction.MAIN,
                 "go to main menu",
                 menuIcon,
                 "go back to main menu without saving", null));
 
-        file.add(main);
-        file.add(new JSeparator());
+        fileMenu.add(main);
+        fileMenu.add(new JSeparator());
 
         JMenuItem exportISArchive = new JMenuItem("create ISArchive",
                 exportArchiveIcon);
@@ -508,7 +524,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         });
 
-        file.add(exportISArchive);
+        fileMenu.add(exportISArchive);
 
 
         JMenuItem validateISA = new JMenuItem("Validate ISAtab", validateIcon);
@@ -523,9 +539,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         });
 
-        file.add(new JSeparator());
+        fileMenu.add(new JSeparator());
 
-        file.add(validateISA);
+        fileMenu.add(validateISA);
 
         JMenuItem convertISA = new JMenuItem("Convert ISAtab", convertIcon);
 
@@ -540,9 +556,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             }
         });
 
-        file.add(convertISA);
+        fileMenu.add(convertISA);
 
-        menuBar.add(file);
+        menuBar.add(fileMenu);
 
 
         // study section
@@ -952,6 +968,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
 
+    /***
+     * Class implenting the action to be performed when leaving the application.
+     *
+     */
     class LeaveAction extends AbstractAction implements PropertyChangeListener {
         static final int LOGOUT = 0;
         static final int MAIN = 1;
@@ -1057,6 +1077,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
+    /***
+     * Class implementing saving ISAtab files in the different situations
+     *
+     */
     class SaveAction extends AbstractAction {
         static final int SAVE_ONLY = 0;
         static final int SAVE_AS = 1;

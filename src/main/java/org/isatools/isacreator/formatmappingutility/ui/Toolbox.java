@@ -55,7 +55,7 @@ import java.util.List;
 public class Toolbox extends JPanel {
     public static final String ENTER_A_QUALIFIER = "Enter a qualifier";
 
-    // toolbox will have 5 buttons in it's entirety for addition of characteristics, factors, protocols, parameters and comments.
+    // toolbox will have 5 buttons in its entirety for addition of characteristics, factors, protocols, parameters and comments.
 
     @InjectedResource
     private ImageIcon addField, addFieldOver, removeField, removeFieldOver, add, addOver;

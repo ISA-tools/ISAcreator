@@ -105,7 +105,7 @@ public class QRAPIHook {
     }
 
     /**
-     * Returns each sample mapped to it's encoded contents for production of the QR codes
+     * Returns each sample mapped to its encoded contents for production of the QR codes
      *
      * @param qrCodeBuilderInfo - List of MappingChoices completed by the user
      * @return SampleName -> QR Code contents.

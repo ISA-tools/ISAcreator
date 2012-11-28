@@ -434,7 +434,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     /**
      * Given a list of ISASections, it returns them as a String
      *
-     * @param sectionTitle a string that is the section title
+     * @param sectionTitle    a string that is the section title
      * @param sectionToOutput a list of objects that are subclasses of ISASection
      * @return a string with the serialization of the ISASection
      */
@@ -448,8 +448,8 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
             for (String fieldName : sectionToOutput.get(0).getFieldValues().keySet()) {
                 representation.append(fieldName);
-                
-                if(sectionToOutput.size() > 0) {
+
+                if (sectionToOutput.size() > 0) {
                     representation.append("\t");
                 }
 
@@ -458,7 +458,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                 for (ISASection section : sectionToOutput) {
                     String value = section.getFieldValues().get(fieldName);
                     representation.append(value);
-                    if(count != sectionToOutput.size()-1) {
+                    if (count != sectionToOutput.size() - 1) {
                         representation.append("\t");
                     }
                     count++;
@@ -468,6 +468,5 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         }
         return representation.toString();
     }
-
 
 }
