@@ -139,7 +139,7 @@ public class ConfigurationManager {
     }
 
     private static String getTrimmedName(String string) {
-        string = string.contains(":") ? string.substring(string.indexOf(":") + 1) : string;
+        string = string.contains(":") ? string.substring(string.lastIndexOf(":") + 1) : string;
         return string;
     }
 

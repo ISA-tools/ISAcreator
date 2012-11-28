@@ -4,6 +4,7 @@ import org.apache.axis.utils.StringUtils;
 import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
@@ -103,6 +104,9 @@ public abstract class ISAFileOutput {
 
 
     protected void printStudy(PrintStream investigationFilePrintStream, Study study) {
+
+        ApplicationManager.getUserInterfaceForISASection(study).update();
+
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study, InvestigationFileSection.STUDY_SECTION));
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getStudyDesigns(), InvestigationFileSection.STUDY_DESIGN_SECTION));
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getPublications(), InvestigationFileSection.STUDY_PUBLICATIONS));
@@ -113,8 +117,13 @@ public abstract class ISAFileOutput {
     }
 
     protected void printInvestigation(Investigation investigation, PrintStream investigationFilePrintStream) {
+
+        ApplicationManager.getUserInterfaceForISASection(investigation).update();
         // print section defining the Ontologies Used
-        investigationFilePrintStream.println(getOntologiesUsedOutput());
+        //investigationFilePrintStream.println(getOntologiesUsedOutput());
+
+        generateMissingSections(investigation);
+
         // print the Investigation section.
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION));
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation.getPublications(), InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION));

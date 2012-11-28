@@ -3,7 +3,9 @@ package org.isatools.isacreator.gs;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.gs.gui.GSFileChooser;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.io.exportisa.OutputISAFiles;
 import org.isatools.isacreator.managers.ApplicationManager;
 
 import javax.swing.*;
@@ -33,6 +35,7 @@ public class GSSaveAction extends AbstractAction {
     private ISAcreator frame = null;
     private ISAcreatorMenu menu = null;
     private GSDataManager gsDataManager = null;
+    private OutputISAFilesFromGUI isatabExporter = null;
 
     /**
      * SaveAction constructor.
@@ -58,10 +61,15 @@ public class GSSaveAction extends AbstractAction {
         GSIdentityManager gsIdentityManager = GSIdentityManager.getInstance();
         gsDataManager = gsIdentityManager.getGsDataManager();
 
+        isatabExporter = new OutputISAFilesFromGUI(ApplicationManager.getCurrentApplicationInstance());
+
     }
 
 
     public void actionPerformed(ActionEvent actionEvent) {
+
+        isatabExporter.saveISAFiles(false, ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation());
+
         if (type == SAVE_ONLY){
 
             //save all the local files into GS
