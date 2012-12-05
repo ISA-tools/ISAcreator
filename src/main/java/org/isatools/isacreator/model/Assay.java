@@ -38,7 +38,6 @@
 package org.isatools.isacreator.model;
 
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.StudySubData;
 import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
@@ -50,6 +49,7 @@ import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
  * @author Eamonn Maguire
  */
 public class Assay extends ISASection implements StudySubData {
+
     public static final String ASSAY_REFERENCE = "Study Assay File Name";
     public static final String MEASUREMENT_ENDPOINT = "Study Assay Measurement Type";
     public static final String MEASUREMENT_ENDPOINT_TERM_ACCESSION = "Study Assay Measurement Type Term Accession Number";
@@ -167,7 +167,10 @@ public class Assay extends ISASection implements StudySubData {
         this.tableReferenceObject = tro;
     }
 
-
+    /**
+     * Retrieves the value of "Study Assay File Name"
+     * @return
+     */
     public String toString() {
         return getValue(ASSAY_REFERENCE);
     }

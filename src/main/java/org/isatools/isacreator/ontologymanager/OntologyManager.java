@@ -61,9 +61,29 @@ public class OntologyManager {
     public static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
 
 
-    public static Map<String, OntologyTerm> getUserOntologyHistory() {
+    public static Map<String, OntologyTerm> getOntologySelectionHistory() {
         return ontologySelectionHistory;
     }
+
+    public static OntologyTerm getOntologyTerm(String key){
+        return ontologySelectionHistory.get(key);
+    }
+
+    public static String getOntologyTermPurl(String dataValue){
+        OntologyTerm ontologyTerm = getOntologyTerm(dataValue);
+        return ontologyTerm!=null? ontologyTerm.getOntologyPurl() : null;
+    }
+
+    public static String getOntologyTermAccession(String dataValue){
+        OntologyTerm ontologyTerm = getOntologyTerm(dataValue);
+        return ontologyTerm!=null? ontologyTerm.getOntologySourceAccession() : null;
+    }
+
+    public static String getOntologyTermSource(String dataValue){
+        OntologyTerm ontologyTerm = getOntologyTerm(dataValue);
+        return ontologyTerm!=null? ontologyTerm.getOntologySource() : null;
+    }
+
 
     public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
         OntologyManager.ontologySelectionHistory = ontologySelectionHistory;

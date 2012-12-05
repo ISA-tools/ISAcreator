@@ -270,13 +270,13 @@ public class Spreadsheet extends JComponent implements
     private void addOntologyTermsToUserHistory() {
         if (tableReferenceObject.getDefinedOntologies().size() > 0) {
             for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
-                OntologyManager.getUserOntologyHistory().put(oo.getUniqueId(), oo);
+                OntologyManager.getOntologySelectionHistory().put(oo.getUniqueId(), oo);
             }
         }
     }
 
     private void populateSpreadsheetWithContent() {
-        if (tableReferenceObject.getReferenceData() != null) {
+        if (!tableReferenceObject.getReferenceData().getData().isEmpty()) {
             populateTable(tableReferenceObject.getReferenceData());
             rebuildDependencies(tableReferenceObject.getColumnDependencies());
         } else {
@@ -1288,7 +1288,7 @@ public class Spreadsheet extends JComponent implements
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
     private OntologyTerm searchUserHistory(String uniqueId) {
-        return OntologyManager.getUserOntologyHistory().get(uniqueId);
+        return OntologyManager.getOntologySelectionHistory().get(uniqueId);
     }
 
     /**

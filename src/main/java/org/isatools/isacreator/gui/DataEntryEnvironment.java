@@ -5,7 +5,11 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
+<<<<<<< HEAD
+ �The contents of this file are subject to the CPAL version 1.0 (the �License�);
+=======
  The contents of this file are subject to the CPAL version 1.0 (the License);
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -13,7 +17,11 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
+<<<<<<< HEAD
+ Software distributed under the License is distributed on an �AS IS� basis,
+=======
  Software distributed under the License is distributed on an AS IS basis,
+>>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -76,6 +84,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -368,6 +378,26 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return false;
     }
 
+    public static boolean isValidName(String text)
+    {
+        Pattern pattern = Pattern.compile(
+                "# Match a valid Windows filename (unspecified file system).          \n" +
+                        "^                                # Anchor to start of string.        \n" +
+                        "(?!                              # Assert filename is not: CON, PRN, \n" +
+                        "  (?:                            # AUX, NUL, COM1, COM2, COM3, COM4, \n" +
+                        "    CON|PRN|AUX|NUL|             # COM5, COM6, COM7, COM8, COM9,     \n" +
+                        "    COM[1-9]|LPT[1-9]            # LPT1, LPT2, LPT3, LPT4, LPT5,     \n" +
+                        "  )                              # LPT6, LPT7, LPT8, and LPT9...     \n" +
+                        "  (?:\\.[^.]*)?                  # followed by optional extension    \n" +
+                        "  $                              # and end of string                 \n" +
+                        ")                                # End negative lookahead assertion. \n" +
+                        "[^<>:\"/\\\\|?*\\x00-\\x1F]*     # Zero or more valid filename chars.\n" +
+                        "[^<>:\"/\\\\|?*\\x00-\\x1F\\ .]  # Last char is not a space or dot.  \n" +
+                        "$                                # Anchor to end of string.            ",
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.COMMENTS);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
+    }
 
     public void createGUI() {
         setSize(ApplicationManager.getCurrentApplicationInstance().getSize());

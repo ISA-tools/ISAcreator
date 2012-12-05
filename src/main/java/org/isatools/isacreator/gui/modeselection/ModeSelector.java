@@ -67,11 +67,12 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
     private JLabel lightMode;
     private JLabel normalMode;
+    private JLabel gsMode;
     private Box optionContainer;
     private JPanel loadingContainer;
 
     @InjectedResource
-    private ImageIcon lightIcon, lightIconOver, normalIcon, normalIconOver, loadingIcon;
+    private ImageIcon lightIcon, lightIconOver, normalIcon, normalIconOver, loadingIcon, gsIcon, gsIconOver;
 
     /**
      * Constructor
@@ -144,8 +145,30 @@ public class ModeSelector extends JFrame implements BundleActivator {
             }
         });
 
+
+        gsMode = new JLabel(gsIcon);
+
+        gsMode.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                loadISAcreator(Mode.GS, context);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                gsMode.setIcon(gsIconOver);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                gsMode.setIcon(gsIcon);
+            }
+        });
+
+
         optionContainer.add(lightMode);
         optionContainer.add(normalMode);
+        optionContainer.add(gsMode);
 
         container.add(optionContainer);
 

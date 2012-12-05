@@ -72,15 +72,6 @@
             <url>http://www.mvnsearch.org/maven2/</url>
         </repository>
 
-
-        <!-- Repository for GS code -->
-        <!--
-        <repository>
-            <id>clojars.org</id>
-            <url>http://clojars.org/repo</url>
-        </repository>
-        -->
-
     </repositories>
 
     <build>
@@ -234,6 +225,27 @@
                 </dependencies>
 
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
         </plugins>
 
         <resources>
@@ -447,11 +459,20 @@
 
         <!-- Dependencies for GS code -->
 
+
         <dependency>
             <groupId>genomespace</groupId>
             <artifactId>cdk</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <!--
+        <dependency>
+            <groupId>org.genomespace</groupId>
+            <artifactId>clientdevelopmentkit</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>genomespace</groupId>
@@ -511,10 +532,19 @@
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.11</version>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>1.11</version>
             <scope>runtime</scope>
         </dependency>
+        -->
+
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -528,16 +558,17 @@
                     <groupId>org.apache.commons</groupId>
                 </exclusion>
             </exclusions>
-            <scope>runtime</scope>
+            <!--<scope>runtime</scope>-->
         </dependency>
 
 
         <dependency>
-            <groupId>com.sun.jersey</groupId>
+            <groupId>genomespace</groupId>
             <artifactId>org.genomespace.jersey-apache-client</artifactId>
             <version>1.11</version>
             <scope>runtime</scope>
         </dependency>
+
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -545,6 +576,7 @@
             <version>1.11</version>
             <scope>runtime</scope>
         </dependency>
+
 
 
     <dependency>
@@ -556,12 +588,13 @@
                <artifactId>httpclient</artifactId>
                <groupId>org.apache.httpcomponents</groupId>
             </exclusion>
-            <exclusion>
+            <!--<exclusion>
                 <artifactId>commons-codec</artifactId>
                 <groupId>commons-codec</groupId>
             </exclusion>
+            -->
         </exclusions>
-        <scope>runtime</scope>
+        <!--<scope>runtime</scope>-->
     </dependency>
 
     </dependencies>

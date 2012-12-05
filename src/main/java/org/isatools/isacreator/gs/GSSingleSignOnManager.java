@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  *
- * Based on org.broad.igv.gs.GSUtils
+ * Based on org.broad.igv.org.isatools.isacreator.gs.GSUtils
  *
  */
 public class GSSingleSignOnManager implements Authentication {
@@ -96,7 +96,7 @@ public class GSSingleSignOnManager implements Authentication {
      *
      * @return
      */
-    public boolean login(){
+    public boolean login(String u){
         String token = getGSToken();
         if (token==null)
             return false;
@@ -227,17 +227,17 @@ public class GSSingleSignOnManager implements Authentication {
     private File getTokenSaveDir() {
         String userDir = System.getProperty("user.home");
 
-         File gsDir = new File(userDir, tokenSaveDir);
-         if (gsDir.exists()) {
-             //single sign on has been used before
-             sso = true;
-             return gsDir;
-         } else if (sso) {
-             //directory doesn't exist, if sso, create it
-             gsDir.mkdir();
-             return gsDir;
-         }
-         return null;
+        File gsDir = new File(userDir, tokenSaveDir);
+        if (gsDir.exists()) {
+            //single sign on has been used before
+            sso = true;
+            return gsDir;
+        } else if (sso) {
+            //directory doesn't exist, if sso, create it
+            gsDir.mkdir();
+            return gsDir;
+        }
+        return null;
     }
 
     /**

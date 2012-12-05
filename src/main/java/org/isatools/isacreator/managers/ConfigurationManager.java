@@ -36,7 +36,6 @@ public class ConfigurationManager {
     }
 
     /**
-     *
      * @return a list of MappingObjects
      */
     public static List<MappingObject> getMappings() {
@@ -69,7 +68,6 @@ public class ConfigurationManager {
     }
 
     /**
-     *
      * Retrieves technology types
      *
      * @return array of strings
@@ -95,7 +93,6 @@ public class ConfigurationManager {
     }
 
     /**
-     *
      * Retrives the allowed technologies per endpoint
      *
      * @return map of string and string list
@@ -123,6 +120,10 @@ public class ConfigurationManager {
      */
     public static TableReferenceObject selectTROForUserSelection(
             String measurementEndpoint, String techType) {
+
+        measurementEndpoint = getTrimmedName(measurementEndpoint);
+        techType = getTrimmedName(techType);
+
         for (MappingObject mo : mappings) {
             if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
                     mo.getTechnologyType().equalsIgnoreCase(techType)) {
@@ -135,6 +136,11 @@ public class ConfigurationManager {
         }
 
         return null;
+    }
+
+    private static String getTrimmedName(String string) {
+        string = string.contains(":") ? string.substring(string.lastIndexOf(":") + 1) : string;
+        return string;
     }
 
     /**
@@ -158,10 +164,12 @@ public class ConfigurationManager {
 
         return null;
     }
-    
-    public static MappingObject getMappingObjectForMeasurementAndTechnology(String measurement, String technology) {
-        for(MappingObject mappingObject : mappings) {
-            if(mappingObject.getMeasurementEndpointType().equals(measurement) && mappingObject.getTechnologyType().equals(technology)) {
+
+    public static MappingObject getMappingObjectForMeasurementAndTechnology(String measurementEndpoint, String techType) {
+        measurementEndpoint = getTrimmedName(measurementEndpoint);
+        techType = getTrimmedName(techType);
+        for (MappingObject mappingObject : mappings) {
+            if (mappingObject.getMeasurementEndpointType().equals(measurementEndpoint) && mappingObject.getTechnologyType().equals(techType)) {
                 return mappingObject;
             }
         }

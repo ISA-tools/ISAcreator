@@ -650,7 +650,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             } else {
                 displayText = "<html>" + "<b>Confirm deletion of " +
                         fieldType + "</b>" + "<p>Deleting this " + fieldType +
-                        " will result in it's complete removal from this experiment annotation!</p>" +
+                        " will result in its complete removal from this experiment annotation!</p>" +
                         "<p>Do you wish to continue?</p>" + "</html>";
             }
 

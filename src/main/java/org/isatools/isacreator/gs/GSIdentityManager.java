@@ -8,6 +8,8 @@ import org.genomespace.client.exceptions.AuthorizationException;
 import org.genomespace.client.exceptions.InternalServerException;
 import org.genomespace.client.exceptions.ServerNotFoundException;
 import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.AuthenticationManager;
+import org.isatools.isacreator.api.CreateProfile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,12 +31,8 @@ import java.util.Map;
  */
 public class GSIdentityManager implements Authentication {
 
-    //private Map<String, GsSession> userSessions = new HashMap<String, GsSession>();
-
     //maintaining a single session
-   // private String username = null;
     private GsSession session = null;
-    private GSDataManager gsDataManager = null;
 
     //private String gsUser = null;
     private String gsToken = null;
@@ -43,14 +41,30 @@ public class GSIdentityManager implements Authentication {
     private String tokenSaveFileName = ".gstoken";
     private String usernameSaveFileName = ".gsusername";
 
+    private AuthenticationManager authenticationManager = new AuthenticationManager();
+
     private static final Logger log = Logger.getLogger(GSIdentityManager.class);
+
+    private static GSIdentityManager instance = null;
+
+    public static GSIdentityManager getInstance(){
+        if (instance==null){
+            instance = new GSIdentityManager();
+        }
+        return instance;
+    }
 
     /**
      * Empty constructor
      */
     public GSIdentityManager(){
-
+        try{
+            session = new GsSession();
+        }catch(InternalServerException e){
+            e.printStackTrace();
+        }
     }
+
 
     /**
      *
@@ -65,12 +79,19 @@ public class GSIdentityManager implements Authentication {
         try{
             String password = new String(pass);
 
-            //when creating a new session, .gs folder for SSO is created automatically
-            session = new GsSession();
             User user = session.login(username, password);
-            //userSessions.put(user.getUsername(),session);
 
             log.info("Logged into GenomeSpace as "+username);
+
+            //local login
+            boolean result = authenticationManager.login(username, pass);
+
+            if (!result){
+                //create user
+                CreateProfile.createProfile(username, pass, "", "", "", "");
+
+            }
+
             return true;
         }catch(AuthorizationException e){
             return false;
@@ -88,7 +109,6 @@ public class GSIdentityManager implements Authentication {
      * @return
      */
     public boolean logout(String username) {
-        //GsSession session = userSessions.get(username);
         if (session==null)
             return false;
         session.logout();
@@ -100,16 +120,33 @@ public class GSIdentityManager implements Authentication {
      *
      * @return
      */
-    public boolean login(){
+    public boolean login(String u){
         String token = getGSToken();
         if (token==null)
             return false;
         try{
+
             GsSession gsSession = new GsSession(token);
-            //identityManager.addSession(gsSession);
             setSession(gsSession);
+
+            String username = gsSession.getUserManagerClient().getTokenUsername(token);
+
+            //local login
+            boolean result = authenticationManager.login(username);
+
+            if (!result){
+                //create user
+                CreateProfile.createProfile(username, username.toCharArray(), "", "", "", "");
+
+            }
+
+
+
+
             return true;
+
         }catch(InternalServerException e){
+            e.printStackTrace();
             log.debug(e.getMessage());
             return false;
         }
@@ -117,11 +154,10 @@ public class GSIdentityManager implements Authentication {
 
     /**
      *
-     * @param username
+     *
      * @return
      */
-    public boolean isLoggedIn(String username) {
-       // GsSession session = userSessions.get(username);
+    public boolean isLoggedIn() {
         if (session==null)
             return false;
         return session.isLoggedIn();
@@ -134,18 +170,16 @@ public class GSIdentityManager implements Authentication {
      * @param emailAddress
      * @return
      */
-    public boolean registerUser(String username, String password, String emailAddress) {
-
-       // GsSession session = userSessions.get(username);
-        if (session==null)
-            return false;
+    public static String registerUser(String username, String password, String emailAddress) {
 
         try {
+            GsSession session = new GsSession();
             User newUser = session.registerUser(username,
                     password, emailAddress);
-            return true;
+            return "";
         }catch(InternalServerException isex){
-            return false;
+            isex.printStackTrace();
+            return "Error registering user "+isex.getMessage();
         }
     }
 
@@ -172,7 +206,7 @@ public class GSIdentityManager implements Authentication {
                     String username = gsSession.getCachedUsernameForSSO();
                     //Collection<String> users = userManagerClient.getAllUsernames();
                     //for(String username: users){
-                        //userSessions.put(username, gsSession);
+                    //userSessions.put(username, gsSession);
                     session = gsSession;
                     //}
                 }
@@ -185,6 +219,7 @@ public class GSIdentityManager implements Authentication {
     }
 
     public GSDataManager getGsDataManager(){
+        System.out.println("session: is logged in when retrieving DM?"+session.isLoggedIn());
         return new GSDataManager(session);
     }
 

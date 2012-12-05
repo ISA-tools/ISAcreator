@@ -10,6 +10,9 @@ import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.*;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Created by the ISA team
  *
@@ -24,6 +27,16 @@ public class ProgrammaticISATabCreationTest {
     public void createISATabProgrammatically() {
 
     	String baseDir = System.getProperty("basedir");
+
+        if ( baseDir == null )
+        {
+            try{
+                baseDir = new File( "." ).getCanonicalPath();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+
         ISAcreator isAcreator = new ISAcreator(Mode.NORMAL_MODE, null, baseDir + "/Configurations/isaconfig-default_v2011-02-18/");
 
         Investigation investigation = new Investigation("gis-investigation", "GIS investigation test");

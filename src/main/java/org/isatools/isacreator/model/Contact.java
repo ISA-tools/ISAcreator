@@ -83,4 +83,22 @@ public abstract class Contact extends ISASection implements StudySubData, Serial
     public String toString() {
         return getLastName() + ", " + getFirstName();
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other==null)
+            return false;
+        if (!(other instanceof StudyContact))
+            return false;
+        Contact contact = (Contact) other;
+
+        return  ((!contact.getEmail().equals("") && contact.getEmail().equals(this.getEmail()))
+             || (!contact.getLastName().equals("") && contact.getFirstName().equals(this.getFirstName()) && contact.getMidInitial().equals(this.getMidInitial()) && contact.getLastName().equals(this.getLastName())));
+    }
+
+    @Override
+    public int hashCode(){
+        return this.getEmail().hashCode()+this.getFirstName().hashCode()+this.getMidInitial().hashCode()+this.getLastName().hashCode();
+    }
+
 }

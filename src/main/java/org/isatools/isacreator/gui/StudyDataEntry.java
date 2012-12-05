@@ -548,6 +548,8 @@ public class StudyDataEntry extends DataEntryForm {
             output.append(fieldName).append("\t\"").append(StringProcessing.cleanUpString(study.getFieldValues().get(fieldName))).append("\"\n");
         }
 
+        populateEmptySections();
+
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_DESIGN_SECTION.toString(), getStudy().getStudyDesigns()));
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_PUBLICATIONS.toString(), getStudy().getPublications()));
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_FACTORS.toString(), getStudy().getFactors()));
@@ -557,6 +559,28 @@ public class StudyDataEntry extends DataEntryForm {
         output.append(getISASectionAsString(InvestigationFileSection.STUDY_CONTACTS.toString(), getStudy().getContacts()));
 
         return output.toString();
+    }
+
+    private void populateEmptySections() {
+        if(getStudy().getStudyDesigns().size() == 0) {
+            getStudy().getStudyDesigns().add(new StudyDesign());
+        }
+
+        if(getStudy().getFactors().size() == 0) {
+            getStudy().addFactor(new Factor());
+        }
+
+        if(getStudy().getProtocols().size() == 0) {
+            getStudy().addProtocol(new Protocol());
+        }
+
+        if(getStudy().getPublications().size() == 0) {
+            getStudy().addPublication(new StudyPublication());
+        }
+
+        if(getStudy().getContacts().size() == 0) {
+            getStudy().addContact(new StudyContact());
+        }
     }
 
     /**
@@ -660,7 +684,7 @@ public class StudyDataEntry extends DataEntryForm {
                 final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
 
                 String removalText = "<html>" + "<b>Confirm deletion of assay</b>" + "<p>Deleting this will result " +
-                        "in it's complete removal from this experiment annotation!</p>" +
+                        "in its complete removal from this experiment annotation!</p>" +
                         "<p>Do you wish to continue?</p>" + "</html>";
 
                 JOptionPane optionPane = new JOptionPane(removalText,

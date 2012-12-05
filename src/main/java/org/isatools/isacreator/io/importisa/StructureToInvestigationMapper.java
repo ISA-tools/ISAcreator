@@ -488,12 +488,25 @@ public class StructureToInvestigationMapper {
 
         Set<String> sectionFields = getFieldList(assaySection);
 
+        Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
+
         for (int recordIndex = 0; recordIndex < recordCount; recordIndex++) {
             Assay a = new Assay();
             Map<String, String> record = getRecord(assaySection, recordIndex);
 
             if (!isNullRecord(record)) {
                 a.addToFields(record);
+
+                for (int hashCode : ontologyFields.keySet()) {
+                    Map<String, String> ontologyField = ontologyFields.get(hashCode);
+                    try {
+                        String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        a.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
+                    } catch (MalformedOntologyTermException e) {
+                        messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
+                    }
+                }
+
                 assays.add(a);
             }
         }
@@ -539,6 +552,15 @@ public class StructureToInvestigationMapper {
         return allNulls;
     }
 
+    /**
+     *
+     * @param fieldBeingCombined
+     * @param term
+     * @param accession
+     * @param sourceRef
+     * @return
+     * @throws MalformedOntologyTermException
+     */
     private String groupElements(String fieldBeingCombined, String term,
                                  String accession, String sourceRef)
             throws MalformedOntologyTermException {
@@ -615,13 +637,22 @@ public class StructureToInvestigationMapper {
         return toReturn;
     }
 
+    /**
+     * It returns an OntologySourceRefObject given an ontology abbreviation
+     * @param source
+     * @return
+     */
     private OntologySourceRefObject getOntologySource(String source) {
         return OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
     }
 
-
+    /**
+     *  Checks for duplicate assay names across all studies.
+     * @param investigation
+     * @return
+     */
     private boolean validateInvestigationFile(Investigation investigation) {
-        // check for duplicate assay names across all studies.
+
         Set<String> assayNames = new HashSet<String>();
         Set<String> studyNames = new HashSet<String>();
 

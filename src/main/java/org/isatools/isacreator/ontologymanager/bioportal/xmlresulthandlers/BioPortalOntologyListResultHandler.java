@@ -25,7 +25,7 @@ import java.util.List;
 public class BioPortalOntologyListResultHandler {
 
     private static final Logger log = Logger.getLogger(BioPortalOntologyListResultHandler.class.getName());
-    // maps an ontology with it's name to a Search result object
+    // maps an ontology with its name to a Search result object
 
     private boolean loadAllOntologies = false;
 
@@ -53,8 +53,7 @@ public class BioPortalOntologyListResultHandler {
                     String ontologyId = (String) reader.read(basePath + "[" + sectionIndex + "]/ontologyId", XPathConstants.STRING);
 
 
-                    if (!abbreviation.isEmpty() && !(abbreviation.toLowerCase().contains("test") || abbreviation.toLowerCase().contains("installation."))
-                            && shouldAddOntology(ontologyId)) {
+                    if (!abbreviation.isEmpty() && !(abbreviation.toLowerCase().contains("test") || abbreviation.toLowerCase().contains("installation."))) {
 
                         Ontology ontology = new Ontology();
                         String version = (String) reader.read(basePath + "[" + sectionIndex + "]/id", XPathConstants.STRING);
@@ -98,19 +97,6 @@ public class BioPortalOntologyListResultHandler {
 
 
         return result;
-    }
-
-    private boolean shouldAddOntology(String ontologyId) {
-        if (!loadAllOntologies) {
-            for (AcceptedOntology acceptedOntology : AcceptedOntologies.values()) {
-                if (acceptedOntology.toString().equals(ontologyId)) {
-                    return true;
-                }
-            }
-        } else {
-            return true;
-        }
-        return false;
     }
 
     /**

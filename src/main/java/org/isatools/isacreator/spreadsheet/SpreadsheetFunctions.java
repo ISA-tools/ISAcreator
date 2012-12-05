@@ -232,7 +232,7 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyTerm> history = OntologyManager.getUserOntologyHistory();
+        Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
 
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
@@ -543,10 +543,10 @@ public class SpreadsheetFunctions {
 
         if (toRemove != null) {
             if (removingParent) {
-                //remove column with it's associated dependencies
+                //remove column with its associated dependencies
                 spreadsheet.columnDependencies.remove(toRemove);
             } else {
-                // remove column from it's parent
+                // remove column from its parent
                 spreadsheet.columnDependencies.get(parentColumn).remove(toRemove);
             }
         } else {
@@ -875,7 +875,7 @@ public class SpreadsheetFunctions {
         model.fireTableStructureChanged();
         model.fireTableDataChanged();
 
-        // now move the column into it's correct position
+        // now move the column into its correct position
         int stopValue = headerLabel.toString().equals("Unit")
                 ? (spreadsheet.previouslyAddedCharacteristicPosition + 1)
                 : (currentlySelectedColumn + 1);

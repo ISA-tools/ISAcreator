@@ -146,5 +146,18 @@ public class GeneralUtils {
         return String.valueOf(c).matches("[\\p{Alnum}]*");
     }
 
+    public static String createISATmpDirectory(){
+        String localTmpDirectory = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
+        boolean success = new File(localTmpDirectory).mkdir();
+        if (success) {
+            System.out.println("Directory: "+ localTmpDirectory + " created");
+            return localTmpDirectory;
+        }else{
+            System.out.println("Could not create "+localTmpDirectory);
+            System.exit(-1);
+        }
+        return null;
+    }
+
 
 }

@@ -58,7 +58,7 @@ public class OntologyBranch implements Serializable {
     /**
      * Constructor
      *
-     * @param branchIdentifier - id of branch (it's accession, e.g. EFO_000001)
+     * @param branchIdentifier - id of branch (its accession, e.g. EFO_000001)
      * @param branchName       - meaningful name of the branch (e.g. Experimental Factor)
      */
     public OntologyBranch(String branchIdentifier, String branchName) {

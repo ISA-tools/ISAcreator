@@ -104,7 +104,20 @@ public class Protocol extends ISASection implements StudySubData, Serializable, 
      * @param protocolComponentTypeAccession - Accession (e.g. 0000123) for the Ontology term defined for protocolComponentType (; separated)
      * @param protocolComponentTypeSource    - Source REF (e.g. OBI) for the Ontology term defined for protocolComponentType (; separated)
      */
-    public Protocol(String protocolName, String protocolType, String protocolTypeTermAccession, String protocolTypeTermSourceRef, String protocolDescription, String protocolURL, String protocolVersion, String protocolParameterName, String protocolParameterNameAccession, String protocolParameterNameSource, String protocolComponentName, String protocolComponentType, String protocolComponentTypeAccession, String protocolComponentTypeSource) {
+    public Protocol(String protocolName,
+                    String protocolType,
+                    String protocolTypeTermAccession,
+                    String protocolTypeTermSourceRef,
+                    String protocolDescription,
+                    String protocolURL,
+                    String protocolVersion,
+                    String protocolParameterName,
+                    String protocolParameterNameAccession,
+                    String protocolParameterNameSource,
+                    String protocolComponentName,
+                    String protocolComponentType,
+                    String protocolComponentTypeAccession,
+                    String protocolComponentTypeSource) {
         super();
         fieldValues.put(PROTOCOL_NAME, protocolName);
         fieldValues.put(PROTOCOL_TYPE, protocolType);
@@ -136,10 +149,6 @@ public class Protocol extends ISASection implements StudySubData, Serializable, 
 
     public String getProtocolName() {
         return getValue(PROTOCOL_NAME);
-    }
-
-    public String getProtocolParameterName() {
-        return getValue(PROTOCOL_PARAMETER_NAME);
     }
 
     public String getProtocolType() {
@@ -174,13 +183,32 @@ public class Protocol extends ISASection implements StudySubData, Serializable, 
         fieldValues.put(PROTOCOL_PARAMETER_NAME, protocolParameterName);
     }
 
+    public String getProtocolParameterName() {
+        return getValue(PROTOCOL_PARAMETER_NAME);
+    }
+
+    public String[] getProtocolParameterNames(){
+        String parameters = getValue(PROTOCOL_PARAMETER_NAME);
+        return parameters.split(";");
+    }
+
     public String getProtocolParameterNameAccession() {
         return getValue(PROTOCOL_PARAMETER_NAME_TERM_ACCESSION);
+    }
+
+    public String[] getProtocolParameterNameAccessions(){
+        String accessions = getValue(PROTOCOL_PARAMETER_NAME_TERM_ACCESSION);
+        return accessions.split(";");
     }
 
     public String getProtocolParameterNameSource() {
         return getValue(PROTOCOL_PARAMETER_NAME_TERM_SOURCE_REF);
 
+    }
+
+    public String[] getProtocolParameterNameSources() {
+        String sources = getValue(PROTOCOL_PARAMETER_NAME_TERM_SOURCE_REF);
+        return sources.split(";");
     }
 
     public String getProtocolComponentType() {
