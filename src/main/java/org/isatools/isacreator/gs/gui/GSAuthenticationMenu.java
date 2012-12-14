@@ -19,7 +19,7 @@ import org.jdesktop.fuse.InjectedResource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Created by the ISATeam.
@@ -46,7 +46,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
     @InjectedResource
     public ImageIcon pleaseLogin, loginButton, loginButtonOver, registerIcon, registerOverIcon,
-             exitButtonSml, exitButtonSmlOver, genomespacelogo, ssoIcon, ssoOverIcon;
+            exitButtonSml, exitButtonSmlOver, genomespacelogo, ssoIcon, ssoOverIcon;
 
     public GSAuthenticationMenu(ISAcreatorMenu menu, Authentication authManager) {
         super(menu);
@@ -66,7 +66,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         username.setText(defaultUsername);
     }
 
-    private void setClassFields(){
+    private void setClassFields() {
         username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
     }
 
@@ -89,19 +89,12 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         userNameCont.add(username);
         userNameCont.setOpaque(false);
-        username.addFocusListener( new FocusListener() {
-            @Override
+        username.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
                 status.setText("");
             }
-            @Override
-            public void focusLost(FocusEvent e) {
-                //do nothing
-            }
-            }
+        }
         );
-
-
 
         //password
         JPanel passwordCont = new JPanel(new GridLayout(1, 2));
@@ -112,14 +105,9 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         password = new RoundedJPasswordField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         UIHelper.renderComponent(password, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        password.addFocusListener( new FocusListener() {
-            @Override
+        password.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
                 status.setText("");
-            }
-            @Override
-            public void focusLost(FocusEvent e) {
-                //do nothing
             }
         }
         );
@@ -189,14 +177,10 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         });
 
 
-        login.addFocusListener( new FocusListener() {
-            @Override
+        login.addFocusListener(new FocusAdapter() {
+
             public void focusGained(FocusEvent e) {
                 status.setText("");
-            }
-            @Override
-            public void focusLost(FocusEvent e) {
-                //do nothing
             }
         }
         );
@@ -285,34 +269,34 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
 
     //private void login(boolean sso){
-    private void login(){
-        String passwordString = new String (password.getPassword());
+    private void login() {
+        String passwordString = new String(password.getPassword());
 
-        if (!username.getText().equals("") && passwordString!=null && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())){
+        if (!username.getText().equals("") && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())) {
 
             //logged in
             clearFields();
-            if (ISAcreatorCLArgs.configDir()==null)
+            if (ISAcreatorCLArgs.configDir() == null)
                 menu.changeView(menu.getImportConfigurationGUI());
-            else{
+            else {
                 //load configuration and go to main menu
                 ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
                 boolean successful = importConfiguration.loadConfiguration();
                 if (successful) {
 
-                    if (ISAcreatorCLArgs.isatabDir()!=null){
+                    if (ISAcreatorCLArgs.isatabDir() != null) {
 
-                            java.util.List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+                        java.util.List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
 
-                        if (!errors.isEmpty()){
-                                //Problem downloading the files
+                        if (!errors.isEmpty()) {
+                            //Problem downloading the files
 
-                                //load menu to show errors when loading files
-                                System.out.println("Number of errors: "+errors.size());
-                                System.out.println("Showing first one: "+errors.get(0).getMessage());
+                            //load menu to show errors when loading files
+                            System.out.println("Number of errors: " + errors.size());
+                            System.out.println("Showing first one: " + errors.get(0).getMessage());
 
 
-                                //status.setText(errors.get(0).getMessage());
+                            //status.setText(errors.get(0).getMessage());
 
 
                             ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
@@ -323,16 +307,16 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                             ErrorMenu errorMenu = new ErrorMenu(menu, list, false, menu.getMainMenuGUI());
                             errorMenu.createGUI();
 
-                            }else{
-                                menu.loadFiles(ISAcreatorCLArgs.isatabDir());
-                            }
+                        } else {
+                            menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                        }
 
 
-                    }else{
+                    } else {
                         menu.changeView(menu.getMainMenuGUI());
                     }
-                }else{
-                  //TODO display problem!!!
+                } else {
+                    //TODO display problem!!!
 
                 }
             }

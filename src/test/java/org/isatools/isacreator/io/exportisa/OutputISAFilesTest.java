@@ -62,6 +62,8 @@ public class OutputISAFilesTest {
         assert(inv!=null);
 
         //if import worked ok, there should not be error messages
+        System.out.println(importer.getMessagesAsString());
+
         assert(importer.getMessages().size()==0);
 
         System.out.println("investigation reference"+inv.getReference());

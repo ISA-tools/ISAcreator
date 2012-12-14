@@ -54,6 +54,7 @@ import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
@@ -130,7 +131,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         super();
         ResourceInjector.get("wizard-package.style").inject(this);
 
-        currentUser = mainMenu.getMain().getCurrentUser();
+        currentUser = UserProfileManager.getCurrentUser();
         this.mainMenu = mainMenu;
 
         dep = new DataEntryEnvironment();

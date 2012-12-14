@@ -40,9 +40,11 @@ package org.isatools.isacreator.io;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.EncryptedObject;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 
 import javax.crypto.BadPaddingException;
@@ -70,17 +72,15 @@ public class UserProfileManager {
 
     private static String USER_PROFILE_FILENAME = "profiles.sup";
 
-    private ISAcreator main;
-    private List<UserProfile> userProfiles;
-
-    public UserProfileManager(ISAcreator main) {
-        this.main = main;
-    }
+    private static UserProfile currentUser;
+    private static List<UserProfile> userProfiles;
+    public static final String PASSPHRASE = "eamonniscool";
 
     public void saveUserProfiles() {
         //.sup extension -> secure user profiles
-        File f = new File(ISAcreator.DEFAULT_USER_PROFILE_DIRECTORY.equals("") ? USER_PROFILE_FILENAME : ISAcreator.DEFAULT_USER_PROFILE_DIRECTORY + File.separator + USER_PROFILE_FILENAME);
-
+        String userProfileLocation = ISAcreatorProperties.getProperty("isacreator.userProfileLocation");
+        System.out.println("User profile location: " + userProfileLocation);
+        File f = new File(userProfileLocation.equals("") ? USER_PROFILE_FILENAME : userProfileLocation + File.separator + USER_PROFILE_FILENAME);
 
         log.info("Saving user profile to: " + f.getAbsolutePath());
 
@@ -89,8 +89,8 @@ public class UserProfileManager {
             eo.generateKey("eamonniscool");
 
             // we convert to an ArrayList since this is Serializable, but a Generic List is not!
-            updateUserProfileInformation(main.getCurrentUser());
-            SealedObject so = eo.encryptObject((ArrayList) main.getUserProfiles());
+            updateUserProfileInformation(getCurrentUser());
+            SealedObject so = eo.encryptObject((ArrayList) getUserProfiles());
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
                     f));
             oos.writeObject(so);
@@ -109,17 +109,31 @@ public class UserProfileManager {
             log.error(e.getMessage());
         } catch (NoSuchPaddingException e) {
             log.error(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    public static void setCurrentUser(UserProfile currentUser) {
+        UserProfileManager.currentUser = currentUser;
+    }
+
+    public static UserProfile getCurrentUser() {
+        return currentUser;
     }
 
     public void loadUserProfiles() {
         EncryptedObject eo = new EncryptedObject();
-        File f = new File(ISAcreator.DEFAULT_USER_PROFILE_DIRECTORY.equals("") ? USER_PROFILE_FILENAME : ISAcreator.DEFAULT_USER_PROFILE_DIRECTORY + File.separator + USER_PROFILE_FILENAME);
+
+        String userProfileLocation = ISAcreatorProperties.getProperty("isacreator.userProfileLocation");
+        System.out.println("User profile location: " + userProfileLocation);
+
+        File f = new File(userProfileLocation.equals("") ? USER_PROFILE_FILENAME : userProfileLocation + File.separator + USER_PROFILE_FILENAME);
         System.out.println(f.getAbsolutePath());
         log.info("Loading user profile from: " + f.getAbsolutePath());
         if (f.exists()) {
             try {
-                eo.generateKey("eamonniscool");
+                eo.generateKey(PASSPHRASE);
 
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
                         f));
@@ -210,9 +224,9 @@ public class UserProfileManager {
         return null;
     }
 
-    public void updateUserProfileInformation(UserProfile up) {
-        if (main.getDataEntryEnvironment() != null) {
-            Investigation inv = main.getDataEntryEnvironment().getInvestigation();
+    public static void updateUserProfileInformation(UserProfile up) {
+        if (ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment() != null) {
+            Investigation inv = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
 
             // update the user profiles to contain the previously added factors, protocols, and contacts.
             if (inv != null && inv.getStudies() != null) {
@@ -240,7 +254,18 @@ public class UserProfileManager {
         }
     }
 
-    public List<UserProfile> getUserProfiles() {
+    public static void updateUserProfiles() {
+        for (UserProfile up : UserProfileManager.getUserProfiles()) {
+
+            if (up.getUsername()!=null && up.getUsername().equals(UserProfileManager.getCurrentUser().getUsername())) {
+                up.setUserHistory(OntologyManager.getOntologySelectionHistory());
+                updateUserProfileInformation(up);
+                break;
+            }
+        }
+    }
+
+    public static List<UserProfile> getUserProfiles() {
         return userProfiles == null ? new ArrayList<UserProfile>() : userProfiles;
     }
 }

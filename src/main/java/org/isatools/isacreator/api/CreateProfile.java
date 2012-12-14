@@ -2,7 +2,9 @@ package org.isatools.isacreator.api;
 
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +46,7 @@ public class CreateProfile {
     }
 
     public static boolean duplicateUser(String username) {
-        for (UserProfile up : main.getUserProfiles()) {
+        for (UserProfile up : UserProfileManager.getUserProfiles()) {
             if (up.getUsername().equals(username)) {
                 return true;
             }
@@ -62,12 +64,12 @@ public class CreateProfile {
                 institution,
                 email);
 
-        if (main != null) {
-            main.getUserProfiles().add(newUser);
-            main.setCurrentUser(newUser);
-            main.setUserOntologyHistory(newUser.getUserHistory());
-            main.saveUserProfiles();
-        }
+
+        UserProfileManager.getUserProfiles().add(newUser);
+        UserProfileManager.setCurrentUser(newUser);
+        OntologyManager.setOntologySelectionHistory(newUser.getUserHistory());
+        main.saveUserProfiles();
+
         return newUser;
     }
 

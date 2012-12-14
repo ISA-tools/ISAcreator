@@ -115,14 +115,11 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     }
 
     public void getSelectedFileAndLoad(File candidate) {
-        settingISAcreatorPane();
-        // Changing this assuming the file is given with full path
-        //loadFile(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-        //        candidate.getName() + File.separator);
+        showLoadingImagePane();
         loadFile(candidate.getAbsolutePath());
     }
 
-    private void settingISAcreatorPane(){
+    private void showLoadingImagePane() {
         // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
         menu.captureCurrentGlassPaneContents();
         // we hide the glass pane which is currently holding the menu items, loading interface etc.
@@ -133,7 +130,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     }
 
     private Container createLoadingImagePanel() {
-        if(loadingImagePanel == null) {
+        if (loadingImagePanel == null) {
             loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
         }
         return loadingImagePanel;
@@ -176,14 +173,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             public void run() {
                 try {
 
-                    //settingISAcreatorPane();
+                    //showLoadingImagePane();
 
                     final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(menu.getMain());
                     boolean successfulImport = iISA.importFile(dir);
                     if (successfulImport && iISA.getMessages().size() == 0) {
                         // success, so load
-
                         menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
+                        menu.resetViewAfterProgress();
 
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
 
@@ -259,7 +256,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     createErrorView(reports, false);
                 } finally {
 
-                    if (loadingImagePanel!=null)
+                    if (loadingImagePanel != null)
                         menu.remove(loadingImagePanel);
                     else
                         menu.hideGlassPane();

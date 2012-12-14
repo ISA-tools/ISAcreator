@@ -50,6 +50,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
@@ -764,8 +765,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         // if it doesn't exist, then add the ontology information to the defined sources
         if (!isPresent) {
 
-            OntologySourceRefObject osro = ApplicationManager.getCurrentApplicationInstance()
-                    .getCurrentUser()
+            OntologySourceRefObject osro = UserProfileManager.getCurrentUser()
                     .getOntologySource(source);
 
             if (osro == null) {

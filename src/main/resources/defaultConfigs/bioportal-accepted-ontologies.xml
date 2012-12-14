@@ -15,4 +15,6 @@
     <acceptedOntology abbreviation="BAO" id="1533"/>
     <acceptedOntology abbreviation="EDAM" id="1498"/>
     <acceptedOntology abbreviation="BFO" id="1332"/>
+    <acceptedOntology abbreviation="NMR" id="1033"/>
+    <acceptedOntology abbreviation="MS" id="1105"/>
 </acceptedOntologies>

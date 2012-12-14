@@ -43,6 +43,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.utils.PropertyFileIO;
@@ -190,7 +191,7 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
                         if (contactEditor == null) {
                             contactEditor = new GeneralViewerEditor<Contact>(ElementEditor.CONTACTS,
                                     menuPanels,
-                                    menuPanels.getMain().getCurrentUser().getPreviouslyUsedContacts());
+                                    UserProfileManager.getCurrentUser().getPreviouslyUsedContacts());
                         }
 
                         changeCentralPanel(contactEditor);
@@ -199,7 +200,7 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
                         if (protocolEditor == null) {
                             protocolEditor = new GeneralViewerEditor<Protocol>(ElementEditor.PROTOCOLS,
                                     menuPanels,
-                                    menuPanels.getMain().getCurrentUser().getPreviouslyUsedProtocols());
+                                    UserProfileManager.getCurrentUser().getPreviouslyUsedProtocols());
                         }
 
                         changeCentralPanel(protocolEditor);

@@ -32,7 +32,6 @@ import java.util.Map;
 public class ISAcreatorApplication  {
 
     private static final Logger log = Logger.getLogger(ISAcreatorApplication.class);
-    private static Felix felixFramework = null;
 
     /**
      * Enables the bundle to run as a stand-alone application. When this
@@ -77,7 +76,7 @@ public class ISAcreatorApplication  {
             configMap.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
 
             System.out.println("Starting up OSGi framework....");
-            felixFramework = new Felix(configMap);
+            Felix felixFramework = new Felix(configMap);
             //felixFramework.init(); //is this needed?
             felixFramework.start();
             //felixFramework.waitForStop(0); //is this needed?

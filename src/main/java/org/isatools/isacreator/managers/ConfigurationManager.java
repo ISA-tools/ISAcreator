@@ -48,7 +48,7 @@ public class ConfigurationManager {
      * @return array of strings with measurement endpoints
      */
     public static String[] getMeasurementEndpoints() {
-        List<MappingObject> assayToTypeMapping = mappings;
+        List<MappingObject> assayToTypeMapping = getMappings();
         Set<String> measTypeSet = new HashSet<String>();
 
         for (MappingObject mo : assayToTypeMapping) {
@@ -73,7 +73,7 @@ public class ConfigurationManager {
      * @return array of strings
      */
     public static String[] getTechnologyTypes() {
-        List<MappingObject> assayToTypeMapping = mappings;
+        List<MappingObject> assayToTypeMapping = getMappings();
         Set<String> techTypeSet = new HashSet<String>();
 
         for (MappingObject mo : assayToTypeMapping) {
@@ -100,7 +100,7 @@ public class ConfigurationManager {
     public static Map<String, List<String>> getAllowedTechnologiesPerEndpoint() {
         Map<String, List<String>> measToAllowedTechs = new HashMap<String, List<String>>();
 
-        for (MappingObject mo : mappings) {
+        for (MappingObject mo : getMappings()) {
             if (!measToAllowedTechs.containsKey(mo.getMeasurementEndpointType())) {
                 measToAllowedTechs.put(mo.getMeasurementEndpointType(), new ArrayList<String>());
             }
@@ -124,7 +124,7 @@ public class ConfigurationManager {
         measurementEndpoint = getTrimmedName(measurementEndpoint);
         techType = getTrimmedName(techType);
 
-        for (MappingObject mo : mappings) {
+        for (MappingObject mo : getMappings()) {
             if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
                     mo.getTechnologyType().equalsIgnoreCase(techType)) {
                 for (TableReferenceObject tro : assayDefinitions) {

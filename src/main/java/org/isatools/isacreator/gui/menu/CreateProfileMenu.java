@@ -40,6 +40,7 @@ package org.isatools.isacreator.gui.menu;
 import org.isatools.isacreator.api.CreateProfile;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -232,7 +233,12 @@ public class CreateProfileMenu extends UserCreationMenu {
                                          "<html><b>user name taken!</b> this username is already in use</html>");
                                 }else{
                                     CreateProfile.createProfile(usernameVal.getText(), passwordVal.getPassword(),firstnameVal.getText(),surnameVal.getText(),institutionVal.getText(),emailVal.getText());
-                                    menu.changeView(menu.getMainMenuGUI());
+
+                                    if (ISAcreatorCLArgs.configDir() == null){
+                                        menu.changeView(menu.getImportConfigurationGUI());
+                                    }else {
+                                        menu.changeView(menu.getMainMenuGUI());
+                                    }
                                 }
                             } else {
                                 status.setText(

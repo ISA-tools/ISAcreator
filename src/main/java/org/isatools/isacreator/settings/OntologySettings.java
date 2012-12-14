@@ -45,7 +45,8 @@ import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.io.OntologyLibrary;
-import org.isatools.isacreator.io.UserProfileIO;
+import org.isatools.isacreator.io.UserProfileManager;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import javax.swing.*;
@@ -138,7 +139,7 @@ public class OntologySettings extends SettingsScreen {
         loadedOntologiesContainer.setLayout(new BoxLayout(loadedOntologiesContainer, BoxLayout.PAGE_AXIS));
         loadedOntologiesContainer.setOpaque(false);
 
-        userOntologyHistory = menu.getMain().getCurrentUser().getUserHistory();
+        userOntologyHistory = UserProfileManager.getCurrentUser().getUserHistory();
 
         historyList = new ExtendedJList(new ColumnFilterRenderer());
 
@@ -250,7 +251,7 @@ public class OntologySettings extends SettingsScreen {
 
 
     public boolean updateSettings() {
-        menu.getMain().setUserOntologyHistory(userOntologyHistory);
+        OntologyManager.setOntologySelectionHistory(userOntologyHistory);
         menu.getMain().saveUserProfiles();
         return true;
     }
@@ -270,11 +271,11 @@ public class OntologySettings extends SettingsScreen {
             JOptionPane optionPane = null;
 
             try {
-                OntologyLibrary ol = UserProfileIO.loadOntologyLibrary(
+                OntologyLibrary ol = UserProfileManager.loadOntologyLibrary(
                         file);
 
                 userOntologyHistory.putAll(ol.getOntologies());
-                menu.getMain().getCurrentUser().setUsedOntologySources(ol.getOntologySources());
+                UserProfileManager.getCurrentUser().setUsedOntologySources(ol.getOntologySources());
 
                 updateLoadedOntologyStats();
                 ontologyTermInformation.setVisible(false);
@@ -332,9 +333,9 @@ public class OntologySettings extends SettingsScreen {
             JOptionPane optionPane = null;
 
             try {
-                UserProfileIO.saveOntologyLibrary(new OntologyLibrary(
+                UserProfileManager.saveOntologyLibrary(new OntologyLibrary(
                         userOntologyHistory,
-                        menu.getMain().getCurrentUser().getUsedOntologySources()),
+                        UserProfileManager.getCurrentUser().getUsedOntologySources()),
                         exportDir);
                 optionPane = new JOptionPane("<html>Ontology library saved in " + exportDir.getPath() + "</html>",
                         JOptionPane.OK_OPTION);

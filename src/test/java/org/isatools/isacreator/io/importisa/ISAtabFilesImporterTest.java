@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static junit.framework.Assert.assertTrue;
+
 /**
  * 
  * Test class for ISAtabFilesImporter
@@ -76,51 +78,13 @@ public class ISAtabFilesImporterTest {
         //if import worked ok, there should not be error messages
         assert(importer.getMessages().size()==0);
 
-//        List<ISAFileErrorReport> errors = importer.getMessages();
-//        for(ISAFileErrorReport error: errors){
-//            System.out.println(error.getProblemSummary());
-//            List<ErrorMessage> messages = error.getMessages();
-//            for(ErrorMessage message: messages){
-//                System.out.println(message.getMessage());
-//            }
-//        }
-
-
-
         System.out.println("ontologies used="+OntologyManager.getOntologiesUsed());
         System.out.println("ontology description="+OntologyManager.getOntologyDescription("OBI"));
         System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
         System.out.println("ontology selection history size=" + OntologyManager.getOntologySelectionHistory().keySet().size());
         System.out.println("ontology term=" + OntologyManager.getOntologyTerm("OBI:metabolite profiling"));
 
-        Map<String, Study> studyMap = inv.getStudies();
-        for(String studyId: studyMap.keySet()){
-            Study study = studyMap.get(studyId);
-
-
-
-//            TableReferenceObject tableReferenceObject = study.getStudySample().getTableReferenceObject();
-//            FieldObject fieldObject = tableReferenceObject.getFieldByName("Characteristics[organism]");
-//
-//            System.out.println("recommended ontology source for fieldobject=" +fieldObject.getRecommmendedOntologySource());
-//            System.out.println("fieldobject name=" +fieldObject.getFieldName());
-//
-//            ReferenceData data = tableReferenceObject.getReferenceData();
-//
-//            for(List<String> row : data.getData()) {
-//                System.out.println("row="+row);
-//                for(String column : row) {
-//                    System.out.println("column="+column);
-//                    if(OntologyManager.getOntologySelectionHistory().containsKey(column)) {
-//                        System.out.println("source accession="+OntologyManager.getOntologySelectionHistory().get(column).getOntologySourceAccession());
-//                        System.out.println("purl="+OntologyManager.getOntologySelectionHistory().get(column).getOntologyPurl());
-//                    }
-//                }
-//                System.out.println();
-//            }
-//            System.out.println();
-//
-        }
+        assertTrue("Oh no, I didnt' get the expected number of studies :(", inv.getStudies().size() == 2);
 
     }
 

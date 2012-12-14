@@ -158,25 +158,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
 
-                            //TODO remove
-                            /*
-                            if (!initialLoadingPassed) {
-                                log.info("loading hasn't been performed before, so now going to authentication screen");
-                                menu.changeView(menu.getAuthenticationGUI());
-                            } else {
 
-
-                                log.info("loading has been performed before, so now going to menu");
-                                menu.changeView(menu.getMainMenuGUI());
-                            }
-                            */
-
-                            //Assuming this menu was only created, if it was necessary to load the configuration files through the GUI (ie. not given as parameter when launching ISAcreator)
-                            //After loading configuration files, check if the isatabDir or isatabFiles where given as parameter
-                            //If GS mode, download the files and load them
-                            //In other modes (NORMAL or LIGHT), just load the files
-
-                            //TODO dependency with GS stuff
                             if (ISAcreatorCLArgs.mode()== Mode.GS && !menu.isUserLoggedIn()){
 
                                if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
