@@ -65,15 +65,15 @@ import java.util.List;
  * @author Eamonn Maguire
  */
 
-public class UserProfileIO {
-    private static final Logger log = Logger.getLogger(UserProfileIO.class.getName());
+public class UserProfileManager {
+    private static final Logger log = Logger.getLogger(UserProfileManager.class.getName());
 
     private static String USER_PROFILE_FILENAME = "profiles.sup";
 
     private ISAcreator main;
     private List<UserProfile> userProfiles;
 
-    public UserProfileIO(ISAcreator main) {
+    public UserProfileManager(ISAcreator main) {
         this.main = main;
     }
 
@@ -115,6 +115,7 @@ public class UserProfileIO {
     public void loadUserProfiles() {
         EncryptedObject eo = new EncryptedObject();
         File f = new File(ISAcreator.DEFAULT_USER_PROFILE_DIRECTORY.equals("") ? USER_PROFILE_FILENAME : ISAcreator.DEFAULT_USER_PROFILE_DIRECTORY + File.separator + USER_PROFILE_FILENAME);
+        System.out.println(f.getAbsolutePath());
         log.info("Loading user profile from: " + f.getAbsolutePath());
         if (f.exists()) {
             try {
@@ -125,6 +126,7 @@ public class UserProfileIO {
 
                 SealedObject so = (SealedObject) ois.readObject();
                 userProfiles = (List<UserProfile>) eo.decryptObject(so);
+                System.out.println("User profiles loaded, we have " + userProfiles.size());
             } catch (NoSuchAlgorithmException e) {
                 log.error(e.getMessage());
             } catch (NoSuchPaddingException e) {
@@ -145,6 +147,8 @@ public class UserProfileIO {
                 log.error(e.getMessage());
             } catch (IllegalBlockSizeException e) {
                 log.error(e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
