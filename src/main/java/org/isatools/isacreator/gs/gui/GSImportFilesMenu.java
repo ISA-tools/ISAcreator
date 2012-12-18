@@ -248,10 +248,10 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     }
 
 
-    private JPanel createButtonPanel() {
+    private Container createButtonPanel() {
 
         //selection panel
-        JPanel selectionPanel = new JPanel(new GridLayout(1, 2));
+        Box selectionPanel = Box.createHorizontalBox();
         selectionPanel.setOpaque(false);
 
         chooseFromElsewhere = new JLabel(getSearchButton(),
@@ -268,19 +268,11 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                     if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
                         String directory = jfc.getSelectedFile().toString();
-
-                        File dirFile = new File(directory);
+                        File dirFile = new File(directory + File.separator);
 
                         menu.showProgressPanel(loadISAanimation);
-                        /*
-                        if (AbstractImportFilesMenu.this instanceof ImportFilesMenu) {
-                            menu.showProgressPanel(loadISAanimation);
-                        } else {
-                            menu.showProgressPanel("attempting to load configuration files in directory " +
-                                    dirFile.getName());
-                        }
-                        */
-                        loadFile(directory + File.separator);
+
+                        loadFile(dirFile.getAbsolutePath());
                     }
 
                     timeButtonLastClicked = System.currentTimeMillis();
@@ -373,17 +365,9 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
         selectionPanel.add(chooseFromElsewhere);
         selectionPanel.add(chooseFromGS);
+        selectionPanel.add(loadSelected);
+        selectionPanel.add(Box.createHorizontalGlue());
 
-        JPanel loadPanel = new JPanel(new GridLayout(1, 1));
-        loadPanel.setOpaque(false);
-        loadPanel.add(loadSelected);
-
-
-        JPanel buttonPanel = new JPanel(new GridLayout(2, 1));
-        buttonPanel.setOpaque(false);
-        buttonPanel.add(selectionPanel);
-        buttonPanel.add(loadPanel);
-
-        return buttonPanel;
+        return selectionPanel;
     }
 }

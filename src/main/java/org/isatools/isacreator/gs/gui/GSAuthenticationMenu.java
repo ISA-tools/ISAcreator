@@ -19,6 +19,9 @@ import org.jdesktop.fuse.InjectedResource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 /**
@@ -126,35 +129,9 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                 JLabel.RIGHT), BorderLayout.NORTH);
         northPanel.add(fields, BorderLayout.CENTER);
 
-        JPanel buttonContainer = new JPanel(new GridLayout(1, 2));
+        JPanel buttonContainer = new JPanel(new BorderLayout());
         buttonContainer.setOpaque(false);
 
-        /*
-        //register
-        register = new JLabel(registerIcon,
-                JLabel.LEFT);
-        register.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                register.setIcon(registerIcon);
-                clearFields();
-                confirmExitPanel.setVisible(false);
-                //TODO change this for registration menu
-                menu.changeView(menu.getCreateProfileGUI());
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                register.setIcon(registerOverIcon);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                register.setIcon(registerIcon);
-            }
-        });
-        buttonContainer.add(register);
-        */
-
-        //login
         login = new JLabel(loginButton,
                 JLabel.RIGHT);
         login.addMouseListener(new MouseAdapter() {
@@ -197,7 +174,35 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         username.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "LOGIN");
         username.getActionMap().put("LOGIN", loginAction);
 
-        buttonContainer.add(login);
+        final JLabel registerButton = new JLabel(registerIcon);
+        UIHelper.renderComponent(registerButton, UIHelper.VER_9_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+
+        registerButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                registerButton.setIcon(registerIcon);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                registerButton.setIcon(registerOverIcon);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                registerButton.setIcon(registerIcon);
+                try {
+                    Desktop.getDesktop().browse(new URI("http://www.genomespace.org/register"));
+                } catch (IOException e1) {
+                    log.error("IOException - " + e1.getMessage());
+                } catch (URISyntaxException e1) {
+                    log.error("URISyntaxException - " + e1.getMessage());
+                }
+            }
+        });
+
+        buttonContainer.add(registerButton, BorderLayout.WEST);
+        buttonContainer.add(login, BorderLayout.EAST);
 
         /*
         //single sign on checkbox
