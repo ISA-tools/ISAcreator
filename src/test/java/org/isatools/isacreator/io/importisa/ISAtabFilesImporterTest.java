@@ -75,6 +75,13 @@ public class ISAtabFilesImporterTest {
 
         assert(inv!=null);
 
+        for(ISAFileErrorReport report : importer.getMessages()) {
+            System.out.println(report.getFileName());
+            for(ErrorMessage message : report.getMessages()) {
+                System.out.println(message.getErrorLevel().toString() + " > " + message.getMessage());
+            }
+        }
+
         //if import worked ok, there should not be error messages
         assert(importer.getMessages().size()==0);
 

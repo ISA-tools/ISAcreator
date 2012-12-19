@@ -104,9 +104,8 @@ public class BioPortalClient implements OntologyService {
             DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
             BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
-            parser.setLoadAllOntologies(loadAll);
 
-            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT, false);
+            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
             if (ontologies != null) {
                 for (Ontology ontology : ontologies) {
@@ -133,7 +132,7 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
-            List<Ontology> ontologies = parser.parseFile(downloadLocation, true);
+            List<Ontology> ontologies = parser.parseFile(downloadLocation);
 
             if (ontologies != null && !ontologies.isEmpty()) {
                 return ontologies.get(0);
