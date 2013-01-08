@@ -2,9 +2,7 @@ package org.isatools.isacreator.io.exportisa.exportadaptors;
 
 import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
-import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.ISASection;
-import org.isatools.isacreator.model.InvestigationContact;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import java.util.HashMap;
@@ -73,6 +71,8 @@ public class ISASectionExportAdaptor {
         StringBuilder output = new StringBuilder();
         output.append(fileSection).append("\n");
 
+        boolean isAssaySection = fileSection == InvestigationFileSection.STUDY_ASSAYS;
+
         ISASection firstSection = isaSections.get(0);
         List<String> fieldNames = firstSection.getFieldKeysAsList();
         for (int fieldIndex = 0; fieldIndex < getNumberOfLinesInSection(firstSection); fieldIndex++) {
@@ -83,7 +83,15 @@ public class ISASectionExportAdaptor {
 
             int sectionCount = 0;
             for (ISASection section : isaSections) {
-                line.append(section.getValue(fieldName));
+                String value = section.getValue(fieldName);
+                if (isAssaySection) {
+                    if(value.matches("^([A-Za-z]{1,4}:)+(.)*") && !value.startsWith("http"))  {
+                        value = value.replaceAll("^([A-Za-z]{1,4}:)+", "");
+                    }
+                    line.append(value);
+                } else {
+                    line.append(value);
+                }
                 line.append(sectionCount != isaSections.size() - 1 ? "\t" : "\n");
                 sectionCount++;
             }
