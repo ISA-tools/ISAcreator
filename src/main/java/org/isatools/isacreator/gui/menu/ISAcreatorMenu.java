@@ -339,7 +339,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         isacreator.validate();
     }
 
-    protected void showProgressPanel(String text) {
+    public void showProgressPanel(String text) {
         captureCurrentGlassPaneContents();
         progressIndicator = new InfiniteProgressPanel(text);
         progressIndicator.setSize(new Dimension(
@@ -356,13 +356,13 @@ public class ISAcreatorMenu extends JLayeredPane {
         previousGlassPane = (JPanel) isacreator.getGlassPane();
     }
 
-    protected void stopProgressIndicator() {
+    public void stopProgressIndicator() {
         if (progressIndicator != null) {
             progressIndicator.stop();
         }
     }
 
-    protected void resetViewAfterProgress() {
+    public void resetViewAfterProgress() {
         isacreator.setGlassPane(previousGlassPane);
     }
 

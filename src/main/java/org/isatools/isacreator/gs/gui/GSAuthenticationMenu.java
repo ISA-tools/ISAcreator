@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by the ISATeam.
@@ -141,6 +142,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                 confirmExitPanel.setVisible(false);
                 //login(sso.isSelected());
                 status.setText("");
+                menu.showProgressPanel("Logging in to GenomeSpace...");
                 login();
             }
 
@@ -165,6 +167,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         Action loginAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 //login(sso.isSelected());
+                menu.showProgressPanel("Logging in to GenomeSpace...");
                 login();
             }
         };
@@ -275,61 +278,98 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
     //private void login(boolean sso){
     private void login() {
-        String passwordString = new String(password.getPassword());
+        Thread performer = new Thread(new Runnable() {
+            public void run() {
+                // success, so load
 
-        if (!username.getText().equals("") && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())) {
+                String passwordString = new String(password.getPassword());
 
-            //logged in
-            clearFields();
-            if (ISAcreatorCLArgs.configDir() == null)
-                menu.changeView(menu.getImportConfigurationGUI());
-            else {
-                //load configuration and go to main menu
-                ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
-                boolean successful = importConfiguration.loadConfiguration();
-                if (successful) {
+                if (!username.getText().equals("") && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())) {
+                    menu.stopProgressIndicator();
 
-                    if (ISAcreatorCLArgs.isatabDir() != null) {
-
-                        java.util.List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
-
-                        if (!errors.isEmpty()) {
-                            //Problem downloading the files
-
-                            //load menu to show errors when loading files
-                            System.out.println("Number of errors: " + errors.size());
-                            System.out.println("Showing first one: " + errors.get(0).getMessage());
-
-
-                            //status.setText(errors.get(0).getMessage());
-
-
-                            ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
-                            java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
-                            list.add(error);
-
-
-                            ErrorMenu errorMenu = new ErrorMenu(menu, list, false, menu.getMainMenuGUI());
-                            errorMenu.createGUI();
-
-                        } else {
-                            menu.loadFiles(ISAcreatorCLArgs.isatabDir());
-                        }
-
+                    //logged in
+                    clearFields();
+                    if (ISAcreatorCLArgs.configDir() == null) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                menu.resetViewAfterProgress();
+                                menu.changeView(menu.getImportConfigurationGUI());
+                            }
+                        });
 
                     } else {
-                        menu.changeView(menu.getMainMenuGUI());
+                        //load configuration and go to main menu
+                        ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
+                        boolean successful = importConfiguration.loadConfiguration();
+
+                        if (successful) {
+
+                            if (ISAcreatorCLArgs.isatabDir() != null) {
+
+                                java.util.List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+
+                                if (!errors.isEmpty()) {
+                                    //Problem downloading the files
+
+                                    //load menu to show errors when loading files
+                                    System.out.println("Number of errors: " + errors.size());
+                                    System.out.println("Showing first one: " + errors.get(0).getMessage());
+
+
+                                    //status.setText(errors.get(0).getMessage());
+
+
+                                    ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
+                                    List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+                                    list.add(error);
+
+
+                                    ErrorMenu errorMenu = new ErrorMenu(menu, list, false, menu.getMainMenuGUI());
+                                    errorMenu.createGUI();
+
+                                } else {
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            menu.resetViewAfterProgress();
+                                            menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                                        }
+                                    });
+                                }
+                            } else {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        menu.resetViewAfterProgress();
+                                        menu.changeView(menu.getMainMenuGUI());
+                                    }
+                                });
+                            }
+                        } else {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    menu.resetViewAfterProgress();
+                                    status.setText(
+                                            "<html><b>Error: </b> Unable to connect to GenomeSpace. </html>");
+                                }
+                            });
+                            //TODO display problem!!!
+                        }
                     }
+
                 } else {
-                    //TODO display problem!!!
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            menu.stopProgressIndicator();
+                            menu.resetViewAfterProgress();
+                            status.setText(
+                                    "<html><b>Error: </b> Username or password incorrect! </html>");
+                        }
+                    });
 
                 }
             }
-
-        } else {
-            status.setText(
-                    "<html><b>Error: </b> Username or password incorrect! </html>");
         }
+        );
+        performer.start();
     }
 
     public void clearFields() {
