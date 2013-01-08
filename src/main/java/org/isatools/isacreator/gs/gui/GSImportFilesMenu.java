@@ -1,34 +1,28 @@
 package org.isatools.isacreator.gs.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-
 import org.apache.log4j.Logger;
-
 import org.genomespace.datamanager.core.GSFileMetadata;
-
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.gui.menu.*;
-import org.isatools.isacreator.managers.ApplicationManager;
-import org.isatools.isacreator.utils.GeneralUtils;
-
 import org.isatools.isacreator.gs.GSDataManager;
 import org.isatools.isacreator.gs.GSIdentityManager;
-
+import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.gui.menu.ImportFilesListCellRenderer;
+import org.isatools.isacreator.gui.menu.ImportFilesMenu;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import java.io.File;
 
 /**
@@ -55,8 +49,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     GSDataManager gsDataManager = null;
 
 
-
-    public GSImportFilesMenu(ISAcreatorMenu menu){
+    public GSImportFilesMenu(ISAcreatorMenu menu) {
         super(menu);
         setPreferredSize(new Dimension(400, 400));
         GSIdentityManager gsIdentityManager = GSIdentityManager.getInstance();
@@ -304,26 +297,11 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                     gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.OPEN);
 
-                    gsFileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
+                    gsFileChooser.addPropertyChangeListener("selectedFileMetadata", new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent event) {
-                            System.out.println("PropertyChangeEvent "+event);
+                            System.out.println("PropertyChangeEvent " + event);
 
-                            GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
-                            if (fileMetadata == null)
-                                return;
-                            System.out.println("fileMetadata===>"+fileMetadata);
-
-                            //menu.showProgressPanel(loadISAanimation);
-
-                            String localTmpDirectory = GeneralUtils.createISATmpDirectory();
-                            System.out.println("Downloading files to local tmp directory "+localTmpDirectory);
-                            String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
-                            gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(),localTmpDirectory, pattern);
-                            System.out.println("Importing file...");
-
-                            ApplicationManager.setCurrentLocalISATABFolder(localTmpDirectory);
-
-                            loadFile(localTmpDirectory);
+                            loadGenomeSpaceFiles();
 
 
                         }
@@ -369,5 +347,35 @@ public class GSImportFilesMenu extends ImportFilesMenu {
         selectionPanel.add(Box.createHorizontalGlue());
 
         return selectionPanel;
+    }
+
+    private void loadGenomeSpaceFiles() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                showLoadingImagePane();
+            }
+        });
+
+        Thread downloadFilesThread = new Thread(new Runnable() {
+            public void run() {
+                GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
+                if (fileMetadata == null)
+                    return;
+                System.out.println("fileMetadata===>" + fileMetadata);
+
+                String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+                System.out.println("Downloading files to local tmp directory " + localTmpDirectory);
+                String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
+                gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(), localTmpDirectory, pattern);
+                System.out.println("Importing file...");
+
+                ApplicationManager.setCurrentLocalISATABFolder(localTmpDirectory);
+
+                loadFile(localTmpDirectory);
+            }
+        });
+
+        downloadFilesThread.start();
+
     }
 }

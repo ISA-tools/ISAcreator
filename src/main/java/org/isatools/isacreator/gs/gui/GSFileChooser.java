@@ -237,6 +237,7 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
             public void mousePressed(MouseEvent event) {
                 if (selectedFileMetadata != null) {
+                    fileSelectionFrame.setVisible(false);
                     firePropertyChange("selectedFileMetadata", "", selectedFileMetadata);
                     fileSelectionFrame.dispose();
                 }

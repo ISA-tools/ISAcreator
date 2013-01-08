@@ -119,7 +119,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         loadFile(candidate.getAbsolutePath());
     }
 
-    private void showLoadingImagePane() {
+    public void showLoadingImagePane() {
         // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
         menu.captureCurrentGlassPaneContents();
         // we hide the glass pane which is currently holding the menu items, loading interface etc.
