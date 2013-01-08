@@ -85,6 +85,7 @@ public class ISASectionExportAdaptor {
             for (ISASection section : isaSections) {
                 String value = section.getValue(fieldName);
                 if (isAssaySection) {
+                    // if it begin with OBI: for example and isn't a URL, then we want to remove anything before the :
                     if(value.matches("^([A-Za-z]{1,4}:)+(.)*") && !value.startsWith("http"))  {
                         value = value.replaceAll("^([A-Za-z]{1,4}:)+", "");
                     }
