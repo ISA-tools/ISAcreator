@@ -140,7 +140,6 @@ public class GSAuthenticationMenu extends MenuUIComponent {
             public void mousePressed(MouseEvent event) {
                 login.setIcon(GSAuthenticationMenu.this.loginButton);
                 confirmExitPanel.setVisible(false);
-                //login(sso.isSelected());
                 status.setText("");
                 menu.showProgressPanel("Logging in to GenomeSpace...");
                 login();
@@ -166,7 +165,6 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         Action loginAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                //login(sso.isSelected());
                 menu.showProgressPanel("Logging in to GenomeSpace...");
                 login();
             }
@@ -179,6 +177,33 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         final JLabel registerButton = new JLabel(registerIcon);
         UIHelper.renderComponent(registerButton, UIHelper.VER_9_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+
+
+        /*
+        //code to use the API to register when ready
+        //register
+        register = new JLabel(registerIcon,
+                JLabel.LEFT);
+        register.addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent event) {
+                register.setIcon(registerIcon);
+                clearFields();
+                confirmExitPanel.setVisible(false);
+                //TODO change this for registration menu
+                menu.changeView(menu.getCreateProfileGUI());
+            }
+
+            public void mouseEntered(MouseEvent event) {
+                register.setIcon(registerOverIcon);
+            }
+
+            public void mouseExited(MouseEvent event) {
+                register.setIcon(registerIcon);
+            }
+        });
+        buttonContainer.add(register);
+        */
 
         registerButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -207,33 +232,6 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         buttonContainer.add(registerButton, BorderLayout.WEST);
         buttonContainer.add(login, BorderLayout.EAST);
 
-        /*
-        //single sign on checkbox
-        JPanel ssoContainer = new JPanel(new GridLayout(1, 2));
-        ssoContainer.setOpaque(false);
-
-        sso = new JCheckBox();
-        ssoContainer.add(sso, JPanel.RIGHT_ALIGNMENT);
-
-        ssoLabel = new JLabel(ssoIcon, JLabel.LEFT);
-        ssoLabel.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent event) {
-            }
-            public void mouseEntered(MouseEvent event) {
-                ssoLabel.setIcon(ssoOverIcon);
-            }
-            public void mouseExited(MouseEvent event) {
-                ssoLabel.setIcon(ssoIcon);
-            }
-        });
-        ssoContainer.add(ssoLabel);
-        */
-
-        //TODO add GS logo
-        //org.isatools.isacreator.gs logo
-        //iconLabel = new JLabel();
-        //iconLabel.setIcon(genomespacelogo);
-
 
         exit = new JLabel(exitButtonSml,
                 JLabel.CENTER);
@@ -260,10 +258,8 @@ public class GSAuthenticationMenu extends MenuUIComponent {
         exitContainer.add(exit);
 
         //south panel
-        //JPanel southPanel = new JPanel(new GridLayout(5, 1));
         JPanel southPanel = new JPanel(new GridLayout(4, 1));
         southPanel.setOpaque(false);
-        //southPanel.add(ssoContainer);
         southPanel.add(status);
         southPanel.add(buttonContainer);
         southPanel.add(exitContainer);
@@ -276,7 +272,6 @@ public class GSAuthenticationMenu extends MenuUIComponent {
     }
 
 
-    //private void login(boolean sso){
     private void login() {
         Thread performer = new Thread(new Runnable() {
             public void run() {
