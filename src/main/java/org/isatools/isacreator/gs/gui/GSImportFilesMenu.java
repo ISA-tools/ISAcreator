@@ -263,6 +263,8 @@ public class GSImportFilesMenu extends ImportFilesMenu {
                         String directory = jfc.getSelectedFile().toString();
                         File dirFile = new File(directory + File.separator);
 
+                        ApplicationManager.setCurrentLocalISATABFolder(dirFile.getAbsolutePath());
+
                         menu.showProgressPanel(loadISAanimation);
 
                         loadFile(dirFile.getAbsolutePath());
