@@ -361,7 +361,8 @@ public class GSImportFilesMenu extends ImportFilesMenu {
                 GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
                 if (fileMetadata == null)
                     return;
-                System.out.println("fileMetadata===>" + fileMetadata);
+
+                ApplicationManager.setCurrentRemoteISATABFolder(fileMetadata.getPath());
 
                 String localTmpDirectory = GeneralUtils.createISATmpDirectory();
                 System.out.println("Downloading files to local tmp directory " + localTmpDirectory);

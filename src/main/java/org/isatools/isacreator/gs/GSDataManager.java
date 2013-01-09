@@ -102,13 +102,9 @@ public class GSDataManager {
 
 
     public GSFileMetadata getFileMetadata(String url){
-        //System.out.println("at getFileMetadata -> url="+url);
-        //System.out.println("is logged in?="+gsSession.isLoggedIn());
         String filePath = transformURLtoFilePath(url) ;
-        //System.out.println("filePath="+filePath);
         DataManagerClient dmClient = gsSession.getDataManagerClient();
         GSFileMetadata fileMetadata = dmClient.getMetadata(filePath);
-        //System.out.println("fileMetadata="+fileMetadata);
         return fileMetadata;
     }
 

@@ -74,12 +74,12 @@ public class GSSaveAction extends AbstractAction {
 
             //save all the local files into GS
             String localISATABFolder = ApplicationManager.getCurrentLocalISAtabFolder();
-            System.out.println("locaISATABFolder="+localISATABFolder);
 
             File folder = new File(localISATABFolder);
             File[] files = folder.listFiles();
 
             String folderPath = ApplicationManager.getCurrentRemoteISAtabFolder();
+
             GSFileMetadata folderMetadata = gsDataManager.getFileMetadata(folderPath);
 
             for(File file: files){
