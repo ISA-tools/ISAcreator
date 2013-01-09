@@ -279,7 +279,8 @@ public class BioPortalClient implements OntologyService {
         if (fileWithNameSpace != null) {
             Map<OntologySourceRefObject, List<OntologyTerm>> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
 
-            updateOntologyManagerWithOntologyInformation();
+            //commeting this out for now to check performance improvement
+            //updateOntologyManagerWithOntologyInformation();
 
             return result;
         }
@@ -297,9 +298,7 @@ public class BioPortalClient implements OntologyService {
         String searchString = REST_URL + "search/" + term +
                 (((source == null) || source.trim().equalsIgnoreCase("")
                         || source.trim().equalsIgnoreCase("all"))
-                        ? "" : "/?ontologyids=" +source);
-
-        searchString += "&" + API_KEY;
+                        ? "?" : "/?ontologyids=" +source + "&") + API_KEY;
 
         log.info("search string " + searchString);
 
@@ -309,6 +308,9 @@ public class BioPortalClient implements OntologyService {
 
         return searchResult == null ? new HashMap<OntologySourceRefObject, List<OntologyTerm>>() : searchResult;
     }
+
+    /*
+    //commeting this out for now to check performance improvement
 
     private void updateOntologyManagerWithOntologyInformation() {
         if (!doneOntologyCheck) {
@@ -322,6 +324,7 @@ public class BioPortalClient implements OntologyService {
             doneOntologyCheck = true;
         }
     }
+    */
 
     private String constructSourceStringFromAllowedOntologies() {
         String allowedOntologies = "";
