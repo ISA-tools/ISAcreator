@@ -17,13 +17,15 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 
@@ -41,6 +43,8 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
     private static Logger log = Logger.getLogger(GSFileChooser.class);
 
+
+
     //the file chooser works in two modes: open and save
     public enum GSFileChooserMode {
         OPEN, SAVE
@@ -48,7 +52,8 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
     @InjectedResource
     private ImageIcon listImage, closeButton, closeButtonOver, selectDir, selectDirOver,
-            saveSubmission, saveSubmissionOver, newFolderButton, newFolderButtonOver;
+            saveSubmission, saveSubmissionOver, newFolderButton, newFolderButtonOver, okButtonIcon, okButtonIconOver,
+            cancelButtonIcon, cancelButtonIconOver;
 
     @InjectedResource
     private Image loadHeader, saveAsHeader;
@@ -62,6 +67,7 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     private GSTree tree = null;
     protected ISAcreatorMenu menu = null;
     private GSDataManager gsDataManager = null;
+    private NewFolderWindow newFolderWindow;
 
     public static final int SELECTED = 0;
     public static final int NOT_SELECTED = 1;
@@ -73,6 +79,7 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         ResourceInjector.get("gui-package.style").inject(this);
         GSIdentityManager gsIdentityManager = GSIdentityManager.getInstance();
         gsDataManager = gsIdentityManager.getGsDataManager();
+        newFolderWindow = new NewFolderWindow();
     }
 
     public int showOpenDialog() {
@@ -86,6 +93,16 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
     public JFrame createDialog() {
         JFrame containerFrame = new JFrame();
+
+        containerFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent windowEvent) {
+                if(newFolderWindow.isShowing()) {
+                    newFolderWindow.dispose();
+                }
+            }
+        });
+        containerFrame.setAlwaysOnTop(true);
         containerFrame.setUndecorated(true);
         containerFrame.setBackground(UIHelper.BG_COLOR);
         instantiatePanel(containerFrame);
@@ -105,26 +122,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         hud.installListeners();
 
         JPanel centerPanel = new JPanel(new BorderLayout());
-
-        JPanel fileNamePanel = new JPanel(new GridLayout(1, 2));
-        fileNamePanel.setBackground(UIHelper.VERY_LIGHT_GREY_COLOR);
-        final JTextField fileNameTxt = new JTextField("Please enter a directory name...");
-        fileNameTxt.setBorder(new LineBorder(UIHelper.LIGHT_GREY_COLOR, 1));
-        if (mode == GSFileChooserMode.SAVE) {
-
-            fileNamePanel.setOpaque(false);
-
-            JLabel fileNameLabel = new JLabel("directory name");
-            UIHelper.renderComponent(fileNameLabel, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
-
-            fileNameTxt.setBackground(UIHelper.BG_COLOR);
-            UIHelper.renderComponent(fileNameTxt, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
-
-            fileNamePanel.add(fileNameLabel);
-            fileNamePanel.add(fileNameTxt);
-
-            centerPanel.add(fileNamePanel, BorderLayout.NORTH);
-        }
 
 
         JComponent treePanel = getTreePanel();
@@ -165,53 +162,69 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
             newFolder.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent event) {
-                    if (selectedFileMetadata == null) {
-                        status.setText("Please, select the parent directory");
-                    } else {
-                        String newFolderName = fileNameTxt.getText();
 
-                        if (newFolderName.equals("Please enter a directory name...")) {
-                            status.setText("Please, enter a valid directory name");
-                            return;
-                        } else if (newFolderName.indexOf('/') != -1) {
-                            status.setText("Folder names must not contain slashes.  No folder was created.");
-                            return;
-                        }
-
-
-                        GSFileMetadata newDirMetadata = gsDataManager.mkDir(newFolderName, selectedFileMetadata);
-
-                        status.setText("Folder " + newFolderName + " created.");
-
-                        final TreePath path = tree.getSelectionPath();
-                        List<String> acceptableExtensions = new ArrayList<String>();
-                        acceptableExtensions.add("txt");
-                        if (tree.isExpanded(path) || currentNode.childrenHaveBeenInitialised()) {
-                            final GSFileMetadataTreeNode newDirNode =
-                                    new GSFileMetadataTreeNode(newDirMetadata, gsDataManager.getDataManagerClient(),
-                                            acceptableExtensions);
-                            final DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
-
-                            final GSFileMetadataTreeNode parent =
-                                    path == null ? (GSFileMetadataTreeNode) treeModel.getRoot()
-                                            : (GSFileMetadataTreeNode) path.getLastPathComponent();
-
-                            final int insertionPoint = getTreeIndex(parent, treeModel, newDirNode, false);
-                            if (insertionPoint == -1) {
-                                status.setText("Duplicate folder name");
-                                log.error("GenomeSpace error: duplicate folder name");
-                                return;
-                            }
-                            treeModel.insertNodeInto(newDirNode, parent, insertionPoint);
-
-                            // Make sure the user can see the new directory node:
-                            tree.scrollPathToVisible(new TreePath(newDirNode.getPath()));
-                        }
-
-                        if (tree.isCollapsed(path))
-                            tree.expandPath(path);
-
+                    newFolderWindow = new NewFolderWindow();
+                    if (!newFolderWindow.isShowing()) {
+                        Point displayLocation = newFolder.getLocationOnScreen();
+                        displayLocation.y -= 35;
+                        newFolderWindow.createGUI(displayLocation);
                     }
+
+                    newFolderWindow.addPropertyChangeListener("fileNameSelected", new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                            if (selectedFileMetadata == null) {
+                                status.setText("Please, select the parent directory");
+                            } else {
+                                String newFolderName = propertyChangeEvent.getNewValue().toString();
+
+                                if (newFolderName.equals("New folder name")) {
+                                    status.setText("Please, enter a valid directory name");
+                                    return;
+                                } else if (newFolderName.indexOf('/') != -1) {
+                                    status.setText("Folder names must not contain slashes.  No folder was created.");
+                                    return;
+                                }
+
+                                newFolderWindow.setVisible(false);
+                                newFolderWindow.dispose();
+
+                                GSFileMetadata newDirMetadata = gsDataManager.mkDir(newFolderName, selectedFileMetadata);
+
+                                status.setText("Folder " + newFolderName + " created.");
+
+                                final TreePath path = tree.getSelectionPath();
+                                List<String> acceptableExtensions = new ArrayList<String>();
+                                acceptableExtensions.add("txt");
+                                if (tree.isExpanded(path) || currentNode.childrenHaveBeenInitialised()) {
+                                    final GSFileMetadataTreeNode newDirNode =
+                                            new GSFileMetadataTreeNode(newDirMetadata, gsDataManager.getDataManagerClient(),
+                                                    acceptableExtensions);
+                                    final DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+
+                                    final GSFileMetadataTreeNode parent =
+                                            path == null ? (GSFileMetadataTreeNode) treeModel.getRoot()
+                                                    : (GSFileMetadataTreeNode) path.getLastPathComponent();
+
+                                    final int insertionPoint = getTreeIndex(parent, treeModel, newDirNode, false);
+                                    if (insertionPoint == -1) {
+                                        status.setText("Duplicate folder name");
+                                        log.error("GenomeSpace error: duplicate folder name");
+                                        return;
+                                    }
+                                    treeModel.insertNodeInto(newDirNode, parent, insertionPoint);
+
+                                    // Make sure the user can see the new directory node:
+                                    tree.scrollPathToVisible(new TreePath(newDirNode.getPath()));
+                                }
+
+                                if (tree.isCollapsed(path))
+                                    tree.expandPath(path);
+
+                            }
+                        }
+                    });
+
+
                 }
 
                 public void mouseEntered(MouseEvent event) {
@@ -301,17 +314,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         return selectedFileMetadata;
     }
 
-
-    private void settingISAcreatorPane() {
-        // capture the current glass pane. This is required when an error occurs on loading and we need to show the error screen etc..
-        menu.captureCurrentGlassPaneContents();
-        // we hide the glass pane which is currently holding the menu items, loading interface etc.
-        menu.hideGlassPane();
-        // add the loading image panel to the view. No need to use the glass pane here.
-        menu.add(createLoadingImagePanel(), BorderLayout.CENTER);
-
-    }
-
     private Container createLoadingImagePanel() {
         if (loadingImagePanel == null) {
             loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
@@ -371,5 +373,75 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         return insertIndex;
     }
 
+    class NewFolderWindow extends JFrame {
+
+        public void createGUI(Point position) {
+            setUndecorated(true);
+            setAlwaysOnTop(true);
+            setPreferredSize(new Dimension(250, 30));
+            setLayout(new BorderLayout());
+            setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
+
+            Box container = Box.createHorizontalBox();
+            container.setBorder(new EmptyBorder(4, 4, 4, 4));
+            setLocation(position);
+
+            final JTextField fileNameTxt = new JTextField("New folder name...", 30);
+            UIHelper.renderComponent(fileNameTxt, UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
+            fileNameTxt.setBorder(new MatteBorder(0, 0, 2, 0, UIHelper.LIGHT_GREEN_COLOR));
+
+            fileNameTxt.setBackground(UIHelper.BG_COLOR);
+            UIHelper.renderComponent(fileNameTxt, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+
+            container.add(fileNameTxt);
+
+            final JLabel okButton = new JLabel(okButtonIcon);
+            okButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent mouseEvent) {
+                    okButton.setIcon(okButtonIconOver);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent mouseEvent) {
+                    okButton.setIcon(okButtonIcon);
+                }
+
+                @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                    okButton.setIcon(okButtonIcon);
+                    firePropertyChange("fileNameSelected", "", fileNameTxt.getText());
+                }
+            });
+
+            final JLabel cancelButton = new JLabel(cancelButtonIcon);
+            cancelButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent mouseEvent) {
+                    cancelButton.setIcon(cancelButtonIconOver);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent mouseEvent) {
+                    cancelButton.setIcon(cancelButtonIcon);
+                }
+
+                @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                    cancelButton.setIcon(cancelButtonIcon);
+                    setVisible(false);
+                    NewFolderWindow.this.dispose();
+                }
+            });
+
+            container.add(okButton);
+            container.add(cancelButton);
+
+            add(container, BorderLayout.NORTH);
+
+            pack();
+            setVisible(true);
+        }
+    }
 
 }

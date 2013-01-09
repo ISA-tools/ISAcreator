@@ -2,14 +2,13 @@ package org.isatools.isacreator.gs;
 
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.gs.gui.GSFileChooser;
+import org.isatools.isacreator.gs.gui.GSSavingWindow;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.io.exportisa.OutputISAFiles;
 import org.isatools.isacreator.managers.ApplicationManager;
 
 import javax.swing.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -47,7 +46,7 @@ public class GSSaveAction extends AbstractAction {
      * @param mnemonic - shortcut key to be used!
      */
     public GSSaveAction(int type, String text, ImageIcon icon, String desc,
-                        Integer mnemonic, ISAcreator f, ISAcreatorMenu m){
+                        Integer mnemonic, ISAcreator f, ISAcreatorMenu m) {
 
         super(text, icon);
         this.type = type;
@@ -68,56 +67,98 @@ public class GSSaveAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent actionEvent) {
 
+        final GSSavingWindow savingProgressIndicator = new GSSavingWindow();
+
+        try {
         isatabExporter.saveISAFiles(false, ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation());
 
-        if (type == SAVE_ONLY){
-
-            //save all the local files into GS
-            String localISATABFolder = ApplicationManager.getCurrentLocalISAtabFolder();
-
-            File folder = new File(localISATABFolder);
-            File[] files = folder.listFiles();
-
-            String folderPath = ApplicationManager.getCurrentRemoteISAtabFolder();
-
-            GSFileMetadata folderMetadata = gsDataManager.getFileMetadata(folderPath);
-
-            for(File file: files){
-                gsDataManager.saveFile(file, folderMetadata);
-            }
-
-
-        }else{
-
-            final GSFileChooser gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.SAVE);
-            gsFileChooser.addPropertyChangeListener("selectedFileMetadata",  new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent event) {
-                    System.out.println("PropertyChangeEvent "+event);
-
-                    GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
-                    if (fileMetadata == null)
-                        return;
-                    System.out.println("fileMetadata===>"+fileMetadata);
-
+        if (type == SAVE_ONLY && ApplicationManager.getCurrentRemoteISAtabFolder() != null) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    savingProgressIndicator.createGUI();
+                }
+            });
+            Thread saveThread = new Thread(new Runnable() {
+                public void run() {
                     //save all the local files into GS
                     String localISATABFolder = ApplicationManager.getCurrentLocalISAtabFolder();
-                    System.out.println("locaISATABFolder="+localISATABFolder);
 
                     File folder = new File(localISATABFolder);
                     File[] files = folder.listFiles();
-                    for(File file: files){
-                        gsDataManager.saveFile(file, fileMetadata);
+
+                    String folderPath = ApplicationManager.getCurrentRemoteISAtabFolder();
+
+                    GSFileMetadata folderMetadata = gsDataManager.getFileMetadata(folderPath);
+
+                    for (File file : files) {
+                        updateProgressIndicator(savingProgressIndicator, file);
+                        gsDataManager.saveFile(file, folderMetadata);
                     }
 
 
+
+                    hideSaveProgressWindow(savingProgressIndicator);
+                }
+            });
+            saveThread.start();
+
+        } else {
+
+            final GSFileChooser gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.SAVE);
+            gsFileChooser.addPropertyChangeListener("selectedFileMetadata", new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent event) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            savingProgressIndicator.createGUI();
+                        }
+                    });
+
+                    Thread saveThread = new Thread(new Runnable() {
+                        public void run() {
+
+                            GSFileMetadata fileMetadata = gsFileChooser.getSelectedFileMetadata();
+                            if (fileMetadata == null)
+                                return;
+                            System.out.println("fileMetadata===>" + fileMetadata);
+
+                            //save all the local files into GS
+                            String localISATABFolder = ApplicationManager.getCurrentLocalISAtabFolder();
+                            System.out.println("localISATABFolder=" + localISATABFolder);
+
+                            File folder = new File(localISATABFolder);
+                            File[] files = folder.listFiles();
+                            for (File file : files) {
+                                updateProgressIndicator(savingProgressIndicator, file);
+                                gsDataManager.saveFile(file, fileMetadata);
+                            }
+
+                            ApplicationManager.setCurrentRemoteISATABFolder(fileMetadata.getPath());
+
+                            hideSaveProgressWindow(savingProgressIndicator);
+                        }
+                    });
+                    saveThread.start();
                 }
             });
 
             gsFileChooser.showOpenDialog();
         }
-
+        } finally {
+            hideSaveProgressWindow(savingProgressIndicator);
+        }
     }
 
+    private void hideSaveProgressWindow(GSSavingWindow savingProgressIndicator) {
+        savingProgressIndicator.setVisible(false);
+    }
+
+    private void updateProgressIndicator(final GSSavingWindow savingProgressIndicator, final File file) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                savingProgressIndicator.fireUpdateToStatus("Uploading " + file.getName());
+            }
+        });
+    }
 
 
     class CloseEvent implements ActionListener {

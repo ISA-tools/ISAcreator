@@ -67,8 +67,6 @@ public class BioPortalClient implements OntologyService {
 
     private Set<String> noChildren;
 
-    private boolean doneOntologyCheck = false;
-
     private List<Ontology> ontologies;
 
     private Map<String, String> ontologySources;
