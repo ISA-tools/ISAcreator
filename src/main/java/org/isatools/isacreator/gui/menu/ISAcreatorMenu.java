@@ -159,7 +159,10 @@ public class ISAcreatorMenu extends JLayeredPane {
 
             if (isacreator.getMode() == Mode.GS) {
                 authentication = GSIdentityManager.getInstance();
-                authGUI = new GSAuthenticationMenu(this, authentication);
+                if (username !=null)
+                    authGUI = new GSAuthenticationMenu(this, authentication, username);
+                else
+                    authGUI = new GSAuthenticationMenu(this, authentication);
 
             }
 

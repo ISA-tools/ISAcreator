@@ -49,7 +49,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
     private Authentication authentication = null;
 
     @InjectedResource
-    public ImageIcon pleaseLogin, loginButton, loginButtonOver, registerIcon, registerOverIcon,
+    public ImageIcon gs_logo, pleaseLogin, loginButton, loginButtonOver, registerIcon, registerOverIcon,
             exitButtonSml, exitButtonSmlOver, genomespacelogo, ssoIcon, ssoOverIcon;
 
     public GSAuthenticationMenu(ISAcreatorMenu menu, Authentication authManager) {
@@ -82,7 +82,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         //username
         JPanel userNameCont = new JPanel(new GridLayout(1, 2));
-        JLabel usernameLabel = new JLabel("GS username ");
+        JLabel usernameLabel = new JLabel("username ");
         usernameLabel.setFont(UIHelper.VER_12_BOLD);
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         userNameCont.add(usernameLabel);
@@ -102,7 +102,7 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         //password
         JPanel passwordCont = new JPanel(new GridLayout(1, 2));
-        JLabel passwordLabel = new JLabel("GS password ");
+        JLabel passwordLabel = new JLabel("password ");
         passwordLabel.setFont(UIHelper.VER_12_BOLD);
         passwordLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
         passwordCont.add(passwordLabel);
@@ -125,6 +125,9 @@ public class GSAuthenticationMenu extends MenuUIComponent {
 
         //north panel
         JPanel northPanel = new JPanel();
+        northPanel.add(new JLabel(
+                gs_logo,
+                JLabel.LEFT), BorderLayout.NORTH);
         northPanel.add(new JLabel(
                 pleaseLogin,
                 JLabel.RIGHT), BorderLayout.NORTH);
