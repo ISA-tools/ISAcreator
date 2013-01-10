@@ -191,8 +191,10 @@ public class ISAcreatorMenu extends JLayeredPane {
         if (loggedIn && configDir != null) {
             ImportConfiguration importConfiguration = new ImportConfiguration(configDir);
             importConfigSuccessful = importConfiguration.loadConfiguration();
-            if (importConfigSuccessful)
+            if (!importConfigSuccessful)
                 System.out.println("Problem importing the configuration at " + configDir);
+            else
+                System.out.println("Loaded configuration "+configDir);
         }
 
         System.out.println("user " + (profileCreated ? "created" : "authenticated") + (importConfigSuccessful ? ", configuration imported" : ", configuration not imported yet"));

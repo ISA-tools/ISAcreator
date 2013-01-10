@@ -38,7 +38,6 @@ public class GSActivator implements BundleActivator {
                 boolean loggedIn = false;
 
                 //LOGIN
-                //main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
                 main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext);
                 gsAuthentication =  GSIdentityManager.getInstance();
 
@@ -52,6 +51,8 @@ public class GSActivator implements BundleActivator {
                         System.exit(0);
                     } else {
                         System.out.println("Logged in to GenomeSpace as user "+ISAcreatorCLArgs.username());
+
+                        System.out.println("Downloading files from GenomeSpace directory: "+ ISAcreatorCLArgs.isatabDir());
                         List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(gsAuthentication);
 
 
@@ -63,6 +64,9 @@ public class GSActivator implements BundleActivator {
                             // System.exit(-1);
                             main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn, errors);
                         }else{
+
+                            System.out.println("Files downloaded from GenomeSpace downloaded to "+ISAcreatorCLArgs.isatabDir());
+
                             main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), gsAuthentication, null, loggedIn);
                         }
                     }

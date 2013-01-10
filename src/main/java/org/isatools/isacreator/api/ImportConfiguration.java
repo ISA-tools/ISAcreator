@@ -32,6 +32,10 @@ public class ImportConfiguration {
         configParser = new ConfigXMLParser(configDir);
     }
 
+    /***
+     *
+     * @return true if the load of the configuration was successful and false otherwise
+     */
     public boolean loadConfiguration(){
         // provide location to the configuration parser!
 
@@ -46,7 +50,10 @@ public class ImportConfiguration {
             ApplicationManager.setCurrentDataReferenceObject();
 
             ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_CONFIGURATION, new File(configDir).getAbsolutePath());
+        }else{
+            System.out.println(configParser.getProblemLog());
         }
+
 
         return !configParser.isProblemsEncountered();
     }

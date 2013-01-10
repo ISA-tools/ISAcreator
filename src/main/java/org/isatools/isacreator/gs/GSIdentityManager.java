@@ -219,7 +219,6 @@ public class GSIdentityManager implements Authentication {
     }
 
     public GSDataManager getGsDataManager(){
-        System.out.println("session: is logged in when retrieving DM?"+session.isLoggedIn());
         return new GSDataManager(session);
     }
 
