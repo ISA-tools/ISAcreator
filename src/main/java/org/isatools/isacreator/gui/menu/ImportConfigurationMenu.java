@@ -176,7 +176,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                                     errorMenu.createGUI();
 
                                 } else {
-                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
                                 }
 
                                 } else {
@@ -187,7 +187,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             } else{
                                 //mode is not GS
                                 if (ISAcreatorCLArgs.isatabDir()!=null){
-                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
                                 }else {
                                     menu.changeView(menu.getMainMenuGUI());
                                 }

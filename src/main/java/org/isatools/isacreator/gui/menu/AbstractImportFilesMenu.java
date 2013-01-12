@@ -59,7 +59,7 @@ import java.io.File;
 
 
 public abstract class AbstractImportFilesMenu extends MenuUIComponent {
-    protected static ImageIcon loadISAanimation = new ImageIcon(ImportFilesMenu.class.getResource("/images/gui/isa_load.gif"));
+    public static ImageIcon loadISAanimation = new ImageIcon(ImportFilesMenu.class.getResource("/images/gui/isa_load.gif"));
 
     protected JEditorPane problemReport;
     protected JScrollPane problemScroll;

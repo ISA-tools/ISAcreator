@@ -10,9 +10,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gs.GSLocalFilesManager;
-import org.isatools.isacreator.gui.menu.ErrorMenu;
-import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
-import org.isatools.isacreator.gui.menu.MenuUIComponent;
+import org.isatools.isacreator.gui.menu.*;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
@@ -283,19 +281,34 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                 String passwordString = new String(password.getPassword());
 
                 if (!username.getText().equals("") && !passwordString.equals("") && authentication.login(username.getText(), password.getPassword())) {
-                    menu.stopProgressIndicator();
+
 
                     //logged in
                     clearFields();
                     if (ISAcreatorCLArgs.configDir() == null) {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
+                                menu.stopProgressIndicator();
                                 menu.resetViewAfterProgress();
                                 menu.changeView(menu.getImportConfigurationGUI());
                             }
                         });
 
                     } else {
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                menu.stopProgressIndicator();
+
+                                menu.resetViewAfterProgress();
+
+                                menu.changeView(
+                                        UIHelper.wrapComponentInPanel(new JLabel(AbstractImportFilesMenu.loadISAanimation))
+                                );
+
+                            }
+                        });
+
                         //load configuration and go to main menu
                         ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
                         boolean successful = importConfiguration.loadConfiguration();
@@ -313,27 +326,25 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                                     System.out.println("Number of errors: " + errors.size());
                                     System.out.println("Showing first one: " + errors.get(0).getMessage());
 
-
                                     //status.setText(errors.get(0).getMessage());
-
-
                                     ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
                                     List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
                                     list.add(error);
-
 
                                     ErrorMenu errorMenu = new ErrorMenu(menu, list, false, menu.getMainMenuGUI());
                                     errorMenu.createGUI();
 
                                 } else {
+
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run() {
-                                            menu.resetViewAfterProgress();
-                                            menu.loadFiles(ISAcreatorCLArgs.isatabDir());
+                                            menu.loadFiles(ISAcreatorCLArgs.isatabDir(), false);
+
                                         }
                                     });
+
                                 }
-                            } else {
+                            } else {   //isatabDir is null
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
                                         menu.resetViewAfterProgress();
@@ -342,14 +353,14 @@ public class GSAuthenticationMenu extends MenuUIComponent {
                                 });
                             }
                         } else {
+
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     menu.resetViewAfterProgress();
                                     status.setText(
-                                            "<html><b>Error: </b> Unable to connect to GenomeSpace. </html>");
+                                            "<html><b>Error: </b> Loading of configuratin file was unsuccessful. </html>");
                                 }
                             });
-                            //TODO display problem!!!
                         }
                     }
 

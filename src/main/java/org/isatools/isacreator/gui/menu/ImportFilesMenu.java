@@ -114,8 +114,27 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         return previousButtonPanel;
     }
 
-    public void getSelectedFileAndLoad(File candidate) {
-        showLoadingImagePane();
+    public void getSelectedFileAndLoad() {
+
+        //showLoadingImagePane();
+
+        if (previousFileList.getSelectedIndex() != -1) {
+            // select file from list
+            for (File candidate : previousFiles) {
+                if (candidate.getName()
+                        .equals(previousFileList.getSelectedValue()
+                                .toString())) {
+                    getSelectedFileAndLoad(candidate,false);
+                }
+            }
+        }
+    }
+
+
+    public void getSelectedFileAndLoad(File candidate, boolean loadingImagePane) {
+        if (loadingImagePane){
+            showLoadingImagePane();
+        }
         loadFile(candidate.getAbsolutePath());
     }
 
@@ -153,27 +172,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         return loadButtonOver;
     }
 
-    public void getSelectedFileAndLoad() {
-        if (previousFileList.getSelectedIndex() != -1) {
-            // select file from list
-            for (File candidate : previousFiles) {
-                if (candidate.getName()
-                        .equals(previousFileList.getSelectedValue()
-                                .toString())) {
-                    getSelectedFileAndLoad(candidate);
-                }
-            }
-        }
-    }
-
 
     public void loadFile(final String dir) {
+
+
         // show infinite panel. if successful, hide glass panel and show either the errors, or the data entry panel containing the submission
         Thread performer = new Thread(new Runnable() {
             public void run() {
                 try {
-
-                    //showLoadingImagePane();
 
                     final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(menu.getMain());
                     boolean successfulImport = iISA.importFile(dir);
@@ -185,6 +191,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
 
                     } else if (successfulImport) {
+
                         log.error("The following problems were encountered when importing the ISAtab files in " + dir);
 
                         for (ISAFileErrorReport report : iISA.getMessages()) {

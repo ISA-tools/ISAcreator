@@ -204,14 +204,14 @@ public class ISAcreatorMenu extends JLayeredPane {
 
 //        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
         if (loggedIn && isacreator.getMode() != Mode.GS && isatabDir != null) {
-            loadFiles(isatabDir);
+            loadFiles(isatabDir, false);
         }
 
         if (panelToShow == SHOW_LOADED_FILES) {
             if (ISAcreatorCLArgs.mode() == Mode.GS && !loggedIn) {
                 GSLocalFilesManager.downloadFiles(getAuthentication());
             }
-            loadFiles(ISAcreatorCLArgs.isatabDir());
+            loadFiles(ISAcreatorCLArgs.isatabDir(), false);
         }
 
 
@@ -280,8 +280,8 @@ public class ISAcreatorMenu extends JLayeredPane {
         });
     }
 
-    public void loadFiles(String isatabDir) {
-        ((ImportFilesMenu) importISA).getSelectedFileAndLoad(new File(isatabDir));
+    public void loadFiles(String isatabDir, boolean invokeLater) {
+        ((ImportFilesMenu) importISA).getSelectedFileAndLoad(new File(isatabDir), invokeLater);
         System.out.println("ISATAB dataset loaded");
     }
 

@@ -166,6 +166,13 @@ public class ConfigXMLParser {
             return null;
         File[] configFiles = dir.listFiles();
 
+        if (configFiles == null){
+            log.error("The specified directory " + configDir + " is wrong!");
+            problemLog += "<p>There is a problem with the directory " + configDir + " as no files where found.</p>";
+            problemsEncountered = true;
+            throw new IOException("The specified directory " + configDir + " is wrong!");
+        }
+
         if (configFiles.length == 0) {
             log.error("The specified directory " + configDir + " is empty!");
             throw new IOException("The specified directory " + configDir + " is empty!");
