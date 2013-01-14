@@ -128,10 +128,9 @@ public abstract class ISAFileOutput {
             def.update();
         }
 
-        // print section defining the Ontologies Used
-        //investigationFilePrintStream.println(getOntologiesUsedOutput());
-
         generateMissingSections(investigation);
+        // print section defining the Ontologies Used
+        investigationFilePrintStream.println(getOntologiesUsedOutput());
 
         // print the Investigation section.
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(investigation, InvestigationFileSection.INVESTIGATION_SECTION));
