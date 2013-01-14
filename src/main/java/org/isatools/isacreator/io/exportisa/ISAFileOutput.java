@@ -82,23 +82,25 @@ public abstract class ISAFileOutput {
 
         // for each study generate study sections if they don't exist.
         for (Study study : investigation.getStudies().values()) {
+            System.out.println("Checking study... " + study.getStudyId());
             if (study.getStudyDesigns().size() == 0) {
                 study.getStudyDesigns().add(new StudyDesign());
             }
             if (study.getAssays().size() == 0) {
-                study.addAssay(new Assay());
+                study.getAssays().put("", new Assay());
             }
             if (study.getFactors().size() == 0) {
-                study.addFactor(new Factor());
+                study.getFactors().add(new Factor());
             }
             if (study.getProtocols().size() == 0) {
-                study.addProtocol(new Protocol());
+                study.getProtocols().add(new Protocol());
             }
             if (study.getPublications().size() == 0) {
-                study.addPublication(new StudyPublication());
+                System.out.println("adding dumb publication");
+                study.getPublications().add(new StudyPublication());
             }
             if (study.getContacts().size() == 0) {
-                study.addContact(new StudyContact());
+                study.getContacts().add(new StudyContact());
             }
         }
     }
