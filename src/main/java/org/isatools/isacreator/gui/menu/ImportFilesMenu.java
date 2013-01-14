@@ -116,15 +116,13 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
     public void getSelectedFileAndLoad() {
 
-        //showLoadingImagePane();
-
         if (previousFileList.getSelectedIndex() != -1) {
             // select file from list
             for (File candidate : previousFiles) {
                 if (candidate.getName()
                         .equals(previousFileList.getSelectedValue()
                                 .toString())) {
-                    getSelectedFileAndLoad(candidate,false);
+                    getSelectedFileAndLoad(candidate,true);
                 }
             }
         }
