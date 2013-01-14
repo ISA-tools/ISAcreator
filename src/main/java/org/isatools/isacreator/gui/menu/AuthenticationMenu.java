@@ -39,9 +39,11 @@ package org.isatools.isacreator.gui.menu;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -254,8 +256,36 @@ public class AuthenticationMenu extends MenuUIComponent {
     public void login(){
         if (authentication.login(username.getText(), password.getPassword())){
             clearFields();
-            menu.changeView(menu.getImportConfigurationGUI());
-        } else {
+            if (ISAcreatorCLArgs.configDir()==null)     {
+
+                menu.changeView(menu.getImportConfigurationGUI());
+
+            }else{ //configDir is not null
+
+                //load configuration and go to main menu
+                ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
+                boolean successful = importConfiguration.loadConfiguration();
+
+                if (successful) {
+
+                    if (ISAcreatorCLArgs.isatabDir() != null) {
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir(), false);
+
+                                }
+                            });
+
+                    }else{
+
+                        menu.changeView(menu.getMainMenuGUI());
+
+                    }
+                }//successful
+
+       }
+        }else{
             status.setText(
                     "<html><b>Error: </b> Username or password incorrect! </html>");
         }
