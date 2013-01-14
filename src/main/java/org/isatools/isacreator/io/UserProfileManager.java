@@ -76,7 +76,7 @@ public class UserProfileManager {
     private static List<UserProfile> userProfiles;
     public static final String PASSPHRASE = "eamonniscool";
 
-    public void saveUserProfiles() {
+    public static void saveUserProfiles() {
         //.sup extension -> secure user profiles
         String userProfileLocation = ISAcreatorProperties.getProperty("isacreator.userProfileLocation");
         System.out.println("User profile location: " + userProfileLocation);
