@@ -105,7 +105,7 @@
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
@@ -542,24 +542,24 @@
     </dependencies>
 
     <profiles>
-        <profile>
-            <id>default-tools.jar</id>
-            <activation>
-                <property>
-                    <name>java.vendor</name>
-                    <value>Sun Microsystems Inc.</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                    <version>1.4.2</version>
-                    <scope>system</scope>
-                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>
+        <!--<profile>-->
+            <!--<id>default-tools.jar</id>-->
+            <!--<activation>-->
+                <!--<property>-->
+                    <!--<name>java.vendor</name>-->
+                    <!--<value>Sun Microsystems Inc.</value>-->
+                <!--</property>-->
+            <!--</activation>-->
+            <!--<dependencies>-->
+                <!--<dependency>-->
+                    <!--<groupId>com.sun</groupId>-->
+                    <!--<artifactId>tools</artifactId>-->
+                    <!--<version>1.4.2</version>-->
+                    <!--<scope>system</scope>-->
+                    <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
+                <!--</dependency>-->
+            <!--</dependencies>-->
+        <!--</profile>-->
 
         <profile>
             <id>toxbank</id>
