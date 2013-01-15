@@ -414,7 +414,8 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                 if (previousGSFiles==null)
                     previousGSFiles = new ArrayList<GSFileMetadata>();
-                previousGSFiles.add(fileMetadata);
+                if (!previousGSFiles.contains(fileMetadata))
+                    previousGSFiles.add(fileMetadata);
 
                 loadFile(localTmpDirectory);
             }
