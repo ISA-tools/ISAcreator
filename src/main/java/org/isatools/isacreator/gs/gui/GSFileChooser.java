@@ -1,8 +1,11 @@
 package org.isatools.isacreator.gs.gui;
 
-import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.apache.log4j.Logger;
 import org.genomespace.datamanager.core.GSFileMetadata;
+
+import com.explodingpixels.macwidgets.IAppWidgetFactory;
+
+import org.apache.log4j.Logger;
+
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
@@ -11,6 +14,7 @@ import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.ImportFilesMenu;
 import org.isatools.isacreator.managers.ApplicationManager;
+
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -22,10 +26,13 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
 import java.awt.*;
 import java.awt.event.*;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import java.util.*;
 import java.util.List;
 
@@ -42,8 +49,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
     protected static ImageIcon loadISAanimation = new ImageIcon(ImportFilesMenu.class.getResource("/images/gui/isa_load.gif"));
 
     private static Logger log = Logger.getLogger(GSFileChooser.class);
-
-
 
     //the file chooser works in two modes: open and save
     public enum GSFileChooserMode {
@@ -123,13 +128,11 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
         JPanel centerPanel = new JPanel(new BorderLayout());
 
-
         JComponent treePanel = getTreePanel();
         treePanel.setBorder(new EmptyBorder(10, 2, 7, 2));
         centerPanel.add(treePanel, BorderLayout.CENTER);
 
         fileSelectionFrame.add(centerPanel, BorderLayout.CENTER);
-
 
         // setup center panel with buttons
         JPanel southPanel = new JPanel(new BorderLayout());
@@ -292,9 +295,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
     private JComponent getTreePanel() {
         //set up central panel with files - treePanel
-        GSIdentityManager identityManager = GSIdentityManager.getInstance();
-        //System.out.println("identityManager.isLoggedIn()="+identityManager.isLoggedIn());
-        GSDataManager gsDataManager = identityManager.getGsDataManager();
 
         tree = new GSTree(gsDataManager.getDataManagerClient(), new ArrayList<String>());
         this.currentNode = (GSFileMetadataTreeNode) tree.getModel().getRoot();
@@ -321,7 +321,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         return loadingImagePanel;
     }
 
-    //    @Override
     public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
 
         status.setText("");
@@ -330,7 +329,7 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         if (currentNode == null) {
             selectedFileMetadata = null;
             selectDirLabel.setEnabled(false);
-        } else { // currentNode != null
+        } else {
             final boolean isFolder = currentNode.getFileMetadata().isDirectory();
             if (!isFolder) {
                 status.setText("Please, select a folder with an ISA-tab dataset");

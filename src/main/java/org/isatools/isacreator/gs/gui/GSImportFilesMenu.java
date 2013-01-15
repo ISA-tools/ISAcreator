@@ -8,6 +8,7 @@ import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gs.GSDataManager;
 import org.isatools.isacreator.gs.GSIdentityManager;
+import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.ImportFilesListCellRenderer;
 import org.isatools.isacreator.gui.menu.ImportFilesMenu;
@@ -146,7 +147,24 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
     @Override
     public File[] getPreviousFiles() {
-        return new File[0];  //To change body of implemented methods use File | Settings | File Templates.
+        previousFileList.clearItems();
+
+
+        File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY);
+
+        if (!f.exists() || !f.isDirectory()) {
+            f.mkdir();
+        }
+
+        previousFiles = f.listFiles();
+
+        for (File prevSubmission : previousFiles) {
+            if (prevSubmission.isDirectory()) {
+                previousFileList.addItem(prevSubmission.getName());
+            }
+        }
+
+        return previousFiles;
     }
 
     @Override

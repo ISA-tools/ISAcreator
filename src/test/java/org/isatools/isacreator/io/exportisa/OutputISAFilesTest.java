@@ -55,9 +55,13 @@ public class OutputISAFilesTest {
     }
 
     @Test
-    public void importFileTest(){
+    public void saveISAFilesTest(){
         importer.importFile(isatabParentDir);
+        System.out.println("isatabParentDir="+isatabParentDir);
+
         Investigation inv = importer.getInvestigation();
+
+        System.out.println("inv="+inv);
 
         assert(inv!=null);
 
