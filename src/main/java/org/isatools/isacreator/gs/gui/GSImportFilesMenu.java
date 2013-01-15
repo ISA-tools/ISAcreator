@@ -41,7 +41,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
-            backButton, backButtonOver, loadButton, loadButtonOver, filterLeft, filterRight, searchButtonGS, searchButtonGSOver;
+            backButton, backButtonOver, loadButton, loadButtonOver, filterLeft, filterRight, searchButtonGS, searchButtonGSOver,gslistImage;
 
     private JLabel back;
     private Container loadingImagePanel;
@@ -200,7 +200,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
     @Override
     public void setListRenderer() {
-        previousFileList.setCellRenderer(new ImportFilesListCellRenderer(listImage));
+        previousFileList.setCellRenderer(new ImportFilesListCellRenderer(listImage, gslistImage));
     }
 
     @Override
