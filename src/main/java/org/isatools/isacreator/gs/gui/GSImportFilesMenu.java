@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by the ISATeam.
@@ -48,6 +49,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
     GSFileChooser gsFileChooser = null;
     GSDataManager gsDataManager = null;
+    private java.util.List<GSFileMetadata> previousGSFiles = null;
 
 
     public GSImportFilesMenu(ISAcreatorMenu menu) {
@@ -146,6 +148,27 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     }
 
     @Override
+    public void getSelectedFileAndLoad() {
+
+        if (previousFileList.getSelectedIndex() != -1) {
+            // select file from list
+            for (File candidate : previousFiles) {
+                if (candidate.getName().equals(previousFileList.getSelectedValue().toString())) {
+                    getSelectedFileAndLoad(candidate,true);
+                }
+            }
+
+            for (GSFileMetadata candidate: previousGSFiles){
+                if (candidate.getUrl().equals(previousFileList.getSelectedValue().toString()))
+                    System.out.println("file candidate = "+candidate);
+
+                    loadGenomeSpaceFiles(candidate);
+            }
+
+        }
+    }
+
+    @Override
     public File[] getPreviousFiles() {
         previousFileList.clearItems();
 
@@ -164,11 +187,15 @@ public class GSImportFilesMenu extends ImportFilesMenu {
             }
         }
 
-        return previousFiles;
-    }
+        if (previousGSFiles!=null){
+            for(GSFileMetadata fileMetadata : previousGSFiles){
+                if (fileMetadata.isDirectory()){
+                    previousFileList.addItem(fileMetadata.getUrl());
+                }
+            }
+        }
 
-    @Override
-    public void getSelectedFileAndLoad() {
+        return previousFiles;
     }
 
     @Override
@@ -305,11 +332,8 @@ public class GSImportFilesMenu extends ImportFilesMenu {
         chooseFromGS = new JLabel(getSearchButtonGS(),
                 JLabel.CENTER);
         chooseFromGS.addMouseListener(new MouseAdapter() {
-
             public void mousePressed(MouseEvent event) {
-
-                // precautionary meaaure to stop double execution of action...
-
+                // precautionary measure to stop double execution of action...
                 if (timeButtonLastClicked != System.currentTimeMillis()) {
 
                     chooseFromGS.setIcon(getSearchButtonGS());
@@ -318,11 +342,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                     gsFileChooser.addPropertyChangeListener("selectedFileMetadata", new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent event) {
-                            System.out.println("PropertyChangeEvent " + event);
-
                             loadGenomeSpaceFiles();
-
-
                         }
                     });
 
@@ -368,6 +388,42 @@ public class GSImportFilesMenu extends ImportFilesMenu {
         return selectionPanel;
     }
 
+
+    private void loadGenomeSpaceFiles(final GSFileMetadata fileMetadata) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                showLoadingImagePane();
+            }
+        });
+
+        Thread downloadFilesThread = new Thread(new Runnable() {
+            public void run() {
+
+                if (fileMetadata == null)
+                    return;
+
+                ApplicationManager.setCurrentRemoteISATABFolder(fileMetadata.getPath());
+
+                String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+                System.out.println("Downloading files to local tmp directory " + localTmpDirectory);
+                String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
+                gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(), localTmpDirectory, pattern);
+                System.out.println("Importing file...");
+
+                ApplicationManager.setCurrentLocalISATABFolder(localTmpDirectory);
+
+                if (previousGSFiles==null)
+                    previousGSFiles = new ArrayList<GSFileMetadata>();
+                previousGSFiles.add(fileMetadata);
+
+                loadFile(localTmpDirectory);
+            }
+        });
+
+        downloadFilesThread.start();
+
+    }
+
     private void loadGenomeSpaceFiles() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -390,6 +446,10 @@ public class GSImportFilesMenu extends ImportFilesMenu {
                 System.out.println("Importing file...");
 
                 ApplicationManager.setCurrentLocalISATABFolder(localTmpDirectory);
+
+                if (previousGSFiles==null)
+                    previousGSFiles = new ArrayList<GSFileMetadata>();
+                previousGSFiles.add(fileMetadata);
 
                 loadFile(localTmpDirectory);
             }
