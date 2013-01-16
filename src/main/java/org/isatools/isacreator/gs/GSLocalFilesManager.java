@@ -29,7 +29,7 @@ public class GSLocalFilesManager {
 
         if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
             //isatabDir not null or isatabFiles not null
-            String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+            String localTmpDirectory = GeneralUtils.createTmpDirectory("isatab-");
 
             GSDataManager gsDataManager = ((GSIdentityManager)gsAuthentication).getGsDataManager();
 

@@ -39,8 +39,10 @@ package org.isatools.isacreator.utils;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
+import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -49,60 +51,15 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 
 public class GeneralUtils {
 
     private static final Logger log = Logger.getLogger(GeneralUtils.class);
+    public static final int BUFFER_SIZE = 1024;
 
-    public static boolean downloadFile(String fileLocation, String downloadLocation) {
-        URL url;
-        OutputStream os = null;
-        InputStream is = null;
-
-        try {
-            url = new URL(fileLocation);
-
-            URLConnection urlConn = url.openConnection();
-            urlConn.setConnectTimeout(1000);
-            is = urlConn.getInputStream();
-            os = new BufferedOutputStream(new FileOutputStream(downloadLocation));
-
-            byte[] inputBuffer = new byte[1024];
-            int numBytesRead;
-
-            while ((numBytesRead = is.read(inputBuffer)) != -1) {
-                os.write(inputBuffer, 0, numBytesRead);
-            }
-
-            return true;
-
-        } catch (MalformedURLException e) {
-            System.err.println("The URL is malformed: " + e.getMessage());
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("io exception caught: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Unexpected error occurred: " + e.getMessage());
-        } finally {
-            try {
-
-                if (os != null) {
-                    os.close();
-                }
-
-                if (is != null) {
-                    is.close();
-                }
-
-            } catch (IOException ioe) {
-                System.err.println("io exception caught: " + ioe.getMessage());
-            }
-        }
-        return false;
-    }
 
     public static Map<String, FieldObject> findMissingFields(String[] headers, TableReferenceObject stdTableDefinition) {
 
@@ -146,8 +103,8 @@ public class GeneralUtils {
         return String.valueOf(c).matches("[\\p{Alnum}]*");
     }
 
-    public static String createISATmpDirectory(){
-        String localTmpDirectory = System.getProperty("java.io.tmpdir")+ "isatab-" + System.currentTimeMillis() + File.separator;
+    public static String createTmpDirectory(String name){
+        String localTmpDirectory = System.getProperty("java.io.tmpdir")+ name + System.currentTimeMillis() + File.separator;
         boolean success = new File(localTmpDirectory).mkdir();
         if (success) {
             System.out.println("Directory: "+ localTmpDirectory + " created");
@@ -159,5 +116,73 @@ public class GeneralUtils {
         return null;
     }
 
+    public static String unzip(String toUnpackName) throws IOException {
+        File file = new File(toUnpackName);
+        return unzip(file);
+    }
+
+    public static String unzip(File toUnpack) throws IOException {
+        ZipFile zf = new ZipFile(toUnpack);
+
+        String parentDir = toUnpack.getParent();
+        String pathToReturn = parentDir;
+
+        Enumeration<? extends ZipEntry> entries = zf.entries();
+
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+
+            // ignore any silly files as a result of the mac os file system (e.g. __MACOSX or .DS_STORE)
+            if (!entry.getName().startsWith("_") && !entry.getName().startsWith(".")) {
+                if (entry.isDirectory()) {
+                    // Assume directories are stored parents first then children.
+                    File newDirectory = new File(parentDir + File.separator + entry.getName());
+                    pathToReturn = newDirectory.getPath();
+                    if (!newDirectory.exists()) {
+                        newDirectory.mkdirs();
+                    }
+                    continue;
+                }
+                copyInputStream(zf.getInputStream(entry),
+                        new BufferedOutputStream(new FileOutputStream(parentDir + File.separator + entry.getName())));
+            }
+        }
+
+
+        zf.close();
+        return pathToReturn;
+
+    }
+
+
+    public static void copyInputStream(InputStream in, OutputStream out)
+            throws IOException {
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int len;
+
+        while ((len = in.read(buffer)) >= 0) {
+            out.write(buffer, 0, len);
+        }
+
+        in.close();
+        out.close();
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+        String configurationFilesLocation = PropertyFileIO.retrieveDefaultSettings().getProperty("configurationFilesLocation");
+        String tmpDirectory = GeneralUtils.createTmpDirectory("Configurations");
+        String downloadedFile = tmpDirectory+"config.zip";
+        boolean downloaded = DownloadUtils.downloadFile(configurationFilesLocation, downloadedFile);
+        System.out.println("downloadedFile="+downloadedFile);
+        try{
+            String unzipped = GeneralUtils.unzip(downloadedFile);
+            System.out.println("unzipped="+unzipped);
+        }catch(IOException ex){
+            ex.printStackTrace();
+
+        }
+    }
 
 }

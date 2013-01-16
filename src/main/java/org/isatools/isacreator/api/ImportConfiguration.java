@@ -23,7 +23,6 @@ import java.util.List;
  */
 public class ImportConfiguration {
 
-    //private static ISAcreator main = ApplicationManager.getCurrentApplicationInstance();
     private ConfigXMLParser configParser = null;
     private String configDir = null;
 

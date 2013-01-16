@@ -404,7 +404,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                 ApplicationManager.setCurrentRemoteISATABFolder(fileMetadata.getPath());
 
-                String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+                String localTmpDirectory = GeneralUtils.createTmpDirectory("isatab-");
                 System.out.println("Downloading files to local tmp directory " + localTmpDirectory);
                 String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
                 gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(), localTmpDirectory, pattern);
@@ -440,7 +440,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                 ApplicationManager.setCurrentRemoteISATABFolder(fileMetadata.getPath());
 
-                String localTmpDirectory = GeneralUtils.createISATmpDirectory();
+                String localTmpDirectory = GeneralUtils.createTmpDirectory("isatab-");
                 System.out.println("Downloading files to local tmp directory " + localTmpDirectory);
                 String pattern = "i_.*\\.txt|s_.*\\.txt|a_.*\\.txt";
                 gsDataManager.downloadAllFilesFromDirectory(fileMetadata.getPath(), localTmpDirectory, pattern);
