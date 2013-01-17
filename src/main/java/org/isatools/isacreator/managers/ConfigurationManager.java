@@ -36,7 +36,6 @@ public class ConfigurationManager {
     }
 
     /**
-     *
      * @return a list of MappingObjects
      */
     public static List<MappingObject> getMappings() {
@@ -49,7 +48,7 @@ public class ConfigurationManager {
      * @return array of strings with measurement endpoints
      */
     public static String[] getMeasurementEndpoints() {
-        List<MappingObject> assayToTypeMapping = mappings;
+        List<MappingObject> assayToTypeMapping = getMappings();
         Set<String> measTypeSet = new HashSet<String>();
 
         for (MappingObject mo : assayToTypeMapping) {
@@ -69,13 +68,12 @@ public class ConfigurationManager {
     }
 
     /**
-     *
      * Retrieves technology types
      *
      * @return array of strings
      */
     public static String[] getTechnologyTypes() {
-        List<MappingObject> assayToTypeMapping = mappings;
+        List<MappingObject> assayToTypeMapping = getMappings();
         Set<String> techTypeSet = new HashSet<String>();
 
         for (MappingObject mo : assayToTypeMapping) {
@@ -95,7 +93,6 @@ public class ConfigurationManager {
     }
 
     /**
-     *
      * Retrives the allowed technologies per endpoint
      *
      * @return map of string and string list
@@ -103,7 +100,7 @@ public class ConfigurationManager {
     public static Map<String, List<String>> getAllowedTechnologiesPerEndpoint() {
         Map<String, List<String>> measToAllowedTechs = new HashMap<String, List<String>>();
 
-        for (MappingObject mo : mappings) {
+        for (MappingObject mo : getMappings()) {
             if (!measToAllowedTechs.containsKey(mo.getMeasurementEndpointType())) {
                 measToAllowedTechs.put(mo.getMeasurementEndpointType(), new ArrayList<String>());
             }
@@ -123,7 +120,11 @@ public class ConfigurationManager {
      */
     public static TableReferenceObject selectTROForUserSelection(
             String measurementEndpoint, String techType) {
-        for (MappingObject mo : mappings) {
+
+        measurementEndpoint = getTrimmedName(measurementEndpoint);
+        techType = getTrimmedName(techType);
+
+        for (MappingObject mo : getMappings()) {
             if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
                     mo.getTechnologyType().equalsIgnoreCase(techType)) {
                 for (TableReferenceObject tro : assayDefinitions) {
@@ -135,6 +136,11 @@ public class ConfigurationManager {
         }
 
         return null;
+    }
+
+    private static String getTrimmedName(String string) {
+        string = string.contains(":") ? string.substring(string.lastIndexOf(":") + 1) : string;
+        return string;
     }
 
     /**
@@ -158,10 +164,12 @@ public class ConfigurationManager {
 
         return null;
     }
-    
-    public static MappingObject getMappingObjectForMeasurementAndTechnology(String measurement, String technology) {
-        for(MappingObject mappingObject : mappings) {
-            if(mappingObject.getMeasurementEndpointType().equals(measurement) && mappingObject.getTechnologyType().equals(technology)) {
+
+    public static MappingObject getMappingObjectForMeasurementAndTechnology(String measurementEndpoint, String techType) {
+        measurementEndpoint = getTrimmedName(measurementEndpoint);
+        techType = getTrimmedName(techType);
+        for (MappingObject mappingObject : mappings) {
+            if (mappingObject.getMeasurementEndpointType().equals(measurementEndpoint) && mappingObject.getTechnologyType().equals(techType)) {
                 return mappingObject;
             }
         }

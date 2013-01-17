@@ -621,7 +621,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private List<OntologyTerm> getSortedHistory() {
         List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
-        ontologyTerms.addAll(OntologyManager.getUserOntologyHistory().values());
+        ontologyTerms.addAll(OntologyManager.getOntologySelectionHistory().values());
         Collections.sort(ontologyTerms);
         return ontologyTerms;
     }
@@ -734,7 +734,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         firePropertyChange("selectedOntology", "OLD_VALUE", selectedTerm.getText());
         if (historyList.getSelectedIndex() != -1) {
-            OntologyManager.getUserOntologyHistory().put(historyList.getSelectedValue().toString(), (OntologyTerm) historyList.getSelectedValue());
+            OntologyManager.getOntologySelectionHistory().put(historyList.getSelectedValue().toString(), (OntologyTerm) historyList.getSelectedValue());
         }
         historyList.getFilterField().setText("");
         historyList.clearSelection();
@@ -1059,9 +1059,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     public void updatehistory() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if ((historyList != null) && (OntologyManager.getUserOntologyHistory() != null)) {
+                if ((historyList != null) && (OntologyManager.getOntologySelectionHistory() != null)) {
 
-                    OntologyTerm[] newHistory = new OntologyTerm[OntologyManager.getUserOntologyHistory().size()];
+                    OntologyTerm[] newHistory = new OntologyTerm[OntologyManager.getOntologySelectionHistory().size()];
 
                     int count = 0;
                     for (OntologyTerm oo : getSortedHistory()) {

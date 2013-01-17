@@ -53,6 +53,9 @@ import java.awt.*;
 public class ImportFilesListCellRenderer extends JComponent
         implements ListCellRenderer {
     DefaultListCellRenderer listCellRenderer;
+    private ImageIcon alternativeListImage;
+    private ImageIcon listImage;
+    private JLabel icon;
 
     /**
      * CustomListCellRenderer Constructor
@@ -60,17 +63,25 @@ public class ImportFilesListCellRenderer extends JComponent
      * @param listImage Image to use for each list item
      */
     public ImportFilesListCellRenderer(ImageIcon listImage) {
+        this(listImage, listImage);
+    }
+
+    public ImportFilesListCellRenderer(ImageIcon listImage, ImageIcon alternativeListImage) {
         setLayout(new BorderLayout());
+        this.listImage = listImage;
+        this.alternativeListImage = alternativeListImage;
+
         listCellRenderer = new DefaultListCellRenderer();
 
-        JLabel image = new JLabel(listImage);
-        image.setOpaque(false);
+        icon = new JLabel(listImage);
+        icon.setOpaque(false);
 
-        add(image, BorderLayout.WEST);
+        add(icon, BorderLayout.WEST);
         add(listCellRenderer, BorderLayout.CENTER);
 
         setBorder(null);
     }
+
 
     public Component getListCellRendererComponent(JList jList,
                                                   Object val, int index, boolean selected, boolean b1) {
@@ -84,6 +95,10 @@ public class ImportFilesListCellRenderer extends JComponent
             } else {
                 UIHelper.renderComponent((JComponent) c, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
             }
+
+            String value = val.toString();
+            listCellRenderer.setText(value.startsWith("http") ? value.substring(value.lastIndexOf("/") + 1): value);
+            icon.setIcon(value.startsWith("http") ? alternativeListImage : listImage);
         }
 
         return this;

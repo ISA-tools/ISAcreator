@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.qrcode.utils;
 
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.formatmappingutility.ui.MappingChoice;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
@@ -105,7 +105,7 @@ public class QRAPIHook {
     }
 
     /**
-     * Returns each sample mapped to it's encoded contents for production of the QR codes
+     * Returns each sample mapped to its encoded contents for production of the QR codes
      *
      * @param qrCodeBuilderInfo - List of MappingChoices completed by the user
      * @return SampleName -> QR Code contents.

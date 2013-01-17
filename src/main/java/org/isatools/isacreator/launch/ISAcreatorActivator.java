@@ -1,5 +1,6 @@
 package org.isatools.isacreator.launch;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -16,14 +17,21 @@ import javax.swing.*;
  */
 public class ISAcreatorActivator implements BundleActivator {
 
+    private static final Logger log = Logger.getLogger(ISAcreatorActivator.class);
+
     private ISAcreator main = null;
 
     public void start(final BundleContext bundleContext) throws Exception {
 
         Thread loadISATask = new Thread(new Runnable() {
             public void run() {
-                main = new ISAcreator(ISAcreatorApplication.mode, bundleContext, ISAcreatorApplication.configDir);
-                main.createGUI(ISAcreatorApplication.configDir, ISAcreatorApplication.username, ISAcreatorApplication.isatabDir);
+                //main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext, ISAcreatorCLArgs.configDir());
+                main = new ISAcreator(ISAcreatorCLArgs.mode(), bundleContext);
+                if (ISAcreatorCLArgs.noArguments()){
+                    main.createGUI();
+                }else{
+                    main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), ISAcreatorCLArgs.password(), ISAcreatorCLArgs.isatabDir(), ISAcreatorCLArgs.isatabFiles(), null, null, false);
+                }
             }
         });
 

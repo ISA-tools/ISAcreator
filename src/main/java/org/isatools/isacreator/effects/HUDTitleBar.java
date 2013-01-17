@@ -72,6 +72,22 @@ public class HUDTitleBar extends JComponent {
         this(activeImage, inactiveImage, true);
     }
 
+    public HUDTitleBar(Image activeImage, Image inactiveImage, Image close, Image closeInactive, Image closeOver, Image closePressed) {
+        this.dispose = true;
+        setLayout(new GridBagLayout());
+
+        grip = activeImage;
+        inactiveGrip = inactiveImage;
+
+        this.close = close;
+        this.closeInactive = closeInactive;
+        this.closeOver = closeOver;
+        this.closePressed = closePressed;
+
+        createButtons();
+        setBackground(UIHelper.BG_COLOR);
+    }
+
     public HUDTitleBar(Image activeImage, Image inactiveImage, boolean dispose) {
         this.dispose = dispose;
         setLayout(new GridBagLayout());

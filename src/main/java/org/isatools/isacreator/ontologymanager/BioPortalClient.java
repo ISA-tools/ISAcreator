@@ -67,8 +67,6 @@ public class BioPortalClient implements OntologyService {
 
     private Set<String> noChildren;
 
-    private boolean doneOntologyCheck = false;
-
     private List<Ontology> ontologies;
 
     private Map<String, String> ontologySources;
@@ -104,9 +102,8 @@ public class BioPortalClient implements OntologyService {
             DownloadUtils.downloadFile(searchString, DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
             BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
-            parser.setLoadAllOntologies(loadAll);
 
-            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT, false);
+            ontologies = parser.parseFile(DownloadUtils.DOWNLOAD_FILE_LOC + "ontologies" + DownloadUtils.XML_EXT);
 
             if (ontologies != null) {
                 for (Ontology ontology : ontologies) {
@@ -133,7 +130,7 @@ public class BioPortalClient implements OntologyService {
 
             BioPortalOntologyListResultHandler parser = new BioPortalOntologyListResultHandler();
 
-            List<Ontology> ontologies = parser.parseFile(downloadLocation, true);
+            List<Ontology> ontologies = parser.parseFile(downloadLocation);
 
             if (ontologies != null && !ontologies.isEmpty()) {
                 return ontologies.get(0);
@@ -179,22 +176,22 @@ public class BioPortalClient implements OntologyService {
         return result;
     }
 
-    public OntologyTerm getTermInformation(String termAccession, String ontology) {
+    public OntologyTerm getTermInformation(String termAccession, String ontologyVersion) {
         OntologyTerm bpo;
-        if (searchResults.containsKey(ontology + "-" + termAccession)) {
-            bpo = searchResults.get(ontology + "-" + termAccession);
+        if (searchResults.containsKey(ontologyVersion + "-" + termAccession)) {
+            bpo = searchResults.get(ontologyVersion + "-" + termAccession);
             if (bpo != null) {
                 if (bpo.getOntologyPurl() == null ||
                         bpo.getOntologyPurl().trim().equals("")) {
-                    bpo = performMetadataQuery(termAccession, ontology);
-                    searchResults.put(ontology + "-" + termAccession, bpo);
+                    bpo = performMetadataQuery(termAccession, ontologyVersion);
+                    searchResults.put(ontologyVersion + "-" + termAccession, bpo);
                 } else {
                     return bpo;
                 }
             }
         } else {
-            bpo = performMetadataQuery(termAccession, ontology);
-            searchResults.put(ontology + "-" + termAccession,
+            bpo = performMetadataQuery(termAccession, ontologyVersion);
+            searchResults.put(ontologyVersion + "-" + termAccession,
                     bpo);
         }
         return bpo;
@@ -280,7 +277,8 @@ public class BioPortalClient implements OntologyService {
         if (fileWithNameSpace != null) {
             Map<OntologySourceRefObject, List<OntologyTerm>> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
 
-            updateOntologyManagerWithOntologyInformation();
+            //commeting this out for now to check performance improvement
+            //updateOntologyManagerWithOntologyInformation();
 
             return result;
         }
@@ -298,9 +296,7 @@ public class BioPortalClient implements OntologyService {
         String searchString = REST_URL + "search/" + term +
                 (((source == null) || source.trim().equalsIgnoreCase("")
                         || source.trim().equalsIgnoreCase("all"))
-                        ? "" : "/?ontologyids=" +source);
-
-        searchString += "&" + API_KEY;
+                        ? "?" : "/?ontologyids=" +source + "&") + API_KEY;
 
         log.info("search string " + searchString);
 
@@ -310,6 +306,9 @@ public class BioPortalClient implements OntologyService {
 
         return searchResult == null ? new HashMap<OntologySourceRefObject, List<OntologyTerm>>() : searchResult;
     }
+
+    /*
+    //commeting this out for now to check performance improvement
 
     private void updateOntologyManagerWithOntologyInformation() {
         if (!doneOntologyCheck) {
@@ -323,6 +322,7 @@ public class BioPortalClient implements OntologyService {
             doneOntologyCheck = true;
         }
     }
+    */
 
     private String constructSourceStringFromAllowedOntologies() {
         String allowedOntologies = "";
@@ -342,7 +342,7 @@ public class BioPortalClient implements OntologyService {
     /**
      * Finds the root in an ontology
      *
-     * @param ontology - ontology to search in as it's version ID e.g. 39002 for BRO
+     * @param ontology - ontology to search in as its version ID e.g. 39002 for BRO
      * @return Map<String,String> representing ontology term accession to term label mappings.
      */
     public Map<String, OntologyTerm> getOntologyRoots(String ontology) {

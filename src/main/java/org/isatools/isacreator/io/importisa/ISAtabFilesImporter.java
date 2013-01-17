@@ -28,10 +28,8 @@ import java.util.List;
 /**
  * Created by the ISA team
  *
- * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 09/03/2011
- *         Time: 14:27
+ * Date: 09/03/2011
+ * Time: 14:27
  *
  * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>

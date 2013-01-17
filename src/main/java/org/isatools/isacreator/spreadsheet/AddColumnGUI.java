@@ -245,7 +245,7 @@ public class AddColumnGUI extends JDialog {
                         dropdown.hidePopup(ontologySelectionTool);
                         // we need to get the selected terms, get the first object and modify the output so that it gives us something conforming to
                         // term (source:accession)
-                        OntologyTerm term = OntologyManager.getUserOntologyHistory().get(evt.getNewValue().toString());
+                        OntologyTerm term = OntologyManager.getOntologySelectionHistory().get(evt.getNewValue().toString());
                         if (term != null) {
                             field.setText(getStringForHeaderFromOntologyTerm(term));
                         } else {

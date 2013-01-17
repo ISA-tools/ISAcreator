@@ -48,7 +48,6 @@ public class ISAtabFilesImporterFromGUI extends ISAtabImporter {
         //GUI related stuff
         attachGUIsToInvestigation();
         dataEntryEnvironment.createGUIFromInvestigation(investigation);
-        assignOntologiesToSession(mapper.getOntologyTermsDefined());
 
         return result;
     }
@@ -72,13 +71,7 @@ public class ISAtabFilesImporterFromGUI extends ISAtabImporter {
     }
 
 
-    private void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
-        for (OntologyTerm oo : ontologiesUsed) {
-            if (!oo.getOntologyTermName().trim().equals("")) {
-                OntologyManager.addToUserHistory(oo);
-            }
-        }
-    }
+
 
 
 }

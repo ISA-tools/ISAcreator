@@ -80,7 +80,7 @@ public class StringProcessing {
                 String part2 = substitution.substring(endIndex);
 
                 substitution = part1 + nextLine[colIndex] + part2;
-                // recursively call this method since direct substitutions inside the first string will change it's
+                // recursively call this method since direct substitutions inside the first string will change its
                 // length and therefore destroy String index locations...
                 return processSubstitutionString(substitution, nextLine);
             }

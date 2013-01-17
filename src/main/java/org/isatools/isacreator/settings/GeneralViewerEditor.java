@@ -45,7 +45,7 @@ import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.StudySubData;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
-import org.isatools.isacreator.io.UserProfileIO;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Protocol;
 import org.jdesktop.fuse.InjectedResource;
@@ -216,9 +216,9 @@ public class GeneralViewerEditor<T> extends SettingsScreen {
 
     public boolean updateSettings() {
         if (title.equals(ElementEditor.CONTACTS)) {
-            menu.getMain().getCurrentUser().setPreviouslyUsedContacts((List<StudySubData>) currentValues);
+            UserProfileManager.getCurrentUser().setPreviouslyUsedContacts((List<StudySubData>) currentValues);
         } else {
-            menu.getMain().getCurrentUser().setPreviouslyUsedProtocols((List<StudySubData>) currentValues);
+            UserProfileManager.getCurrentUser().setPreviouslyUsedProtocols((List<StudySubData>) currentValues);
         }
 
         menu.getMain().saveUserProfiles();
@@ -242,9 +242,9 @@ public class GeneralViewerEditor<T> extends SettingsScreen {
             try {
 
                 if (title.equals(ElementEditor.CONTACTS)) {
-                    currentValues.addAll((Collection<? extends T>) UserProfileIO.loadContactsLibrary(file));
+                    currentValues.addAll((Collection<? extends T>) UserProfileManager.loadContactsLibrary(file));
                 } else {
-                    currentValues.addAll((Collection<? extends T>) UserProfileIO.loadProtocolLibrary(file));
+                    currentValues.addAll((Collection<? extends T>) UserProfileManager.loadProtocolLibrary(file));
                 }
 
                 updateStats();
@@ -297,9 +297,9 @@ public class GeneralViewerEditor<T> extends SettingsScreen {
             JOptionPane optionPane = null;
             try {
                 if (title.equals(ElementEditor.CONTACTS)) {
-                    UserProfileIO.saveContactsLibrary((List<Contact>) currentValues, exportDir);
+                    UserProfileManager.saveContactsLibrary((List<Contact>) currentValues, exportDir);
                 } else {
-                    UserProfileIO.saveProtocolLibrary((List<Protocol>) currentValues, exportDir);
+                    UserProfileManager.saveProtocolLibrary((List<Protocol>) currentValues, exportDir);
                 }
                 optionPane = new JOptionPane("<html>" + title + " library saved in " + exportDir.getPath() + "</html>",
                         JOptionPane.OK_OPTION);

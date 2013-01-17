@@ -38,6 +38,7 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -214,7 +215,7 @@ public class MainMenu extends MenuUIComponent {
             public void mousePressed(MouseEvent event) {
                 logoutButton.setIcon(MainMenu.this.logout);
                 confirmExitPanel.setVisible(false);
-                menu.getMain().setCurrentUser(null);
+                UserProfileManager.setCurrentUser(null);
                 menu.changeView(menu.getAuthenticationGUI());
             }
 

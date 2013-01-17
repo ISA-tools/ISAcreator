@@ -99,7 +99,7 @@ public class TermSubstitutionGUI extends JPanel {
         infoLabPanel.setBackground(UIHelper.BG_COLOR);
         JLabel infoLab = new JLabel("<html>You have changed the names of some terms used within the Study sample and assay definitions." +
                 " In order to ensure that the terms are consistent, <b>either match the term you replaced with one of the new terms you have added</b>, or" +
-                " <b>delete</b> the term to remove it's presence in the sample or assay definitions.</html>");
+                " <b>delete</b> the term to remove its presence in the sample or assay definitions.</html>");
         infoLab.setOpaque(false);
         infoLab.setPreferredSize(new Dimension(400, 90));
         infoLab.setFont(UIHelper.VER_12_PLAIN);

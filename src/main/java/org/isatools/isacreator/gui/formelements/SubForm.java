@@ -41,7 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
@@ -50,6 +50,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
@@ -650,7 +651,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             } else {
                 displayText = "<html>" + "<b>Confirm deletion of " +
                         fieldType + "</b>" + "<p>Deleting this " + fieldType +
-                        " will result in it's complete removal from this experiment annotation!</p>" +
+                        " will result in its complete removal from this experiment annotation!</p>" +
                         "<p>Do you wish to continue?</p>" + "</html>";
             }
 
@@ -764,8 +765,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         // if it doesn't exist, then add the ontology information to the defined sources
         if (!isPresent) {
 
-            OntologySourceRefObject osro = ApplicationManager.getCurrentApplicationInstance()
-                    .getCurrentUser()
+            OntologySourceRefObject osro = UserProfileManager.getCurrentUser()
                     .getOntologySource(source);
 
             if (osro == null) {

@@ -88,6 +88,7 @@ public class UIHelper {
     public static final ImageIcon OK_BUTTON_OVER = new ImageIcon(UIHelper.class.getResource("/images/common/ok_over.png"));
     public static final ImageIcon CLOSE_BUTTON = new ImageIcon(UIHelper.class.getResource("/images/common/close.png"));
     public static final ImageIcon CLOSE_BUTTON_OVER = new ImageIcon(UIHelper.class.getResource("/images/common/close_over.png"));
+    public static final Color VERY_LIGHT_GREY_COLOR = new Color(250, 252, 250);
 
     //
 
@@ -125,7 +126,6 @@ public class UIHelper {
         comp.setForeground(foregroundColor);
         comp.setFont(f);
         comp.setBackground(BG_COLOR);
-
         comp.setOpaque(opaque);
     }
 
