@@ -46,22 +46,18 @@ import java.awt.*;
 
 /**
  * MenuUIComponent
+ * Date: Mar 3, 2010
  *
- * @author eamonnmaguire
- * @date Mar 3, 2010
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
  */
-
-
-public class MenuUIComponent extends JPanel {
+public abstract class MenuUIComponent extends JPanel {
 
     protected ISAcreatorMenu menu;
     protected ExitConfirmationPanel confirmExitPanel;
 
     public MenuUIComponent(ISAcreatorMenu menu) {
         this.menu = menu;
-
         ResourceInjector.get("gui-package.style").inject(this, true);
-
         instantiatePanel();
     }
 
@@ -73,14 +69,12 @@ public class MenuUIComponent extends JPanel {
         JLabel lab = new JLabel(labelName);
         lab.setFont(UIHelper.VER_12_BOLD);
         lab.setForeground(UIHelper.DARK_GREEN_COLOR);
-
         return lab;
     }
 
     protected static JPanel createPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 2));
         panel.setOpaque(false);
-
         return panel;
     }
 
@@ -89,4 +83,6 @@ public class MenuUIComponent extends JPanel {
         UIHelper.renderComponent(textfield, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
         return textfield;
     }
+
+    protected abstract void createGUI();
 }

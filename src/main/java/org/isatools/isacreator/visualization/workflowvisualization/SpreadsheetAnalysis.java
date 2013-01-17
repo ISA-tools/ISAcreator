@@ -1,6 +1,6 @@
 package org.isatools.isacreator.visualization.workflowvisualization;
 
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.sampleselection.SampleInformation;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.visualization.workflowvisualization.graph.*;

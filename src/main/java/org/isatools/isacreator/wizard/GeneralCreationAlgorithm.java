@@ -158,7 +158,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
 
                                     row += val + "\t";
                                 } else if (tableStructure.get(columnIndex)[0].equals(GeneralFieldTypes.PROTOCOL_REF.name)) {
-                                    // we have a protocol. Do two things: set value to it's default value and add it to the study protocols
+                                    // we have a protocol. Do two things: set value to its default value and add it to the study protocols
                                     row += buildingModel.getDefaultValue(columnIndex + 1) + "\t";
                                 } else {
                                     // just empty row data

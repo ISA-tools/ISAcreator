@@ -38,8 +38,8 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
-import org.isatools.isacreator.apiutils.StudyUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.StudyUtils;
 import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.assayselection.AssaySelectionDialog;
 import org.isatools.isacreator.common.UIHelper;
@@ -684,7 +684,7 @@ public class StudyDataEntry extends DataEntryForm {
                 final AssayInformationPanel panel = (AssayInformationPanel) propertyChangeEvent.getNewValue();
 
                 String removalText = "<html>" + "<b>Confirm deletion of assay</b>" + "<p>Deleting this will result " +
-                        "in it's complete removal from this experiment annotation!</p>" +
+                        "in its complete removal from this experiment annotation!</p>" +
                         "<p>Do you wish to continue?</p>" + "</html>";
 
                 JOptionPane optionPane = new JOptionPane(removalText,

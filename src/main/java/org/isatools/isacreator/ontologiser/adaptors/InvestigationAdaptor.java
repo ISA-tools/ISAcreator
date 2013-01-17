@@ -1,7 +1,7 @@
 package org.isatools.isacreator.ontologiser.adaptors;
 
-import org.isatools.isacreator.apiutils.InvestigationUtils;
-import org.isatools.isacreator.apiutils.SpreadsheetUtils;
+import org.isatools.isacreator.api.utils.InvestigationUtils;
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;

@@ -88,7 +88,7 @@ public class ConfigXMLParser {
         try {
             definitions = getTableDefinitions();
 
-            // do check for presence of the Investigation file, if it's not there, this method will load in a default file as well
+            // do check for presence of the Investigation file, if it is not there, this method will load in a default file as well
             checkInvestigationFileDefinitionFound(definitions);
 
             for (IsaTabConfigFileType isa : definitions) {
@@ -165,6 +165,13 @@ public class ConfigXMLParser {
         if (dir==null)
             return null;
         File[] configFiles = dir.listFiles();
+
+        if (configFiles == null){
+            log.error("The specified directory " + configDir + " is wrong!");
+            problemLog += "<p>There is a problem with the directory " + configDir + " as no files where found.</p>";
+            problemsEncountered = true;
+            throw new IOException("The specified directory " + configDir + " is wrong!");
+        }
 
         if (configFiles.length == 0) {
             log.error("The specified directory " + configDir + " is empty!");

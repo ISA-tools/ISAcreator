@@ -37,13 +37,19 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.errorreporter.model.FileType;
+import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.api.ImportConfiguration;
-import org.isatools.isacreator.configuration.io.ConfigXMLParser;
-import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.managers.ConfigurationManager;
-import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+import org.isatools.isacreator.utils.GeneralUtils;
+import org.isatools.isacreator.utils.PropertyFileIO;
 import org.jdesktop.fuse.InjectedResource;
+import uk.ac.ebi.utils.io.DownloadUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,22 +57,29 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ImportFilesMenu provides the interface to allow users to import previously saved ISATAB
  * submissions into the software for editing/viewing.
  *
+ * Date: Mar 3, 2010
+ *
  * @author eamonnmaguire
- * @date Mar 3, 2010
+ * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
+ *
  */
-
-
 public class ImportConfigurationMenu extends AbstractImportFilesMenu {
+
+    private static Logger log = Logger.getLogger(ImportConfigurationMenu.class);
 
     @InjectedResource
     private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
             loadButton, loadButtonOver, exitButtonSml, exitButtonSmlOver, filterLeft, filterRight;
 
-    private boolean initialLoadingPassed = false;
+    //private boolean initialLoadingPassed = true;
 
     public ImportConfigurationMenu(ISAcreatorMenu menu) {
         super(menu);
@@ -134,11 +147,11 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                     public void run() {
 
                         ImportConfiguration importConfiguration = new ImportConfiguration(dir);
-                        boolean problemEncountered = importConfiguration.loadConfiguration();
+                        boolean successful = importConfiguration.loadConfiguration();
 
                         System.out.println("Loaded configuration");
                         menu.stopProgressIndicator();
-                        if (problemEncountered) {
+                        if (!successful) {
                             menu.resetViewAfterProgress();
                             System.out.println("Problem encountered");
                             problemReport.setText(importConfiguration.getProblemLog());
@@ -149,19 +162,46 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
 
-                            if (!initialLoadingPassed) {
-                                System.err.println("loading hasn't been performed before, so now going to authentication screen");
-                                menu.changeView(menu.getAuthenticationGUI());
-                            } else {
-                                System.err.println("loading has been performed before, so now going to menu");
-                                menu.changeView(menu.getMainMenuGUI());
+
+                            if (ISAcreatorCLArgs.mode()== Mode.GS && !menu.isUserLoggedIn()){
+
+                               if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
+
+                                List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+
+
+                                if (!errors.isEmpty()){
+
+                                    ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
+                                    java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+                                    list.add(error);
+
+                                    ErrorMenu errorMenu = new ErrorMenu(menu, list, false, ImportConfigurationMenu.this);
+                                    errorMenu.createGUI();
+
+                                } else {
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
+                                }
+
+                                } else {
+                                   //the ISAtab files were not given as parameter, show main menu
+                                   menu.changeView(menu.getMainMenuGUI());
+                               }
+
+                            } else{
+                                //mode is not GS
+                                if (ISAcreatorCLArgs.isatabDir()!=null){
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
+                                }else {
+                                    menu.changeView(menu.getMainMenuGUI());
+                                }
                             }
 
-                            problemScroll.setVisible(false);
+                            }//else
 
-                            initialLoadingPassed = true;
+                            problemScroll.setVisible(false);
+                            //initialLoadingPassed = true;
                         }
-                    }
                 }
                 );
             }
@@ -181,6 +221,28 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
         }
 
         previousFiles = f.listFiles();
+
+        if (previousFiles.length==0){
+
+            String configurationFilesLocation = PropertyFileIO.retrieveDefaultSettings().getProperty("configurationFilesLocation");
+            String tmpDirectory = GeneralUtils.createTmpDirectory("Configurations");
+            String downloadedFile = tmpDirectory+"config.zip";
+            boolean downloaded = DownloadUtils.downloadFile(configurationFilesLocation, downloadedFile);
+            System.out.println("downloadedFile="+downloadedFile);
+            ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY =  tmpDirectory;
+            try{
+                String unzipped = GeneralUtils.unzip(downloadedFile);
+                System.out.println("Configurations downloaded and unzipped ="+unzipped);
+                f = new File(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY);
+                previousFiles = f.listFiles();
+
+
+            }catch(IOException ex){
+                ex.printStackTrace();
+
+            }
+        }
+
 
         for (File prevSubmission : previousFiles) {
             if (prevSubmission.isDirectory()) {
@@ -228,5 +290,8 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
     public ImageIcon getRightFilterImage() {
         return filterRight;
     }
+
+
+
 
 }

@@ -47,8 +47,8 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
@@ -92,6 +92,7 @@ public class ValidateUI extends JFrame {
 
     private JPanel swappableContainer;
     private OperatingMode mode;
+    private ConvertUI convertUI;
 
     public ValidateUI(ISAcreator isacreatorEnvironment, OperatingMode mode) {
         this.mode = mode;
@@ -172,21 +173,26 @@ public class ValidateUI extends JFrame {
                         swapContainers(successfulValidationContainer);
                         if (mode == OperatingMode.CONVERT) {
 
-                            final ConvertUI convertUI = new ConvertUI(constructConversionTargets());
-                            convertUI.setPreferredSize(new Dimension(750, 440));
-                            convertUI.createGUI();
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    convertUI = new ConvertUI(constructConversionTargets());
+                                    convertUI.setPreferredSize(new Dimension(750, 440));
+                                    convertUI.createGUI();
+                                    convertUI.addPropertyChangeListener("startConversion", new PropertyChangeListener() {
+                                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
 
-                            convertUI.addPropertyChangeListener("startConversion", new PropertyChangeListener() {
-                                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                                            swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
 
-                                    swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
+                                            convertISAtab(isatabValidator.getStore(), convertUI.getConversionToPerform(),
+                                                    ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB),
+                                                    convertUI.getOutputLocation());
+                                        }
+                                    });
 
-                                    convertISAtab(isatabValidator.getStore(), convertUI.getConversionToPerform(),
-                                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB),
-                                            convertUI.getOutputLocation());
+                                    swapContainers(convertUI);
                                 }
                             });
-                            swapContainers(convertUI);
+
                         }
                     } else {
                         log.info("Showing errors and warnings...");
@@ -333,13 +339,26 @@ public class ValidateUI extends JFrame {
         return conversionTargets.values();
     }
 
-    private void swapContainers(Container newContainer) {
-        if (newContainer != null) {
-            swappableContainer.removeAll();
-            swappableContainer.add(newContainer);
-            swappableContainer.repaint();
-            swappableContainer.validate();
-        }
+    private void swapContainers(final Container newContainer) {
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (newContainer != null) {
+                    swappableContainer.removeAll();
+                    swappableContainer.add(newContainer);
+                    swappableContainer.repaint();
+                    swappableContainer.validate();
+                    swappableContainer.updateUI();
+
+                    newContainer.validate();
+                    newContainer.repaint();
+
+                    validate();
+                    repaint();
+                }
+            }
+        });
+
     }
 
 }

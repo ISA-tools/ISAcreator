@@ -4,6 +4,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.visualization.graph.GraphView;
 import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.TaxonomyLevel;
 import org.isatools.isacreator.visualization.workflowvisualization.taxonomy.io.TaxonomyLevelLoader;
@@ -71,7 +72,8 @@ public class WorkflowVisualization extends AnimatableJFrame {
     public void createGUI() {
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(600, 840));
+        setPreferredSize(new Dimension(800, 600));
+        setLocationRelativeTo(ApplicationManager.getCurrentApplicationInstance());
         setBackground(UIHelper.BG_COLOR);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));

@@ -127,7 +127,7 @@ public abstract class CreationAlgorithm extends JPanel {
             count++;
 
             newFo = new FieldObject(count, "Unit",
-                    "Unit to give meaning to it's associated value",
+                    "Unit to give meaning to its associated value",
                     DataTypes.ONTOLOGY_TERM, "",
                     false, false, false);
             buildingModel.addField(newFo);

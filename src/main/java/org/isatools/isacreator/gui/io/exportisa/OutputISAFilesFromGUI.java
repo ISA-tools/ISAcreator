@@ -55,9 +55,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Outputs the ISAtab files corresponding to their respective objects in the ISAcreator model.
+ * Outputs the ISAtab files corresponding to their respective objects in the ISAcreator model (from the GUI classes).
  */
 public class OutputISAFilesFromGUI extends ISAFileOutput {
+
     private static final Logger log = Logger.getLogger(OutputISAFilesFromGUI.class.getName());
 
     private List<Spreadsheet> errorSheets;
@@ -87,17 +88,17 @@ public class OutputISAFilesFromGUI extends ISAFileOutput {
 
             File file = new File(investigation.getReference());
 
+            generateMissingSections(investigation);
+
             PrintStream investigationFilePrintStream = new PrintStream(file);
 
-            // print section defining the Ontologies Used
-            investigationFilePrintStream.println(getOntologiesUsedOutput());
-            // print the Investigation section.
-            investigationFilePrintStream.println(ApplicationManager.getUserInterfaceForISASection(investigation).toString());
+            printInvestigation(investigation, investigationFilePrintStream);
 
             File fileToSave;
 
             for (Study study : investigation.getStudies().values()) {
-                investigationFilePrintStream.println(ApplicationManager.getUserInterfaceForISASection(study).toString());
+                //investigationFilePrintStream.println(ApplicationManager.getUserInterfaceForISASection(study).toString());
+                printStudy(investigationFilePrintStream, study);
 
                 fileToSave = new File(file.getParentFile().getPath() +
                         File.separator + study.getStudySampleFileIdentifier());

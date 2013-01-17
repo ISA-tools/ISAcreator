@@ -37,13 +37,13 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
+import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.io.UserProfile;
-import org.isatools.isacreator.spreadsheet.Spreadsheet;
+import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -57,12 +57,13 @@ import java.awt.event.MouseEvent;
  * Alternatively, if they haven't yet got a login, they can create a profile using
  * the create profile button.
  *
- * @author eamonnmaguire
- * @date Mar 3, 2010
+ * Date: Mar 3, 2010
+ *
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
  */
-
-
 public class AuthenticationMenu extends MenuUIComponent {
+
+    private static final Logger log = Logger.getLogger(AuthenticationMenu.class);
 
     private JLabel status;
     private JPasswordField password;
@@ -70,60 +71,80 @@ public class AuthenticationMenu extends MenuUIComponent {
 
     private JLabel createProfile, login, exit;
 
+    private Authentication authentication = null;
+
     @InjectedResource
     public ImageIcon pleaseLogin, loginButton, loginButtonOver, createProfileButton,
             createProfileButtonOver, exitButtonSml, exitButtonSmlOver;
 
-    public AuthenticationMenu(ISAcreatorMenu menu) {
+    /**
+     * Constructor
+     *
+     * @param menu the ISAcreatorMenu to which this authentication menu is associated
+     * @param auth an object implementing the Authentication interface
+     */
+    public AuthenticationMenu(ISAcreatorMenu menu, Authentication auth) {
         super(menu);
+        authentication = auth;
         status = new JLabel();
         status.setForeground(UIHelper.RED_COLOR);
         setPreferredSize(new Dimension(400, 300));
         setLayout(new BorderLayout());
         setOpaque(false);
+
+        username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
     }
 
+    public AuthenticationMenu(ISAcreatorMenu menu, Authentication auth, String un) {
+        this(menu, auth);
+        if (un!=null)
+            username.setText(un);
+    }
+
+    /**
+     * Setting all fields back to empty string
+     *
+     */
     public void clearFields() {
         status.setText("");
         password.setText("");
         username.setText("");
     }
 
-    void createGUI() {
+
+    public void createGUI() {
         // create username field info
         Box fields = Box.createVerticalBox();
         fields.add(Box.createVerticalStrut(10));
         fields.setOpaque(false);
 
-        JPanel userNameCont = new JPanel(new GridLayout(1, 2));
+        JPanel userNameContainer = new JPanel(new GridLayout(1, 2));
         JLabel usernameLabel = new JLabel("username ");
         usernameLabel.setFont(UIHelper.VER_12_BOLD);
         usernameLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
-        userNameCont.add(usernameLabel);
+        userNameContainer.add(usernameLabel);
 
-        username = new RoundedJTextField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         username.setOpaque(false);
-
 
         UIHelper.renderComponent(username, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        userNameCont.add(username);
-        userNameCont.setOpaque(false);
+        userNameContainer.add(username);
+        userNameContainer.setOpaque(false);
 
-        JPanel passwordCont = new JPanel(new GridLayout(1, 2));
+        JPanel passwordContainer = new JPanel(new GridLayout(1, 2));
         JLabel passwordLabel = new JLabel("password ");
         passwordLabel.setFont(UIHelper.VER_12_BOLD);
         passwordLabel.setForeground(UIHelper.DARK_GREEN_COLOR);
-        passwordCont.add(passwordLabel);
+        passwordContainer.add(passwordLabel);
         password = new RoundedJPasswordField(10, UIHelper.TRANSPARENT_LIGHT_GREEN_COLOR);
         UIHelper.renderComponent(password, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        passwordCont.add(password);
-        passwordCont.setOpaque(false);
+        passwordContainer.add(password);
+        passwordContainer.setOpaque(false);
 
-        fields.add(userNameCont);
+        fields.add(userNameContainer);
         fields.add(Box.createVerticalStrut(10));
-        fields.add(passwordCont);
+        fields.add(passwordContainer);
 
         JPanel northPanel = new JPanel();
         northPanel.add(new JLabel(
@@ -216,12 +237,12 @@ public class AuthenticationMenu extends MenuUIComponent {
             }
         });
 
-        JPanel exitCont = new JPanel(new GridLayout(1, 1));
-        exitCont.setOpaque(false);
+        JPanel exitContainer = new JPanel(new GridLayout(1, 1));
+        exitContainer.setOpaque(false);
 
-        exitCont.add(exit);
+        exitContainer.add(exit);
 
-        southPanel.add(exitCont);
+        southPanel.add(exitContainer);
 
         southPanel.add(confirmExitPanel);
 
@@ -233,10 +254,38 @@ public class AuthenticationMenu extends MenuUIComponent {
 
 
     public void login(){
-        if (Authentication.login(username.getText(), password.getPassword())){
+        if (authentication.login(username.getText(), password.getPassword())){
             clearFields();
-            menu.changeView(menu.getMainMenuGUI());
-        } else {
+            if (ISAcreatorCLArgs.configDir()==null)     {
+
+                menu.changeView(menu.getImportConfigurationGUI());
+
+            }else{ //configDir is not null
+
+                //load configuration and go to main menu
+                ImportConfiguration importConfiguration = new ImportConfiguration(ISAcreatorCLArgs.configDir());
+                boolean successful = importConfiguration.loadConfiguration();
+
+                if (successful) {
+
+                    if (ISAcreatorCLArgs.isatabDir() != null) {
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir(), false);
+
+                                }
+                            });
+
+                    }else{
+
+                        menu.changeView(menu.getMainMenuGUI());
+
+                    }
+                }//successful
+
+       }
+        }else{
             status.setText(
                     "<html><b>Error: </b> Username or password incorrect! </html>");
         }

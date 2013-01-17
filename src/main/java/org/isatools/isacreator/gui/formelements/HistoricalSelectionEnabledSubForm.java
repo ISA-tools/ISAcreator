@@ -40,6 +40,7 @@ package org.isatools.isacreator.gui.formelements;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.io.UserProfile;
+import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.model.Protocol;
@@ -85,8 +86,7 @@ public abstract class HistoricalSelectionEnabledSubForm extends SubForm {
 
             UIHelper.renderComponent(selectFromHistory, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
-            final UserProfile up = dataEntryEnvironment.getParentFrame()
-                    .getCurrentUser();
+            final UserProfile up = UserProfileManager.getCurrentUser();
 
             selectFromHistory.addMouseListener(new MouseAdapter() {
 

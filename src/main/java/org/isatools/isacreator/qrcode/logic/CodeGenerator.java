@@ -94,11 +94,11 @@ public class CodeGenerator {
             BitMatrix matrix = qrWrite.encode(toEncode, BarcodeFormat.QR_CODE, imageSize.width, imageSize.height);
             MatrixToImageWriter.writeToFile(matrix, format.getFormat(), fileName);
         } catch (WriterException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -110,7 +110,7 @@ public class CodeGenerator {
             BitMatrix matrix = qrWrite.encode(toEncode, BarcodeFormat.QR_CODE, imageSize.width, imageSize.height);
             return Imaging.createImageFromBufferedImage(MatrixToImageWriter.toBufferedImage(matrix));
         } catch (WriterException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         return null;
@@ -128,7 +128,7 @@ public class CodeGenerator {
 
             return Imaging.createImageFromBufferedImage(MatrixToImageWriter.toBufferedImage(matrix));
         } catch (WriterException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         return null;
