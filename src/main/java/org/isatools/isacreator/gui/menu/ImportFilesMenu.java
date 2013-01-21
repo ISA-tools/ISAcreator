@@ -261,10 +261,10 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     createErrorView(reports, false);
                 } finally {
 
-                    if (loadingImagePanel != null)
+                    if (loadingImagePanel != null){
                         menu.remove(loadingImagePanel);
-                    else
                         menu.hideGlassPane();
+                    }
                 }
             }
         });
