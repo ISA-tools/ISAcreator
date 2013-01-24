@@ -97,7 +97,7 @@ public class OutputISAFilesFromGUI extends ISAFileOutput {
             File fileToSave;
 
             for (Study study : investigation.getStudies().values()) {
-                //investigationFilePrintStream.println(ApplicationManager.getUserInterfaceForISASection(study).toString());
+
                 printStudy(investigationFilePrintStream, study);
 
                 fileToSave = new File(file.getParentFile().getPath() +
@@ -117,13 +117,15 @@ public class OutputISAFilesFromGUI extends ISAFileOutput {
                     fileToSave = new File(file.getParentFile().getPath() +
                             File.separator + assay.getAssayReference());
 
-                    tmpSheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet();
-                    if (!tmpSheet.getSpreadsheetFunctions().exportTable(fileToSave, "\t", removeEmptyColumns)) {
-                        errorSheets.add(tmpSheet);
-                        shouldShowIncorrectOrderGUI = true;
+                    if (ApplicationManager.getUserInterfaceForISASection(assay)!=null){
+                        tmpSheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet();
+                        if (!tmpSheet.getSpreadsheetFunctions().exportTable(fileToSave, "\t", removeEmptyColumns)) {
+                            errorSheets.add(tmpSheet);
+                            shouldShowIncorrectOrderGUI = true;
+                        }
+                        allSheets.add(tmpSheet);
                     }
 
-                    allSheets.add(tmpSheet);
                 }
             }
         } catch (FileNotFoundException e) {
