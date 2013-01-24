@@ -980,10 +980,11 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private Map<OntologySourceRefObject, Set<OntologyTerm>> processResults() {
 
-        Set<String> recordedAccessions = new HashSet<String>();
-
         Map<OntologySourceRefObject, Set<OntologyTerm>> processedResult = new HashMap<OntologySourceRefObject, Set<OntologyTerm>>();
         for (OntologySourceRefObject osro : result.keySet()) {
+
+            Set<String> recordedAccessions = new HashSet<String>();
+
             if (osro != null) {
                 if (!processedResult.containsKey(osro)) {
                     processedResult.put(osro, new HashSet<OntologyTerm>());
@@ -997,7 +998,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                 }
             }
         }
-
         return removeRedundantSearchResults(processedResult);
     }
 
