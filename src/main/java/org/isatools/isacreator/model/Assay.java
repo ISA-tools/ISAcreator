@@ -73,10 +73,7 @@ public class Assay extends ISASection implements StudySubData {
      * @param tableReferenceObject - the Table Reference Object which contains all the properties of a an Assay, in particular defining which Columns are required, Which are Ontology terms, etc. These files are provided via the ISAConfiguration Tool.
      */
     public Assay(String assayReference, TableReferenceObject tableReferenceObject) {
-        super();
-
-        fieldValues.put(ASSAY_REFERENCE, assayReference);
-        this.tableReferenceObject = tableReferenceObject;
+        this(assayReference, "", "", "", tableReferenceObject);
     }
 
     /**
@@ -117,11 +114,11 @@ public class Assay extends ISASection implements StudySubData {
 
         fieldValues.put(ASSAY_REFERENCE, assayReference);
         fieldValues.put(MEASUREMENT_ENDPOINT, measurementEndpoint);
-        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_ACCESSION, mappingObject.getMeasurementAccession());
-        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_SOURCE_REF, mappingObject.getMeasurementSource());
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_ACCESSION, mappingObject!=null? mappingObject.getMeasurementAccession() : "");
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_SOURCE_REF, mappingObject!=null? mappingObject.getMeasurementSource() : "");
         fieldValues.put(TECHNOLOGY_TYPE, technologyType);
-        fieldValues.put(TECHNOLOGY_TYPE_TERM_ACCESSION, mappingObject.getTechnologyAccession());
-        fieldValues.put(TECHNOLOGY_TYPE_TERM_SOURCE_REF, mappingObject.getTechnologySource());
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_ACCESSION, mappingObject!=null? mappingObject.getTechnologyAccession(): "");
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_SOURCE_REF, mappingObject!=null? mappingObject.getTechnologySource(): "" );
         fieldValues.put(ASSAY_PLATFORM, assayPlatform);
     }
 
