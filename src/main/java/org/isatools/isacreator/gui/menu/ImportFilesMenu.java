@@ -263,8 +263,9 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                     if (loadingImagePanel != null){
                         menu.remove(loadingImagePanel);
-                        menu.hideGlassPane();
                     }
+                    menu.hideGlassPane();
+
                 }
             }
         });
