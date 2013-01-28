@@ -91,10 +91,8 @@ public class ISASectionExportAdaptor {
                     if (value.matches("^([A-Za-z]{1,4}:)+(.)*") && !value.startsWith("http")) {
                         value = value.replaceAll("^([A-Za-z]{1,4}:)+", "");
                     }
-                    line.append(value);
-                } else {
-                    line.append(value);
                 }
+                line.append(value);
                 line.append(sectionCount != isaSections.size() - 1 ? "\t" : "\n");
                 sectionCount++;
             }

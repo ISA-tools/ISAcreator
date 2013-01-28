@@ -28,8 +28,6 @@ public abstract class ISAFileOutput {
 
     public abstract void saveISAFiles(boolean removeEmptyColumns, Investigation investigation);
 
-
-
     public String getOntologiesUsedOutput() {
         String[] headerTerms = new String[]{
                 "Term Source Name", "Term Source File", "Term Source Version",
@@ -82,7 +80,6 @@ public abstract class ISAFileOutput {
 
         // for each study generate study sections if they don't exist.
         for (Study study : investigation.getStudies().values()) {
-            System.out.println("Checking study... " + study.getStudyId());
             if (study.getStudyDesigns().size() == 0) {
                 study.getStudyDesigns().add(new StudyDesign());
             }
@@ -96,7 +93,6 @@ public abstract class ISAFileOutput {
                 study.getProtocols().add(new Protocol());
             }
             if (study.getPublications().size() == 0) {
-                System.out.println("adding dumb publication");
                 study.getPublications().add(new StudyPublication());
             }
             if (study.getContacts().size() == 0) {
