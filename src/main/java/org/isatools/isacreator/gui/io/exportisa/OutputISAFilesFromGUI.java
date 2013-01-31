@@ -88,8 +88,6 @@ public class OutputISAFilesFromGUI extends ISAFileOutput {
 
             File file = new File(investigation.getReference());
 
-            generateMissingSections(investigation);
-
             PrintStream investigationFilePrintStream = new PrintStream(file);
 
             printInvestigation(investigation, investigationFilePrintStream);

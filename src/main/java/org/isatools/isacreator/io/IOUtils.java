@@ -94,7 +94,6 @@ public class IOUtils {
             for (String ontologyTerm : ontologies) {
                 OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(ontologyTerm);
 
-
                 if (oo != null) {
                     tmpTerm += oo.getOntologyTermName();
                     tmpAccession += oo.getOntologySourceAccession();
@@ -122,28 +121,27 @@ public class IOUtils {
 
         } else if (term != null && term.contains(":")) {
 
+            System.out.println("Getting ontology object for " + term);
             OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(term);
 
-            if (oo.getOntologyTermName() != null) {
+            System.out.println("oo = " + oo);
+            tmpTerm = term;
+            tmpAccession = "";
+            tmpSourceRefs = "";
+
+            if (oo != null && oo.getOntologyTermName() != null) {
                 tmpTerm = oo.getOntologyTermName();
                 tmpAccession = oo.getOntologySourceAccession();
                 tmpSourceRefs = oo.getOntologySource();
+
+                System.out.println("Got ontology term... good times. Term is now " + tmpTerm);
             } else {
                 if (term.contains(":")) {
                     String[] termAndSource = term.split(":");
-
                     tmpSourceRefs = termAndSource[0];
                     tmpTerm = termAndSource[1];
-                } else {
-                    tmpTerm = term;
-                    tmpAccession = "";
-                    tmpSourceRefs = "";
                 }
             }
-        } else {
-            tmpTerm = term;
-            tmpAccession = ontologyTerms.get(IOUtils.ACCESSION) == null ? "" : ontologyTerms.get(IOUtils.ACCESSION);
-            tmpSourceRefs = ontologyTerms.get(IOUtils.SOURCE_REF) == null ? "" : ontologyTerms.get(IOUtils.SOURCE_REF);
         }
 
         Map<String, String> result = new HashMap<String, String>();

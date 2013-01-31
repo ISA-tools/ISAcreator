@@ -455,7 +455,7 @@
         </field>
 
         <field header="Study Protocol Parameters Name" section="STUDY PROTOCOLS" data-type="Ontology term"
-               is-file-field="false" is-multiple-value="false"
+               is-file-field="false" is-multiple-value="true"
                is-required="false">
             <description>The parameters used when executing this protocol.
             </description>

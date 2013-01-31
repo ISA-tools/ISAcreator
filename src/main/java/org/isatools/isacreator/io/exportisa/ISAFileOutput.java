@@ -64,44 +64,6 @@ public abstract class ISAFileOutput {
         return toReturn;
     }
 
-    /**
-     * Will generate any content which isn't already there.
-     *
-     * @param investigation - Investigation to generate content for.
-     */
-    protected void generateMissingSections(Investigation investigation) {
-        // generate investigation sections if they don't exist.
-        if (investigation.getPublications().size() == 0) {
-            investigation.addPublication(new InvestigationPublication());
-        }
-        if (investigation.getContacts().size() == 0) {
-            investigation.addContact(new InvestigationContact());
-        }
-
-        // for each study generate study sections if they don't exist.
-        for (Study study : investigation.getStudies().values()) {
-            if (study.getStudyDesigns().size() == 0) {
-                study.getStudyDesigns().add(new StudyDesign());
-            }
-            if (study.getAssays().size() == 0) {
-                study.getAssays().put("", new Assay());
-            }
-            if (study.getFactors().size() == 0) {
-                study.getFactors().add(new Factor());
-            }
-            if (study.getProtocols().size() == 0) {
-                study.getProtocols().add(new Protocol());
-            }
-            if (study.getPublications().size() == 0) {
-                study.getPublications().add(new StudyPublication());
-            }
-            if (study.getContacts().size() == 0) {
-                study.getContacts().add(new StudyContact());
-            }
-        }
-    }
-
-
     protected void printStudy(PrintStream investigationFilePrintStream, Study study) {
 
         DataEntryForm def = ApplicationManager.getUserInterfaceForISASection(study);
@@ -124,7 +86,6 @@ public abstract class ISAFileOutput {
             def.update();
         }
 
-        generateMissingSections(investigation);
         // print section defining the Ontologies Used
         investigationFilePrintStream.println(getOntologiesUsedOutput());
 

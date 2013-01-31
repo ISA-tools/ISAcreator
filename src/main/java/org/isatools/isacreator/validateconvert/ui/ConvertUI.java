@@ -80,7 +80,6 @@ public class ConvertUI extends JPanel {
     public void createGUI() {
         setLayout(new BorderLayout());
         setOpaque(false);
-
         createSelectionPane();
     }
 
@@ -127,7 +126,7 @@ public class ConvertUI extends JPanel {
         container.add(Box.createVerticalStrut(5));
 
         container.add(UIHelper.wrapComponentInPanel(
-                UIHelper.createLabel("<html><i>weve filtered out conversion targets not applicable to your data. just click on a box to select the format.</i></html>",
+                UIHelper.createLabel("<html><i>we've filtered out conversion targets not applicable to your data. just click on a box to select the format.</i></html>",
                         UIHelper.VER_9_PLAIN, UIHelper.GREY_COLOR, SwingConstants.LEFT)));
 
         container.add(Box.createVerticalStrut(15));

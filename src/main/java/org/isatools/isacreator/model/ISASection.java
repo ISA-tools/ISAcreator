@@ -74,6 +74,7 @@ public abstract class ISASection {
 
     public void addToFields(Map<String, String> fieldValues) {
         this.fieldValues.putAll(fieldValues);
+
     }
 
     public String getValue(String key) {
@@ -81,8 +82,6 @@ public abstract class ISASection {
         if (fieldValues.get(key) != null) {
             value = fieldValues.get(key);
         }
-
-
         return value;
     }
 
