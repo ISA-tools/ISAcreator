@@ -53,7 +53,7 @@ public class ISASectionExportAdaptor {
                 Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, isaSection.getFieldValues());
 
                 for (String key : processedOntologyField.keySet()) {
-                    System.out.println("Placing " + key + " in " + processedOntologyField.get(key));
+
                     if (!processedOntologyField.get(key).isEmpty()) {
                         isaSection.getFieldValues().put(key, processedOntologyField.get(key));
                     }
