@@ -212,9 +212,10 @@ public class MappingLogic {
                 AssaySelection aso = assayInfo.get(assayName);
                 String measurement = aso.getMeasurement();
                 String technology = aso.getTechnology().equals(AssaySelectionUI.NO_TECHNOLOGY_TEXT) ? "" : aso.getTechnology();
+                String platform = aso.getPlatform();
 
                 Assay mappedAssay = new Assay("a_" + assayName.replaceAll("\\s+", "") + ".txt",
-                        measurement, technology, "", mappings.get(assayName));
+                        measurement, technology, platform, mappings.get(assayName));
 
                 ApplicationManager.assignDataEntryToISASection(mappedAssay, ApplicationManager.getUserInterfaceForAssay(mappedAssay, sde));
                 study.addAssay(mappedAssay);
