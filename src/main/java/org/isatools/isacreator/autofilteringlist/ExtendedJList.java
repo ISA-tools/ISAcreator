@@ -37,16 +37,12 @@
 
 package org.isatools.isacreator.autofilteringlist;
 
-import org.isatools.isacreator.effects.components.RoundedJTextField;
-
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -139,11 +135,26 @@ public class ExtendedJList extends JList implements ListSelectionListener, Filte
     }
 
     public void updateContents(Object[] newContents) {
+        updateContents(newContents, false);
+    }
+
+    public void updateContents(Object[] newContents, boolean performSort) {
 
         ((ListFilterModel) getModel()).clearItems();
 
         if (newContents != null) {
-            for (Object s : newContents) {
+            List<Object> contents = new ArrayList<Object>();
+            Collections.addAll(contents, newContents);
+
+            if (performSort) {
+                Collections.sort(contents, new Comparator<Object>() {
+                    public int compare(Object o, Object o2) {
+                        return o.toString().compareToIgnoreCase(o2.toString());
+                    }
+                });
+            }
+
+            for (Object s : contents) {
                 addItem(s);
             }
         }

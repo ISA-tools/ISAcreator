@@ -342,14 +342,15 @@ public class OLSClient implements OntologyService {
 
             OntologySourceRefObject ontologySource = getOntologySourceReferenceForOntology(source);
 
-            if (!processedResult.containsKey(ontologySource)) {
-                processedResult.put(ontologySource, new ArrayList<OntologyTerm>());
+            if (ontologySource != null) {
+                if (!processedResult.containsKey(ontologySource)) {
+                    processedResult.put(ontologySource, new ArrayList<OntologyTerm>());
+                }
+
+                String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
+
+                processedResult.get(ontologySource).add(createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
             }
-
-            String tmpAccession = accession.replaceAll(source, "").replaceAll(":", "").trim();
-
-            processedResult.get(ontologySource).add(createOntologyTerm(source, tmpAccession, ontologyAccessionToTerm.get(accession)));
-
         }
 
         return processedResult;

@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.common.filterableTree;
 
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -60,8 +61,8 @@ public abstract class TreeFilterModel<T, V> extends DefaultTreeModel {
     public TreeFilterModel(TreeNode treeNode, FilterableJTree targetJTree) {
         super(treeNode);
         this.targetJTree = targetJTree;
-        items = new HashMap<T, Set<V>>();
-        filterItems = new HashMap<T, Set<V>>();
+        items = new ListOrderedMap<T, Set<V>>();
+        filterItems = new ListOrderedMap<T, Set<V>>();
     }
 
     /**
