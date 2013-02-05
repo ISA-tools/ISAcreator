@@ -234,7 +234,8 @@ public class AddColumnGUI extends JDialog {
      * @return DropDownComponent object.
      */
     protected DropDownComponent createOntologyDropDown(final JTextField field,
-                                                       boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource) {
+                                                       boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource,
+                                                       final boolean isHeaderType) {
         ontologySelectionTool = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
         ontologySelectionTool.createGUI();
 
@@ -247,7 +248,8 @@ public class AddColumnGUI extends JDialog {
                         // term (source:accession)
                         OntologyTerm term = OntologyManager.getOntologySelectionHistory().get(evt.getNewValue().toString());
                         if (term != null) {
-                            field.setText(getStringForHeaderFromOntologyTerm(term));
+
+                            field.setText(isHeaderType ? getStringForHeaderFromOntologyTerm(term) : term.getUniqueId());
                         } else {
                             field.setText(evt.getNewValue().toString());
                         }
@@ -287,7 +289,7 @@ public class AddColumnGUI extends JDialog {
 
         olsFieldCont.add(stdFieldLab);
 
-        olsFieldCont.add(createOntologyDropDown(varSelectOntologyField, false, false, null));
+        olsFieldCont.add(createOntologyDropDown(varSelectOntologyField, false, false, null, true));
 
         return olsFieldCont;
     }
@@ -313,7 +315,7 @@ public class AddColumnGUI extends JDialog {
         unitFieldCont.add(stdFieldLab);
 
         final DropDownComponent ontologyDropDown = createOntologyDropDown(unitField, false,
-                false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "", UNIT_ONTOLOGY, "Unit Ontology"))));
+                false, Collections.singletonMap("Unit", new RecommendedOntology(new Ontology("", "", UNIT_ONTOLOGY, "Unit Ontology"))), false);
         unitFieldCont.add(ontologyDropDown);
 
         JPanel determineUnitRequired = new JPanel(new GridLayout(1, 2));

@@ -51,12 +51,13 @@ public class ISASectionExportAdaptor {
             if (ontologyTerms.containsKey(fieldHashCode)) {
                 Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
                 Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, isaSection.getFieldValues());
-                isaSection.getFieldValues().put(ontologyField.get(IOUtils.TERM),
-                        processedOntologyField.get(IOUtils.TERM));
-                isaSection.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION),
-                        processedOntologyField.get(IOUtils.ACCESSION));
-                isaSection.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF),
-                        processedOntologyField.get(IOUtils.SOURCE_REF));
+
+                for (String key : processedOntologyField.keySet()) {
+
+                    if (!processedOntologyField.get(key).isEmpty()) {
+                        isaSection.getFieldValues().put(key, processedOntologyField.get(key));
+                    }
+                }
             }
         }
     }
@@ -65,18 +66,23 @@ public class ISASectionExportAdaptor {
         return exportISASectionAsString(isaSections, fileSection, new HashMap<String, String>());
     }
 
-    public static String exportISASectionAsString(List<? extends ISASection> isaSections, InvestigationFileSection fileSection, Map<String, String> aliasesToRealNames) {
+    public static String exportISASectionAsString(List<? extends ISASection> isaSections, InvestigationFileSection isaSection, Map<String, String> aliasesToRealNames) {
         // find an efficient way of outputting the block.
 
         StringBuilder output = new StringBuilder();
-        output.append(fileSection).append("\n");
+        output.append(isaSection).append("\n");
 
-        boolean isAssaySection = fileSection == InvestigationFileSection.STUDY_ASSAYS;
+        boolean isAssaySection = isaSection == InvestigationFileSection.STUDY_ASSAYS;
 
-        System.out.println("Outputting " + fileSection.toString());
-        addMissingSection(isaSections, fileSection);
+        addMissingSectionIfRequired(isaSections, isaSection);
+
         ISASection firstSection = isaSections.get(0);
         List<String> fieldNames = firstSection.getFieldKeysAsList();
+
+        for (ISASection section : isaSections) {
+            processSectionOntologyFields(section);
+        }
+
         for (int fieldIndex = 0; fieldIndex < getNumberOfLinesInSection(firstSection); fieldIndex++) {
             StringBuilder line = new StringBuilder();
             String fieldName = fieldNames.get(fieldIndex);
@@ -85,16 +91,19 @@ public class ISASectionExportAdaptor {
 
             int sectionCount = 0;
             for (ISASection section : isaSections) {
+
                 String value = section.getValue(fieldName);
+
+                System.out.printf("value for %s is %s\n", fieldName, value);
+
                 if (isAssaySection) {
                     // if it begin with OBI: for example and isn't a URL, then we want to remove anything before the :
                     if (value.matches("^([A-Za-z]{1,4}:)+(.)*") && !value.startsWith("http")) {
                         value = value.replaceAll("^([A-Za-z]{1,4}:)+", "");
                     }
-                    line.append(value);
-                } else {
-                    line.append(value);
                 }
+
+                line.append(value);
                 line.append(sectionCount != isaSections.size() - 1 ? "\t" : "\n");
                 sectionCount++;
             }
@@ -105,35 +114,41 @@ public class ISASectionExportAdaptor {
         return output.toString();
     }
 
-    private static void addMissingSection(List<? extends ISASection> isaSections, InvestigationFileSection fileSection) {
-        if (fileSection == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
-            ((List<InvestigationPublication>) isaSections).add(new InvestigationPublication());
-        }
-        if (fileSection == InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION) {
+    private static void addMissingSectionIfRequired(List<? extends ISASection> isaSections, InvestigationFileSection fileSection) {
+        if (isaSections.size() == 0) {
+            if (fileSection == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
+                ((List<InvestigationPublication>) isaSections).add(new InvestigationPublication());
+            }
+            if (fileSection == InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION) {
 
-            ((List<InvestigationContact>) isaSections).add(new InvestigationContact());
-        }
+                ((List<InvestigationContact>) isaSections).add(new InvestigationContact());
+            }
 
-        // for each study generate study sections if they don't exist.
+            // for each study generate study sections if they don't exist.
 
-        if (fileSection == InvestigationFileSection.STUDY_DESIGN_SECTION) {
-            ((List<StudyDesign>) isaSections).add(new StudyDesign());
-        }
+            if (fileSection == InvestigationFileSection.STUDY_DESIGN_SECTION) {
+                ((List<StudyDesign>) isaSections).add(new StudyDesign());
+            }
 
-        if (fileSection == InvestigationFileSection.STUDY_FACTORS) {
-            ((List<Factor>) isaSections).add(new Factor());
-        }
+            if (fileSection == InvestigationFileSection.STUDY_FACTORS) {
+                ((List<Factor>) isaSections).add(new Factor());
+            }
 
-        if (fileSection == InvestigationFileSection.STUDY_PROTOCOLS) {
-            ((List<Protocol>) isaSections).add(new Protocol());
-        }
+            if (fileSection == InvestigationFileSection.STUDY_ASSAYS) {
+                ((List<Assay>) isaSections).add(new Assay());
+            }
 
-        if (fileSection == InvestigationFileSection.STUDY_PUBLICATIONS) {
-            ((List<StudyPublication>) isaSections).add(new StudyPublication());
-        }
+            if (fileSection == InvestigationFileSection.STUDY_PROTOCOLS) {
+                ((List<Protocol>) isaSections).add(new Protocol());
+            }
 
-        if (fileSection == InvestigationFileSection.STUDY_CONTACTS) {
-            ((List<StudyContact>) isaSections).add(new StudyContact());
+            if (fileSection == InvestigationFileSection.STUDY_PUBLICATIONS) {
+                ((List<StudyPublication>) isaSections).add(new StudyPublication());
+            }
+
+            if (fileSection == InvestigationFileSection.STUDY_CONTACTS) {
+                ((List<StudyContact>) isaSections).add(new StudyContact());
+            }
         }
 
     }

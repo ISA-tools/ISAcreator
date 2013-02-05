@@ -24,8 +24,6 @@ public class OutputISAFiles extends ISAFileOutput {
     public void saveISAFiles(boolean removeEmptyColumns, Investigation investigation) {
         File file = new File(investigation.getReference());
 
-        generateMissingSections(investigation);
-
         PrintStream investigationFilePrintStream;
         try {
             investigationFilePrintStream = new PrintStream(file);
