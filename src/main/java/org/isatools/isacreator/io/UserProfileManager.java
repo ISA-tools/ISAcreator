@@ -225,7 +225,7 @@ public class UserProfileManager {
     }
 
     public static void updateUserProfileInformation(UserProfile up) {
-        if (ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment() != null) {
+        if (ApplicationManager.getCurrentApplicationInstance()!=null && ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment() != null) {
             Investigation inv = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
 
             // update the user profiles to contain the previously added factors, protocols, and contacts.

@@ -77,7 +77,6 @@ public class SaveAsDialog extends JDialog {
 
     public void createGUI() {
         setBackground(UIHelper.BG_COLOR);
-
         instantiatePanel();
         pack();
     }
@@ -114,13 +113,12 @@ public class SaveAsDialog extends JDialog {
 
         centerPanel.add(fileNamePanel);
 
-        JPanel statusPanel = new JPanel(new GridLayout(1, 1));
+        JPanel statusPanel = new JPanel(new BorderLayout());
         statusPanel.setBackground(UIHelper.BG_COLOR);
-
-        status = new JLabel();
+        status = new JLabel("<html></html>");
+        status.setPreferredSize(new Dimension(410,30));
         UIHelper.renderComponent(status, UIHelper.VER_12_BOLD, UIHelper.RED_COLOR, false);
-
-        statusPanel.add(status);
+        statusPanel.add(status, BorderLayout.CENTER);
 
         centerPanel.add(statusPanel);
 
@@ -185,19 +183,18 @@ public class SaveAsDialog extends JDialog {
         if (!fileName.equals("") && !fileName.contains("Please enter a directory name...") ) {
             if (fileName.contains("/")) {
                 status.setText("<html><b>Invalid file name<: / are not allowed in directory names</b></html>");
-            }
-            else {
-            File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
+            } else {
+                File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
                     fileName.replace("/","_"));
 
-            if (!f.exists()) {
-                firePropertyChange("save", "", fileName);
-            } else {
-                status.setText(
+                if (!f.exists()) {
+                    firePropertyChange("save", "", fileName);
+                } else {
+                    status.setText(
                         "<html><b>directory name already exists in \"" + ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + "\" folder</b></html>");
+                }
             }
-        }
-    }else {
+        } else {
             status.setText("<html><b>Invalid directory name</b></html>");
         }
     }

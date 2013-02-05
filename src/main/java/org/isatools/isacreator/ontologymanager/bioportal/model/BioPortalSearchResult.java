@@ -88,14 +88,16 @@ public class BioPortalSearchResult {
 
     public void addToResult(OntologySourceRefObject referenceObject, OntologyTerm ontology) {
 
-        if (!sourceReferences.containsKey(referenceObject.getSourceName())) {
-            sourceReferences.put(referenceObject.getSourceName(), referenceObject);
-            result.put(referenceObject, new ArrayList<OntologyTerm>());
-        }
+        if (referenceObject != null) {
+            if (!sourceReferences.containsKey(referenceObject.getSourceName())) {
+                sourceReferences.put(referenceObject.getSourceName(), referenceObject);
+                result.put(referenceObject, new ArrayList<OntologyTerm>());
+            }
 
-        if (ontology != null) {
-            if (ontology.getOntologyTermName() != null) {
-                result.get(sourceReferences.get(referenceObject.getSourceName())).add(ontology);
+            if (ontology != null) {
+                if (ontology.getOntologyTermName() != null) {
+                    result.get(sourceReferences.get(referenceObject.getSourceName())).add(ontology);
+                }
             }
         }
 

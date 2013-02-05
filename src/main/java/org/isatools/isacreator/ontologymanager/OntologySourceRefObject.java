@@ -49,7 +49,7 @@ import java.io.Serializable;
  * @author Eamonn Maguire
  * @date Jun 12, 2008
  */
-public class OntologySourceRefObject extends ISASection implements Serializable {
+public class OntologySourceRefObject extends ISASection implements Serializable, Comparable<OntologySourceRefObject> {
 
     public static final String SOURCE_NAME = "Term Source Name";
     public static final String SOURCE_FILE = "Term Source File";
@@ -109,8 +109,14 @@ public class OntologySourceRefObject extends ISASection implements Serializable 
     }
 
     public String toString() {
-
         return getSourceName() + " - " + getSourceDescription();
+    }
 
+    public int compareTo(OntologySourceRefObject o) {
+        if (o == null) {
+            return -1;
+        } else {
+            return getSourceName().compareToIgnoreCase(o.getSourceName());
+        }
     }
 }

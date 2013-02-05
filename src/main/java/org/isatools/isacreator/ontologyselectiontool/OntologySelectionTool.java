@@ -38,6 +38,7 @@
 package org.isatools.isacreator.ontologyselectiontool;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
@@ -882,68 +883,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                             result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
                             if (searchAllOntologies) {
-                                log.info("no recommended ontology specified, so searching for " + searchField.getText());
-
-                                Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), null, false);
-
-                                if (olsResult != null) {
-                                    log.info("found terms in " + olsResult.size() + " ols ontologies");
-                                    result.putAll(olsResult);
-                                }
-
-                                Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), "all", false);
-
-                                log.info("found terms in " + bioportalResult.size() + " bioportal ontologies");
-
-                                if (bioportalResult.size() > 0) {
-                                    result.putAll(bioportalResult);
-                                }
-
-                                Map<OntologySourceRefObject, List<OntologyTerm>> pluginResults = OntologySearchPluginRegistry.compositeSearch(searchField.getText());
-                                if (pluginResults != null && pluginResults.size() > 0) {
-                                    result.putAll(pluginResults);
-                                }
-
-                                log.info("almalgamated result is comprised of " + result.size() + " ontologies");
-
-                                OntologyManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
-
-
+                                searchAllOntologies();
                             } else {
-
-                                OntologyManager.placeRecommendedOntologyInformationInRecords(recommendedOntologies.values());
-
-                                List<RecommendedOntology> olsOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.OLS);
-
-                                if (olsOntologies.size() > 0) {
-                                    Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), olsOntologies);
-
-                                    if (olsResult != null) {
-                                        log.info("found terms in " + olsResult.size() + " ols ontologies");
-                                        result.putAll(olsResult);
-                                    }
-                                } else {
-                                    log.info("Not searching OLS, nothing to search for in recommended ontologies.");
-                                }
-
-                                List<RecommendedOntology> bioportalOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.BIOPORTAL);
-
-                                int totalResourcesSearchedOnByPluginResources = OntologySearchPluginRegistry.howManyOfTheseResourcesAreSearchedOnByPlugins(recommendedOntologies.values());
-
-                                if (bioportalOntologies.size() > 0 && totalResourcesSearchedOnByPluginResources != recommendedOntologies.size()) {
-                                    Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), bioportalOntologies);
-
-                                    if (bioportalResult != null) {
-                                        log.info("found terms in " + bioportalResult.size() + " bioportal ontologies");
-                                        result.putAll(bioportalResult);
-                                    }
-                                } else {
-                                    log.info("Not searching Bioportal, nothing to search for in recommended ontologies.");
-                                }
-
-                                // by default, for now we'll assume that reading from the recommended ontologies will also
-                                // encompass plugged in ontology resources.
-                                result.putAll(OntologySearchPluginRegistry.compositeSearch(searchField.getText(), recommendedOntologies));
+                                searchSpecificOntologies();
                             }
 
                             // only add to the cache if we got a result!
@@ -978,12 +920,79 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         performer.start();
     }
 
+    private void searchSpecificOntologies() {
+        OntologyManager.placeRecommendedOntologyInformationInRecords(recommendedOntologies.values());
+
+        List<RecommendedOntology> olsOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.OLS);
+
+        if (olsOntologies.size() > 0) {
+            Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), olsOntologies);
+
+            if (olsResult != null) {
+                log.info("found terms in " + olsResult.size() + " ols ontologies");
+                result.putAll(olsResult);
+            }
+        } else {
+            log.info("Not searching OLS, nothing to search for in recommended ontologies.");
+        }
+
+        List<RecommendedOntology> bioportalOntologies = filterRecommendedOntologiesForService(recommendedOntologies.values(), OntologyPortal.BIOPORTAL);
+
+        int totalResourcesSearchedOnByPluginResources = OntologySearchPluginRegistry.howManyOfTheseResourcesAreSearchedOnByPlugins(recommendedOntologies.values());
+
+        if (bioportalOntologies.size() > 0 && totalResourcesSearchedOnByPluginResources != recommendedOntologies.size()) {
+            Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), bioportalOntologies);
+
+            if (bioportalResult != null) {
+                log.info("found terms in " + bioportalResult.size() + " bioportal ontologies");
+                result.putAll(bioportalResult);
+            }
+        } else {
+            log.info("Not searching Bioportal, nothing to search for in recommended ontologies.");
+        }
+
+        // by default, for now we'll assume that reading from the recommended ontologies will also
+        // encompass plugged in ontology resources.
+        result.putAll(OntologySearchPluginRegistry.compositeSearch(searchField.getText(), recommendedOntologies));
+    }
+
+    private void searchAllOntologies() {
+        log.info("no recommended ontology specified, so searching for " + searchField.getText());
+
+        Map<OntologySourceRefObject, List<OntologyTerm>> olsResult = olsClient.getTermsByPartialNameFromSource(searchField.getText(), null, false);
+
+        if (olsResult != null) {
+            log.info("found terms in " + olsResult.size() + " ols ontologies");
+            result.putAll(olsResult);
+        }
+
+        Map<OntologySourceRefObject, List<OntologyTerm>> bioportalResult = bioportalClient.getTermsByPartialNameFromSource(searchField.getText(), "all", false);
+
+        log.info("found terms in " + bioportalResult.size() + " bioportal ontologies");
+
+        if (bioportalResult.size() > 0) {
+            result.putAll(bioportalResult);
+        }
+
+        Map<OntologySourceRefObject, List<OntologyTerm>> pluginResults = OntologySearchPluginRegistry.compositeSearch(searchField.getText());
+        if (pluginResults != null && pluginResults.size() > 0) {
+            result.putAll(pluginResults);
+        }
+
+        log.info("almalgamated result is comprised of " + result.size() + " ontologies");
+
+        OntologyManager.addOLSOntologyDefinitions(bioportalClient.getOntologyNames(), bioportalClient.getOntologyVersions());
+    }
+
     private Map<OntologySourceRefObject, Set<OntologyTerm>> processResults() {
 
-        Set<String> recordedAccessions = new HashSet<String>();
+        SortedMap<OntologySourceRefObject, Set<OntologyTerm>> processedResult = new TreeMap<OntologySourceRefObject, Set<OntologyTerm>>();
 
-        Map<OntologySourceRefObject, Set<OntologyTerm>> processedResult = new HashMap<OntologySourceRefObject, Set<OntologyTerm>>();
+
         for (OntologySourceRefObject osro : result.keySet()) {
+
+            Set<String> recordedAccessions = new HashSet<String>();
+
             if (osro != null) {
                 if (!processedResult.containsKey(osro)) {
                     processedResult.put(osro, new HashSet<OntologyTerm>());
@@ -997,9 +1006,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                 }
             }
         }
-
         return removeRedundantSearchResults(processedResult);
     }
+
+
 
     private Map<OntologySourceRefObject, Set<OntologyTerm>> removeRedundantSearchResults(Map<OntologySourceRefObject, Set<OntologyTerm>> toProcess) {
 
@@ -1032,7 +1042,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         }
 
         return toProcess;
-
     }
 
     /**
@@ -1069,7 +1078,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         count++;
                     }
 
-                    historyList.updateContents(newHistory);
+                    historyList.updateContents(newHistory, true);
                 }
             }
         });

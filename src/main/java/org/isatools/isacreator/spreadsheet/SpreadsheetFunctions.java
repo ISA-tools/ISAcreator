@@ -287,7 +287,12 @@ public class SpreadsheetFunctions {
                                 if (oo != null) {
                                     termAccession = oo.getOntologySourceAccession();
                                     if (termAccession.contains(":")) {
-                                        termAccession = termAccession.substring(val.indexOf(":") + 1);
+                                        try {
+                                            termAccession = termAccession.substring(termAccession.indexOf(":") + 1);
+                                        } catch (Exception exception) {
+                                            System.err.println("Error when parsing ontology string. Dealt with it.");
+                                            termAccession = oo.getOntologySourceAccession();
+                                        }
                                     }
                                 }
 
