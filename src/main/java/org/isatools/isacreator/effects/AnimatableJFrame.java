@@ -38,6 +38,7 @@
 package org.isatools.isacreator.effects;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -151,11 +152,18 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     private void setupAnimation() {
         glass.removeAll();
         // set back to be a transparent white colour.
-        glass.setBackground(new Color(255, 255, 255, 100));
+        int minorVersion = getVersion();
+
+        glass.setBackground(new Color(255, 255, 255, minorVersion < 7 ? 100 : 210));
         glass.setOpaque(true);
         glass.setVisible(true);
         animationDirection = INCOMING;
         startAnimation();
+    }
+
+    private int getVersion() {
+        String version = ISAcreatorProperties.getProperty("java.version");
+        return (int) version.charAt(2);
     }
 
     public void setupPane() {

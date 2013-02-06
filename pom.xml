@@ -416,6 +416,10 @@
                     <artifactId>commons-httpclient</artifactId>
                     <groupId>commons-httpclient</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>org.isatools</artifactId>
+                    <groupId>ISAcreator</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 

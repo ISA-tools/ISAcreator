@@ -108,6 +108,8 @@ public class IOUtils {
                         } else {
                             tmpTerm = termAndSource[0];
                         }
+                    }  else {
+                        tmpTerm += ontologyTerm;
                     }
                 }
 

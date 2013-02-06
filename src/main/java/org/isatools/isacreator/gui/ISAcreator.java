@@ -266,16 +266,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName, boolean loggedIn) {
 
         performStandardSetup();
-
-
         // check that java version is supported!
         if (!checkSystemRequirements()) {
             //this can't happen if this is used from java web start
             isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
             //mode, configuration, user, main
-            int panelToShow = ISAcreatorMenu.NONE;
-
+            int panelToShow;
             if (!loggedIn && (username==null || password==null) || authMenuClassName!=null){
                 panelToShow = ISAcreatorMenu.SHOW_LOGIN;
             }else if (configDir==null){
@@ -392,11 +389,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private boolean checkSystemRequirements() {
         String version = System.getProperty("java.version");
+        ISAcreatorProperties.setProperty("java.version", version);
+        char minorVersion = version.charAt(2);
+
         log.info("System details");
         log.info(System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + (System.getProperty("os.arch").equals("x86_64") ? "64 bit" : "32 bit"));
         log.info("JRE version: " + version);
 
-        char minorVersion = version.charAt(2);
         return minorVersion >= '6';
     }
 
