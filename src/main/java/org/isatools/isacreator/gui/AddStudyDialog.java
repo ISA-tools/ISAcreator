@@ -5,11 +5,11 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
-<<<<<<< HEAD
+ <<<<<<< HEAD
  �The contents of this file are subject to the CPAL version 1.0 (the �License�);
-=======
+ =======
  The contents of this file are subject to the CPAL version 1.0 (the License);
->>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
+ >>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -17,11 +17,11 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
-<<<<<<< HEAD
+ <<<<<<< HEAD
  Software distributed under the License is distributed on an �AS IS� basis,
-=======
+ =======
  Software distributed under the License is distributed on an AS IS basis,
->>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
+ >>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -45,6 +45,7 @@
 
 package org.isatools.isacreator.gui;
 
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.managers.ApplicationManager;
@@ -52,13 +53,14 @@ import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
-
-import static org.isatools.isacreator.gui.DataEntryEnvironment.isValidName;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * AddNodeDialog provides simple interface for which to add a Study to the investigation.
@@ -83,74 +85,8 @@ public class AddStudyDialog extends JDialog {
         ResourceInjector.get("gui-package.style").inject(this);
     }
 
-    private void addStudy() {
-        
-        if (!isValidName(name.getText())) {
-            status.setText("<html><b>Invalid file name: can not start with COM#|LPT#</b></br> or contain \\<\\>\\/</html>");
-            status.setVisible(true);
-        }
-        else  if (!dataEntryEnvironment.checkForDuplicateName(name.getText(), "Study")) {
-
-             if (dataEntryEnvironment.addStudy(name.getText())) {
-                status.setVisible(false);
-                hideMe();
-                }
-
-            else {
-                status.setVisible(true);
-
-             }
-        } else {
-            status.setVisible(true);
-        }
-    }
-
     public void createGUI() {
-        add = new JLabel(addStudyButton,
-                JLabel.RIGHT);
-        add.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                add.setIcon(addStudyButton);
-                addStudy();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                add.setIcon(addStudyButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                add.setIcon(addStudyButton);
-            }
-        });
-
-        close = new JLabel(closeButton,
-                JLabel.LEFT);
-        close.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                status.setVisible(false);
-                hideMe();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                close.setIcon(closeButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                close.setIcon(closeButton);
-            }
-        });
-
         instantiateFrame();
-    }
-
-    public int getHeight() {
-        return 120;
-    }
-
-    public int getWidth() {
-        return 200;
     }
 
     private void hideMe() {
@@ -162,6 +98,7 @@ public class AddStudyDialog extends JDialog {
         });
     }
 
+
     private void instantiateFrame() {
         setBackground(UIHelper.BG_COLOR);
         add(instantiatePanel());
@@ -169,24 +106,20 @@ public class AddStudyDialog extends JDialog {
     }
 
     private JPanel instantiatePanel() {
-        JPanel headerCont = new JPanel(new GridLayout(1, 1));
-        headerCont.setBackground(UIHelper.BG_COLOR);
 
-        // by default, header image is to add study!
-        headerCont.add(new JLabel(
-                addStudyHeader,
-                JLabel.RIGHT));
+        add(UIHelper.wrapComponentInPanel(new JLabel(addStudyHeader)), BorderLayout.NORTH);
 
-        add(headerCont, BorderLayout.NORTH);
-
-        JLabel exHeaderLab = UIHelper.createLabel("Please enter " + type + " name: ");
-        JPanel topCont = new JPanel(new GridLayout(2, 1));
-        topCont.setBackground(UIHelper.BG_COLOR);
-        topCont.add(exHeaderLab);
-
-        name = new RoundedJTextField(10);
-        name.setText(type);
-        UIHelper.renderComponent(name, UIHelper.VER_12_PLAIN, UIHelper.GREY_COLOR, UIHelper.BG_COLOR);
+        name = new RoundedJTextField(20, new Color(241, 241, 241));
+        name.setText(type + " id");
+        name.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                if (name.getText().equals(type + " id")) {
+                    name.setText("");
+                }
+            }
+        });
+        UIHelper.renderComponent(name, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
 
         Action addStudyAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -195,30 +128,121 @@ public class AddStudyDialog extends JDialog {
         };
 
         name.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "ADDSTUDY");
-
-
         name.getActionMap().put("ADDSTUDY", addStudyAction);
 
+        JPanel buttonCont = createButtonPanel();
 
-        topCont.add(name);
-
-        JPanel buttonCont = new JPanel(new GridLayout(1, 2));
-        buttonCont.setBackground(UIHelper.BG_COLOR);
-
-        buttonCont.add(close);
-        buttonCont.add(add);
-
-        status = UIHelper.createLabel("<html>study with that name already exists!</html>", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR);
-
-        status.setBackground(UIHelper.BG_COLOR);
-        status.setVisible(false);
+        JPanel statusPanel = new JPanel(new BorderLayout());
+        statusPanel.setBackground(UIHelper.BG_COLOR);
+        status = new JLabel("<html></html>");
+        status.setPreferredSize(new Dimension(400, 30));
+        UIHelper.renderComponent(status, UIHelper.VER_12_BOLD, UIHelper.RED_COLOR, false);
+        statusPanel.add(status, BorderLayout.CENTER);
 
         JPanel container = new JPanel(new BorderLayout());
+        container.setBorder(new EmptyBorder(5, 5, 5, 5));
         container.setBackground(UIHelper.BG_COLOR);
-        container.add(topCont, BorderLayout.NORTH);
-        container.add(status, BorderLayout.CENTER);
+
+        JPanel nameContainer = new JPanel(new GridLayout(1, 1));
+        nameContainer.setOpaque(false);
+
+        nameContainer.setBorder(new EmptyBorder(10, 20, 10, 20));
+        nameContainer.add(name);
+
+        container.add(nameContainer, BorderLayout.NORTH);
+        container.add(statusPanel, BorderLayout.CENTER);
         container.add(buttonCont, BorderLayout.SOUTH);
 
         return container;
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel buttonCont = new JPanel(new BorderLayout());
+        buttonCont.setBackground(UIHelper.BG_COLOR);
+
+
+        add = new JLabel(addStudyButton,
+                JLabel.RIGHT);
+        add.addMouseListener(new CommonMouseAdapter() {
+
+            public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
+                add.setIcon(addStudyButton);
+                addStudy();
+            }
+
+            public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
+                add.setIcon(addStudyButtonOver);
+            }
+
+            public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
+                add.setIcon(addStudyButton);
+            }
+        });
+
+        close = new JLabel(closeButton,
+                JLabel.LEFT);
+        close.addMouseListener(new CommonMouseAdapter() {
+
+            public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
+                status.setText("");
+                hideMe();
+            }
+
+            public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
+                close.setIcon(closeButtonOver);
+            }
+
+            public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
+                close.setIcon(closeButton);
+            }
+        });
+
+        buttonCont.add(close, BorderLayout.WEST);
+        buttonCont.add(add, BorderLayout.EAST);
+
+        return buttonCont;
+    }
+
+    //todo: probably should remove close coupling with DataEntryEnvironment.
+    private void addStudy() {
+        if (!isValidName(name.getText())) {
+            status.setText("<html><b>Invalid file name: can not start with COM#|LPT#</b></br> or contain \\<\\>\\/</html>");
+        } else if (!dataEntryEnvironment.checkForDuplicateName(name.getText(), "Study")) {
+
+            if (dataEntryEnvironment.addStudy(name.getText())) {
+                status.setText("");
+                hideMe();
+            } else {
+                status.setText("<html><b>An unexpected error occurred when adding a study. Please report this to the ISA Team!</b></html>");
+            }
+        } else {
+            status.setText("<html><b>Study with this identifier already exists.</b></html>");
+        }
+    }
+
+    private boolean isValidName(String text) {
+        Pattern pattern = Pattern.compile(
+                "# Match a valid Windows filename (unspecified file system).          \n" +
+                        "^                                # Anchor to start of string.        \n" +
+                        "(?!                              # Assert filename is not: CON, PRN, \n" +
+                        "  (?:                            # AUX, NUL, COM1, COM2, COM3, COM4, \n" +
+                        "    CON|PRN|AUX|NUL|             # COM5, COM6, COM7, COM8, COM9,     \n" +
+                        "    COM[1-9]|LPT[1-9]            # LPT1, LPT2, LPT3, LPT4, LPT5,     \n" +
+                        "  )                              # LPT6, LPT7, LPT8, and LPT9...     \n" +
+                        "  (?:\\.[^.]*)?                  # followed by optional extension    \n" +
+                        "  $                              # and end of string                 \n" +
+                        ")                                # End negative lookahead assertion. \n" +
+                        "[^<>:\"/\\\\|?*\\x00-\\x1F]*     # Zero or more valid filename chars.\n" +
+                        "[^<>:\"/\\\\|?*\\x00-\\x1F\\ .]  # Last char is not a space or dot.  \n" +
+                        "$                                # Anchor to end of string.            ",
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.COMMENTS);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
     }
 }

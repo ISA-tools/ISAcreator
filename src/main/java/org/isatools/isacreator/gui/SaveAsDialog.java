@@ -5,11 +5,11 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
-<<<<<<< HEAD
+ <<<<<<< HEAD
  �The contents of this file are subject to the CPAL version 1.0 (the �License�);
-=======
+ =======
  The contents of this file are subject to the CPAL version 1.0 (the License);
->>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
+ >>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -17,11 +17,11 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
-<<<<<<< HEAD
+ <<<<<<< HEAD
  Software distributed under the License is distributed on an �AS IS� basis,
-=======
+ =======
  Software distributed under the License is distributed on an AS IS basis,
->>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
+ >>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -46,14 +46,14 @@
 package org.isatools.isacreator.gui;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 
 
@@ -66,6 +66,7 @@ import java.io.File;
 public class SaveAsDialog extends JDialog {
 
     private JLabel status;
+    private RoundedJTextField fileName;
 
     @InjectedResource
     private ImageIcon dialogHeader, closeButton, closeButtonOver,
@@ -78,52 +79,80 @@ public class SaveAsDialog extends JDialog {
     public void createGUI() {
         setBackground(UIHelper.BG_COLOR);
         instantiatePanel();
+
         pack();
     }
 
     private void instantiatePanel() {
+        createAndAddNorthPanel();
+        createAndAddCenterPanel();
+        createAndAddSouthPanel();
+
+
+    }
+
+    private void createAndAddNorthPanel() {
         JPanel topPanel = new JPanel(new GridLayout(1, 1));
         topPanel.setBackground(UIHelper.BG_COLOR);
 
-        JLabel saveAsLab = new JLabel(dialogHeader,
-                JLabel.RIGHT);
+        JLabel saveAsLab = new JLabel(dialogHeader);
         saveAsLab.setBackground(UIHelper.BG_COLOR);
 
         topPanel.add(saveAsLab);
 
         add(topPanel, BorderLayout.NORTH);
+    }
 
-        // setup center panel to contain data entry facility for user.
+    private void createAndAddCenterPanel() {
         JPanel centerPanel = new JPanel(new GridLayout(2, 1));
         centerPanel.setBackground(UIHelper.BG_COLOR);
+        centerPanel.setBorder(new EmptyBorder(5, 20, 5, 20));
 
-        JPanel fileNamePanel = new JPanel(new GridLayout(1, 2));
+        JPanel fileNamePanel = new JPanel(new BorderLayout());
         fileNamePanel.setOpaque(false);
 
-        JLabel fileNameLab = new JLabel("directory name");
-        UIHelper.renderComponent(fileNameLab, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        final String defaultText = " Please enter a directory name...";
 
-        final JTextField fileNameTxt = new JTextField(
-                "Please enter a directory name...");
-        fileNameTxt.setBackground(UIHelper.BG_COLOR);
-        UIHelper.renderComponent(fileNameTxt, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+        fileName = new RoundedJTextField(20, new Color(241,242,241));
+        fileName.setText(defaultText);
+        fileName.setBackground(UIHelper.BG_COLOR);
+        UIHelper.renderComponent(fileName, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        fileNamePanel.add(fileNameLab);
-        fileNamePanel.add(fileNameTxt);
+        fileName.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                if(fileName.getText().equals(defaultText)) {
+                    fileName.setText("");
+                }
+            }
+        });
+
+        fileNamePanel.add(fileName, BorderLayout.CENTER);
 
         centerPanel.add(fileNamePanel);
 
         JPanel statusPanel = new JPanel(new BorderLayout());
         statusPanel.setBackground(UIHelper.BG_COLOR);
         status = new JLabel("<html></html>");
-        status.setPreferredSize(new Dimension(410,30));
+        status.setPreferredSize(new Dimension(350, 30));
         UIHelper.renderComponent(status, UIHelper.VER_12_BOLD, UIHelper.RED_COLOR, false);
         statusPanel.add(status, BorderLayout.CENTER);
 
         centerPanel.add(statusPanel);
 
-        add(centerPanel, BorderLayout.CENTER);
+        Action saveAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                save(fileName.getText().trim());
+            }
+        };
 
+        fileName.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "SAVE");
+        fileName.getActionMap().put("SAVE", saveAction);
+
+        add(centerPanel, BorderLayout.CENTER);
+    }
+
+    private void createAndAddSouthPanel() {
         // setup south panel with buttons and so forth :o)
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.setBackground(UIHelper.BG_COLOR);
@@ -146,14 +175,6 @@ public class SaveAsDialog extends JDialog {
             }
         });
 
-        Action saveAction = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                save(fileNameTxt.getText().trim());
-            }
-        };
-
-        fileNameTxt.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "SAVE");
-        fileNameTxt.getActionMap().put("SAVE", saveAction);
 
         final JLabel save = new JLabel(saveSubmission,
                 JLabel.RIGHT);
@@ -161,7 +182,7 @@ public class SaveAsDialog extends JDialog {
         save.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                save(fileNameTxt.getText().trim());
+                save(fileName.getText().trim());
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -180,18 +201,18 @@ public class SaveAsDialog extends JDialog {
     }
 
     public void save(String fileName) {
-        if (!fileName.equals("") && !fileName.contains("Please enter a directory name...") ) {
+        if (!fileName.equals("") && !fileName.contains("Please enter a directory name...")) {
             if (fileName.contains("/")) {
                 status.setText("<html><b>Invalid file name<: / are not allowed in directory names</b></html>");
             } else {
                 File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
-                    fileName.replace("/","_"));
+                        fileName.replace("/", "_"));
 
                 if (!f.exists()) {
                     firePropertyChange("save", "", fileName);
                 } else {
                     status.setText(
-                        "<html><b>directory name already exists in \"" + ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + "\" folder</b></html>");
+                            "<html><b>directory name already exists in \"" + ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + "\" folder</b></html>");
                 }
             }
         } else {

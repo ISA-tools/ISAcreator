@@ -116,7 +116,15 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     }
 
     private void finishShowingSheet() {
-        glass.removeAll();
+
+        if(getJavaVersion() < 7) {
+            glass.removeAll();
+        } else {
+            glass = new JPanel();
+            glass.setOpaque(true);
+            glass.setBackground(new Color(255,255,255,100));
+            setGlassPane(glass);
+        }
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -151,24 +159,21 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
 
     private void setupAnimation() {
         glass.removeAll();
-        // set back to be a transparent white colour.
-        int minorVersion = getVersion();
-
-        glass.setBackground(new Color(255, 255, 255, minorVersion < 7 ? 100 : 210));
+        glass.setBackground(new Color(255, 255, 255, 100));
         glass.setOpaque(true);
         glass.setVisible(true);
         animationDirection = INCOMING;
         startAnimation();
     }
 
-    private int getVersion() {
+    private int getJavaVersion() {
         String version = ISAcreatorProperties.getProperty("java.version");
-        return (int) version.charAt(2);
+        String[] versionParts = version.split("\\.");
+        return Integer.valueOf(versionParts[1]);
     }
 
     public void setupPane() {
         glass = (JPanel) getGlassPane();
-//		glass.addMouseListener(this);
         glass.setLayout(new GridBagLayout());
         glass.setBackground(UIHelper.BG_COLOR);
         animatingSheet = new AnimatingSheet();
@@ -183,15 +188,13 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
      * Used to show JDialog windows as sheets
      *
      * @param dialog - Dialog to be shown as a sheet
-     * @return - The AnimatingSheet object to be used in the animation
      */
-    public JComponent showJDialogAsSheet(JDialog dialog) {
+    public void showJDialogAsSheet(JDialog dialog) {
+
         sheet = (JComponent) dialog.getContentPane();
         sheet.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
-        glass.addMouseListener(this);
+//        maskOutMouseEvents();
         setupAnimation();
-
-        return sheet;
     }
 
     private void startAnimation() {
@@ -224,6 +227,7 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     private void stopAnimation() {
         animationTimer.stop();
         animating = false;
+        System.setProperty("awt.nativeDoubleBuffering", "false");
     }
 
 
