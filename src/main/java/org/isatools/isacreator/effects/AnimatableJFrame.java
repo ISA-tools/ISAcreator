@@ -77,8 +77,6 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
         setupPane();
     }
 
-    // used by the Timer
-
     public void actionPerformed(ActionEvent e) {
         if (animating) {
             // calculate height to show
@@ -116,7 +114,6 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     }
 
     private void finishShowingSheet() {
-
         if(getJavaVersion() < 7) {
             glass.removeAll();
         } else {
@@ -190,10 +187,8 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
      * @param dialog - Dialog to be shown as a sheet
      */
     public void showJDialogAsSheet(JDialog dialog) {
-
         sheet = (JComponent) dialog.getContentPane();
         sheet.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
-//        maskOutMouseEvents();
         setupAnimation();
     }
 
@@ -230,24 +225,13 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
         System.setProperty("awt.nativeDoubleBuffering", "false");
     }
 
+    public void mouseClicked(MouseEvent mouseEvent) {}
 
-    public void mouseClicked(MouseEvent mouseEvent) {
+    public void mouseEntered(MouseEvent mouseEvent) {}
 
-    }
+    public void mouseExited(MouseEvent mouseEvent) {}
 
-    public void mouseEntered(MouseEvent mouseEvent) {
+    public void mousePressed(MouseEvent mouseEvent) {}
 
-    }
-
-    public void mouseExited(MouseEvent mouseEvent) {
-
-    }
-
-    public void mousePressed(MouseEvent mouseEvent) {
-
-    }
-
-    public void mouseReleased(MouseEvent mouseEvent) {
-
-    }
+    public void mouseReleased(MouseEvent mouseEvent) {}
 }
