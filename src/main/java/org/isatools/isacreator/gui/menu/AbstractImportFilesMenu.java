@@ -41,6 +41,7 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.managers.ApplicationManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -190,7 +191,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
                     chooseFromElsewhere.setIcon(getSearchButton());
 
-                    if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
+                    if (jfc.showOpenDialog(ApplicationManager.getCurrentApplicationInstance()) == JFileChooser.APPROVE_OPTION) {
                         String directory = jfc.getSelectedFile().toString();
 
                         File dirFile = new File(directory);

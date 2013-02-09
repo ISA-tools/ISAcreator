@@ -122,7 +122,7 @@ public class UserProfileManager {
         return currentUser;
     }
 
-    public void loadUserProfiles() {
+    public static void loadUserProfiles() {
         EncryptedObject eo = new EncryptedObject();
 
         String userProfileLocation = ISAcreatorProperties.getProperty("isacreator.userProfileLocation");

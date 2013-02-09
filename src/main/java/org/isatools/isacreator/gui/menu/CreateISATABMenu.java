@@ -101,7 +101,7 @@ public class CreateISATABMenu extends MenuUIComponent {
                         createUsingWizard.setIcon(useWizardButton);
                         wizard.createGUI();
                         wizard.changeView();
-                        menu.getMain().setCurrentPage(wizard);
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(wizard);
                     }
                 });
             }
@@ -127,7 +127,7 @@ public class CreateISATABMenu extends MenuUIComponent {
                         MappingUtilView mappingUtilView = new MappingUtilView(menu);
                         createUsingMapper.setIcon(useMapperButton);
                         mappingUtilView.createGUI();
-                        menu.getMain().setCurrentPage(mappingUtilView);
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(mappingUtilView);
                         mappingUtilView.changeView();
                     }
                 });
@@ -208,15 +208,15 @@ public class CreateISATABMenu extends MenuUIComponent {
                 DataEntryEnvironment dataEntryEnvironment = new DataEntryEnvironment();
                 dataEntryEnvironment.createGUI();
 
-                dataEntryEnvironment.getInvestigation().setLastConfigurationUsed(menu.getMain().getLoadedConfiguration());
-                dataEntryEnvironment.getInvestigation().setConfigurationCreateWith(menu.getMain().getLoadedConfiguration());
+                dataEntryEnvironment.getInvestigation().setLastConfigurationUsed(ApplicationManager.getCurrentApplicationInstance().getLoadedConfiguration());
+                dataEntryEnvironment.getInvestigation().setConfigurationCreateWith(ApplicationManager.getCurrentApplicationInstance().getLoadedConfiguration());
 
                 menu.stopProgressIndicator();
                 menu.resetViewAfterProgress();
                 menu.hideGlassPane();
 
-                menu.getMain().setCurrentPage(dataEntryEnvironment);
-                menu.getMain().setCurDataEntryPanel(dataEntryEnvironment);
+                ApplicationManager.getCurrentApplicationInstance().setCurrentPage(dataEntryEnvironment);
+                ApplicationManager.getCurrentApplicationInstance().setCurDataEntryPanel(dataEntryEnvironment);
 
             }
         });

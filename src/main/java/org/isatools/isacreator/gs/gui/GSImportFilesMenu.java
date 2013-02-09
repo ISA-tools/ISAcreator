@@ -303,7 +303,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
                     chooseFromElsewhere.setIcon(getSearchButton());
 
-                    if (jfc.showOpenDialog(menu.getMain()) == JFileChooser.APPROVE_OPTION) {
+                    if (jfc.showOpenDialog(ApplicationManager.getCurrentApplicationInstance()) == JFileChooser.APPROVE_OPTION) {
                         String directory = jfc.getSelectedFile().toString();
                         File dirFile = new File(directory + File.separator);
 

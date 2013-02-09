@@ -2,6 +2,7 @@ package org.isatools.isacreator.gui.menu;
 
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.errorreporter.ui.ErrorReporterView;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.awt.*;
@@ -55,10 +56,10 @@ public class ErrorMenu extends MenuUIComponent {
             errorReportWithControls.addPropertyChangeListener(ErrorReportWrapper.CONTINUE_BUTTON_CLICKED_EVENT, new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
 
-                    menu.getMain().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(
+                    ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation().setLastConfigurationUsed(
                             ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
                     menu.hideGlassPane();
-                    menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
+                    ApplicationManager.getCurrentApplicationInstance().setCurrentPage(ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment());
                 }
             });
         }

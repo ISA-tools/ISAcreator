@@ -45,7 +45,6 @@ import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.model.Contact;
@@ -56,6 +55,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
@@ -224,6 +224,12 @@ public class HistoricalSelectionGUI extends JFrame implements MouseListener, Win
         filterFieldContainer.setBackground(UIHelper.BG_COLOR);
 
         filterFieldContainer.add(historicalItems.getFilterField());
+        UIHelper.renderComponent(historicalItems.getFilterField(), UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        historicalItems.getFilterField().setBorder(new MatteBorder(0, 0, 2, 0, UIHelper.LIGHT_GREEN_COLOR));
+        historicalItems.getFilterField().setSelectedTextColor(UIHelper.BG_COLOR);
+        historicalItems.getFilterField().setCaretColor(UIHelper.DARK_GREEN_COLOR);
+        historicalItems.getFilterField().setSelectionColor(UIHelper.LIGHT_GREEN_COLOR);
+
         filterFieldContainer.add(new ClearFieldUtility(historicalItems.getFilterField()));
 
         historicalItemsPanel.add(filterFieldContainer, BorderLayout.NORTH);

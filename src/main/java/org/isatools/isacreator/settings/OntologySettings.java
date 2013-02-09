@@ -46,6 +46,7 @@ import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.io.OntologyLibrary;
 import org.isatools.isacreator.io.UserProfileManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
@@ -252,7 +253,7 @@ public class OntologySettings extends SettingsScreen {
 
     public boolean updateSettings() {
         OntologyManager.setOntologySelectionHistory(userOntologyHistory);
-        menu.getMain().saveUserProfiles();
+        UserProfileManager.saveUserProfiles();
         return true;
     }
 
@@ -305,12 +306,12 @@ public class OntologySettings extends SettingsScreen {
                         public void propertyChange(PropertyChangeEvent event) {
                             if (event.getPropertyName()
                                     .equals(JOptionPane.VALUE_PROPERTY)) {
-                                menu.getMain().hideSheet();
+                                ApplicationManager.getCurrentApplicationInstance().hideSheet();
                             }
                         }
                     });
 
-                    menu.getMain()
+                    ApplicationManager.getCurrentApplicationInstance()
                             .showJDialogAsSheet(optionPane.createDialog(menu,
                                     "information"));
                 }
@@ -356,12 +357,12 @@ public class OntologySettings extends SettingsScreen {
                         public void propertyChange(PropertyChangeEvent event) {
                             if (event.getPropertyName()
                                     .equals(JOptionPane.VALUE_PROPERTY)) {
-                                menu.getMain().hideSheet();
+                                ApplicationManager.getCurrentApplicationInstance().hideSheet();
                             }
                         }
                     });
 
-                    menu.getMain()
+                    ApplicationManager.getCurrentApplicationInstance()
                             .showJDialogAsSheet(optionPane.createDialog(menu,
                                     "information"));
                 }

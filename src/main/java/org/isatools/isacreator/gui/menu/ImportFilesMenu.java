@@ -179,11 +179,11 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             public void run() {
                 try {
 
-                    final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(menu.getMain());
+                    final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(ApplicationManager.getCurrentApplicationInstance());
                     boolean successfulImport = iISA.importFile(dir);
                     if (successfulImport && iISA.getMessages().size() == 0) {
                         // success, so load
-                        menu.getMain().setCurrentPage(menu.getMain().getDataEntryEnvironment());
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment());
                         menu.resetViewAfterProgress();
 
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
