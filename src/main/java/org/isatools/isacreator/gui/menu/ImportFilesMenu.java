@@ -133,6 +133,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         if (loadingImagePane){
             showLoadingImagePane();
         }
+        ApplicationManager.setCurrentLocalISATABFolder(candidate.getAbsolutePath());
         loadFile(candidate.getAbsolutePath());
     }
 
