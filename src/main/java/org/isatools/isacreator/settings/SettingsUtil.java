@@ -44,6 +44,7 @@ import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.UserProfileManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.utils.PropertyFileIO;
@@ -114,7 +115,7 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
 
     public void createGUI() {
         setLayout(new BorderLayout());
-        menuPanels.getMain().hideGlassPane();
+        ApplicationManager.getCurrentApplicationInstance().hideGlassPane();
 
         createSouthPanel(false);
 
@@ -137,8 +138,8 @@ public class SettingsUtil extends AbstractDataEntryEnvironment {
                     public void run() {
                         callUpdate();
 
-                        menuPanels.getMain().setCurrentPage(menuPanels);
-                        menuPanels.getMain().setGlassPanelContents(menuPanels.getMainMenuGUI());
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(menuPanels);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(menuPanels.getMainMenuGUI());
                         menuPanels.startAnimation();
                     }
                 });

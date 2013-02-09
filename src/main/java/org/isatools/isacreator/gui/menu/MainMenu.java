@@ -39,6 +39,7 @@ package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.io.UserProfileManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -147,7 +148,7 @@ public class MainMenu extends MenuUIComponent {
                 confirmExitPanel.setVisible(false);
                 menu.getMergeStudiesGUI().createGUI();
                 menu.getMergeStudiesGUI().changeView();
-                menu.getMain().setCurrentPage(menu.getMergeStudiesGUI());
+                ApplicationManager.getCurrentApplicationInstance().setCurrentPage(menu.getMergeStudiesGUI());
             }
 
             public void mouseEntered(MouseEvent event) {
@@ -161,7 +162,7 @@ public class MainMenu extends MenuUIComponent {
         menuItems.add(merge);
         menuItems.add(Box.createVerticalStrut(10));
 
-        if (menu.getMain().getMode() == Mode.NORMAL_MODE) {
+        if (ApplicationManager.getCurrentApplicationInstance().getMode() == Mode.NORMAL_MODE) {
             settingsButton = new JLabel(settings,
                     JLabel.LEFT);
             settingsButton.addMouseListener(new MouseAdapter() {
@@ -171,7 +172,7 @@ public class MainMenu extends MenuUIComponent {
                     confirmExitPanel.setVisible(false);
                     menu.getSettings().createGUI();
                     menu.getSettings().changeView();
-                    menu.getMain().setCurrentPage(menu.getSettings());
+                    ApplicationManager.getCurrentApplicationInstance().setCurrentPage(menu.getSettings());
                 }
 
                 public void mouseEntered(MouseEvent event) {

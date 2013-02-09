@@ -103,7 +103,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
     public void createGUI() {
 
-        menuPanels.getMain().hideGlassPane();
+        ApplicationManager.getCurrentApplicationInstance().hideGlassPane();
 
         createWestPanel(logo, null);
 
@@ -168,7 +168,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
         selectFilesContainer.add(Box.createVerticalStrut(20));
         selectFilesContainer.add(statusPanel);
 
-        final JLayeredPane finalLayout = getGeneralLayout(selectFilesHeader, breadcrumb1, "", selectFilesContainer, menuPanels.getMain().getHeight());
+        final JLayeredPane finalLayout = getGeneralLayout(selectFilesHeader, breadcrumb1, "", selectFilesContainer, ApplicationManager.getCurrentApplicationInstance().getHeight());
 
         final MouseListener[] listeners = new MouseListener[2];
 
@@ -186,8 +186,8 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
                 backButton.setIcon(back);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        menuPanels.getMain().setCurrentPage(menuPanels);
-                        menuPanels.getMain().setGlassPanelContents(menuPanels.getMainMenuGUI());
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(menuPanels);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(menuPanels.getMainMenuGUI());
                         menuPanels.startAnimation();
                     }
                 });
@@ -224,15 +224,15 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
                                         SwingUtilities.invokeLater(new Runnable() {
                                             public void run() {
-                                                previousGlassPane = (JPanel) menuPanels.getMain().getGlassPane();
+                                                previousGlassPane = (JPanel) ApplicationManager.getCurrentApplicationInstance().getGlassPane();
 
                                                 progressPanel = new InfiniteProgressPanel(
                                                         "merging files...");
-                                                progressPanel.setSize(new Dimension(menuPanels.getMain().getContentPane().getWidth(),
-                                                        menuPanels.getMain().getContentPane().getHeight()));
+                                                progressPanel.setSize(new Dimension(ApplicationManager.getCurrentApplicationInstance().getContentPane().getWidth(),
+                                                        ApplicationManager.getCurrentApplicationInstance().getContentPane().getHeight()));
 
-                                                menuPanels.getMain().setGlassPane(progressPanel);
-                                                menuPanels.getMain().validate();
+                                                ApplicationManager.getCurrentApplicationInstance().setGlassPane(progressPanel);
+                                                ApplicationManager.getCurrentApplicationInstance().validate();
                                                 progressPanel.start();
 
 
@@ -531,7 +531,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
         investigationDefPane.add(Box.createVerticalStrut(10));
         investigationDefPane.add(investigationDefinitionPanel);
 
-        final JLayeredPane finalPane = getGeneralLayout(defineInvestigationHeader, breadcrumb2, "", investigationDefPane, menuPanels.getMain().getContentPane().getHeight());
+        final JLayeredPane finalPane = getGeneralLayout(defineInvestigationHeader, breadcrumb2, "", investigationDefPane, ApplicationManager.getCurrentApplicationInstance().getContentPane().getHeight());
 
         assignListenerToLabel(backButton, listeners[0]);
 
@@ -607,7 +607,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
         Thread performerThread = new Thread(new Runnable() {
             public void run() {
                 try {
-                    ISAtabImporter importISA1 = new ISAtabFilesImporterFromGUI(menuPanels.getMain());
+                    ISAtabImporter importISA1 = new ISAtabFilesImporterFromGUI(ApplicationManager.getCurrentApplicationInstance());
 
                     if (!importISA1.importFile(ISA1 + File.separator)) {
 //                        status.setText(importISA1.getProblemLog());
@@ -616,7 +616,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
                     final Investigation inv1 = importISA1.getInvestigation();
 
-                    ISAtabImporter importISA2 = new ISAtabFilesImporterFromGUI(menuPanels.getMain());
+                    ISAtabImporter importISA2 = new ISAtabFilesImporterFromGUI(ApplicationManager.getCurrentApplicationInstance());
                     importISA2.importFile(ISA2 + File.separator);
 
                     if (!importISA2.importFile(ISA2 + File.separator)) {
@@ -656,7 +656,7 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
                     inv1.setFileReference(f.getAbsolutePath());
 
-                    menuPanels.getMain().getDataEntryEnvironment().setInvestigation(inv1);
+                    ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().setInvestigation(inv1);
 
                     status.setForeground(UIHelper.DARK_GREEN_COLOR);
                     status.setText("merge complete! " + newISAName + " saved in the isatab files directory...");
@@ -670,10 +670,10 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            menuPanels.getMain().setGlassPane(previousGlassPane);
-                            menuPanels.getMain().hideGlassPane();
+                            ApplicationManager.getCurrentApplicationInstance().setGlassPane(previousGlassPane);
+                            ApplicationManager.getCurrentApplicationInstance().hideGlassPane();
                             progressPanel.stop();
-                            menuPanels.getMain().validate();
+                            ApplicationManager.getCurrentApplicationInstance().validate();
                             System.gc();
                         }
                     });
