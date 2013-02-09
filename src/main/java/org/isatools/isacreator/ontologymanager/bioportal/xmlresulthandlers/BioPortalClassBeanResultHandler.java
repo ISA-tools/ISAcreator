@@ -55,7 +55,8 @@ public class BioPortalClassBeanResultHandler {
         try {
             resultDocument = bioontology.bioportal.classBean.schema.SuccessDocument.Factory.parse(new File(fileLocation));
         } catch (org.apache.xmlbeans.XmlException e) {
-            System.err.println("XML Exception encountered");
+            System.err.println("XML Exception encountered "+ e.getMessage());
+            e.printStackTrace();
         } catch (java.io.IOException e) {
             System.err.println("IO Exception: " + e.getMessage());
         }
@@ -63,6 +64,11 @@ public class BioPortalClassBeanResultHandler {
         return resultDocument;
     }
 
+
+    public String getTermURL(String fileLocation){
+        SuccessDocument resultDocument = getDocument(fileLocation);
+        return resultDocument.getSuccess().getData().getClassBean().getFullIdArray(0);
+    }
 
     public OntologyTerm parseMetadataFile(String fileLocation) {
         SuccessDocument resultDocument = getDocument(fileLocation);
