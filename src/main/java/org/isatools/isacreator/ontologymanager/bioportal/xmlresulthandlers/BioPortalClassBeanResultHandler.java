@@ -135,7 +135,7 @@ public class BioPortalClassBeanResultHandler {
 
                                                 // if there are no children, add the term accession to quicken up later queries
                                                 if (relationEntry.getInt().intValue() == 0) {
-                                                    termHasNoChildren.add(ontology.getOntologySourceAccession());
+                                                    termHasNoChildren.add(ontology.getOntologyTermAccession());
                                                     break;
                                                 }
 
@@ -179,7 +179,7 @@ public class BioPortalClassBeanResultHandler {
                         OntologyTerm ontology = createOntologyFromClassBean(upperLevelClass);
 
                         if (!ontology.getOntologyTermName().equals(OntologyTerm.THING)) {
-                            terms.put(ontology.getOntologySourceAccession(), ontology);
+                            terms.put(ontology.getOntologyTermAccession(), ontology);
                         }
 
                         if (entry.getListArray().length > 0) {
@@ -201,19 +201,19 @@ public class BioPortalClassBeanResultHandler {
 
 
     public OntologyTerm createOntologyFromClassBean(ClassBeanDocument.ClassBean classToConvert) {
-        OntologyTerm ontology = new OntologyTerm();
+        OntologyTerm ontologyTerm = new OntologyTerm();
 
         if (classToConvert.getIdArray().length > 0) {
-            ontology.setOntologySourceAccession(classToConvert.getIdArray(0));
+            ontologyTerm.setOntologyTermAccession(classToConvert.getIdArray(0));
         }
         if (classToConvert.getLabelArray().length > 0) {
-            ontology.setOntologyTermName(classToConvert.getLabelArray(0));
+            ontologyTerm.setOntologyTermName(classToConvert.getLabelArray(0));
         }
         if (classToConvert.getFullIdArray().length > 0) {
-            ontology.setOntologyPurl(classToConvert.getFullIdArray(0));
+            ontologyTerm.setOntologyPurl(classToConvert.getFullIdArray(0));
         }
 
-        return ontology;
+        return ontologyTerm;
     }
 
     private boolean proceedWithProcessing(SuccessDocument successDoc) {

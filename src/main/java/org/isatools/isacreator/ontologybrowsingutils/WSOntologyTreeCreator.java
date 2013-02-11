@@ -248,8 +248,8 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
             DefaultMutableTreeNode childNode =
                     new DefaultMutableTreeNode(new OntologyTreeItem(
                             new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
-                                    ? ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession()
-                                    : ontologyTerm.getOntologySourceAccession(), ontologyTerm.getOntologyTermName()), ontology));
+                                    ? ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologyTermAccession()
+                                    : ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologyTermName()), ontology));
 
             if (parent == null) {
                 parent = rootNode;
@@ -289,8 +289,8 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         OntologyService service = getCorrectOntologyService(ontology);
 
         Map<String, OntologyTerm> nodeParentsFromRoot = service.getAllTermParents((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
-                ? term.getOntologySource() + ":" + term.getOntologySourceAccession()
-                : term.getOntologySourceAccession(), service instanceof OLSClient ? term.getOntologySource() : term.getOntologySourceInformation().getSourceVersion());
+                ? term.getOntologySource() + ":" + term.getOntologyTermAccession()
+                : term.getOntologyTermAccession(), service instanceof OLSClient ? term.getOntologySource() : term.getOntologySourceInformation().getSourceVersion());
         TreePath lastPath = null;
 
         for (OntologyTerm node : nodeParentsFromRoot.values()) {
@@ -300,7 +300,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
                     OntologyTreeItem termNode = (OntologyTreeItem) visitingNode.getUserObject();
 
                     if (termNode.getBranch().getBranchName().toLowerCase().equalsIgnoreCase(node.getOntologyTermName())
-                            || termNode.getBranch().getBranchIdentifier().equalsIgnoreCase(node.getOntologySourceAccession())) {
+                            || termNode.getBranch().getBranchIdentifier().equalsIgnoreCase(node.getOntologyTermAccession())) {
                         TreePath pathToNode = new TreePath(visitingNode.getPath());
                         tree.expandPath(pathToNode);
                         tree.setSelectionPath(pathToNode);

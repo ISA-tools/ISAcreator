@@ -230,7 +230,7 @@ public class OntologySettings extends SettingsScreen {
                 "<span class=\"info\">source ref: </span> " +
                 "<span class=\"info_text\">" + ot.getOntologySource() + "</span><br/>" +
                 "<span class=\"info\">accession no: </div>" +
-                "<span class=\"info_text\">" + ot.getOntologySourceAccession() + "</span>" +
+                "<span class=\"info_text\">" + ot.getOntologyTermAccession() + "</span>" +
                 "</body>" +
                 "</html>";
 

@@ -61,7 +61,7 @@ public class InvestigationAdaptor implements ContentAdaptor {
                 OntologyTerm ontology = annotation.getAssignedOntology().getOntologyTerm();
 
                 // add the term to the ontology history.
-                OntologyTerm ontologyObject = new OntologyTerm(ontology.getOntologyTermName(), ontology.getOntologySourceAccession(), ontologySourceRefObject);
+                OntologyTerm ontologyObject = new OntologyTerm(ontology.getOntologyTermName(), ontology.getOntologyTermAccession(), ontologySourceRefObject);
 
                 mappingsForReplacement.put(annotation.getFreeTextTerm(), ontologyObject);
 

@@ -161,7 +161,7 @@ public class BioPortalClientTest {
             System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
 
             for (OntologyTerm term : result.get(source)) {
-                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
 
@@ -228,13 +228,24 @@ public class BioPortalClientTest {
 
     @Test
     public void getTermIRITest(){
-        System.out.println("_____Testing getRDFTerm()____");
+        System.out.println("_____Testing getTermIRI()____");
 
 
         String termAccession = "obo:OBI_0000634";
         //obi
         //client.getRDFTerm("47893", "obo:OBI_0000634");
         String url = client.getTermIRI("47893", termAccession);
+
+        System.out.println("URL for term "+termAccession+ " is "+ url );
+    }
+
+    @Test
+    public void getTermIRITest2(){
+        System.out.println("_____Testing getTermIRI()____");
+
+        String termAccession = "PATO_0000011";
+
+        String url = client.getTermIRI("49640", termAccession);
 
         System.out.println("URL for term "+termAccession+ " is "+ url );
     }

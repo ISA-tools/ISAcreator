@@ -312,7 +312,7 @@ public class OLSClient implements OntologyService {
 
             for (OntologyTerm term : termSearchResult.get(termSource)) {
 
-                if (termsInBranch.contains(term.getOntologySource() + ":" + term.getOntologySourceAccession())) {
+                if (termsInBranch.contains(term.getOntologySource() + ":" + term.getOntologyTermAccession())) {
 
                     if (!filteredResult.containsKey(termSource)) {
                         filteredResult.put(termSource, new ArrayList<OntologyTerm>());
@@ -374,11 +374,8 @@ public class OLSClient implements OntologyService {
     }
 
     private OntologyTerm createOntologyTerm(String source, String accession, String name) {
-        OntologyTerm term = new OntologyTerm();
-        term.setOntologyTermName(name);
-        term.setOntologySourceAccession(accession);
-
-        term.setOntologySourceInformation(getOntologySourceReferenceForOntology(source));
+        OntologyTerm term = new OntologyTerm(name, accession, getOntologySourceReferenceForOntology(source));
+        term.addToComments("Service Provider", "OLS");
         return term;
     }
 

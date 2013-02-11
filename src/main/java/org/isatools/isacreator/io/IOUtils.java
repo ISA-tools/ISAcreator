@@ -96,7 +96,7 @@ public class IOUtils {
 
                 if (oo != null) {
                     tmpTerm += oo.getOntologyTermName();
-                    tmpAccession += oo.getOntologySourceAccession();
+                    tmpAccession += oo.getOntologyTermAccession();
                     tmpSourceRefs += oo.getOntologySource();
                 } else {
                     if (term.contains(":")) {
@@ -133,7 +133,7 @@ public class IOUtils {
 
             if (oo != null && oo.getOntologyTermName() != null) {
                 tmpTerm = oo.getOntologyTermName();
-                tmpAccession = oo.getOntologySourceAccession();
+                tmpAccession = oo.getOntologyTermAccession();
                 tmpSourceRefs = oo.getOntologySource();
 
                 System.out.println("Got ontology term... good times. Term is now " + tmpTerm);

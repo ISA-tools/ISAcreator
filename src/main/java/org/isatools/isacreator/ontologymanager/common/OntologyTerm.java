@@ -44,22 +44,20 @@ import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class OntologyTerm implements Comparable<OntologyTerm> {
 
     public static final String THING = "Thing";
 
     private OntologySourceRefObject ontologySourceInformation;
 
-    private String ontologySourceAccession;
+    private String ontologyTermAccession;
     private String ontologyTermName;
     private String purl = "";
 
     // extra terms for metadata processing
     private Map<String, String> comments;
 
-    public OntologyTerm() {
-    }
+    public OntologyTerm() {}
 
     /***
      *
@@ -69,7 +67,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
      */
     public OntologyTerm(String termName, String accession, OntologySourceRefObject ontologySourceRefObject) {
         ontologyTermName = termName;
-        ontologySourceAccession = accession;
+        ontologyTermAccession = accession;
         ontologySourceInformation = ontologySourceRefObject;
     }
 
@@ -87,8 +85,8 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return ontologySourceInformation.getSourceName();
     }
 
-    public String getOntologySourceAccession() {
-        return ontologySourceAccession;
+    public String getOntologyTermAccession() {
+        return ontologyTermAccession;
     }
 
     public void setOntologySourceInformation(OntologySourceRefObject ontologySourceInformation) {
@@ -99,28 +97,21 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return ontologySourceInformation;
     }
 
-    public void setOntologySourceAccession(String conceptIdShort) {
+    public void setOntologyTermAccession(String conceptIdShort) {
 
         if (conceptIdShort.contains("/")) {
             conceptIdShort = conceptIdShort.substring(conceptIdShort.lastIndexOf("/") + 1);
         }
 
-        this.ontologySourceAccession = conceptIdShort;
+        this.ontologyTermAccession = conceptIdShort;
         // we set this as the accession by default in case the xml does not contain all of the information.
         if (ontologyTermName == null) {
             this.ontologyTermName = conceptIdShort;
         }
     }
 
-
     public String getOntologyTermName() {
-        if (ontologyTermName == null) {
-            return null;
-        } else {
-            return ontologyTermName.contains(":")
-                    ? ontologyTermName.substring(ontologyTermName.indexOf(":") + 1)
-                    : ontologyTermName;
-        }
+        return ontologyTermName;
     }
 
     public void setOntologyTermName(String ontologyTermName) {
@@ -137,14 +128,13 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     @Override
     public String toString() {
-        return getOntologyTermName() + "(" + getOntologySourceAccession() + ")";
+        return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
     }
 
     public void addToComments(String key, String value) {
         if (comments == null) {
             comments = new ListOrderedMap<String, String>();
         }
-
         comments.put(key, value);
     }
 

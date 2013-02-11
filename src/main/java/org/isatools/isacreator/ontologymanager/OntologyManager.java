@@ -76,7 +76,7 @@ public class OntologyManager {
 
     public static String getOntologyTermAccession(String dataValue){
         OntologyTerm ontologyTerm = getOntologyTerm(dataValue);
-        return ontologyTerm!=null? ontologyTerm.getOntologySourceAccession() : null;
+        return ontologyTerm!=null? ontologyTerm.getOntologyTermAccession() : null;
     }
 
     public static String getOntologyTermSource(String dataValue){
@@ -234,9 +234,7 @@ public class OntologyManager {
     }
 
     public static void addToUserHistory(OntologyTerm oo) {
-        if (!ontologySelectionHistory.containsKey(oo.getUniqueId())) {
-            ontologySelectionHistory.put(oo.getUniqueId(), oo);
-        }
+        ontologySelectionHistory.put(oo.getUniqueId(), oo);
     }
 
     public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {

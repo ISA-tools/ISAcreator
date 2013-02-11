@@ -132,13 +132,6 @@ public class ISASectionExportAdaptor {
 
                 System.out.printf("value for %s is %s\n", fieldName, value);
 
-                if (isAssaySection) {
-                    // if it begin with OBI: for example and isn't a URL, then we want to remove anything before the :
-                    if (value.matches("^([A-Za-z]{1,4}:)+(.)*") && !value.startsWith("http")) {
-                        value = value.replaceAll("^([A-Za-z]{1,4}:)+", "");
-                    }
-                }
-
                 line.append(value);
                 line.append(sectionCount != isaSections.size() - 1 ? "\t" : "\n");
                 sectionCount++;
