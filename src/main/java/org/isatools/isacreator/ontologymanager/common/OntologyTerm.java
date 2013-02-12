@@ -34,8 +34,6 @@
  Sponsors:
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
-
-
 package org.isatools.isacreator.ontologymanager.common;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
@@ -61,9 +59,11 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     /***
      *
-     * @param termName
-     * @param accession
-     * @param ontologySourceRefObject
+     * Constructor
+     *
+     * @param termName the label for the term
+     * @param accession the term identifier
+     * @param ontologySourceRefObject an object representing the source ontology
      */
     public OntologyTerm(String termName, String accession, OntologySourceRefObject ontologySourceRefObject) {
         ontologyTermName = termName;
@@ -89,12 +89,12 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return ontologyTermAccession;
     }
 
-    public void setOntologySourceInformation(OntologySourceRefObject ontologySourceInformation) {
-        this.ontologySourceInformation = ontologySourceInformation;
-    }
-
     public OntologySourceRefObject getOntologySourceInformation() {
         return ontologySourceInformation;
+    }
+
+    public void setOntologySourceInformation(OntologySourceRefObject ontologySourceInformation) {
+        this.ontologySourceInformation = ontologySourceInformation;
     }
 
     public void setOntologyTermAccession(String conceptIdShort) {
@@ -114,21 +114,17 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return ontologyTermName;
     }
 
-    public void setOntologyTermName(String ontologyTermName) {
-        this.ontologyTermName = ontologyTermName;
-    }
-
     public String getOntologyPurl() {
         return purl;
     }
 
-    public void setOntologyPurl(String purl) {
-        this.purl = purl;
+
+    public void setOntologyTermName(String ontologyTermName) {
+        this.ontologyTermName = ontologyTermName;
     }
 
-    @Override
-    public String toString() {
-        return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
+    public void setOntologyPurl(String purl) {
+        this.purl = purl;
     }
 
     public void addToComments(String key, String value) {
@@ -138,8 +134,18 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         comments.put(key, value);
     }
 
+    /**
+     * Retrieves a Map with the comments. Note that a copy of the map is retrieved to avoid
+     * callers of the method being able to modify the private field.
+     * @return
+     */
     public Map<String, String> getComments() {
-        return comments == null ? new HashMap<String, String>() : comments;
+        return comments == null ? new HashMap<String, String>() : new HashMap<String, String>(comments);
+    }
+
+    @Override
+    public String toString() {
+        return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
     }
 
     /***
@@ -148,18 +154,17 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
      * @return
      */
     public String getUniqueId() {
-
         String ontologySource = getOntologySource();
-
         if (!ontologySource.equals("")) {
             return ontologySource + ":" + getOntologyTermName();
         }
-
         return getOntologyTermName();
     }
 
-
     public int compareTo(OntologyTerm ontologyTerm) {
-        return getOntologyTermName().toLowerCase().compareTo(ontologyTerm.getOntologyTermName().toLowerCase());
+        if (getOntologyPurl()!=null && ontologyTerm.getOntologyPurl()!=null)
+            return getOntologyPurl().compareTo(ontologyTerm.getOntologyPurl());
+        return getUniqueId().toLowerCase().compareTo(ontologyTerm.getUniqueId().toLowerCase());
     }
+
 }
