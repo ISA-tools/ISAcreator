@@ -104,17 +104,14 @@ public class BioPortalSearchBeanResultHandler {
     }
 
     private OntologyTerm createBioPortalOntologyFromSearchResult(SearchBeanDocument.SearchBean searchResult) {
-        OntologyTerm ontologyTerm = new OntologyTerm();
-
+        OntologyTerm ontologyTerm =  null;
         if (AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()) != null) {
-            ontologyTerm.setOntologyTermName(searchResult.getPreferredName());
-            ontologyTerm.setOntologyTermAccession(searchResult.getConceptIdShort());
-            ontologyTerm.setOntologyPurl(searchResult.getConceptId());
+
+            ontologyTerm = new OntologyTerm(searchResult.getPreferredName(),searchResult.getConceptIdShort(), searchResult.getConceptId(), null);
             ontologyTerm.addToComments("Service Provider", "BioPortal");
-
             return ontologyTerm;
-        }
 
+        }
         return null;
     }
 

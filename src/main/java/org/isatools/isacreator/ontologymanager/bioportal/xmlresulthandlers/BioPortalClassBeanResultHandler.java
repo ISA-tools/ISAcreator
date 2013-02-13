@@ -201,17 +201,23 @@ public class BioPortalClassBeanResultHandler {
 
 
     public OntologyTerm createOntologyFromClassBean(ClassBeanDocument.ClassBean classToConvert) {
-        OntologyTerm ontologyTerm = new OntologyTerm();
+
+        String termName = null;
+        String termAccession = null;
+        String purl = null;
+        OntologyTerm ontologyTerm = null;
+
 
         if (classToConvert.getIdArray().length > 0) {
-            ontologyTerm.setOntologyTermAccession(classToConvert.getIdArray(0));
+            termAccession = classToConvert.getIdArray(0);
         }
         if (classToConvert.getLabelArray().length > 0) {
-            ontologyTerm.setOntologyTermName(classToConvert.getLabelArray(0));
+            termName = classToConvert.getLabelArray(0);
         }
         if (classToConvert.getFullIdArray().length > 0) {
-            ontologyTerm.setOntologyPurl(classToConvert.getFullIdArray(0));
+            purl = classToConvert.getFullIdArray(0);
         }
+        ontologyTerm = new OntologyTerm(termName, termAccession, purl, null);
 
         return ontologyTerm;
     }

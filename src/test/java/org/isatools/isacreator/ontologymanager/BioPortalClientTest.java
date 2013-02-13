@@ -243,7 +243,7 @@ public class BioPortalClientTest {
     public void getTermIRITest2(){
         System.out.println("_____Testing getTermIRI()____");
 
-        String termAccession = "PATO_0000011";
+        String termAccession = "PATO:0000011";
 
         String url = client.getTermIRI("49640", termAccession);
 

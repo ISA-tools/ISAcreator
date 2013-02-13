@@ -374,7 +374,7 @@ public class OLSClient implements OntologyService {
     }
 
     private OntologyTerm createOntologyTerm(String source, String accession, String name) {
-        OntologyTerm term = new OntologyTerm(name, accession, getOntologySourceReferenceForOntology(source));
+        OntologyTerm term = new OntologyTerm(name, accession, null, getOntologySourceReferenceForOntology(source));
         term.addToComments("Service Provider", "OLS");
         return term;
     }

@@ -326,7 +326,7 @@ public class TableReferenceObject implements Serializable {
 
                             if (!definedOntologies.containsKey(prevVal)) {
                                 definedOntologies.put(prevVal,
-                                        new OntologyTerm(term, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                                        new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
                             }
                         }
                     }

@@ -85,11 +85,7 @@ public class BioPortalAnnotatorResultHandler {
         ConceptDocument.Concept concept = annotation.getConcept();
 
         if (ontologies.containsKey(concept.getLocalOntologyId().toString())) {
-            OntologyTerm ontologyTerm = new OntologyTerm();
-
-            ontologyTerm.setOntologyTermAccession(concept.getLocalConceptId());
-            ontologyTerm.setOntologyPurl(concept.getFullId());
-            ontologyTerm.setOntologyTermName(concept.getPreferredName());
+            OntologyTerm ontologyTerm = new OntologyTerm(concept.getPreferredName(),concept.getLocalConceptId(), concept.getFullId(), null);
 
             Ontology ontologySource = ontologies.get(concept.getLocalOntologyId().toString());
 

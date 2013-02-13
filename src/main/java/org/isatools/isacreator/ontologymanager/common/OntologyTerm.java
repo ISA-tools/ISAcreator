@@ -48,14 +48,12 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     private OntologySourceRefObject ontologySourceInformation;
 
-    private String ontologyTermAccession;
-    private String ontologyTermName;
-    private String purl = "";
+    private String ontologyTermAccession = null;
+    private String ontologyTermName = null;
+    private String purl = null;
 
     // extra terms for metadata processing
     private Map<String, String> comments;
-
-    public OntologyTerm() {}
 
     /***
      *
@@ -63,12 +61,15 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
      *
      * @param termName the label for the term
      * @param accession the term identifier
+     * @param iri the iri for the term
      * @param ontologySourceRefObject an object representing the source ontology
+     *
      */
-    public OntologyTerm(String termName, String accession, OntologySourceRefObject ontologySourceRefObject) {
+    public OntologyTerm(String termName, String accession, String iri, OntologySourceRefObject ontologySourceRefObject) {
         ontologyTermName = termName;
         ontologyTermAccession = accession;
         ontologySourceInformation = ontologySourceRefObject;
+        purl = iri;
     }
 
     public String getOntologyVersionId() {
