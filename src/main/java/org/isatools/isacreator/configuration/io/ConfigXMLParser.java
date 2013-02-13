@@ -41,6 +41,8 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.isatools.isacreator.configuration.*;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
 import org.isatools.isatab.configurator.schema.*;
@@ -201,6 +203,9 @@ public class ConfigXMLParser {
         OntologyEntryType measurementInfo = isaConf.getMeasurement();
         OntologyEntryType technologyInfo = isaConf.getTechnology();
 
+        addOntologySourceForAssay(measurementInfo);
+        addOntologySourceForAssay(technologyInfo);
+
         String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]") ? MappingObject.INVESTIGATION : MappingObject.ASSAY_TYPE;
 
 
@@ -312,6 +317,10 @@ public class ConfigXMLParser {
 
         mappings.add(mo);
         tables.add(new TableReferenceObject(tc));
+    }
+
+    private void addOntologySourceForAssay(OntologyEntryType ontologyEntryType) {
+        OntologyManager.addToUsedOntologies(new OntologySourceRefObject(ontologyEntryType.getSourceAbbreviation(), ontologyEntryType.getSourceUri(), ontologyEntryType.getSourceVersion(), ontologyEntryType.getSourceTitle()));
     }
 
     /**

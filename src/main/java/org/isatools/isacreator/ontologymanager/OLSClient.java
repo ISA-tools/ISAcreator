@@ -185,7 +185,7 @@ public class OLSClient implements OntologyService {
             if (m.find()) {
                 tempVersion = tempVersion.substring(m.start(), m.end());
             }
-            versions.put(OntologyManager.OLS_TEXT, tempVersion);
+            versions.put(OntologyManager.OLS, tempVersion);
         } catch (RemoteException e) {
             log.error("remote exception thrown " + e.getMessage());
         } catch (Exception e) {
@@ -375,7 +375,7 @@ public class OLSClient implements OntologyService {
 
     private OntologyTerm createOntologyTerm(String source, String accession, String name) {
         OntologyTerm term = new OntologyTerm(name, accession, null, getOntologySourceReferenceForOntology(source));
-        term.addToComments("Service Provider", "OLS");
+        term.addToComments("Service Provider", OntologyManager.OLS);
         return term;
     }
 
