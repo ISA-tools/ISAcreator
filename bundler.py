@@ -16,7 +16,7 @@ f.write('<dict>'\
         '<key>CFBundleIdentifier</key>'\
         '<string>org.isatools.isacreator.launch.ISAcreatorApplication</string>'\
         '<key>CFBundleVersion</key>'\
-        '<string>1.6</string>'\
+        '<string>1.7</string>'\
         '<key>CFBundleAllowMixedLocalizations</key>'\
         '<string>true</string>'\
         '<key>CFBundleExecutable</key>'\
@@ -26,7 +26,7 @@ f.write('<dict>'\
         '<key>CFBundlePackageType</key>'\
         '<string>APPL</string>'\
         '<key>CFBundleShortVersionString</key>'\
-        '<string>1.6</string>'\
+        '<string>1.7</string>'\
         '<key>CFBundleSignature</key>'\
         '<string>????</string>'\
         '<key>CFBundleGetInfoString</key>'\

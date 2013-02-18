@@ -30,7 +30,8 @@ public class GSSavingWindow extends JWindow {
 
         add(new JLabel(SAVING_IMAGE), BorderLayout.CENTER);
 
-        additionalInformation = UIHelper.createLabel("Uploading", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR, JLabel.CENTER);
+        additionalInformation = UIHelper.createLabel("<html>Uploading</html>", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR, JLabel.CENTER);
+        additionalInformation.setSize(250,40);
 
         add(additionalInformation, BorderLayout.SOUTH);
 
@@ -40,7 +41,7 @@ public class GSSavingWindow extends JWindow {
     }
 
     public void fireUpdateToStatus(String message) {
-        additionalInformation.setText(message);
+        additionalInformation.setText("<html>" + message + "</html>");
     }
 
     public static void main(String[] args) {
