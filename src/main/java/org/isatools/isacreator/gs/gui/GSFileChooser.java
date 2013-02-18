@@ -219,15 +219,10 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
                                     // Make sure the user can see the new directory node:
                                     tree.scrollPathToVisible(new TreePath(newDirNode.getPath()));
                                 }
-
-                                if (tree.isCollapsed(path))
-                                    tree.expandPath(path);
-
+                                if (tree.isCollapsed(path)) tree.expandPath(path);
                             }
                         }
                     });
-
-
                 }
 
                 public void mouseEntered(MouseEvent event) {
@@ -394,6 +389,15 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
             container.add(fileNameTxt);
 
+            createButtonPanel(container, fileNameTxt);
+
+            add(container, BorderLayout.NORTH);
+
+            pack();
+            setVisible(true);
+        }
+
+        private void createButtonPanel(Box container, final JTextField fileNameTxt) {
             final JLabel okButton = new JLabel(okButtonIcon);
             okButton.addMouseListener(new MouseAdapter() {
                 @Override
@@ -435,11 +439,6 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
 
             container.add(okButton);
             container.add(cancelButton);
-
-            add(container, BorderLayout.NORTH);
-
-            pack();
-            setVisible(true);
         }
     }
 
