@@ -137,7 +137,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private OutputISAFilesFromGUI outputISATABFromGUI;
     private IncorrectColumnOrderGUI incorrectGUI;
-    private UserProfileManager userProfileManager;
+
     private Mode mode;
 
     private MenuPluginTracker menuPluginTracker;
@@ -221,7 +221,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         }
 
         outputISATABFromGUI = new OutputISAFilesFromGUI(this);
-        userProfileManager = new UserProfileManager();
+
         menusRequiringStudyIds = new HashMap<String, JMenu>();
 
         gridbagConstraints = new GridBagConstraints();
@@ -244,11 +244,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         // check that java version is supported!
         if (!checkSystemRequirements()) {
             //this can't happen if this is used from java web start
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         }else{
             int panelToShow = ISAcreatorMenu.SHOW_ERROR;
 
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, password, configDir, isatabDir, authentication ,authMenuClassName, panelToShow, loggedIn, errors);
+            isacreatorMenu = new ISAcreatorMenu(username, password, configDir, isatabDir, authentication ,authMenuClassName, panelToShow, loggedIn, errors);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -266,16 +266,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     public void createGUI(String configDir, String username, char[] password, final String isatabDir, String[] isatabFiles, Authentication authentication, String authMenuClassName, boolean loggedIn) {
 
         performStandardSetup();
-
-
         // check that java version is supported!
         if (!checkSystemRequirements()) {
             //this can't happen if this is used from java web start
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
             //mode, configuration, user, main
-            int panelToShow = ISAcreatorMenu.NONE;
-
+            int panelToShow;
             if (!loggedIn && (username==null || password==null) || authMenuClassName!=null){
                 panelToShow = ISAcreatorMenu.SHOW_LOGIN;
             }else if (configDir==null){
@@ -286,7 +283,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
             }
 
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow, loggedIn);
+            isacreatorMenu = new ISAcreatorMenu(username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow, loggedIn);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -298,9 +295,9 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         // check that java version is supported!
         if (!checkSystemRequirements()) {
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
         } else {
-            isacreatorMenu = new ISAcreatorMenu(ISAcreator.this, ISAcreatorMenu.SHOW_LOGIN);
+            isacreatorMenu = new ISAcreatorMenu(ISAcreatorMenu.SHOW_LOGIN);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -321,7 +318,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         addWindowFocusListener(this);
         // load user profiles into the system
         loadProgramSettings();
-        userProfileManager.loadUserProfiles();
+        UserProfileManager.loadUserProfiles();
         // create the top menu bar
 
         createTopPanel();
@@ -392,12 +389,16 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private boolean checkSystemRequirements() {
         String version = System.getProperty("java.version");
+        ISAcreatorProperties.setProperty("java.version", version);
+
+        String[] versionParts = version.split("\\.");
+        int minorVersion = Integer.valueOf(versionParts[1]);
+
         log.info("System details");
         log.info(System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + (System.getProperty("os.arch").equals("x86_64") ? "64 bit" : "32 bit"));
         log.info("JRE version: " + version);
 
-        char minorVersion = version.charAt(2);
-        return minorVersion >= '6';
+        return minorVersion >= 6;
     }
 
     private void createTopPanel() {
@@ -751,6 +752,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                     }
                 }
 
+                System.out.println("Adding study ids for menusRequiringStudyIds.");
                 for (final String study_id : studies) {
 
                     JMenuItem item = new JMenuItem(study_id);
@@ -759,13 +761,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                         item.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
 
-
                                 Thread loader = new Thread(new Runnable() {
                                     public void run() {
                                         SwingUtilities.invokeLater(new Runnable() {
                                             public void run() {
-                                                QRCodeGeneratorUI qrCodeUI = new QRCodeGeneratorUI(
-                                                        ISAcreator.this, study_id);
+                                                QRCodeGeneratorUI qrCodeUI = new QRCodeGeneratorUI(ApplicationManager.getCurrentApplicationInstance(), study_id);
                                                 qrCodeUI.createGUI();
                                                 showJDialogAsSheet(qrCodeUI);
                                                 maskOutMouseEvents();
@@ -807,7 +807,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         if (UserProfileManager.getCurrentUser() != null) {
             UserProfileManager.updateUserProfiles();
         }
-        userProfileManager.saveUserProfiles();
+        UserProfileManager.saveUserProfiles();
         dispose();
         System.exit(0);
     }
@@ -818,7 +818,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             UserProfileManager.updateUserProfiles();
 
-            userProfileManager.saveUserProfiles();
+            UserProfileManager.saveUserProfiles();
             checkMenuRequired();
 
             ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, "");
@@ -882,10 +882,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         glass.setVisible(true);
         glass.revalidate();
         glass.repaint();
-    }
-
-    public void saveUserProfiles() {
-        userProfileManager.saveUserProfiles();
     }
 
     public Properties getProgramSettings() {
@@ -1095,7 +1091,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                                 ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, baseDirectory);
 
                                 saveISATab();
-                                userProfileManager.saveUserProfiles();
+                                UserProfileManager.saveUserProfiles();
 
                                 hideSheet();
                                 closeWindowTimer.start();

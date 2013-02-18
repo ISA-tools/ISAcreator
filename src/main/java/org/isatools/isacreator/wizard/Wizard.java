@@ -136,7 +136,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         dep = new DataEntryEnvironment();
         setDataEntryEnvironment(dep);
-        this.mainMenu.getMain().setCurDataEntryPanel(dep);
+        ApplicationManager.getCurrentApplicationInstance().setCurDataEntryPanel(dep);
 
     }
 
@@ -148,7 +148,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
         workingProgressScreen = new WorkingScreen();
         workingProgressScreen.createGUI();
 
-        mainMenu.getMain().hideGlassPane();
+        ApplicationManager.getCurrentApplicationInstance().hideGlassPane();
 
         createWestPanel(logo, defineStudyInfo);
 
@@ -536,8 +536,8 @@ public class Wizard extends AbstractDataEntryEnvironment {
                         public void run() {
                             if (investigationDefinition.getStudies().size() > 0) {
 
-                                mainMenu.getMain().setCurrentPage(mainMenu);
-                                mainMenu.getMain().setGlassPanelContents(mainMenu.getCreateISAMenuGUI());
+                                ApplicationManager.getCurrentApplicationInstance().setCurrentPage(mainMenu);
+                                ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(mainMenu.getCreateISAMenuGUI());
                                 mainMenu.startAnimation();
 
                             } else {
@@ -827,7 +827,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             public void mousePressed(MouseEvent event) {
                 // go back to the create isatab menu
                 mainMenu.changeView(mainMenu.getCreateISAMenuGUI());
-                mainMenu.getMain().setCurrentPage(mainMenu);
+                ApplicationManager.getCurrentApplicationInstance().setCurrentPage(mainMenu);
                 mainMenu.startAnimation();
             }
 
@@ -865,8 +865,8 @@ public class Wizard extends AbstractDataEntryEnvironment {
                                                 invSubmission.getText(),
                                                 invPubReleaseDate.getText());
 
-                                        investigationDefinition.setLastConfigurationUsed(mainMenu.getMain().getLoadedConfiguration());
-                                        investigationDefinition.setConfigurationCreateWith(mainMenu.getMain().getLoadedConfiguration());
+                                        investigationDefinition.setLastConfigurationUsed(ApplicationManager.getCurrentApplicationInstance().getLoadedConfiguration());
+                                        investigationDefinition.setConfigurationCreateWith(ApplicationManager.getCurrentApplicationInstance().getLoadedConfiguration());
 
                                         numberStudiesToDefine = Integer.valueOf(howManyStudiesVal.getText());
 
@@ -1219,7 +1219,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             public void mousePressed(MouseEvent mouseEvent) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        mainMenu.getMain().setCurrentPage(new ISAcreatorMenu(mainMenu.getMain(), ISAcreatorMenu.SHOW_CREATE_ISA));
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(new ISAcreatorMenu(ISAcreatorMenu.SHOW_CREATE_ISA));
                         mainMenu.startAnimation();
                     }
                 });
@@ -1240,7 +1240,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
             public void mousePressed(MouseEvent mouseEvent) {
                 // go back to define assay page.
-                mainMenu.getMain().setCurDataEntryPanel(dep);
+                ApplicationManager.getCurrentApplicationInstance().setCurDataEntryPanel(dep);
 
                 ApplicationManager.assignDataEntryToISASection(investigationDefinition, new InvestigationDataEntry(
                         investigationDefinition, dep));
@@ -1248,7 +1248,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
                 dep.createGUIFromInvestigation(investigationDefinition);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        mainMenu.getMain().setCurrentPage(dep);
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(dep);
                     }
                 });
             }

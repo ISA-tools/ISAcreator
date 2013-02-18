@@ -38,6 +38,7 @@
 package org.isatools.isacreator.effects;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -76,8 +77,6 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
         setupPane();
     }
 
-    // used by the Timer
-
     public void actionPerformed(ActionEvent e) {
         if (animating) {
             // calculate height to show
@@ -115,7 +114,14 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     }
 
     private void finishShowingSheet() {
-        glass.removeAll();
+        if(getJavaVersion() < 7) {
+            glass.removeAll();
+        } else {
+            glass = new JPanel();
+            glass.setOpaque(true);
+            glass.setBackground(new Color(255,255,255,100));
+            setGlassPane(glass);
+        }
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -150,7 +156,6 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
 
     private void setupAnimation() {
         glass.removeAll();
-        // set back to be a transparent white colour.
         glass.setBackground(new Color(255, 255, 255, 100));
         glass.setOpaque(true);
         glass.setVisible(true);
@@ -158,9 +163,14 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
         startAnimation();
     }
 
+    private int getJavaVersion() {
+        String version = ISAcreatorProperties.getProperty("java.version");
+        String[] versionParts = version.split("\\.");
+        return Integer.valueOf(versionParts[1]);
+    }
+
     public void setupPane() {
         glass = (JPanel) getGlassPane();
-//		glass.addMouseListener(this);
         glass.setLayout(new GridBagLayout());
         glass.setBackground(UIHelper.BG_COLOR);
         animatingSheet = new AnimatingSheet();
@@ -175,15 +185,11 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
      * Used to show JDialog windows as sheets
      *
      * @param dialog - Dialog to be shown as a sheet
-     * @return - The AnimatingSheet object to be used in the animation
      */
-    public JComponent showJDialogAsSheet(JDialog dialog) {
+    public void showJDialogAsSheet(JDialog dialog) {
         sheet = (JComponent) dialog.getContentPane();
         sheet.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
-        glass.addMouseListener(this);
         setupAnimation();
-
-        return sheet;
     }
 
     private void startAnimation() {
@@ -216,26 +222,16 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     private void stopAnimation() {
         animationTimer.stop();
         animating = false;
+        System.setProperty("awt.nativeDoubleBuffering", "false");
     }
 
+    public void mouseClicked(MouseEvent mouseEvent) {}
 
-    public void mouseClicked(MouseEvent mouseEvent) {
+    public void mouseEntered(MouseEvent mouseEvent) {}
 
-    }
+    public void mouseExited(MouseEvent mouseEvent) {}
 
-    public void mouseEntered(MouseEvent mouseEvent) {
+    public void mousePressed(MouseEvent mouseEvent) {}
 
-    }
-
-    public void mouseExited(MouseEvent mouseEvent) {
-
-    }
-
-    public void mousePressed(MouseEvent mouseEvent) {
-
-    }
-
-    public void mouseReleased(MouseEvent mouseEvent) {
-
-    }
+    public void mouseReleased(MouseEvent mouseEvent) {}
 }

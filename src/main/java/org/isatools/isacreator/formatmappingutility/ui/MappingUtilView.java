@@ -142,7 +142,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     public void createGUI() {
         createFileChooser();
 
-        menuPanels.getMain().hideGlassPane();
+        ApplicationManager.getCurrentApplicationInstance().hideGlassPane();
 
         createWestPanel(logo, null);
         createSouthPanel();
@@ -291,8 +291,8 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 backButton.setIcon(back);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        menuPanels.getMain().setCurrentPage(menuPanels);
-                        menuPanels.getMain().setGlassPanelContents(menuPanels.getCreateISAMenuGUI());
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(menuPanels);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(menuPanels.getCreateISAMenuGUI());
                         menuPanels.startAnimation();
                     }
                 });
@@ -917,15 +917,15 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         // now we need to construct the investigation from the defined table reference objects and the
                         ApplicationManager.assignDataEntryToISASection(investigation, new InvestigationDataEntry(investigation, dataEntryEnvironment));
 
-                        investigation.setConfigurationCreateWith(menuPanels.getMain().getLoadedConfiguration());
-                        investigation.setLastConfigurationUsed(menuPanels.getMain().getLoadedConfiguration());
+                        investigation.setConfigurationCreateWith(ApplicationManager.getCurrentApplicationInstance().getLoadedConfiguration());
+                        investigation.setLastConfigurationUsed(ApplicationManager.getCurrentApplicationInstance().getLoadedConfiguration());
 
                         dataEntryEnvironment.createGUIFromInvestigation(investigation);
 
                         previousPage.push(new HistoryComponent(finalPanel, listeners));
-                        menuPanels.getMain().hideGlassPane();
-                        menuPanels.getMain().setCurDataEntryPanel(dataEntryEnvironment);
-                        menuPanels.getMain().setCurrentPage(dataEntryEnvironment);
+                        ApplicationManager.getCurrentApplicationInstance().hideGlassPane();
+                        ApplicationManager.getCurrentApplicationInstance().setCurDataEntryPanel(dataEntryEnvironment);
+                        ApplicationManager.getCurrentApplicationInstance().setCurrentPage(dataEntryEnvironment);
                     }
                 });
 
@@ -960,7 +960,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
         errorPanel = new ErrorDisplay();
         errorPanel.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent event) {
-                menuPanels.getMain().getGlassPane().setVisible(false);
+                ApplicationManager.getCurrentApplicationInstance().getGlassPane().setVisible(false);
             }
         });
     }
@@ -968,7 +968,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private void showErrorPanel() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                menuPanels.getMain().setGlassPanelContents(errorPanel);
+                ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(errorPanel);
             }
         });
     }

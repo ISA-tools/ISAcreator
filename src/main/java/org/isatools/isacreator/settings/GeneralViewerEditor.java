@@ -46,6 +46,7 @@ import org.isatools.isacreator.gui.StudySubData;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
 import org.isatools.isacreator.io.UserProfileManager;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Protocol;
 import org.jdesktop.fuse.InjectedResource;
@@ -221,7 +222,7 @@ public class GeneralViewerEditor<T> extends SettingsScreen {
             UserProfileManager.getCurrentUser().setPreviouslyUsedProtocols((List<StudySubData>) currentValues);
         }
 
-        menu.getMain().saveUserProfiles();
+        UserProfileManager.saveUserProfiles();
         return true;
     }
 
@@ -274,11 +275,11 @@ public class GeneralViewerEditor<T> extends SettingsScreen {
                         public void propertyChange(PropertyChangeEvent event) {
                             if (event.getPropertyName()
                                     .equals(JOptionPane.VALUE_PROPERTY)) {
-                                menu.getMain().hideSheet();
+                                ApplicationManager.getCurrentApplicationInstance().hideSheet();
                             }
                         }
                     });
-                    menu.getMain()
+                    ApplicationManager.getCurrentApplicationInstance()
                             .showJDialogAsSheet(optionPane.createDialog(menu,
                                     "information"));
                 }
@@ -318,11 +319,11 @@ public class GeneralViewerEditor<T> extends SettingsScreen {
                         public void propertyChange(PropertyChangeEvent event) {
                             if (event.getPropertyName()
                                     .equals(JOptionPane.VALUE_PROPERTY)) {
-                                menu.getMain().hideSheet();
+                                ApplicationManager.getCurrentApplicationInstance().hideSheet();
                             }
                         }
                     });
-                    menu.getMain()
+                    ApplicationManager.getCurrentApplicationInstance()
                             .showJDialogAsSheet(optionPane.createDialog(menu,
                                     "information"));
                 }

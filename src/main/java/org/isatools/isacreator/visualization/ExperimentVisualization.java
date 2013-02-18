@@ -51,6 +51,7 @@ import prefuse.visual.VisualItem;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -142,11 +143,9 @@ public class ExperimentVisualization extends JLayeredPane {
                     file = gv.generateView(investigation);
                 }
 
-
                 if (fullGUI && investigation != null) {
                     containerPanel.add(createNorthPanel(), BorderLayout.NORTH);
-                    containerPanel.setBorder(new EtchedBorder(UIHelper.DARK_GREEN_COLOR,
-                            UIHelper.DARK_GREEN_COLOR));
+                    containerPanel.setBorder(BorderFactory.createLineBorder(UIHelper.LIGHT_GREEN_COLOR));
                 }
 
                 containerPanel.add(createSouthPanel(), BorderLayout.SOUTH);

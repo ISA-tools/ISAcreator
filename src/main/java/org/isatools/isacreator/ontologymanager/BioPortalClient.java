@@ -34,10 +34,9 @@
  Sponsors:
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
-
-
 package org.isatools.isacreator.ontologymanager;
 
+import bioontology.bioportal.classBean.schema.SuccessDocument;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
@@ -56,7 +55,8 @@ import java.util.*;
 
 
 public class BioPortalClient implements OntologyService {
-    private static final Logger log = Logger.getLogger(BioPortalClient.class.getName());
+
+    private static final Logger log = Logger.getLogger(BioPortalClient.class);
 
     public static final int PARENTS = 0;
 
@@ -64,6 +64,8 @@ public class BioPortalClient implements OntologyService {
 
     public static final String REST_URL = "http://rest.bioontology.org/bioportal/";
     public static final String API_KEY = "apikey=fd88ee35-6995-475d-b15a-85f1b9dd7a42";
+
+    public static final String OWL_EXT = ".owl";
 
     private Set<String> noChildren;
 
@@ -77,13 +79,14 @@ public class BioPortalClient implements OntologyService {
 
     public static final String DIRECT_ONTOLOGY_URL = "http://bioportal.bioontology.org/ontologies/";
 
-
+    /**
+     * Constructor
+     */
     public BioPortalClient() {
         ontologySources = new HashMap<String, String>();
         ontologyVersions = new HashMap<String, String>();
         searchResults = new HashMap<String, OntologyTerm>();
         cachedNodeChildrenQueries = new HashMap<String, Map<String, OntologyTerm>>();
-
         noChildren = new HashSet<String>();
     }
 
@@ -121,7 +124,6 @@ public class BioPortalClient implements OntologyService {
 
             String searchString = REST_URL + "virtual/ontology/" + ontologyId + "/?" + API_KEY;
 
-            System.out.println(searchString);
             log.info("Getting ontology by id : query string is " + searchString);
 
             String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + "ontology" + ontologyId + DownloadUtils.XML_EXT;
@@ -468,6 +470,84 @@ public class BioPortalClient implements OntologyService {
         BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
 
         return handler.parseOntologyParentPathFile(fileWithNameSpace.getAbsolutePath());
+    }
+
+
+    public void downloadOntology(String ontologyVersion){
+        String searchString = REST_URL + "ontologies/download/"+ ontologyVersion + "?" + API_KEY;
+
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontologyVersion + OWL_EXT;
+
+        log.info("Downloading ontology whose version is "+ontologyVersion+ " at location "+ downloadLocation);
+
+        DownloadUtils.downloadFile(searchString, downloadLocation);
+    }
+
+    public void downloadLatestVersionOntology(String ontologyVirtualID){
+        String searchString = REST_URL + "virtual/download/" + ontologyVirtualID + "?" + API_KEY;
+
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontologyVirtualID + OWL_EXT;
+
+        log.info("Downloading latest ontology version for virtual identifier  "+ontologyVirtualID+ " at location "+ downloadLocation);
+
+        DownloadUtils.downloadFile(searchString, downloadLocation);
+    }
+
+    /**
+     * Retrieves a list with the namespace prefixes
+     *
+     * @param ontologyVersion
+     * @return
+     */
+    public List<String> getOntologyNamespacePrefixes(String ontologyVersion){
+
+        String searchString = REST_URL + "ontologies/namespaces/" + ontologyVersion + "?" + API_KEY;
+
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontologyVersion + "--namespaces" + DownloadUtils.XML_EXT;
+
+        System.out.println("Getting namespaces for ontology whose version is  "+ontologyVersion+ " at location "+ downloadLocation);
+
+        DownloadUtils.downloadFile(searchString, downloadLocation);
+
+        return null;
+    }
+
+    public void getRDFTerm(String ontologyVersion, String termAccession){
+        //examples:
+        //http://rest.bioontology.org/bioportal/rdf/47799/?conceptid=NEMO_1398000&apikey=YourAPIKey
+        //http://rest.bioontology.org/bioportal/rdf/47893/?conceptid=obo:OBI_0000634&apikey=fd88ee35-6995-475d-b15a-85f1b9dd7a42
+
+        String searchString = REST_URL + "rdf/" + ontologyVersion + "/?conceptid=" + termAccession + "&" + API_KEY;
+
+        log.debug("searchString="+searchString);
+
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontologyVersion + "--" + termAccession + DownloadUtils.XML_EXT;
+
+        log.debug("downloadLocation="+downloadLocation);
+
+        log.info("Getting RDF information for term "+ termAccession + " in the ontology whose version is "+ontologyVersion+ " at location "+ downloadLocation);
+
+        DownloadUtils.downloadFile(searchString, downloadLocation);
+    }
+
+    public String getTermIRI(String ontologyVersion, String termAccession){
+        //http://rest.bioontology.org/bioportal/concepts/47893?conceptid=obo:OBI_0000634&apikey=fd88ee35-6995-475d-b15a-85f1b9dd7a42
+        String searchString = REST_URL + "concepts/" + ontologyVersion + "?conceptid=" + termAccession + "&" + API_KEY;
+
+        log.debug("searchString="+searchString);
+
+        String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + ontologyVersion + "-" + correctTermForHTTPTransport(termAccession) + DownloadUtils.XML_EXT;
+
+        DownloadUtils.downloadFile(searchString, downloadLocation);
+
+        log.debug("downloadLocation="+downloadLocation);
+
+        BioPortalClassBeanResultHandler handler = new BioPortalClassBeanResultHandler();
+
+        File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation),
+                "http://bioontology.org/bioportal/classBeanSchema#", "<success>");
+
+        return handler.getTermURL(fileWithNameSpace.getAbsolutePath());
     }
 
     private String correctTermForHTTPTransport(String term) {

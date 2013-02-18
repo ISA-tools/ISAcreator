@@ -207,6 +207,7 @@ public class ViewTermDefinitionUI extends JPanel {
                     properties = term.getComments();
                     if (ontologyService != null) {
                         setCurrentPage(new JLabel(LOADING));
+
                         properties.putAll(ontologyService.getTermMetadata(term.getBranchIdentifier(), searchOntology));
                     }
                     setCurrentPage(createOntologyInformationPane(term));

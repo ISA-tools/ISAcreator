@@ -58,6 +58,7 @@ import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.ISAcreatorBackground;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.mergeutil.MergeFilesUI;
 import org.isatools.isacreator.settings.SettingsUtil;
 
@@ -103,7 +104,6 @@ public class ISAcreatorMenu extends JLayeredPane {
     private MergeFilesUI mergeStudies;
     private SettingsUtil settings;
     private ImportConfigurationMenu importConfigurationMenu;
-    private ISAcreator isacreator;
     private MainMenu mainMenu;
 
     private static InfiniteProgressPanel progressIndicator;
@@ -113,19 +113,18 @@ public class ISAcreatorMenu extends JLayeredPane {
     private GenericPanel background;
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li) {
-        this(ISAcreator, username, password, configDir, isatabDir, auth, authMenuClassName, panelToShow, li, null);
+    public ISAcreatorMenu(String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li) {
+        this(username, password, configDir, isatabDir, auth, authMenuClassName, panelToShow, li, null);
     }
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, Authentication authentication, String authMenuClassName, final int panelToShow, boolean loggedIn) {
-        this(ISAcreator, username, null, null, null, authentication, authMenuClassName, panelToShow, loggedIn, null);
+    public ISAcreatorMenu(String username, Authentication authentication, String authMenuClassName, final int panelToShow, boolean loggedIn) {
+        this(username, null, null, null, authentication, authMenuClassName, panelToShow, loggedIn, null);
     }
 
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li, final java.util.List<ErrorMessage> errors) {
-        this.isacreator = ISAcreator;
+    public ISAcreatorMenu(String username, char[] password, String configDir, String isatabDir, Authentication auth, String authMenuClassName, final int panelToShow, boolean li, final java.util.List<ErrorMessage> errors) {
 
-        setSize(ISAcreator.getSize());
+        setSize(ApplicationManager.getCurrentApplicationInstance().getSize());
         setLayout(new OverlayLayout(this));
         setBackground(UIHelper.BG_COLOR);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
@@ -142,7 +141,7 @@ public class ISAcreatorMenu extends JLayeredPane {
             }
         }
 
-        if (isacreator.getMode() != Mode.GS && authMenuClassName == null && authentication == null) {
+        if (ApplicationManager.getCurrentApplicationInstance().getMode() != Mode.GS && authMenuClassName == null && authentication == null) {
             authentication = new AuthenticationManager();
             authGUI = new AuthenticationMenu(this, authentication, username);
         } else {
@@ -157,7 +156,7 @@ public class ISAcreatorMenu extends JLayeredPane {
             }
 
 
-            if (isacreator.getMode() == Mode.GS) {
+            if (ApplicationManager.getCurrentApplicationInstance().getMode() == Mode.GS) {
                 authentication = GSIdentityManager.getInstance();
                 if (username !=null)
                     authGUI = new GSAuthenticationMenu(this, authentication, username);
@@ -174,7 +173,7 @@ public class ISAcreatorMenu extends JLayeredPane {
         createProfileGUI = new CreateProfileMenu(this);
 
 
-        if (isacreator.getMode() == Mode.GS) {
+        if (ApplicationManager.getCurrentApplicationInstance().getMode() == Mode.GS) {
             importISA = new GSImportFilesMenu(this);
         } else {
             importISA = new ImportFilesMenu(this);
@@ -182,8 +181,8 @@ public class ISAcreatorMenu extends JLayeredPane {
         importConfigurationMenu = new ImportConfigurationMenu(this);
         mergeStudies = new MergeFilesUI(this);
 
-        if (isacreator.getMode() == Mode.NORMAL_MODE)
-            settings = new SettingsUtil(this, ISAcreator.getProgramSettings());
+        if (ApplicationManager.getCurrentApplicationInstance().getMode() == Mode.NORMAL_MODE)
+            settings = new SettingsUtil(this, ApplicationManager.getCurrentApplicationInstance().getProgramSettings());
 
         mainMenu = new MainMenu(this);
 
@@ -205,7 +204,7 @@ public class ISAcreatorMenu extends JLayeredPane {
 
 
 //        importISA = new ImportFilesMenu(ISAcreatorMenu.this);
-        if (loggedIn && isacreator.getMode() != Mode.GS && isatabDir != null) {
+        if (loggedIn && ApplicationManager.getCurrentApplicationInstance().getMode() != Mode.GS && isatabDir != null) {
             loadFiles(isatabDir, false);
         }
 
@@ -237,22 +236,22 @@ public class ISAcreatorMenu extends JLayeredPane {
 
                 switch (panelToShow) {
                     case SHOW_MAIN:
-                        isacreator.setGlassPanelContents(mainMenu);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(mainMenu);
 
                         break;
 
                     case SHOW_LOGIN:
-                        isacreator.setGlassPanelContents(authGUI);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(authGUI);
                         break;
 
                     case SHOW_CREATE_ISA:
-                        isacreator.setGlassPanelContents(createISA);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(createISA);
                         break;
 
                     case SHOW_UNSUPPORTED_JAVA:
                         UnSupportedJava noSupport = new UnSupportedJava(ISAcreatorMenu.this);
                         noSupport.createGUI();
-                        isacreator.setGlassPanelContents(noSupport);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(noSupport);
                         break;
 
 
@@ -274,7 +273,7 @@ public class ISAcreatorMenu extends JLayeredPane {
                         break;
 
                     default:  //SHOW_IMPORT_CONFIGURATION
-                        isacreator.setGlassPanelContents(importConfigurationMenu);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(importConfigurationMenu);
                 }
 
                 UIHelper.applyBackgroundToSubComponents(ISAcreatorMenu.this, UIHelper.BG_COLOR);
@@ -287,8 +286,8 @@ public class ISAcreatorMenu extends JLayeredPane {
         System.out.println("ISATAB dataset loaded");
     }
 
-    public ISAcreatorMenu(ISAcreator ISAcreator, final int panelToShow) {
-        this(ISAcreator, null, null, null, panelToShow, false);
+    public ISAcreatorMenu(final int panelToShow) {
+        this(null, null, null, panelToShow, false);
     }
 
     public Authentication getAuthentication() {
@@ -320,7 +319,7 @@ public class ISAcreatorMenu extends JLayeredPane {
             currentPanel = panel;
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    isacreator.setGlassPanelContents((JPanel) currentPanel);
+                    ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents((JPanel) currentPanel);
                 }
             });
 
@@ -334,33 +333,33 @@ public class ISAcreatorMenu extends JLayeredPane {
         System.out.println("previousGlassPane=" + previousGlassPane);
         InfiniteImageProgressPanel imageProgress = new InfiniteImageProgressPanel(image);
         System.out.println("imageProgress" + imageProgress);
-        int isacreatorWidth = isacreator.getContentPane().getWidth();
-        int isacreatorHeight = isacreator.getContentPane().getHeight();
+        int isacreatorWidth = ApplicationManager.getCurrentApplicationInstance().getContentPane().getWidth();
+        int isacreatorHeight = ApplicationManager.getCurrentApplicationInstance().getContentPane().getHeight();
         imageProgress.setSize(new Dimension(
                 isacreatorWidth == 0 ? ISAcreator.APP_WIDTH : isacreatorWidth,
                 isacreatorHeight == 0 ? ISAcreator.APP_HEIGHT : isacreatorHeight));
 
         System.out.println("imageProgress = " + imageProgress);
 
-        isacreator.setGlassPane(imageProgress);
-        isacreator.validate();
+        ApplicationManager.getCurrentApplicationInstance().setGlassPane(imageProgress);
+        ApplicationManager.getCurrentApplicationInstance().validate();
     }
 
     public void showProgressPanel(String text) {
         captureCurrentGlassPaneContents();
         progressIndicator = new InfiniteProgressPanel(text);
         progressIndicator.setSize(new Dimension(
-                isacreator.getContentPane().getWidth(),
-                isacreator.getContentPane().getHeight()));
+                ApplicationManager.getCurrentApplicationInstance().getContentPane().getWidth(),
+                ApplicationManager.getCurrentApplicationInstance().getContentPane().getHeight()));
 
-        isacreator.setGlassPane(progressIndicator);
+        ApplicationManager.getCurrentApplicationInstance().setGlassPane(progressIndicator);
 
         progressIndicator.start();
-        isacreator.validate();
+        ApplicationManager.getCurrentApplicationInstance().validate();
     }
 
     public void captureCurrentGlassPaneContents() {
-        previousGlassPane = (JPanel) isacreator.getGlassPane();
+        previousGlassPane = (JPanel) ApplicationManager.getCurrentApplicationInstance().getGlassPane();
     }
 
     public void stopProgressIndicator() {
@@ -370,22 +369,19 @@ public class ISAcreatorMenu extends JLayeredPane {
     }
 
     public void resetViewAfterProgress() {
-        isacreator.setGlassPane(previousGlassPane);
+        ApplicationManager.getCurrentApplicationInstance().setGlassPane(previousGlassPane);
     }
 
     public void hideGlassPane() {
         System.out.println("============Hiding glass pane");
-        isacreator.hideGlassPane();
+        ApplicationManager.getCurrentApplicationInstance().hideGlassPane();
     }
 
 
     public DataEntryEnvironment getCurrentDEP() {
-        return isacreator.getDataEntryEnvironment();
+        return ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment();
     }
 
-    public ISAcreator getMain() {
-        return isacreator;
-    }
 
     public void paintComponent(Graphics g) {
         // check current size to ensure that it's larger than the preferred dimension...
@@ -397,17 +393,17 @@ public class ISAcreatorMenu extends JLayeredPane {
             public void run() {
                 switch (guiType) {
                     case SHOW_MAIN:
-                        isacreator.setGlassPanelContents(mainMenu);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(mainMenu);
 
                         break;
 
                     case SHOW_LOGIN:
-                        isacreator.setGlassPanelContents(authGUI);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(authGUI);
 
                         break;
 
                     default:
-                        isacreator.setGlassPanelContents(mainMenu);
+                        ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(mainMenu);
                 }
             }
         });

@@ -60,6 +60,6 @@ public class AnnotatorResult {
 
     @Override
     public String toString() {
-        return ontologyTerm.getOntologyTermName() + " (" + ontologyTerm.getOntologySourceAccession() + ")";
+        return ontologyTerm.getOntologyTermName() + " (" + ontologyTerm.getOntologyTermAccession() + ")";
     }
 }

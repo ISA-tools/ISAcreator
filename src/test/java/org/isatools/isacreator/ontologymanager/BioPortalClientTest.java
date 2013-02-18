@@ -161,7 +161,7 @@ public class BioPortalClientTest {
             System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
 
             for (OntologyTerm term : result.get(source)) {
-                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
 
@@ -191,6 +191,63 @@ public class BioPortalClientTest {
         }
 
         System.out.println("Found " + parentTerms.size() + " parents for 45781");
+    }
+
+    @Test
+    public void downloadOntologyTest() {
+        System.out.println("_____Testing downloadOntology()____");
+
+        //obi version
+        client.downloadOntology("47893");
+    }
+
+    @Test
+    public void downloadOntologyTest2() {
+        System.out.println("_____Testing downloadOntology()____");
+
+        //a previous obi version
+        client.downloadOntology("47203");
+    }
+
+    @Test
+    public void downloadLatestVersionOntologyTest(){
+        System.out.println("_____Testing downloadLatestVersionOntology()____");
+
+        //obi
+        client.downloadLatestVersionOntology("1127");
+    }
+
+    @Test
+    public void getRDFTermTest(){
+        System.out.println("_____Testing getRDFTerm()____");
+
+        //obi
+        //client.getRDFTerm("47893", "obo:OBI_0000634");
+        client.getRDFTerm("47893", "obo:OBI_0000634");
+    }
+
+    @Test
+    public void getTermIRITest(){
+        System.out.println("_____Testing getTermIRI()____");
+
+
+        String termAccession = "obo:OBI_0000634";
+        //obi
+        //client.getRDFTerm("47893", "obo:OBI_0000634");
+        String url = client.getTermIRI("47893", termAccession);
+
+        System.out.println("URL for term "+termAccession+ " is "+ url );
+    }
+
+    @Test
+    public void getTermIRITest2(){
+        System.out.println("_____Testing getTermIRI()____");
+
+        String termAccession = "PATO:0000011";
+
+        String url = client.getTermIRI("49640", termAccession);
+
+        System.out.println("URL for term "+termAccession+ " is "+ url );
     }
 
 

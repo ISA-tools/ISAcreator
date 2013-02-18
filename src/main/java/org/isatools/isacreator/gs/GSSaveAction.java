@@ -123,7 +123,6 @@ public class GSSaveAction extends AbstractAction {
 
                             //save all the local files into GS
                             String localISATABFolder = ApplicationManager.getCurrentLocalISAtabFolder();
-                            System.out.println("localISATABFolder=" + localISATABFolder);
 
                             File folder = new File(localISATABFolder);
                             File[] files = folder.listFiles();
