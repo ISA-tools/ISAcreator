@@ -148,9 +148,8 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
                         ImportConfiguration importConfiguration = new ImportConfiguration(dir);
                         boolean successful = importConfiguration.loadConfiguration();
-
-                        System.out.println("Loaded configuration");
                         menu.stopProgressIndicator();
+
                         if (!successful) {
                             menu.resetViewAfterProgress();
                             System.out.println("Problem encountered");
@@ -159,33 +158,33 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             revalidate();
                             repaint();
                         } else {
+                            System.out.println("Loaded configuration");
+
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
 
-
-                            if (ISAcreatorCLArgs.mode()== Mode.GS && !menu.isUserLoggedIn()){
+                            if (ISAcreatorCLArgs.mode()== Mode.GS ){
 
                                if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
 
-                                List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+                                   List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
 
+                                    if (!errors.isEmpty()){
 
-                                if (!errors.isEmpty()){
+                                        ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
+                                        java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
+                                        list.add(error);
 
-                                    ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
-                                    java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
-                                    list.add(error);
+                                        ErrorMenu errorMenu = new ErrorMenu(menu, list, false, menu.getMainMenuGUI());
+                                        errorMenu.createGUI();
 
-                                    ErrorMenu errorMenu = new ErrorMenu(menu, list, false, ImportConfigurationMenu.this);
-                                    errorMenu.createGUI();
+                                    } else {
+                                        menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
+                                    }
 
-                                } else {
-                                    menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
-                                }
-
-                                } else {
-                                   //the ISAtab files were not given as parameter, show main menu
-                                   menu.changeView(menu.getMainMenuGUI());
+                               } else {
+                                    //the ISAtab files were not given as parameter, show main menu
+                                    menu.changeView(menu.getMainMenuGUI());
                                }
 
                             } else{
@@ -197,13 +196,13 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                                 }
                             }
 
-                            }//else
-
-                            problemScroll.setVisible(false);
-                            //initialLoadingPassed = true;
                         }
+
+                        problemScroll.setVisible(false);
+
+                    }
                 }
-                );
+            );
             }
         }
         );
