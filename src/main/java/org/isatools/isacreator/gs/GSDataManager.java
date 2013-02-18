@@ -11,6 +11,8 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
 
+import uk.ac.ebi.utils.collections.Pair;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -221,10 +223,17 @@ public class GSDataManager {
         return null;
     }
 
-    public GSFileMetadata mkDir(String newDirectoryName, GSFileMetadata parentDirectoryName) {
+    public Pair<GSFileMetadata,ErrorMessage> mkDir(String newDirectoryName, GSFileMetadata parentDirectoryName) {
         DataManagerClient dmClient = gsSession.getDataManagerClient();
-        GSFileMetadata newDirMeta = dmClient.createDirectory(parentDirectoryName,newDirectoryName);
-        return newDirMeta;
+        ErrorMessage errorMessage = null;
+        GSFileMetadata newDirMeta = null;
+        try{
+            newDirMeta = dmClient.createDirectory(parentDirectoryName,newDirectoryName);
+        }catch(ForbiddenException ex){
+            errorMessage = new ErrorMessage(ErrorLevel.ERROR, "Access forbidden to directory "+parentDirectoryName+" in Genome Space");
+        }
+        Pair<GSFileMetadata,ErrorMessage> result = new Pair(newDirMeta, errorMessage);
+        return result;
     }
 
     public boolean saveFile(File localFile, GSFileMetadata parentDirectory){
