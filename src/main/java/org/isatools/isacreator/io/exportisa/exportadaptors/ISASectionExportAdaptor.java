@@ -108,8 +108,6 @@ public class ISASectionExportAdaptor {
         StringBuilder output = new StringBuilder();
         output.append(isaSection).append("\n");
 
-        boolean isAssaySection = isaSection == InvestigationFileSection.STUDY_ASSAYS;
-
         addMissingSectionIfRequired(isaSections, isaSection);
 
         ISASection firstSection = isaSections.get(0);
@@ -130,9 +128,7 @@ public class ISASectionExportAdaptor {
 
                 String value = section.getValue(fieldName);
 
-                System.out.printf("value for %s is %s\n", fieldName, value);
-
-                line.append(value);
+                line.append("\"").append(value).append("\"");
                 line.append(sectionCount != isaSections.size() - 1 ? "\t" : "\n");
                 sectionCount++;
             }
