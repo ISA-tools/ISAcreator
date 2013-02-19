@@ -55,7 +55,8 @@ public class BioPortalClassBeanResultHandler {
         try {
             resultDocument = bioontology.bioportal.classBean.schema.SuccessDocument.Factory.parse(new File(fileLocation));
         } catch (org.apache.xmlbeans.XmlException e) {
-            System.err.println("XML Exception encountered");
+            System.err.println("XML Exception encountered "+ e.getMessage());
+            e.printStackTrace();
         } catch (java.io.IOException e) {
             System.err.println("IO Exception: " + e.getMessage());
         }
@@ -63,6 +64,11 @@ public class BioPortalClassBeanResultHandler {
         return resultDocument;
     }
 
+
+    public String getTermURL(String fileLocation){
+        SuccessDocument resultDocument = getDocument(fileLocation);
+        return resultDocument.getSuccess().getData().getClassBean().getFullIdArray(0);
+    }
 
     public OntologyTerm parseMetadataFile(String fileLocation) {
         SuccessDocument resultDocument = getDocument(fileLocation);
@@ -129,7 +135,7 @@ public class BioPortalClassBeanResultHandler {
 
                                                 // if there are no children, add the term accession to quicken up later queries
                                                 if (relationEntry.getInt().intValue() == 0) {
-                                                    termHasNoChildren.add(ontology.getOntologySourceAccession());
+                                                    termHasNoChildren.add(ontology.getOntologyTermAccession());
                                                     break;
                                                 }
 
@@ -173,7 +179,7 @@ public class BioPortalClassBeanResultHandler {
                         OntologyTerm ontology = createOntologyFromClassBean(upperLevelClass);
 
                         if (!ontology.getOntologyTermName().equals(OntologyTerm.THING)) {
-                            terms.put(ontology.getOntologySourceAccession(), ontology);
+                            terms.put(ontology.getOntologyTermAccession(), ontology);
                         }
 
                         if (entry.getListArray().length > 0) {
@@ -195,19 +201,25 @@ public class BioPortalClassBeanResultHandler {
 
 
     public OntologyTerm createOntologyFromClassBean(ClassBeanDocument.ClassBean classToConvert) {
-        OntologyTerm ontology = new OntologyTerm();
+
+        String termName = null;
+        String termAccession = null;
+        String purl = null;
+        OntologyTerm ontologyTerm = null;
+
 
         if (classToConvert.getIdArray().length > 0) {
-            ontology.setOntologySourceAccession(classToConvert.getIdArray(0));
+            termAccession = classToConvert.getIdArray(0);
         }
         if (classToConvert.getLabelArray().length > 0) {
-            ontology.setOntologyTermName(classToConvert.getLabelArray(0));
+            termName = classToConvert.getLabelArray(0);
         }
         if (classToConvert.getFullIdArray().length > 0) {
-            ontology.setOntologyPurl(classToConvert.getFullIdArray(0));
+            purl = classToConvert.getFullIdArray(0);
         }
+        ontologyTerm = new OntologyTerm(termName, termAccession, purl, null);
 
-        return ontology;
+        return ontologyTerm;
     }
 
     private boolean proceedWithProcessing(SuccessDocument successDoc) {

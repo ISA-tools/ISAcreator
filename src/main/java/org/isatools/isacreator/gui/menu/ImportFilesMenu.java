@@ -133,6 +133,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         if (loadingImagePane){
             showLoadingImagePane();
         }
+        ApplicationManager.setCurrentLocalISATABFolder(candidate.getAbsolutePath());
         loadFile(candidate.getAbsolutePath());
     }
 
@@ -181,7 +182,10 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                     final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(ApplicationManager.getCurrentApplicationInstance());
                     boolean successfulImport = iISA.importFile(dir);
+
                     if (successfulImport && iISA.getMessages().size() == 0) {
+
+                        System.out.println("ISA-TAB dataset loaded");
                         // success, so load
                         ApplicationManager.getCurrentApplicationInstance().setCurrentPage(ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment());
                         menu.resetViewAfterProgress();

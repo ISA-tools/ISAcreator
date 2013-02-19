@@ -605,7 +605,7 @@ public class StructureToInvestigationMapper {
                         }
 
                         ontologyTermsDefined.add(new OntologyTerm(
-                                splitTerms[i], accToAdd, getOntologySource(splitSourceRefs[i])));
+                                splitTerms[i], accToAdd, null, getOntologySource(splitSourceRefs[i])));
 
                     }
 
@@ -628,7 +628,7 @@ public class StructureToInvestigationMapper {
                 if (!term.trim().equals("") &&
                         !sourceRef.trim().equals("")) {
                     ontologyTermsDefined.add(new OntologyTerm(
-                            term, accession, getOntologySource(sourceRef)));
+                            term, accession, null, getOntologySource(sourceRef)));
                 }
 
             }

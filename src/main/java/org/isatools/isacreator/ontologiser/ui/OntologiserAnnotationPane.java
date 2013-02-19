@@ -157,7 +157,7 @@ public class OntologiserAnnotationPane extends JPanel {
                         " Name = " + selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermName());
 
                 definitionUI.setContent(
-                        new OntologyBranch(selectedItem.getAnnotatorResult().getOntologyTerm().getOntologySourceAccession(),
+                        new OntologyBranch(selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermAccession(),
                                 selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermName()),
                         selectedItem.getAnnotatorResult().getOntologySource().getOntologyVersion(), ontologyService);
 

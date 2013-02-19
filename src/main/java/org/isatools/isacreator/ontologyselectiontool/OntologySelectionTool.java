@@ -38,7 +38,6 @@
 package org.isatools.isacreator.ontologyselectiontool;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
@@ -633,16 +632,16 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                 createOntologyBranch(ontologyTerm), ontologyVersions.get(ontologyTerm.getOntologySource()), sourceIsInPlugins ? null : bioportalClient);
     }
 
-    private OntologyBranch createOntologyBranch(OntologyTerm historyTerm) {
-        OntologyBranch branch = new OntologyBranch(historyTerm.getOntologySourceAccession(), historyTerm.getOntologyTermName());
-        branch.setComments(historyTerm.getComments());
+    private OntologyBranch createOntologyBranch(OntologyTerm ontologyTerm) {
+        OntologyBranch branch = new OntologyBranch(ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologyTermName());
+        branch.setComments(ontologyTerm.getComments());
         return branch;
     }
 
     private void setTermDefinitionView(OntologyTerm ontologyTerm) {
         boolean sourceIsInPlugins = OntologySearchPluginRegistry.isOntologySourceAbbreviationDefinedInPlugins(ontologyTerm.getOntologySource());
         viewTermDefinition.setContent(
-                new OntologyBranch(ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession(), ontologyTerm.getOntologyTermName()), ontologyTerm.getOntologySource(),
+                new OntologyBranch(ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologyTermName()), ontologyTerm.getOntologySource(),
                 sourceIsInPlugins ? null : olsClient == null ? new OLSClient() : olsClient);
     }
 
@@ -991,58 +990,19 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         for (OntologySourceRefObject osro : result.keySet()) {
 
-            Set<String> recordedAccessions = new HashSet<String>();
-
             if (osro != null) {
                 if (!processedResult.containsKey(osro)) {
                     processedResult.put(osro, new HashSet<OntologyTerm>());
                 }
 
                 for (OntologyTerm term : result.get(osro)) {
-                    if (!recordedAccessions.contains(term.getOntologySourceAccession())) {
-                        processedResult.get(osro).add(term);
-                        recordedAccessions.add(term.getOntologySourceAccession());
-                    }
+                    processedResult.get(osro).add(term);
                 }
             }
         }
-        return removeRedundantSearchResults(processedResult);
+        return processedResult;
     }
 
-
-
-    private Map<OntologySourceRefObject, Set<OntologyTerm>> removeRedundantSearchResults(Map<OntologySourceRefObject, Set<OntologyTerm>> toProcess) {
-
-        Map<String, List<OntologySourceRefObject>> representedOntologies = new HashMap<String, List<OntologySourceRefObject>>();
-
-        for (OntologySourceRefObject osro : toProcess.keySet()) {
-            if (!representedOntologies.containsKey(osro.getSourceName())) {
-                representedOntologies.put(osro.getSourceName(), new ArrayList<OntologySourceRefObject>());
-            }
-            representedOntologies.get(osro.getSourceName()).add(osro);
-        }
-
-        Set<OntologySourceRefObject> toRemove = new HashSet<OntologySourceRefObject>();
-
-        for (String sourceName : representedOntologies.keySet()) {
-            if (representedOntologies.get(sourceName) != null) {
-                if (representedOntologies.get(sourceName).size() > 1) {
-                    for (OntologySourceRefObject removalCandidate : representedOntologies.get(sourceName)) {
-                        if (OntologyUtils.getSourceOntologyPortalByVersion(removalCandidate.getSourceVersion()) == OntologyPortal.OLS) {
-                            toRemove.add(removalCandidate);
-                        }
-                    }
-                }
-            }
-        }
-
-        // remove the ontologies which have been found to be unnecessary from the result
-        for (OntologySourceRefObject removedSource : toRemove) {
-            toProcess.remove(removedSource);
-        }
-
-        return toProcess;
-    }
 
     /**
      * Filters out the Recommended Ontologies so that they are specific to a service (to speed things up)
@@ -1213,7 +1173,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                             boolean sourceIsInPlugins = OntologySearchPluginRegistry.isOntologySourceAbbreviationDefinedInPlugins(ontologyTerm.getOntologySource());
                             viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceVersion(), sourceIsInPlugins ? null : bioportalClient == null ? new BioPortalClient() : bioportalClient);
                         } else {
-                            viewTermDefinition.setContent(new OntologyBranch(ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologySourceAccession(), ontologyTerm.getOntologyTermName()), ontologySource.getSourceName(), olsClient);
+                            viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceVersion(), olsClient);
                         }
                     }
                 } else if (tree == browseRecommendedOntologyTree) {
