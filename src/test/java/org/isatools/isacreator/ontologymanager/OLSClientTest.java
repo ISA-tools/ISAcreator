@@ -94,7 +94,7 @@ public class OLSClientTest {
             System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
 
             for (OntologyTerm term : matchingTerms.get(source)) {
-                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
     }
@@ -115,7 +115,7 @@ public class OLSClientTest {
             System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
 
             for (OntologyTerm term : matchingTerms.get(source)) {
-                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologySourceAccession() + ")");
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
 

@@ -50,7 +50,8 @@ import java.util.*;
 
 
 public class OntologyManager {
-    public static final String OLS_TEXT = "OLS";
+    public static final String OLS = "OLS";
+    public static final String BIO_PORTAL = "BioPortal";
 
     private static Map<String, List<OntologySourceRefObject>> usedOntologySources = new HashMap<String, List<OntologySourceRefObject>>();
 
@@ -76,7 +77,7 @@ public class OntologyManager {
 
     public static String getOntologyTermAccession(String dataValue){
         OntologyTerm ontologyTerm = getOntologyTerm(dataValue);
-        return ontologyTerm!=null? ontologyTerm.getOntologySourceAccession() : null;
+        return ontologyTerm!=null? ontologyTerm.getOntologyTermAccession() : null;
     }
 
     public static String getOntologyTermSource(String dataValue){
@@ -160,10 +161,6 @@ public class OntologyManager {
     }
 
     public static List<OntologySourceRefObject> getOntologiesUsed() {
-        return getAllOntologiesUsed();
-    }
-
-    private static List<OntologySourceRefObject> getAllOntologiesUsed() {
         List<OntologySourceRefObject> sourceRefObjects = new ArrayList<OntologySourceRefObject>();
 
         Set<String> addedOntologySourceRefs = new HashSet<String>();
@@ -228,19 +225,15 @@ public class OntologyManager {
 
 
     public static void newInvestigation(String investigationAccession) {
-
         usedOntologySources.put(investigationAccession, new ArrayList<OntologySourceRefObject>());
-        usedOntologySources.get(investigationAccession).add(new OntologySourceRefObject("OBI", "", "", "Ontology for Biomedical Investigations"));
     }
 
     public static void addToUserHistory(OntologyTerm oo) {
-        if (!ontologySelectionHistory.containsKey(oo.getUniqueId())) {
-            ontologySelectionHistory.put(oo.getUniqueId(), oo);
-        }
+        ontologySelectionHistory.put(oo.getUniqueId(), oo);
     }
 
     public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {
-        for (OntologySourceRefObject ontologySourceRefObject : getAllOntologiesUsed()) {
+        for (OntologySourceRefObject ontologySourceRefObject : getOntologiesUsed()) {
             if (source.equalsIgnoreCase(ontologySourceRefObject.getSourceName())) {
                 return ontologySourceRefObject;
             }

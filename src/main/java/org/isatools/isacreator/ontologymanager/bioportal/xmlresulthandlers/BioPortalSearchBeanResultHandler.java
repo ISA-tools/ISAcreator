@@ -42,6 +42,7 @@ import bioontology.bioportal.searchBean.schema.SearchBeanDocument;
 import bioontology.bioportal.searchBean.schema.SearchResultListDocument;
 import bioontology.bioportal.searchBean.schema.SuccessDocument;
 import org.isatools.isacreator.ontologymanager.BioPortalClient;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -104,16 +105,14 @@ public class BioPortalSearchBeanResultHandler {
     }
 
     private OntologyTerm createBioPortalOntologyFromSearchResult(SearchBeanDocument.SearchBean searchResult) {
-        OntologyTerm ontology = new OntologyTerm();
-
+        OntologyTerm ontologyTerm =  null;
         if (AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()) != null) {
-            ontology.setOntologyTermName(searchResult.getPreferredName());
-            ontology.setOntologySourceAccession(searchResult.getConceptIdShort());
-            ontology.setOntologyPurl(searchResult.getConceptId());
 
-            return ontology;
+            ontologyTerm = new OntologyTerm(searchResult.getPreferredName(),searchResult.getConceptIdShort(), searchResult.getConceptId(), null);
+            ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
+            return ontologyTerm;
+
         }
-
         return null;
     }
 

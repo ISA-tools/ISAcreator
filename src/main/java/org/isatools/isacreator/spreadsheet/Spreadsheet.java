@@ -1615,7 +1615,7 @@ public class Spreadsheet extends JComponent implements
                         "</p>" + "<p><b>source ref: </b> " +
                         ooForSelectedTerm.getOntologySource() + "</p>" +
                         "<p><b>accession no: </b>" +
-                        ooForSelectedTerm.getOntologySourceAccession() + "</p>" +
+                        ooForSelectedTerm.getOntologyTermAccession() + "</p>" +
                         "</html>");
             }
         }
