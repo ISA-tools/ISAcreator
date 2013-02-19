@@ -283,7 +283,6 @@ public class ISAcreatorMenu extends JLayeredPane {
 
     public void loadFiles(String isatabDir, boolean invokeLater) {
         ((ImportFilesMenu) importISA).getSelectedFileAndLoad(new File(isatabDir), invokeLater);
-        System.out.println("ISATAB dataset loaded");
     }
 
     public ISAcreatorMenu(final int panelToShow) {

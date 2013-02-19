@@ -450,7 +450,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         fileMenu.add(saveAs);
 
         if(mode == null) {
-            mode = Mode.GS;
+            mode = Mode.NORMAL_MODE;
         }
 
         //GenomeSpace related code

@@ -14,9 +14,11 @@ import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.menu.ImportFilesMenu;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.errorreporter.model.ErrorMessage;
 
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
+import uk.ac.ebi.utils.collections.Pair;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -119,6 +121,8 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
         log.info("Instantiating panel... mode=" + mode);
 
         status = new JLabel();
+        status.setSize(new Dimension(450,40));
+        UIHelper.renderComponent(status,UIHelper.VER_10_PLAIN,UIHelper.RED_COLOR, false);
 
         Image headerIcon = mode == GSFileChooserMode.OPEN ? loadHeader : saveAsHeader;
 
@@ -191,35 +195,44 @@ public class GSFileChooser extends JComponent implements TreeSelectionListener {
                                 newFolderWindow.setVisible(false);
                                 newFolderWindow.dispose();
 
-                                GSFileMetadata newDirMetadata = gsDataManager.mkDir(newFolderName, selectedFileMetadata);
+                                Pair<GSFileMetadata, ErrorMessage> newDirResult = gsDataManager.mkDir(newFolderName, selectedFileMetadata);
 
-                                status.setText("Folder " + newFolderName + " created.");
+                                if (newDirResult.snd == null  && newDirResult.fst!=null){
 
-                                final TreePath path = tree.getSelectionPath();
-                                List<String> acceptableExtensions = new ArrayList<String>();
-                                acceptableExtensions.add("txt");
-                                if (tree.isExpanded(path) || currentNode.childrenHaveBeenInitialised()) {
-                                    final GSFileMetadataTreeNode newDirNode =
+                                    GSFileMetadata newDirMetadata =  newDirResult.fst;
+
+                                    status.setText("Folder " + newFolderName + " created.");
+                                    status.setForeground(UIHelper.GREY_COLOR);
+
+                                    final TreePath path = tree.getSelectionPath();
+                                    List<String> acceptableExtensions = new ArrayList<String>();
+                                    acceptableExtensions.add("txt");
+                                    if (tree.isExpanded(path) || currentNode.childrenHaveBeenInitialised()) {
+                                        final GSFileMetadataTreeNode newDirNode =
                                             new GSFileMetadataTreeNode(newDirMetadata, gsDataManager.getDataManagerClient(),
                                                     acceptableExtensions);
-                                    final DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+                                        final DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
 
-                                    final GSFileMetadataTreeNode parent =
+                                        final GSFileMetadataTreeNode parent =
                                             path == null ? (GSFileMetadataTreeNode) treeModel.getRoot()
                                                     : (GSFileMetadataTreeNode) path.getLastPathComponent();
 
-                                    final int insertionPoint = getTreeIndex(parent, treeModel, newDirNode, false);
-                                    if (insertionPoint == -1) {
-                                        status.setText("Duplicate folder name");
-                                        log.error("GenomeSpace error: duplicate folder name");
-                                        return;
-                                    }
-                                    treeModel.insertNodeInto(newDirNode, parent, insertionPoint);
+                                        final int insertionPoint = getTreeIndex(parent, treeModel, newDirNode, false);
+                                        if (insertionPoint == -1) {
+                                            status.setText("Duplicate folder name");
+                                            status.setForeground(UIHelper.RED_COLOR);
+                                            log.error("GenomeSpace error: duplicate folder name");
+                                            return;
+                                        }
+                                        treeModel.insertNodeInto(newDirNode, parent, insertionPoint);
 
-                                    // Make sure the user can see the new directory node:
-                                    tree.scrollPathToVisible(new TreePath(newDirNode.getPath()));
+                                        // Make sure the user can see the new directory node:
+                                        tree.scrollPathToVisible(new TreePath(newDirNode.getPath()));
+                                    }
+                                    if (tree.isCollapsed(path)) tree.expandPath(path);
+                                }else{
+                                    status.setText("<html>Folder " + newFolderName + " not created. "+newDirResult.snd.getMessage()+"</html>");
                                 }
-                                if (tree.isCollapsed(path)) tree.expandPath(path);
                             }
                         }
                     });
