@@ -10,6 +10,7 @@ import org.isatools.macros.io.graphml.GraphMLCreator;
 import org.isatools.macros.loaders.isa.ISAWorkflowLoader;
 import org.isatools.macros.loaders.isa.fileprocessing.isatab.ISAFileFlattener;
 import org.isatools.macros.macrofile.LightMacro;
+import org.isatools.macros.macrofile.importer.MacroFileImporter;
 import org.isatools.macros.motiffinder.GraphTraversalImpl;
 import org.isatools.macros.motiffinder.MotifFinder;
 import org.isatools.macros.motiffinder.TargetedMotifFinderImpl;
@@ -17,6 +18,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -35,9 +37,7 @@ public class WorkflowGraphCreator {
 
     private Neo4JConnector connector;
 
-
-
-
+    private static final String AUTOMACRON_FILE_PATH = "ProgramData/files/automacron.xml";
 
     // pass in filter on study samples to look at and create the tree based on that.
 
@@ -56,7 +56,6 @@ public class WorkflowGraphCreator {
                     investigation, selectedSamples);
 
             String assayInView = getNameOfAssayInView().substring(0, getNameOfAssayInView().lastIndexOf("."));
-
 
             System.out.println("Loading experiments");
             GraphDatabaseService graphDatabaseService = connector.getGraphDB();
@@ -88,8 +87,7 @@ public class WorkflowGraphCreator {
                             (fileAppender.equals("") ? "" : ("-" + fileAppender)) + ".xml");
 
                     MotifFinder finder;
-
-                    Set<LightMacro> targetedMacros = getTargetMacros();
+                    Collection<LightMacro> targetedMacros = getTargetMacros();
 
                     if (targetedMacros != null && !targetedMacros.isEmpty()) {
                         Set<String> searchTargets = new HashSet<String>();
@@ -109,11 +107,6 @@ public class WorkflowGraphCreator {
                     }
                 }
             }
-
-
-            // we want to shut it down afterwards to avoid having anything running on multiple experiments in view.
-
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -123,8 +116,18 @@ public class WorkflowGraphCreator {
         return graphMLFile;
     }
 
-    private Set<LightMacro> getTargetMacros() {
-        return null;
+    private Collection<LightMacro> getTargetMacros() {
+        MacroFileImporter importer = new MacroFileImporter();
+        Collection<LightMacro> macros = null;
+        try {
+            if (new File(AUTOMACRON_FILE_PATH).exists()) {
+                macros = importer.importFile(new File(AUTOMACRON_FILE_PATH));
+                System.out.println("Macro size " + macros.size());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return macros;
     }
 
     private String getNameOfAssayInView() {
