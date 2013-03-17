@@ -165,6 +165,10 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
 
     private int getJavaVersion() {
         String version = ISAcreatorProperties.getProperty("java.version");
+        if(version.isEmpty()) {
+            version = System.getProperty("java.version");
+            ISAcreatorProperties.setProperty("java.version", version);
+        }
         String[] versionParts = version.split("\\.");
         return Integer.valueOf(versionParts[1]);
     }

@@ -290,9 +290,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.prefuse</groupId>
+            <groupId>prefuse</groupId>
             <artifactId>prefuse</artifactId>
-            <version>20071021</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
@@ -410,7 +410,7 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>automacron</artifactId>
-            <version>0.1.1</version>
+            <version>0.1.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-httpclient</artifactId>

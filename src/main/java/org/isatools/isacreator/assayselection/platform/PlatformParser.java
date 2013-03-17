@@ -50,7 +50,7 @@ import java.util.Map;
 
 public class PlatformParser {
 
-    private static final String PLATFORM_FILE = "/required/platforms.xml";
+    private static final String PLATFORM_FILE = "/defaults/assayinfo/platforms.xml";
 
 
     public Map<FileType, List<Platform>> loadPlatformFile() {

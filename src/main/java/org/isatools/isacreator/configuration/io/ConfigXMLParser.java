@@ -142,7 +142,7 @@ public class ConfigXMLParser {
             log.info("No Investigation definition file found in Configurations directory, will suggest to load default from Resources...");
 
             try {
-                IsatabConfigFileDocument investigationFiles = IsatabConfigFileDocument.Factory.parse(getClass().getResourceAsStream("/defaultConfigs/investigation.xml"));
+                IsatabConfigFileDocument investigationFiles = IsatabConfigFileDocument.Factory.parse(getClass().getResourceAsStream("/defaults/investigation.xml"));
                 definitions.add(investigationFiles.getIsatabConfigFile());
                 log.info("Default Investigation file xml file loaded into the tools");
             } catch (Exception e) {
