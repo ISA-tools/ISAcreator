@@ -15,7 +15,7 @@ import javax.xml.xpath.XPathConstants;
  */
 public class OSGiDependencyImport {
 
-    private static final String FILE = "/defaultConfigs/osgi-framework-packages.xml";
+    private static final String FILE = "/defaults/osgi-framework-packages.xml";
 
 
     public static String getDependencies() {

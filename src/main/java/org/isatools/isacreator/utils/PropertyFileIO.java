@@ -54,7 +54,7 @@ public class PropertyFileIO {
 
 
     public static final String SETTINGS_DIR = "Settings";
-    public static final String DEFAULT_CONFIGS_SETTINGS_PROPERTIES = "/defaultConfigs/settings/defaultsettings.properties";
+    public static final String DEFAULT_CONFIGS_SETTINGS_PROPERTIES = "/defaults/settings/defaultsettings.properties";
 
     private static Properties defaultProperties;
 

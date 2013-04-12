@@ -40,7 +40,7 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
-import org.isatools.isacreator.visualization.glyphbasedworkflow.GraphMLCreator;
+import org.isatools.isacreator.visualization.glyphbasedworkflow.WorkflowGraphCreator;
 import org.isatools.isacreator.visualization.workflowvisualization.WorkflowVisualization;
 
 import javax.swing.*;
@@ -379,8 +379,8 @@ public class SpreadsheetPopupMenus {
         JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for this assay");
         viewWorkflowForAssays.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                GraphMLCreator graphMLCreator = new GraphMLCreator();
-                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true);
+                WorkflowGraphCreator workflowGraphCreator = new WorkflowGraphCreator();
+                File graphMLFile = workflowGraphCreator.createGraphMLFileForExperiment(true);
                 new WorkflowVisualization(graphMLFile).createGUI();
             }
         });
@@ -388,9 +388,9 @@ public class SpreadsheetPopupMenus {
         JMenuItem viewWorkflowForSelectedSamples = new JMenuItem("View workflow for selected samples");
         viewWorkflowForSelectedSamples.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                GraphMLCreator graphMLCreator = new GraphMLCreator();
+                WorkflowGraphCreator workflowGraphCreator = new WorkflowGraphCreator();
                 Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
-                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
+                File graphMLFile = workflowGraphCreator.createGraphMLFileForExperiment(true, selectedSamples);
                 new WorkflowVisualization(graphMLFile).createGUI();
             }
         });
@@ -700,9 +700,9 @@ public class SpreadsheetPopupMenus {
         JMenuItem viewWorkflowForSelectedSamples = new JMenuItem("View workflow for selected samples");
         viewWorkflowForSelectedSamples.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                GraphMLCreator graphMLCreator = new GraphMLCreator();
+                WorkflowGraphCreator workflowGraphCreator = new WorkflowGraphCreator();
                 Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
-                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
+                File graphMLFile = workflowGraphCreator.createGraphMLFileForExperiment(true, selectedSamples);
                 System.out.println("graph file is " + graphMLFile);
                 new WorkflowVisualization(graphMLFile).createGUI();
             }

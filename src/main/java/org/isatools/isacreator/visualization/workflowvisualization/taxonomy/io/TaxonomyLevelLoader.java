@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class TaxonomyLevelLoader {
 
-    private static final String TAXONOMY_FILE = "/defaultConfigs/visualisation/taxonomy.xml";
+    private static final String TAXONOMY_FILE = "/defaults/visualisation/taxonomy.xml";
 
     private static List<TaxonomyLevel> taxonomyLevels = new ArrayList<TaxonomyLevel>();
 

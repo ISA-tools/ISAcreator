@@ -76,7 +76,8 @@ public class AddAssayPane extends JPanel {
 
     private static final Logger log = Logger.getLogger(AddAssayPane.class.getName());
 
-    private static final String ARRAY_DESIGN_FILE = "ProgramData" + File.separator + "AEArrayDesigns.txt";
+    private static final String ARRAY_DESIGN_FILE = "ProgramData" + File.separator + "files"
+                                                                    + File.separator + "AEArrayDesigns.txt";
 
     private Collection<Assay> assaysToDefine;
     private List<CreationAlgorithm> algorithmsToRun;

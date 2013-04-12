@@ -20,6 +20,7 @@ import prefuse.data.io.GraphMLReader;
 import prefuse.data.tuple.TupleSet;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.render.LabelRenderer;
+import prefuse.render.MultiScaleLabelRenderer;
 import prefuse.util.ColorLib;
 import prefuse.util.StrokeLib;
 import prefuse.util.ui.UILib;
@@ -60,7 +61,7 @@ public class GraphView extends JPanel {
         m_vis.addFocusGroup("selected");
         m_vis.addFocusGroup("highlighted");
 
-        LabelRenderer tr = new LabelRenderer("value", label.equalsIgnoreCase("image") ? label : null);
+        MultiScaleLabelRenderer tr = new MultiScaleLabelRenderer("value", label.contains("image") ? label : null);
         tr.setImagePosition(Constants.TOP);
         m_vis.setRendererFactory(new DefaultRendererFactory(tr));
 
@@ -139,8 +140,8 @@ public class GraphView extends JPanel {
         UILib.setPlatformLookAndFeel();
 
         // create graphview
-        String datafile = "/Users/eamonnmaguire/git/eamonnrepo/GraphMacro/data/graphml/E-GEOD-20176-E-GEOD-20176.xml";
-        String label = "value";
+        String datafile = "/Users/eamonnmaguire/git/eamonnrepo/GraphMacro/data/test.xml";
+        String label = "image";
 
         Graph g = null;
 
@@ -150,16 +151,6 @@ public class GraphView extends JPanel {
             final GraphView view = new GraphView(g, label, Constants.ORIENT_TOP_BOTTOM, new Dimension(800, 600));
 
             view.getDisplay().addControlListener(new ControlAdapter() {
-
-                @Override
-                public void mousePressed(MouseEvent mouseEvent) {
-                    // do nothing
-                }
-
-                @Override
-                public void itemClicked(VisualItem visualItem, MouseEvent mouseEvent) {
-                    // do nothing.
-                }
 
                 @Override
                 public void itemEntered(VisualItem visualItem, MouseEvent mouseEvent) {
