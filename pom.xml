@@ -432,7 +432,7 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.ebi</groupId>
