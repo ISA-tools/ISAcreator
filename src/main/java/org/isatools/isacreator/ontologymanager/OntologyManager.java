@@ -47,9 +47,9 @@ import java.util.*;
  * @author Eamonn Maguire
  * @date Feb 9, 2009
  */
-
-
 public class OntologyManager {
+
+    //ontology term providers
     public static final String OLS = "OLS";
     public static final String BIO_PORTAL = "BioPortal";
 
@@ -64,6 +64,15 @@ public class OntologyManager {
 
     public static Map<String, OntologyTerm> getOntologySelectionHistory() {
         return ontologySelectionHistory;
+    }
+
+    public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
+        OntologyManager.ontologySelectionHistory = new HashMap<String, OntologyTerm>();
+        OntologyManager.ontologySelectionHistory.putAll(ontologySelectionHistory);
+    }
+
+    public static void addToOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
+        OntologyManager.ontologySelectionHistory.putAll(ontologySelectionHistory);
     }
 
     public static OntologyTerm getOntologyTerm(String key){
@@ -83,11 +92,6 @@ public class OntologyManager {
     public static String getOntologyTermSource(String dataValue){
         OntologyTerm ontologyTerm = getOntologyTerm(dataValue);
         return ontologyTerm!=null? ontologyTerm.getOntologySource() : null;
-    }
-
-
-    public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
-        OntologyManager.ontologySelectionHistory = ontologySelectionHistory;
     }
 
 
