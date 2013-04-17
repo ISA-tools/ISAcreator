@@ -316,11 +316,13 @@ public class TableReferenceObject implements Serializable {
 
                 String prevVal = header.substring(header.indexOf('[')+1, header.indexOf("]"));
 
-                String term = prevVal.substring(0, prevVal.indexOf('('));
-                String[] parts = prevVal.substring(prevVal.indexOf('(')+1, prevVal.indexOf(')')).split(":");
+                String[] parts = prevVal.split("-");
 
                 String source = parts[0];
-                String accession = parts[1];
+                String term = parts[1];
+                String accession = parts[2];
+
+                prevVal = source + ":" + term;
 
                 if (!referencedOntologyTerms.containsKey(prevVal)) {
                        referencedOntologyTerms.put(prevVal,
