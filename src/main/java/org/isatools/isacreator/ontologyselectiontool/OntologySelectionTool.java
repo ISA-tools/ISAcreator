@@ -186,12 +186,16 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         ontologyViewContainer = new JPanel(new BorderLayout());
         ontologyViewContainer.setPreferredSize(new Dimension(400, 170));
 
-        progressIndicator = new InfiniteProgressPanel("searching for matching ontologies");
+        progressIndicator = new InfiniteProgressPanel("searching for matching terms in ontologies");
 
         createPanels();
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
 
         pack();
+    }
+
+    public void setSearchFieldText(String text){
+        searchField.setText(text);
     }
 
     public void setMultipleTermsAllowed(boolean multipleTermsAllowed) {

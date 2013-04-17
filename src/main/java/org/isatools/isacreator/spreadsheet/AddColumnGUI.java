@@ -241,10 +241,12 @@ public class AddColumnGUI extends JDialog {
         ontologySelectionTool.createGUI();
 
         dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
+
         ontologySelectionTool.addPropertyChangeListener("selectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
                         dropdown.hidePopup(ontologySelectionTool);
+
                         // we need to get the selected terms, get the first object and modify the output so that it gives us something conforming to
                         // term (source:accession)
                         OntologyTerm term = OntologyManager.getOntologyTerm(evt.getNewValue().toString());
