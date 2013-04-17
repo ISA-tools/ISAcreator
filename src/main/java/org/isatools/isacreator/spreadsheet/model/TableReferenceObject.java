@@ -327,8 +327,10 @@ public class TableReferenceObject implements Serializable {
                                 new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
                 }
 
+            }
 
-            } else if (headers[i].toLowerCase().contains("source ref")) {
+            //process rows
+            if (headers[i].toLowerCase().contains("source ref")) {
                 if (!s.equals("")) {
                     String prevVal = rowDataModified.get(prevValLoc);
                     rowDataModified.set(prevValLoc, s + ":" + prevVal);
