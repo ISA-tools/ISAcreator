@@ -194,7 +194,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         pack();
     }
 
-    public void setSearchFieldText(String text){
+    public void setSearchFieldText(String text) {
         searchField.setText(text);
     }
 
@@ -211,7 +211,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         System.out.println("Resetting recommended ontologies, it is now, ");
         for (String ontologySource : recommendedOntologies.keySet()) {
-            System.out.println( ontologySource );
+            System.out.println(ontologySource);
         }
         final boolean resetView = !(this.recommendedOntologies == recommendedOntologies);
 
@@ -224,17 +224,13 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                 browseRecommendedOntologiesTab.setVisible(recommendedOntologiesAvailable);
 
                 if (resetView) {
-                    System.out.println("Resetting view....");
+                    resetView();
                     // should also reset the recommended ontologies. Displaying recommended ontologies for another field
                     // if not a great idea.
                     if (recommendedOntologiesAvailable) {
                         ontologySearchResultsTree.setModel(new FilterableOntologyTreeModel<OntologySourceRefObject, List<OntologyTerm>>(new DefaultMutableTreeNode("results"), ontologySearchResultsTree));
 
-                        try {
-                            wsOntologyTreeCreator.createTree(recommendedOntologies);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        treeCreated = false;
                     }
                     searchSpan.toggleOptionEnabled(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable);
                     searchSpan.setSelectedItem(recommendedOntologiesAvailable ? RECOMMENDED_ONTOLOGIES : ALL_ONTOLOGIES);
@@ -243,7 +239,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         });
     }
 
-    private void resetView(boolean resetButtons) {
+    private void resetView() {
 
         resetButtons();
         searchOntologiesTab.setIcon(searchOntologiesIconOver);
