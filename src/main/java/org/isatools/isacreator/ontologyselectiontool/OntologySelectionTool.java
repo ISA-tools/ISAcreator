@@ -207,8 +207,12 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         selectedTerm.setEditable(!forceOntologySelection);
     }
 
-    public void setRecommendedOntologies(Map<String, RecommendedOntology> recommendedOntologies) {
+    public void setRecommendedOntologies(final Map<String, RecommendedOntology> recommendedOntologies) {
 
+        System.out.println("Resetting recommended ontologies, it is now, ");
+        for (String ontologySource : recommendedOntologies.keySet()) {
+            System.out.println( ontologySource );
+        }
         final boolean resetView = !(this.recommendedOntologies == recommendedOntologies);
 
         this.recommendedOntologies = recommendedOntologies;
@@ -220,10 +224,17 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                 browseRecommendedOntologiesTab.setVisible(recommendedOntologiesAvailable);
 
                 if (resetView) {
+                    System.out.println("Resetting view....");
                     // should also reset the recommended ontologies. Displaying recommended ontologies for another field
                     // if not a great idea.
                     if (recommendedOntologiesAvailable) {
                         ontologySearchResultsTree.setModel(new FilterableOntologyTreeModel<OntologySourceRefObject, List<OntologyTerm>>(new DefaultMutableTreeNode("results"), ontologySearchResultsTree));
+
+                        try {
+                            wsOntologyTreeCreator.createTree(recommendedOntologies);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     }
                     searchSpan.toggleOptionEnabled(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable);
                     searchSpan.setSelectedItem(recommendedOntologiesAvailable ? RECOMMENDED_ONTOLOGIES : ALL_ONTOLOGIES);
