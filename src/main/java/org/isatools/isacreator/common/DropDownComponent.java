@@ -115,7 +115,12 @@ public class DropDownComponent extends JComponent implements ActionListener,
 
                 if (container instanceof OntologySelector) {
                     OntologySelector ost = (OntologySelector) container;
+
+                    if (visibleComponent instanceof  JTextField)
+                        ost.setSearchFieldText(((JTextField)visibleComponent).getText());
+
                     ost.updatehistory();
+
                 }
 
                 addListener(container);
@@ -137,6 +142,7 @@ public class DropDownComponent extends JComponent implements ActionListener,
 
         if (hideableWindow instanceof OntologySelector) {
             OntologySelector ost = (OntologySelector) hideableWindow;
+
             ost.updatehistory();
         }
 

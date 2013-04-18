@@ -268,10 +268,12 @@ public class Spreadsheet extends JComponent implements
     }
 
     private void addOntologyTermsToUserHistory() {
-        if (tableReferenceObject.getDefinedOntologies().size() > 0) {
-            for (OntologyTerm oo : tableReferenceObject.getDefinedOntologies().values()) {
-                OntologyManager.getOntologySelectionHistory().put(oo.getUniqueId(), oo);
-            }
+
+        Map<String, OntologyTerm> referencedOntologyTerms = tableReferenceObject.getReferencedOntologyTerms();
+        Map<String, OntologyTerm> ontoHistory = OntologyManager.getOntologySelectionHistory();
+
+        for (OntologyTerm oo : referencedOntologyTerms.values()) {
+                ontoHistory.put(oo.getUniqueId(), oo);
         }
     }
 

@@ -24,7 +24,7 @@ public class ISAtabFilesImporterFromGUITest {
     @Before
     public void setUp() {
         baseDir = System.getProperty("basedir");
-        isacreator = new ISAcreator(Mode.NORMAL_MODE, null, baseDir + "/Configurations/isaconfig-default_v2011-02-18/");
+        isacreator = new ISAcreator(Mode.NORMAL_MODE, null, baseDir + ISAcreator.CONFIG_DIR);
         importer = new ISAtabFilesImporterFromGUI(isacreator);
     }
 
