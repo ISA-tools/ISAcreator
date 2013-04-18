@@ -236,7 +236,7 @@ public class ConfigXMLParser {
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
 
-                newField.setWizardTemplate(stdField.getGeneratedValueTemplate());
+                newField.setWizardTemplate(StringProcessing.cleanUpString(stdField.getGeneratedValueTemplate()));
 
                 if (stdField.getRecommendedOntologies() != null) {
                     processRecommendedOntologies(stdField, newField);
@@ -262,7 +262,7 @@ public class ConfigXMLParser {
                 }
 
                 if (stdField.getListValues() != null) {
-                    String values = stdField.getListValues();
+                    String values = StringProcessing.cleanUpString(stdField.getListValues());
 
                     if (values.contains(",")) {
                         String[] valueList = values.split(",");
