@@ -45,6 +45,8 @@
     <dependency package="org.isatools.isacreator.autofilteringlist"/>
     <dependency package="org.isatools.errorreporter.ui.utils"/>
     <dependency package="org.apache.commons.collections15.map"/>
+    <dependency package="org.isatools.isacreator.common.CustomMenuItemUI"/>
+
     
     <!-- needed for JDK7 -->
     <dependency package="javax.swing"/>
