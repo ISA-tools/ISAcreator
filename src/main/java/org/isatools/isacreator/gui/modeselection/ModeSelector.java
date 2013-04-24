@@ -37,6 +37,7 @@ package org.isatools.isacreator.gui.modeselection;
  */
 
 import com.sun.awt.AWTUtilities;
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.jdesktop.fuse.InjectedResource;
@@ -52,9 +53,6 @@ import java.awt.event.MouseEvent;
  * Created by the ISA team
  *
  * @author Eamonn Maguire (eamonnmag@gmail.com)
- *         <p/>
- *         Date: 11/04/2011
- *         Time: 15:02
  */
 public class ModeSelector extends JFrame implements BundleActivator {
 
@@ -109,38 +107,44 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         lightMode = new JLabel(lightIcon);
 
-        lightMode.addMouseListener(new MouseAdapter() {
+        lightMode.addMouseListener(new CommonMouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 loadISAcreator(Mode.LIGHT_MODE, context);
             }
 
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 lightMode.setIcon(lightIconOver);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 lightMode.setIcon(lightIcon);
             }
         });
 
         normalMode = new JLabel(normalIcon);
 
-        normalMode.addMouseListener(new MouseAdapter() {
+        normalMode.addMouseListener(new CommonMouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 loadISAcreator(Mode.NORMAL_MODE, context);
             }
 
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 normalMode.setIcon(normalIconOver);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 normalMode.setIcon(normalIcon);
             }
         });
@@ -148,19 +152,22 @@ public class ModeSelector extends JFrame implements BundleActivator {
 
         gsMode = new JLabel(gsIcon);
 
-        gsMode.addMouseListener(new MouseAdapter() {
+        gsMode.addMouseListener(new CommonMouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 loadISAcreator(Mode.GS, context);
             }
 
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 gsMode.setIcon(gsIconOver);
             }
 
             @Override
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 gsMode.setIcon(gsIcon);
             }
         });

@@ -52,6 +52,7 @@ final class ConfigurationUtil {
                 } else {
                     if (plugin.getName().contains(".jar")) {
                         toLoad.append("file:").append(plugin.getAbsolutePath()).append(" ");
+                        System.out.println("Added plugin " + plugin.getName());
                     }
                 }
             }

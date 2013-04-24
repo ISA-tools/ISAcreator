@@ -133,7 +133,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private ISAcreatorMenu isacreatorMenu = null;
 
     private JMenuBar menuBar;
-    private JMenu pluginMenu;
+    private JMenu pluginMenu = new JMenu("plugins");;
 
     private Map<String, JMenu> menusRequiringStudyIds;
 
@@ -653,7 +653,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         menuBar.add(options);
 
-        pluginMenu = new JMenu("plugins");
+
         pluginMenu.setVisible(false);
         menuBar.add(pluginMenu);
 
