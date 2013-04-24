@@ -56,10 +56,10 @@
             <url>http://download.java.net/maven/2/</url>
         </repository>
 
-        <repository>
-            <id>oerc</id>
-            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases/</url>
-        </repository>
+        <!--<repository>-->
+            <!--<id>oerc</id>-->
+            <!--<url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases/</url>-->
+        <!--</repository>-->
 
         <repository>
             <id>mvnsearch</id>
@@ -80,9 +80,7 @@
                     <executable>apt</executable>
                     <fork>true</fork>
                     <debug>true</debug>
-                    <compilerArguments>
-                        <s>${project.build.directory}</s>
-                    </compilerArguments>
+
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
                 </configuration>
@@ -192,7 +190,9 @@
                     </execution>
 
                 </executions>
+
                 <dependencies>
+
                     <dependency>
                         <groupId>com.sun.xml.ws</groupId>
                         <artifactId>jaxws-tools</artifactId>
@@ -204,6 +204,7 @@
                             </exclusion>
                         </exclusions>
                     </dependency>
+
                     <dependency>
                         <groupId>org.jvnet.staxex</groupId>
                         <artifactId>stax-ex</artifactId>
@@ -215,6 +216,7 @@
                             </exclusion>
                         </exclusions>
                     </dependency>
+
                 </dependencies>
 
             </plugin>
@@ -407,27 +409,6 @@
             <version>1.8.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.isatools</groupId>
-            <artifactId>automacron</artifactId>
-            <version>0.1.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-httpclient</artifactId>
-                    <groupId>commons-httpclient</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.isatools</artifactId>
-                    <groupId>ISAcreator</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j</artifactId>
-            <version>1.8.M07</version>
-        </dependency>
 
         <dependency>
             <groupId>org.isatools</groupId>
@@ -448,8 +429,6 @@
 
 
         <!-- Dependencies for GS code -->
-
-
         <dependency>
             <groupId>genomespace</groupId>
             <artifactId>cdk</artifactId>

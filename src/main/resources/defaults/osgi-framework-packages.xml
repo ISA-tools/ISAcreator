@@ -37,36 +37,14 @@
     <dependency package="org.isatools.isacreator.ontologyselectiontool"/>
     <dependency package="org.apache.commons.collections15"/>
     <dependency package="org.apache.commons.collections15.multimap"/>
-
-
-    <!--mysterious requirements-->
-
     <dependency package="org.isatools.macros.plugin.workflowvisualization.graph"/>
-    <dependency package="org.jboss.resource.adapter.jdbc"/>
-    <dependency package="org.jboss.resource.adapter.jdbc.vendor"/>
-    <dependency package="ch.qos.logback.core"/>
-    <dependency package="com.mchange.v2.c3p0"/>
-    <dependency package="com.sun.tools.javac.tree"/>
     <dependency package="org.apache.commons.collections15.set"/>
     <dependency package="org.isatools.isacreator.visualization.tree"/>
-    <dependency package="org.neo4j.graphdb.factory"/>
     <dependency package="org.isatools.isacreator.effects.borders"/>
-    <dependency package="org.neo4j.kernel.impl.util"/>
     <dependency package="org.isatools.errorreporter.model"/>
-    <dependency package="org.neo4j.graphdb"/>
     <dependency package="org.isatools.isacreator.autofilteringlist"/>
     <dependency package="org.isatools.errorreporter.ui.utils"/>
     <dependency package="org.apache.commons.collections15.map"/>
-    <dependency package="sun.misc"/>
-
-
-
-
-
-
-
-
-    
     
     <!-- needed for JDK7 -->
     <dependency package="javax.swing"/>
