@@ -209,15 +209,15 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     public void setRecommendedOntologies(final Map<String, RecommendedOntology> recommendedOntologies) {
 
-        System.out.println("Resetting recommended ontologies, it is now, ");
-        for (String ontologySource : recommendedOntologies.keySet()) {
-            System.out.println(ontologySource);
-        }
-        final boolean resetView = !(this.recommendedOntologies == recommendedOntologies);
+        System.out.println("Resetting recommended ontologies, it is now: parameter="+recommendedOntologies + " field="+ this.recommendedOntologies);
 
-        this.recommendedOntologies = recommendedOntologies;
+        if (recommendedOntologies!=null){
 
-        SwingUtilities.invokeLater(new Runnable() {
+            final boolean resetView = !(this.recommendedOntologies == recommendedOntologies);
+
+            this.recommendedOntologies = recommendedOntologies;
+
+            SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 
                 boolean recommendedOntologiesAvailable = checkIfRecommendedOntologiesAreAvailable();
@@ -235,8 +235,10 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                     searchSpan.toggleOptionEnabled(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable);
                     searchSpan.setSelectedItem(recommendedOntologiesAvailable ? RECOMMENDED_ONTOLOGIES : ALL_ONTOLOGIES);
                 }
-            }
-        });
+                }
+            });
+
+        }
     }
 
     private void resetView() {
