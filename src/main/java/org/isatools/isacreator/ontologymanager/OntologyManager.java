@@ -233,7 +233,8 @@ public class OntologyManager {
     }
 
     public static void addToUserHistory(OntologyTerm oo) {
-        ontologySelectionHistory.put(oo.getUniqueId(), oo);
+        if (oo!=null)
+            ontologySelectionHistory.put(oo.getUniqueId(), oo);
     }
 
     public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {
