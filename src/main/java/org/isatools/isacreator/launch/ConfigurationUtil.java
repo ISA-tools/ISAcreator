@@ -46,12 +46,13 @@ final class ConfigurationUtil {
                 if (plugin.isDirectory()) {
                     for (File jarFile : plugin.listFiles()) {
                         if (jarFile.getName().contains(".jar")) {
-                            toLoad.append("file:").append(jarFile.getAbsolutePath()).append(" ");
+                            toLoad.append("file:").append("\"").append(jarFile.getAbsolutePath()).append("\"").append(" ");
+                            System.out.println("Added plugin " + jarFile.getName());
                         }
                     }
                 } else {
                     if (plugin.getName().contains(".jar")) {
-                        toLoad.append("file:").append(plugin.getAbsolutePath()).append(" ");
+                        toLoad.append("file:").append("\"").append(plugin.getAbsolutePath()).append("\"").append(" ");
                         System.out.println("Added plugin " + plugin.getName());
                     }
                 }
