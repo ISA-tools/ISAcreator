@@ -40,8 +40,10 @@ package org.isatools.isacreator.gui.menu;
 import org.isatools.isacreator.api.CreateProfile;
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+import org.isatools.isacreator.orcid.OrcidService;
+import org.isatools.isacreator.orcid.impl.OrcidServiceImpl;
+import org.isatools.isacreator.orcid.model.OrcidAuthor;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -69,6 +71,7 @@ public class CreateProfileMenu extends UserCreationMenu {
     private JTextField firstnameVal;
     private JTextField institutionVal;
     private JTextField surnameVal;
+    private JTextField orcid;
 
     public CreateProfileMenu(ISAcreatorMenu menu) {
         super(menu);
@@ -89,9 +92,19 @@ public class CreateProfileMenu extends UserCreationMenu {
                 createProfile();
             }
         };
+
+        Action lookupUserInfoFromOrcidAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                lookupUserInfoFromOrcid();
+            }
+        };
+
         JPanel userNameCont = createUsernamePanel(createProfileAction);
         JPanel passwordCont = createPasswordPanel(createProfileAction);
         JPanel confirmPasswordCont = createConfirmPasswordPanel(createProfileAction);
+
+        JPanel orcidIdCont = createOrcidPanel(lookupUserInfoFromOrcidAction);
+
         JPanel firstNameCont = createForenamePanel(createProfileAction);
         JPanel surnameCont = createSurnamePanel(createProfileAction);
         JPanel institutionCont = createInstitutionPanel(createProfileAction);
@@ -99,17 +112,19 @@ public class CreateProfileMenu extends UserCreationMenu {
 
 
         fields.add(userNameCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(passwordCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(confirmPasswordCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
+        fields.add(orcidIdCont);
+        fields.add(Box.createVerticalStrut(8));
         fields.add(firstNameCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(surnameCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(institutionCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(emailCont);
 
         JLabel info = new JLabel(
@@ -231,6 +246,28 @@ public class CreateProfileMenu extends UserCreationMenu {
         return firstNameCont;
     }
 
+    private JPanel createOrcidPanel(Action lookupOrcid){
+        JPanel orcidCont = createPanel();
+        JLabel orcidLabel = createLabel("orcid");
+        orcidCont.add(orcidLabel);
+
+        orcid = createTextField();
+        orcidCont.add(orcid);
+        assignKeyActionToComponent(lookupOrcid, orcid);
+        return orcidCont;
+    }
+
+    private void lookupUserInfoFromOrcid() {
+        OrcidService service = new OrcidServiceImpl();
+        OrcidAuthor author = service.getAuthorInfo(orcid.getText());
+
+        if (author==null)
+            return;
+
+        firstnameVal.setText(author.getGivenNames());
+        surnameVal.setText(author.getFamilyName());
+        emailVal.setText(author.getEmail());
+    }
 
     private void createProfile() {
         // check password is not empty and that the password and the confirmation match!
