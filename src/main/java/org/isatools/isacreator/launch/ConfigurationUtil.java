@@ -1,7 +1,7 @@
 package org.isatools.isacreator.launch;
 
 import org.apache.felix.framework.util.FelixConstants;
-import org.apache.felix.main.AutoActivator;
+import org.apache.felix.main.AutoProcessor;
 import org.isatools.isacreator.io.osgi.OSGiDependencyImport;
 import org.osgi.framework.Constants;
 
@@ -57,8 +57,9 @@ final class ConfigurationUtil {
                     }
                 }
             }
-            configMap.put(AutoActivator.AUTO_START_PROP + ".1",
+            configMap.put(AutoProcessor.AUTO_START_PROP + ".1",
                     toLoad.toString());
+
         }
 
         configMap.put(FelixConstants.LOG_LEVEL_PROP, "4");
