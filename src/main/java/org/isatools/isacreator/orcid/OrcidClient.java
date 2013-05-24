@@ -10,8 +10,10 @@ import org.isatools.isacreator.orcid.model.OrcidAuthor;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public interface OrcidService {
+public interface OrcidClient {
 
    public OrcidAuthor getAuthorInfo(String orcidID);
+
+   public OrcidAuthor[] getOrcidProfiles(String searchString);
 
 }

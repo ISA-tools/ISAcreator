@@ -8,19 +8,27 @@ package org.isatools.isacreator.orcid.model;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class OrcidAuthor {
+public class OrcidAuthor {//extends Contact {
 
     private String orcid;
+
+    //first name
     private String givenNames;
+    //last name
     private String familyName;
+    private String email;
+
     private String pastInstitution;
     private String currentPrimaryInstitution;
     private String currentOtherInstitution;
-    private String email;
+
+
 
     public OrcidAuthor(){
 
     }
+
+
 
     public String getOrcid(){
         return orcid;
@@ -50,6 +58,7 @@ public class OrcidAuthor {
         return email;
     }
 
+
     public void setOrcid(String orcid){
         this.orcid = orcid;
     }
@@ -70,12 +79,13 @@ public class OrcidAuthor {
         this.email = email;
     }
 
-    public String toString(){
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(getGivenNames()+"\t");
-        buffer.append(getFamilyName()+"\t");
-        buffer.append(getEmail());
-        return buffer.toString();
+
+
+    public String getIdentifier() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public String toString(){
+        return getGivenNames()+" "+getFamilyName();
+    }
 }

@@ -2,7 +2,7 @@ package org.isatools.isacreator.orcid.impl;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.isatools.isacreator.orcid.OrcidService;
+import org.isatools.isacreator.orcid.OrcidClient;
 import org.isatools.isacreator.orcid.model.OrcidAuthor;
 import org.isatools.isacreator.orcid.xmlhandlers.OrcidSearchResultHandler;
 import org.orcid.ns.orcid.OrcidMessageDocument;
@@ -17,7 +17,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class OrcidServiceImpl implements OrcidService {
+public class OrcidClientImpl implements OrcidClient {
 
     public static final String QUERY_URL = "http://pub.orcid.org/search/orcid-bio/";
 
@@ -27,23 +27,22 @@ public class OrcidServiceImpl implements OrcidService {
 
     private HttpClient client = null;
     private GetMethod getMethod = null;
+    private  OrcidSearchResultHandler handler = null;
 
 
-    public OrcidServiceImpl(){
+    public OrcidClientImpl(){
 
         client = new HttpClient();
         getMethod = new GetMethod(QUERY_URL);
-
-
+        handler = new OrcidSearchResultHandler();
 
     }
 
     public OrcidAuthor getAuthorInfo(String orcidID) {
 
+        try{
             getMethod.setQueryString("q=orcid:" + orcidID );
 
-
-        try{
             System.out.println("query string=" + getMethod.getQueryString());
             System.out.println("URI="+ getMethod.getURI());
 
@@ -73,18 +72,59 @@ public class OrcidServiceImpl implements OrcidService {
         return null;
     }
 
+    public OrcidAuthor[] getOrcidProfiles(String searchString) {
+
+        try{
+            getMethod.setQueryString("q=text:'" + searchString +"'");
+
+            System.out.println("query string=" + getMethod.getQueryString());
+            System.out.println("URI="+ getMethod.getURI());
+
+
+            getMethod.addRequestHeader(CONTENT_TYPE, ORCID_XML);
+
+            int statusCode = client.executeMethod(getMethod);
+
+            if (statusCode != -1) {
+                String contents = getMethod.getResponseBodyAsString();
+
+                System.out.println("status text=" + getMethod.getStatusText());
+                System.out.println("contents=" + contents);
+
+                getMethod.releaseConnection();
+                return processOrcidProfles(contents);
+            }else{
+                System.out.println("status code is -1");
+            }
+
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }//catch(HttpException ex){
+
+        //}
+        return null;
+
+
+    }
+
+    private OrcidAuthor[] processOrcidProfles(String contents){
+        OrcidMessageDocument orcidMessageDocument = handler.getOrcidMessageDocument(contents);
+        return handler.getOrcidAuthors(orcidMessageDocument);
+    }
 
     private OrcidAuthor processAuthorInfo(String contents){
         System.out.println("contents="+contents);
-        OrcidSearchResultHandler handler = new OrcidSearchResultHandler();
         OrcidMessageDocument orcidMessageDocument = handler.getOrcidMessageDocument(contents);
-        return handler.getOrcidAuthor(orcidMessageDocument);
+        return handler.getSingleOrcidAuthor(orcidMessageDocument);
     }
 
 
     public static void main(String[] args) {
-        OrcidServiceImpl service = new OrcidServiceImpl();
-        service.getAuthorInfo("0000-0003-3499-8262");
+        OrcidClientImpl client = new OrcidClientImpl();
+        //client.getAuthorInfo("0000-0003-3499-8262");
+       // client.getOrcidProfiles("English");
+        //client.getOrcidProfiles("gonzalez-beltran");
+        client.getOrcidProfiles("0000-0003-3499-8262");
     }
 
 }
