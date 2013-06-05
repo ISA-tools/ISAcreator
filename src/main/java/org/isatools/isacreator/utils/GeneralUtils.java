@@ -104,8 +104,9 @@ public class GeneralUtils {
     }
 
     public static String createTmpDirectory(String name){
-        String localTmpDirectory = System.getProperty("java.io.tmpdir")+ name + System.currentTimeMillis() + File.separator;
-        boolean success = new File(localTmpDirectory).mkdir();
+
+        String localTmpDirectory = System.getProperty("java.io.tmpdir") + File.separator +  name + File.separator + System.currentTimeMillis() + File.separator;
+        boolean success = new File(localTmpDirectory).mkdirs();
         if (success) {
             System.out.println("Directory: "+ localTmpDirectory + " created");
             return localTmpDirectory;

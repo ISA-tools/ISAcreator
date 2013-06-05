@@ -108,7 +108,7 @@ public class IOUtils {
                         } else {
                             tmpTerm = termAndSource[0];
                         }
-                    }  else {
+                    } else {
                         tmpTerm += ontologyTerm;
                     }
                 }
@@ -141,7 +141,11 @@ public class IOUtils {
                 if (term.contains(":")) {
                     String[] termAndSource = term.split(":");
                     tmpSourceRefs = termAndSource[0];
-                    tmpTerm = termAndSource[1];
+                    if (termAndSource.length == 2) {
+                        tmpTerm = termAndSource[1];
+                    } else {
+                        tmpTerm = "";
+                    }
                 }
             }
         }
