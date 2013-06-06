@@ -209,7 +209,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         this.setLayout(new BorderLayout());
         this.setBackground(UIHelper.BG_COLOR);
 
-        ResourceInjector.get().inject(true, new Object[] {this});
+        ResourceInjector.get().inject(this,true);
 
         if (createBorder) {
             setBorder(new TitledBorder(
