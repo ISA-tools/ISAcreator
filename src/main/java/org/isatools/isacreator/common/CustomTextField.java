@@ -37,7 +37,6 @@
 
 package org.isatools.isacreator.common;
 
-import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -55,14 +54,6 @@ import java.awt.*;
 
 
 public class CustomTextField extends JPanel {
-
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("common-package.style").load(
-                ArchiveOutputWindow.class.getResource("/dependency-injections/common-package.properties"));
-    }
-
 
     private String fieldName;
 

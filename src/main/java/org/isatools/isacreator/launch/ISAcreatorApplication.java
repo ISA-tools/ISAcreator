@@ -44,6 +44,9 @@ public class ISAcreatorApplication  {
     {
         BundleActivator activatorClass = null;
 
+        //setting the dependency-injections, so that plugins can use them
+        ISAcreatorGUIProperties.setProperties();
+
         //if there are no parameters, use the ModeSelector activator
         if (args==null || args.length==0){
            activatorClass = new ModeSelector();
@@ -66,8 +69,6 @@ public class ISAcreatorApplication  {
         {
             Map<String, Object> configMap = ConfigurationUtil.createConfiguration();
 
-            //setting the dependency-injections, so that plugins can use them
-            ISAcreatorGUIProperties.setProperties();
 
             // Create list to hold custom framework activators.
             List<BundleActivator> list = new ArrayList<BundleActivator>();

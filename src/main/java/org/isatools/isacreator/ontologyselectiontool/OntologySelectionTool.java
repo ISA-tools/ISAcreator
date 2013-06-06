@@ -102,16 +102,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private SingleSelectionListCellRenderer singleSelectionListCellRenderer = new SingleSelectionListCellRenderer();
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-        ResourceInjector.get("ontologyselectiontool-package.style").load(
-                OntologySelectionTool.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
-        ResourceInjector.get("common-package.style").load(
-                OntologySelectionTool.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("effects-package.style").load(OntologySelectionTool.class.getResource
-                ("/dependency-injections/effects-package.properties"));
-    }
-
     @InjectedResource
     private ImageIcon termDefinitionIcon, searchButton, searchButtonOver, filterInfo, browseOntologiesIcon,
             browseOntologiesIconOver, searchOntologiesIcon, searchOntologiesIconOver, leftFieldIcon, rightFieldIcon,
