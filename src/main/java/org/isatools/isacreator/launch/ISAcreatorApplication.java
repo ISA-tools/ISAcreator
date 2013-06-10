@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.gs.GSActivator;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.gui.modeselection.ModeSelector;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.launch.Framework;
 
@@ -42,6 +43,7 @@ public class ISAcreatorApplication  {
      **/
     public static void main(String[] args)
     {
+        ApplicationManager.setIsaCreatorRunning(true);
         BundleActivator activatorClass = null;
 
         //setting the dependency-injections, so that plugins can use them
