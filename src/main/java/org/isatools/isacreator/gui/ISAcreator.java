@@ -117,6 +117,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     @InjectedResource
     private Image isacreatorIcon;
+
     @InjectedResource
     private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, validateIcon, convertIcon,
             logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon, removeStudyIcon, fullScreenIcon,
@@ -134,7 +135,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private JMenuBar menuBar;
     private JMenu pluginMenu = new JMenu("plugins");
-    ;
+
 
     private Map<String, JMenu> menusRequiringStudyIds;
 

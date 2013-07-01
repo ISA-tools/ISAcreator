@@ -45,6 +45,7 @@ import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -873,6 +874,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
 
     public static void main(String[] args) {
+        ISAcreatorGUIProperties.setProperties();
         FileChooserUI fc = new FileChooserUI();
         fc.setVisible(true);
     }

@@ -93,7 +93,6 @@ public class GSActivator implements BundleActivator {
                     loggedIn = gsAuthentication.login("");
 
                     if (loggedIn){
-                        GSLocalFilesManager.downloadFiles(gsAuthentication);
                         main.createGUI(ISAcreatorCLArgs.configDir(), ISAcreatorCLArgs.username(), null, ISAcreatorCLArgs.isatabDir(), null, gsAuthentication, null, true);
                     }else {
                         //not logged in

@@ -2,15 +2,12 @@ package org.isatools.isacreator.gs;
 
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.api.Authentication;
-import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.utils.GeneralUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by the ISATeam.
@@ -51,7 +48,9 @@ public class GSLocalFilesManager {
             if (ISAcreatorCLArgs.isatabFiles()!=null){
 
                 for(String filePath: ISAcreatorCLArgs.isatabFiles()){
-                    errors.add(gsDataManager.downloadFile(filePath, localTmpDirectory));
+                    ErrorMessage errorMessage = gsDataManager.downloadFile(filePath, localTmpDirectory);
+                    if (errorMessage!=null)
+                        errors.add(errorMessage);
                 }//for
 
             }//if
