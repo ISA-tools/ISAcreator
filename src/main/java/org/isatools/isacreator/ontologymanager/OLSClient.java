@@ -122,7 +122,7 @@ public class OLSClient implements OntologyService {
         try {
             Query service = locator.getOntologyQuery();
             Map<String, String> metadata = service.getTermMetadata(termId, ontology);
-
+            System.out.println("ontology is " + ontology);
             answer.put("accession", termId);
             if (metadata != null) {
                 answer.putAll(metadata);
@@ -360,7 +360,6 @@ public class OLSClient implements OntologyService {
         Map<String, OntologyTerm> processedResult = new HashMap<String, OntologyTerm>();
 
         for (String accession : ontologyAccessionToTerm.keySet()) {
-            System.out.println("Processing accession - " + accession);
             if (accession.contains(":")) {
                 String source = accession.substring(0, accession.lastIndexOf(":"));
 
@@ -376,6 +375,8 @@ public class OLSClient implements OntologyService {
     private OntologyTerm createOntologyTerm(String source, String accession, String name) {
         OntologyTerm term = new OntologyTerm(name, accession, null, getOntologySourceReferenceForOntology(source));
         term.addToComments("Service Provider", OntologyManager.OLS);
+        term.addToComments("Source", source);
+        term.addToComments("accession", accession);
         return term;
     }
 
