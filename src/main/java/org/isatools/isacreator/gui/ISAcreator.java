@@ -265,7 +265,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
+        setTitle("ISAcreator " + ISAcreatorProperties.getProperty("version"));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);

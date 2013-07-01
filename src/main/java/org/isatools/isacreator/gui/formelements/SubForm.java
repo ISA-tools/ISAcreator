@@ -175,6 +175,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     public void createGUI() {
+        ResourceInjector.get("gui-package.style").inject(true, this);
         initialisePanel();
         setupTableModel(initialNoFields);
 
@@ -208,8 +209,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     protected void initialisePanel() {
         this.setLayout(new BorderLayout());
         this.setBackground(UIHelper.BG_COLOR);
-
-        ResourceInjector.get().inject(this,true);
 
         if (createBorder) {
             setBorder(new TitledBorder(

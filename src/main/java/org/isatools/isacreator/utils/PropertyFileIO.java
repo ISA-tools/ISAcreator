@@ -162,7 +162,7 @@ public class PropertyFileIO {
     }
 
     enum IgnoredProperties {
-        APPVERSION("appTitleAndVersion"), STRICTVALIDATION("strictValidation.isOn");
+        APPVERSION("version"), STRICTVALIDATION("strictValidation.isOn");
         private String key;
 
         IgnoredProperties(String key) {
