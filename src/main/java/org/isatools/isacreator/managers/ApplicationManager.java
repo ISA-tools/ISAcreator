@@ -60,6 +60,7 @@ import java.util.Map;
 public class ApplicationManager {
 
 
+    private static boolean isaCreatorRunning = false;
     private static ISAcreator currentApplicationInstance;
     private static Map<ISASection, DataEntryForm> isaSectionToDataEntryForm = new HashMap<ISASection, DataEntryForm>();
     private static Object screenInView;
@@ -69,6 +70,15 @@ public class ApplicationManager {
     private static String currentlySelectedFieldName;
     private static String currentLocalISAtabFolder;
     private static String currentRemoteISAtabFolder;
+
+
+    public static void setIsaCreatorRunning(boolean b){
+        isaCreatorRunning = b;
+    }
+
+    public static boolean getIsaCreatorRunning(){
+        return isaCreatorRunning;
+    }
 
     public static String getCurrentLocalISAtabFolder(){
         return currentLocalISAtabFolder;

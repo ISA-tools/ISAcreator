@@ -3,6 +3,7 @@ package org.isatools.isacreator.io.importisa;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ public class ISAtabFilesImporterFromGUITest {
 
     @Before
     public void setUp() {
+        ISAcreatorGUIProperties.setProperties();
         baseDir = System.getProperty("basedir");
         isacreator = new ISAcreator(Mode.NORMAL_MODE, null, baseDir + ISAcreator.CONFIG_DIR);
         importer = new ISAtabFilesImporterFromGUI(isacreator);

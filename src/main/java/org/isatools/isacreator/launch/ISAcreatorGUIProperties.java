@@ -1,8 +1,16 @@
 package org.isatools.isacreator.launch;
 
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
+import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
+import org.isatools.isacreator.calendar.CalendarGUI;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.factorlevelentry.FactorLevelEntryGUI;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.formelements.assay.AssayInformationPanel;
+import org.isatools.isacreator.gui.modeselection.ModeSelector;
+import org.isatools.isacreator.ontologiser.ui.OntologyHelpPane;
+import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
+import org.isatools.isacreator.protocolselector.ProtocolSelectorListCellRenderer;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
@@ -67,6 +75,42 @@ public class ISAcreatorGUIProperties {
                 ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
         ResourceInjector.get("validateconvert-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/validator-package.properties"));
+
+        ResourceInjector.get("autofilteringlist-package.style").load(
+                FilterableListCellRenderer.class.getResource("/dependency-injections/autofilteringlist-package.properties"));
+
+        ResourceInjector.get("calendar-package.style").load(
+                CalendarGUI.class.getResource("/dependency-injections/calendar-package.properties"));
+
+        ResourceInjector.get("common-package.style").load(
+                ArchiveOutputWindow.class.getResource("/dependency-injections/common-package.properties"));
+
+        ResourceInjector.get("factorlevelentry-package.style").load(
+                FactorLevelEntryGUI.class.getResource("/dependency-injections/factorlevelentry-package.properties"));
+
+        ResourceInjector.get("gui-package.style").load(
+                AssayInformationPanel.class.getResource("/dependency-injections/gui-package.properties"));
+        ResourceInjector.get("gui-package.style").load(
+                ModeSelector.class.getResource("/dependency-injections/gui-package.properties"));
+
+        ResourceInjector.get("ontologiser-generator-package.style").load(
+                OntologyHelpPane.class.getResource("/dependency-injections/ontologiser-generator-package.properties"));
+        ResourceInjector.get("formatmappingutility-package.style").load(
+                OntologyHelpPane.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
+        ResourceInjector.get("common-package.style").load(
+                OntologyHelpPane.class.getResource("/dependency-injections/common-package.properties"));
+        ResourceInjector.get("ontologyselectiontool-package.style").load(
+                OntologyHelpPane.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
+
+        ResourceInjector.get("ontologyselectiontool-package.style").load(
+                OntologySelectionTool.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
+        ResourceInjector.get("common-package.style").load(
+                OntologySelectionTool.class.getResource("/dependency-injections/common-package.properties"));
+        ResourceInjector.get("effects-package.style").load(OntologySelectionTool.class.getResource
+                ("/dependency-injections/effects-package.properties"));
+
+        ResourceInjector.get("sample-selection-package.style").load(
+                ProtocolSelectorListCellRenderer.class.getResource("/dependency-injections/autofilterfield-package.properties"));
 
     }
 
