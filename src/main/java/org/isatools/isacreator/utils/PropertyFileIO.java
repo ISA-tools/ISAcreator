@@ -79,9 +79,10 @@ public class PropertyFileIO {
             File f = new File(SETTINGS_DIR + File.separator + propertiesFile);
             if (f.exists()) {
                 is = new FileInputStream(f);
+                loadDefaults(p);
                 p.load(is);
                 setProxy(p);
-                return overrideWithDefaultProperties(p);
+                return p;
             }
         } catch (IOException e) {
             log.error("problem loading settings properties: " + e.getMessage());
@@ -99,7 +100,7 @@ public class PropertyFileIO {
         return retrieveDefaultSettings();
     }
 
-    private static Properties overrideWithDefaultProperties(Properties userSettings) {
+    private static Properties loadDefaults(Properties userSettings) {
         for (String key : retrieveDefaultSettings().stringPropertyNames()) {
             userSettings.put(key, retrieveDefaultSettings().get(key).toString());
         }
