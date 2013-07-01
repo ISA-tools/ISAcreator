@@ -70,6 +70,7 @@
     <dependency package="javax.xml.transform"/>
     <dependency package="javax.xml.transform.sax"/>
     <dependency package="javax.xml.validation"/>
+    <dependency package="javax.xml.namespace"/>
 
     <dependency package="org.w3c.dom"/>
     <dependency package="org.w3c.dom.traversal"/>

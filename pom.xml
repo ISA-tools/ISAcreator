@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -548,6 +548,15 @@
             <id>toxbank</id>
             <properties>
                 <isacreator.alwaysShowInvestigation>true</isacreator.alwaysShowInvestigation>
+            </properties>
+
+        </profile>
+
+        <profile>
+            <id>build</id>
+            <properties>
+                <isacreator.version>${pom.version}</isacreator.version>
+                <isacreator.alwaysShowInvestigation>false</isacreator.alwaysShowInvestigation>
             </properties>
 
         </profile>

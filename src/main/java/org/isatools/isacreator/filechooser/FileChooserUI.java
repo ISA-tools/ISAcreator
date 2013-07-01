@@ -940,8 +940,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
     }
 
     public void windowDeactivated(WindowEvent event) {
-        System.out.println("Window deactivated");
-        firePropertyChange("noSelectedFiles", "", selectedFiles);
         listModel.removeAllElements();
         setVisible(false);
     }
@@ -958,7 +956,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             JPanel container = new JPanel();
             container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
             container.setBackground(UIHelper.BG_COLOR);
-
 
             JPanel headerPanel = new JPanel(new GridLayout(1, 1));
             headerPanel.setBackground(UIHelper.BG_COLOR);

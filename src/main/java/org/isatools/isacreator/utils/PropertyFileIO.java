@@ -79,10 +79,9 @@ public class PropertyFileIO {
             File f = new File(SETTINGS_DIR + File.separator + propertiesFile);
             if (f.exists()) {
                 is = new FileInputStream(f);
-                loadDefaults(p);
                 p.load(is);
                 setProxy(p);
-                return p;
+                return loadDefaults(p);
             }
         } catch (IOException e) {
             log.error("problem loading settings properties: " + e.getMessage());
@@ -102,7 +101,9 @@ public class PropertyFileIO {
 
     private static Properties loadDefaults(Properties userSettings) {
         for (String key : retrieveDefaultSettings().stringPropertyNames()) {
-            userSettings.put(key, retrieveDefaultSettings().get(key).toString());
+            if (!(key.equalsIgnoreCase(IgnoredProperties.APPVERSION.key) && key.equalsIgnoreCase(IgnoredProperties.STRICTVALIDATION.key))) {
+                userSettings.put(key, retrieveDefaultSettings().get(key).toString());
+            }
         }
 
         return userSettings;
@@ -157,6 +158,15 @@ public class PropertyFileIO {
             log.error(npe.getMessage());
             log.info("Setting the proxy information was problematic. Some values didn't exist.");
 
+        }
+    }
+
+    enum IgnoredProperties {
+        APPVERSION("appTitleAndVersion"), STRICTVALIDATION("strictValidation.isOn");
+        private String key;
+
+        IgnoredProperties(String key) {
+            this.key = key;
         }
     }
 }
