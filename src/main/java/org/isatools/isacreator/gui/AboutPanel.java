@@ -37,6 +37,9 @@
 
 package org.isatools.isacreator.gui;
 
+import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -65,5 +68,28 @@ public class AboutPanel extends JPanel {
 
     private void createGUI() {
         add(new JLabel(aboutImage));
+    }
+
+    @Override
+    public void paint(Graphics graphics) {
+        super.paint(graphics);
+
+        Graphics2D g2d = (Graphics2D) graphics;
+
+        g2d.setFont(UIHelper.VER_10_PLAIN);
+        g2d.setColor(UIHelper.BG_COLOR);
+        g2d.drawString("version ", 90, 120);
+        g2d.setColor(UIHelper.LIGHT_GREEN_COLOR);
+        g2d.drawString(ISAcreatorProperties.getProperty("version"), 130, 120);
+    }
+
+    public static void main(String[] args) {
+        ISAcreatorGUIProperties.setProperties();
+        JFrame container = new JFrame();
+        container.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        container.setLayout(new BorderLayout());
+        container.add(new AboutPanel());
+        container.pack();
+        container.setVisible(true);
     }
 }
