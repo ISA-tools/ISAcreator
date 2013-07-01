@@ -442,6 +442,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             public boolean isCellEditable(int row, int col) {
                 return (col != 0) && !uneditableRecords.contains(col);
             }
+
+            @Override
+            public void setValueAt(Object o, int i, int i2) {
+                super.setValueAt(o, i, i2);
+                ApplicationManager.setModified(true);
+            }
         };
     }
 

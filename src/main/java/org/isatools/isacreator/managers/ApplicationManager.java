@@ -70,19 +70,21 @@ public class ApplicationManager {
     private static String currentLocalISAtabFolder;
     private static String currentRemoteISAtabFolder;
 
-    public static String getCurrentLocalISAtabFolder(){
+    private static boolean isModified = false;
+
+    public static String getCurrentLocalISAtabFolder() {
         return currentLocalISAtabFolder;
     }
 
-    public static void setCurrentLocalISATABFolder(String folder){
+    public static void setCurrentLocalISATABFolder(String folder) {
         currentLocalISAtabFolder = folder;
     }
 
-    public static String getCurrentRemoteISAtabFolder(){
+    public static String getCurrentRemoteISAtabFolder() {
         return currentRemoteISAtabFolder;
     }
 
-    public static void setCurrentRemoteISATABFolder(String folder){
+    public static void setCurrentRemoteISATABFolder(String folder) {
         currentRemoteISAtabFolder = folder;
     }
 
@@ -158,13 +160,21 @@ public class ApplicationManager {
 
     }
 
+    public static void setModified(boolean modified) {
+        isModified = modified;
+    }
+
+    public static boolean isModified() {
+        return isModified;
+    }
+
     public static void resetForNextSession() {
         isaSectionToDataEntryForm.clear();
         screenInView = null;
     }
 
     public static void setScreenInView(Object objectInView) {
-       screenInView = objectInView;
+        screenInView = objectInView;
     }
 
     public static Object getScreenInView() {

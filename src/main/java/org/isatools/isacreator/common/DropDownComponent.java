@@ -129,10 +129,12 @@ public class DropDownComponent extends JComponent implements ActionListener,
             }
 
             public void mouseEntered(MouseEvent event) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 icon.setIcon(type == CALENDAR ? calendarIconOver : tableBrowserIconOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                setCursor(Cursor.getDefaultCursor());
                 icon.setIcon(type == CALENDAR ? calendarIcon : tableBrowserIcon);
             }
         });

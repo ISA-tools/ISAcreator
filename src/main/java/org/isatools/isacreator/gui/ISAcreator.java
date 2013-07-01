@@ -133,7 +133,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private ISAcreatorMenu isacreatorMenu = null;
 
     private JMenuBar menuBar;
-    private JMenu pluginMenu = new JMenu("plugins");;
+    private JMenu pluginMenu = new JMenu("plugins");
+    ;
 
     private Map<String, JMenu> menusRequiringStudyIds;
 
@@ -199,10 +200,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         if (!checkSystemRequirements()) {
             //this can't happen if this is used from java web start
             isacreatorMenu = new ISAcreatorMenu(ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
-        }else{
+        } else {
             int panelToShow = ISAcreatorMenu.SHOW_ERROR;
 
-            isacreatorMenu = new ISAcreatorMenu(username, password, configDir, isatabDir, authentication ,authMenuClassName, panelToShow, loggedIn, errors);
+            isacreatorMenu = new ISAcreatorMenu(username, password, configDir, isatabDir, authentication, authMenuClassName, panelToShow, loggedIn, errors);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -227,17 +228,17 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         } else {
             //mode, configuration, user, main
             int panelToShow;
-            if (!loggedIn && (username==null || password==null) || authMenuClassName!=null){
+            if (!loggedIn && (username == null || password == null) || authMenuClassName != null) {
                 panelToShow = ISAcreatorMenu.SHOW_LOGIN;
-            }else if (configDir==null){
+            } else if (configDir == null) {
                 panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
-            } else if (isatabDir==null && isatabFiles==null){
+            } else if (isatabDir == null && isatabFiles == null) {
                 panelToShow = ISAcreatorMenu.SHOW_MAIN;
-            }else{
+            } else {
                 panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
             }
 
-            isacreatorMenu = new ISAcreatorMenu(username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow, loggedIn);
+            isacreatorMenu = new ISAcreatorMenu(username, null, configDir, isatabDir, authentication, authMenuClassName, panelToShow, loggedIn);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -391,7 +392,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         fileMenu.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem save = new JMenuItem(new SaveAction(SaveAction.SAVE_ONLY,
-                "save", saveIcon, mode != Mode.GS ? "save ISA files": "save ISA files locally", KeyEvent.VK_S));
+                "save", saveIcon, mode != Mode.GS ? "save ISA files" : "save ISA files locally", KeyEvent.VK_S));
 
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 KeyEvent.CTRL_MASK));
@@ -403,12 +404,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         fileMenu.add(saveAs);
 
-        if(mode == null) {
+        if (mode == null) {
             mode = Mode.NORMAL_MODE;
         }
 
         //GenomeSpace related code
-        if (mode.equals(Mode.GS)){
+        if (mode.equals(Mode.GS)) {
 
             JMenuItem saveGS = new JMenuItem(new GSSaveAction(GSSaveAction.SAVE_ONLY,
                     "save in GenomeSpace", saveIcon, "save ISA files in GenomeSpace", KeyEvent.VK_I, this, isacreatorMenu));
@@ -802,8 +803,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
 
-
-
     public void setCurDataEntryPanel(DataEntryEnvironment dataEntryEnvironment) {
         curDataEntryEnvironment = dataEntryEnvironment;
         System.out.println("Data entry panel changed & initialised");
@@ -851,9 +850,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
 
-    /***
+    /**
      * Class implenting the action to be performed when leaving the application.
-     *
      */
     class LeaveAction extends AbstractAction implements PropertyChangeListener {
         static final int LOGOUT = 0;
@@ -886,11 +884,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
                     switch (type) {
                         case LOGOUT:
-                            leaveText = "Are you sure you want to logout without saving?";
+                            leaveText = "Are you sure you want to logout" + (ApplicationManager.isModified() ? " without saving?" : "?");
                             icon[0] = confirmLogout;
                             break;
                         case MAIN:
-                            leaveText = "Are you sure you want to go to the main menu without saving?";
+                            leaveText = "Are you sure you want to go to the main menu" + (ApplicationManager.isModified() ? " without saving?" : "?");
                             icon[0] = confirmMenu;
                             break;
                         case EXIT:
@@ -906,7 +904,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                     UIHelper.applyOptionPaneBackground(optionPane[0], UIHelper.BG_COLOR);
                     optionPane[0].addPropertyChangeListener(LeaveAction.this);
 
-                    showJDialogAsSheet(optionPane[0].createDialog(ISAcreator.this, "Confirm"));
+                    if (!ApplicationManager.isModified()) {
+                        ApplicationManager.resetForNextSession();
+                        closeWindowTimer.start();
+                    } else {
+                        showJDialogAsSheet(optionPane[0].createDialog(ISAcreator.this, "Confirm"));
+                    }
                 }
             });
         }
@@ -941,13 +944,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                         switch (type) {
                             case MAIN:
                                 saveProfilesAndGoToMain();
-
                                 break;
 
 
                             case EXIT:
                                 saveProfilesAndExit();
-
                                 break;
 
                             default:
@@ -960,9 +961,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
-    /***
+    /**
      * Class implementing saving ISAtab files in the different situations
-     *
      */
     class SaveAction extends AbstractAction {
         static final int SAVE_ONLY = 0;
@@ -1124,6 +1124,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     public void saveISATab() {
         outputISATABFromGUI.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
+        ApplicationManager.setModified(false);
     }
 
     class ScreenResizeAction extends AbstractAction {

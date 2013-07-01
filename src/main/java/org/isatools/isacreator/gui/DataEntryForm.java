@@ -58,11 +58,14 @@ import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEven
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -387,6 +390,8 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
                         invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
 
+                        ((JTextArea) textComponent).getDocument().addDocumentListener(new DocumentChangeListener());
+
                         IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
                         fieldPanel.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, (JTextArea) textComponent));
                     } else if (textComponent instanceof JTextComponent) {
@@ -400,9 +405,13 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                         } else {
                             fieldPanel.add(textComponent);
                         }
+                        ((JTextComponent) textComponent).getDocument().addDocumentListener(new DocumentChangeListener());
                     } else {
                         fieldPanel.add(textComponent);
                     }
+
+
+
 
                     fieldDefinitions.put(tmpFieldName, textComponent);
 
@@ -505,6 +514,24 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
             }
         }
         return representation.toString();
+    }
+
+    /**
+     * This listener sets an ISATab to modified if changes have been made to its contents.
+     */
+    class DocumentChangeListener implements DocumentListener {
+
+        public void insertUpdate(DocumentEvent documentEvent) {
+            ApplicationManager.setModified(true);
+        }
+
+        public void removeUpdate(DocumentEvent documentEvent) {
+            ApplicationManager.setModified(true);
+        }
+
+        public void changedUpdate(DocumentEvent documentEvent) {
+            ApplicationManager.setModified(true);
+        }
     }
 
 }
