@@ -4,7 +4,6 @@
 #
 
 #MVNOPTS="--offline"
-alias mvn='/Users/eamonnmaguire/dev/maven/bin/mvn'
 get_tag_data () {
     local tag=$1
     local xml_file=$2
