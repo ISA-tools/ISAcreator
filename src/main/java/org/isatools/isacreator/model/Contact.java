@@ -88,7 +88,7 @@ public abstract class Contact extends ISASection implements StudySubData, Serial
     public boolean equals(Object other) {
         if (other==null)
             return false;
-        if (!(other instanceof StudyContact))
+        if (!(other instanceof Contact))
             return false;
         Contact contact = (Contact) other;
 
@@ -98,7 +98,11 @@ public abstract class Contact extends ISASection implements StudySubData, Serial
 
     @Override
     public int hashCode(){
-        return this.getEmail().hashCode()+this.getFirstName().hashCode()+this.getMidInitial().hashCode()+this.getLastName().hashCode();
+        if (!getEmail().equals(""))
+            return getEmail().hashCode();
+        if (!getLastName().equals(""))
+            return this.getFirstName().hashCode()+this.getMidInitial().hashCode()+this.getLastName().hashCode();
+        return 0;
     }
 
 }
