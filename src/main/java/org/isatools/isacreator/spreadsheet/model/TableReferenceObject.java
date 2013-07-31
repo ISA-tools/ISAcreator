@@ -310,23 +310,45 @@ public class TableReferenceObject implements Serializable {
             }
 
             //processing header annotation
-            if (headers[i].contains(":")){
+            if (headers[i].contains(":")) {
 
                 String header = headers[i];
 
-                String prevVal = header.substring(header.indexOf('[')+1, header.indexOf("]"));
+                String prevVal = header.substring(header.indexOf('[') + 1, header.indexOf("]"));
 
-                String[] parts = prevVal.split("-");
+                String source = "";
+                String term = "";
+                String accession = "";
+                if (prevVal.contains("-")) {
+                    String[] parts = prevVal.split("-");
+                    source = parts[0];
+                    term = parts[1];
+                    accession = parts[2];
+                } else if (prevVal.contains(":")) {
+                    if (prevVal.startsWith("http://")) {
+                        // we have a PURL. So we'll use this directly
+                        if (prevVal.contains("(")) {
+                            String[] termAndSource = prevVal.split("\\(");
+                            term = termAndSource[0];
+                            accession = termAndSource[1].replace(")", "");
+                        }
+                    } else {
+                        String[] parts = prevVal.split(":");
+                        if (parts[0].contains("(")) {
+                            String[] termAndSource = parts[0].split("\\(");
+                            term = termAndSource[0];
+                            source = termAndSource[1];
+                        }
+                        accession = parts[1].replace(")", "");
+                    }
+                }
 
-                String source = parts[0];
-                String term = parts[1];
-                String accession = parts[2];
 
                 prevVal = source + ":" + term;
 
                 if (!referencedOntologyTerms.containsKey(prevVal)) {
-                       referencedOntologyTerms.put(prevVal,
-                                new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                    referencedOntologyTerms.put(prevVal,
+                            new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
                 }
 
             }
