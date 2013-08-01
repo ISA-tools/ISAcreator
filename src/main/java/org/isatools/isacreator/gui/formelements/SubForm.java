@@ -175,7 +175,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     public void createGUI() {
-        ResourceInjector.get("gui-package.style").inject(true, this);
+        ResourceInjector.get("gui-package.style").inject(true, new Object[] {this});
         initialisePanel();
         setupTableModel(initialNoFields);
 
