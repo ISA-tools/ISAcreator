@@ -248,7 +248,7 @@ public abstract class ISAtabImporter {
 
                     if (builtReference != null) {
                         study.setStudySamples(new Assay(study.getStudySampleFileIdentifier(), builtReference));
-                        OntologyManager.getOntologySelectionHistory().putAll(builtReference.getDefinedOntologies());
+                        OntologyManager.addToOntologySelectionHistory(builtReference.getReferencedOntologyTerms());
                     }
                 } catch (MalformedInvestigationException mie) {
                     messages.add(new ErrorMessage(ErrorLevel.ERROR, mie.getMessage()));
@@ -286,7 +286,7 @@ public abstract class ISAtabImporter {
                                 assay.getAssayReference(), assayTableReferenceObject);
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
-                            OntologyManager.getOntologySelectionHistory().putAll(builtReference.getDefinedOntologies());
+                            OntologyManager.getOntologySelectionHistory().putAll(builtReference.getReferencedOntologyTerms());
                         }
                     } catch (IOException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));

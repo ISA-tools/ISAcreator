@@ -102,16 +102,6 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private SingleSelectionListCellRenderer singleSelectionListCellRenderer = new SingleSelectionListCellRenderer();
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-        ResourceInjector.get("ontologyselectiontool-package.style").load(
-                OntologySelectionTool.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
-        ResourceInjector.get("common-package.style").load(
-                OntologySelectionTool.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("effects-package.style").load(OntologySelectionTool.class.getResource
-                ("/dependency-injections/effects-package.properties"));
-    }
-
     @InjectedResource
     private ImageIcon termDefinitionIcon, searchButton, searchButtonOver, filterInfo, browseOntologiesIcon,
             browseOntologiesIconOver, searchOntologiesIcon, searchOntologiesIconOver, leftFieldIcon, rightFieldIcon,
@@ -186,12 +176,16 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         ontologyViewContainer = new JPanel(new BorderLayout());
         ontologyViewContainer.setPreferredSize(new Dimension(400, 170));
 
-        progressIndicator = new InfiniteProgressPanel("searching for matching ontologies");
+        progressIndicator = new InfiniteProgressPanel("searching for matching terms in ontologies");
 
         createPanels();
         ((JComponent) getContentPane()).setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
 
         pack();
+    }
+
+    public void setSearchFieldText(String text) {
+        searchField.setText(text);
     }
 
     public void setMultipleTermsAllowed(boolean multipleTermsAllowed) {
@@ -203,32 +197,41 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         selectedTerm.setEditable(!forceOntologySelection);
     }
 
-    public void setRecommendedOntologies(Map<String, RecommendedOntology> recommendedOntologies) {
+    public void setRecommendedOntologies(final Map<String, RecommendedOntology> recommendedOntologies) {
 
-        final boolean resetView = !(this.recommendedOntologies == recommendedOntologies);
+        System.out.println("Resetting recommended ontologies, it is now: parameter="+recommendedOntologies + " field="+ this.recommendedOntologies);
 
-        this.recommendedOntologies = recommendedOntologies;
+        if (recommendedOntologies!=null){
 
-        SwingUtilities.invokeLater(new Runnable() {
+            final boolean resetView = !(this.recommendedOntologies == recommendedOntologies);
+
+            this.recommendedOntologies = recommendedOntologies;
+
+            SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 
                 boolean recommendedOntologiesAvailable = checkIfRecommendedOntologiesAreAvailable();
                 browseRecommendedOntologiesTab.setVisible(recommendedOntologiesAvailable);
 
                 if (resetView) {
+                    resetView();
                     // should also reset the recommended ontologies. Displaying recommended ontologies for another field
                     // if not a great idea.
                     if (recommendedOntologiesAvailable) {
                         ontologySearchResultsTree.setModel(new FilterableOntologyTreeModel<OntologySourceRefObject, List<OntologyTerm>>(new DefaultMutableTreeNode("results"), ontologySearchResultsTree));
+
+                        treeCreated = false;
                     }
                     searchSpan.toggleOptionEnabled(RECOMMENDED_ONTOLOGIES, recommendedOntologiesAvailable);
                     searchSpan.setSelectedItem(recommendedOntologiesAvailable ? RECOMMENDED_ONTOLOGIES : ALL_ONTOLOGIES);
                 }
-            }
-        });
+                }
+            });
+
+        }
     }
 
-    private void resetView(boolean resetButtons) {
+    private void resetView() {
 
         resetButtons();
         searchOntologiesTab.setIcon(searchOntologiesIconOver);

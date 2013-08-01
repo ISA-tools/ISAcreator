@@ -143,8 +143,24 @@ public class Assay extends ISASection implements StudySubData {
         return getValue(MEASUREMENT_ENDPOINT);
     }
 
+    public String getMeasurementEndpointTermAccession(){
+        return getValue(MEASUREMENT_ENDPOINT_TERM_ACCESSION);
+    }
+
+    public String getMeasurementEndpointTermSourceRef(){
+        return getValue(MEASUREMENT_ENDPOINT_TERM_SOURCE_REF);
+    }
+
     public String getTechnologyType() {
         return getValue(TECHNOLOGY_TYPE);
+    }
+
+    public String getTechnologyTypeTermAccession(){
+        return getValue(TECHNOLOGY_TYPE_TERM_ACCESSION);
+    }
+
+    public String getTechnologyTypeTermSourceRef(){
+        return getValue(TECHNOLOGY_TYPE_TERM_SOURCE_REF);
     }
 
     public TableReferenceObject getTableReferenceObject() {

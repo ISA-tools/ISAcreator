@@ -1,6 +1,5 @@
 package org.isatools.isacreator.api;
 
-import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.launch.ISAcreatorApplication;
 import org.junit.After;

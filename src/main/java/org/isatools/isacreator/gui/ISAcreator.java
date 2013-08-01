@@ -106,6 +106,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private static Logger log = Logger.getLogger(ISAcreator.class);
 
+    public static final String CONFIG_DIR = "/Configurations/isaconfig-default_v2013-02-13/";
+
     public static String DEFAULT_ISATAB_SAVE_DIRECTORY = "isatab files";
     public static String DEFAULT_CONFIGURATIONS_DIRECTORY = "Configurations";
     public static String DEFAULT_USER_PROFILE_DIRECTORY = "";
@@ -115,6 +117,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     @InjectedResource
     private Image isacreatorIcon;
+
     @InjectedResource
     private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, validateIcon, convertIcon,
             logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon, removeStudyIcon, fullScreenIcon,
@@ -131,7 +134,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private ISAcreatorMenu isacreatorMenu = null;
 
     private JMenuBar menuBar;
-    private JMenu pluginMenu;
+    private JMenu pluginMenu = new JMenu("plugins");
+
 
     private Map<String, JMenu> menusRequiringStudyIds;
 
@@ -145,54 +149,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private OntologyPluginTracker ontologyPluginTracker;
     private JMenuItem useShortNames;
 
-    static {
-        UIManager.put("Panel.background", UIHelper.BG_COLOR);
-        UIManager.put("ToolTip.foreground", Color.white);
-        UIManager.put("ToolTip.background", UIHelper.DARK_GREEN_COLOR);
-        UIManager.put("Tree.background", UIHelper.BG_COLOR);
-        UIManager.put("Menu.selectionBackground", UIHelper.LIGHT_GREEN_COLOR);
-        UIManager.put("MenuItem.selectionBackground", UIHelper.LIGHT_GREEN_COLOR);
-
-
-        UIManager.put("Container.background", UIHelper.BG_COLOR);
-        UIManager.put("PopupMenuUI", "org.isatools.isacreator.common.CustomPopupMenuUI");
-        UIManager.put("MenuItemUI", "org.isatools.isacreator.common.CustomMenuItemUI");
-        UIManager.put("MenuUI", "org.isatools.isacreator.common.CustomMenuUI");
-        UIManager.put("SeparatorUI", "org.isatools.isacreator.common.CustomSeparatorUI");
-        UIManager.put("MenuBarUI", "org.isatools.isacreator.common.CustomMenuBarUI");
-
-
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("archiveoutput-package.style").load(
-                ArchiveOutputWindow.class.getResource("/dependency-injections/archiveoutput-package.properties"));
-        ResourceInjector.get("gui-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/gui-package.properties"));
-        ResourceInjector.get("common-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("filechooser-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/filechooser-package.properties"));
-        ResourceInjector.get("longtexteditor-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/longtexteditor-package.properties"));
-        ResourceInjector.get("mergeutil-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/mergeutil-package.properties"));
-        ResourceInjector.get("publicationlocator-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/publicationlocator-package.properties"));
-        ResourceInjector.get("wizard-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/wizard-package.properties"));
-        ResourceInjector.get("formatmappingutility-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
-        ResourceInjector.get("arraydesignbrowser-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/arraydesignbrowser-package.properties"));
-        ResourceInjector.get("effects-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/effects-package.properties"));
-        ResourceInjector.get("assayselection-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/assayselection-package.properties"));
-        ResourceInjector.get("calendar-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
-        ResourceInjector.get("validateconvert-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/validator-package.properties"));
-    }
 
     public ISAcreator(Mode mode, BundleContext context) {
         this(mode, context, null);
@@ -245,10 +201,10 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         if (!checkSystemRequirements()) {
             //this can't happen if this is used from java web start
             isacreatorMenu = new ISAcreatorMenu(ISAcreatorMenu.SHOW_UNSUPPORTED_JAVA);
-        }else{
+        } else {
             int panelToShow = ISAcreatorMenu.SHOW_ERROR;
 
-            isacreatorMenu = new ISAcreatorMenu(username, password, configDir, isatabDir, authentication ,authMenuClassName, panelToShow, loggedIn, errors);
+            isacreatorMenu = new ISAcreatorMenu(username, password, configDir, isatabDir, authentication, authMenuClassName, panelToShow, loggedIn, errors);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -273,17 +229,17 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         } else {
             //mode, configuration, user, main
             int panelToShow;
-            if (!loggedIn && (username==null || password==null) || authMenuClassName!=null){
+            if (!loggedIn && (username == null || password == null) || authMenuClassName != null) {
                 panelToShow = ISAcreatorMenu.SHOW_LOGIN;
-            }else if (configDir==null){
+            } else if (configDir == null) {
                 panelToShow = ISAcreatorMenu.SHOW_IMPORT_CONFIGURATION;
-            } else if (isatabDir==null && isatabFiles==null){
+            } else if (isatabDir == null && isatabFiles == null) {
                 panelToShow = ISAcreatorMenu.SHOW_MAIN;
-            }else{
+            } else {
                 panelToShow = ISAcreatorMenu.SHOW_LOADED_FILES;
             }
 
-            isacreatorMenu = new ISAcreatorMenu(username, null, configDir, isatabDir, authentication,authMenuClassName, panelToShow, loggedIn);
+            isacreatorMenu = new ISAcreatorMenu(username, null, configDir, isatabDir, authentication, authMenuClassName, panelToShow, loggedIn);
         }
         setCurrentPage(isacreatorMenu);
         pack();
@@ -309,7 +265,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         setPreferredSize(new Dimension(APP_WIDTH, APP_HEIGHT));
         setIconImage(isacreatorIcon);
         setBackground(UIHelper.BG_COLOR);
-        setTitle(ISAcreatorProperties.getProperty("appTitleAndVersion"));
+        setTitle("ISAcreator " + ISAcreatorProperties.getProperty("version"));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setUndecorated(true);
         setResizable(true);
@@ -437,7 +393,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         fileMenu.addMouseListener(cleanUpDisplayedEditors);
 
         JMenuItem save = new JMenuItem(new SaveAction(SaveAction.SAVE_ONLY,
-                "save", saveIcon, mode != Mode.GS ? "save ISA files": "save ISA files locally", KeyEvent.VK_S));
+                "save", saveIcon, mode != Mode.GS ? "save ISA files" : "save ISA files locally", KeyEvent.VK_S));
 
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 KeyEvent.CTRL_MASK));
@@ -449,12 +405,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         fileMenu.add(saveAs);
 
-        if(mode == null) {
+        if (mode == null) {
             mode = Mode.NORMAL_MODE;
         }
 
         //GenomeSpace related code
-        if (mode.equals(Mode.GS)){
+        if (mode.equals(Mode.GS)) {
 
             JMenuItem saveGS = new JMenuItem(new GSSaveAction(GSSaveAction.SAVE_ONLY,
                     "save in GenomeSpace", saveIcon, "save ISA files in GenomeSpace", KeyEvent.VK_I, this, isacreatorMenu));
@@ -651,7 +607,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         menuBar.add(options);
 
-        pluginMenu = new JMenu("plugins");
+
         pluginMenu.setVisible(false);
         menuBar.add(pluginMenu);
 
@@ -848,8 +804,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
 
-
-
     public void setCurDataEntryPanel(DataEntryEnvironment dataEntryEnvironment) {
         curDataEntryEnvironment = dataEntryEnvironment;
         System.out.println("Data entry panel changed & initialised");
@@ -897,9 +851,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     }
 
 
-    /***
+    /**
      * Class implenting the action to be performed when leaving the application.
-     *
      */
     class LeaveAction extends AbstractAction implements PropertyChangeListener {
         static final int LOGOUT = 0;
@@ -932,11 +885,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
                     switch (type) {
                         case LOGOUT:
-                            leaveText = "Are you sure you want to logout without saving?";
+                            leaveText = "Are you sure you want to logout" + (ApplicationManager.isModified() ? " without saving?" : "?");
                             icon[0] = confirmLogout;
                             break;
                         case MAIN:
-                            leaveText = "Are you sure you want to go to the main menu without saving?";
+                            leaveText = "Are you sure you want to go to the main menu" + (ApplicationManager.isModified() ? " without saving?" : "?");
                             icon[0] = confirmMenu;
                             break;
                         case EXIT:
@@ -952,7 +905,12 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                     UIHelper.applyOptionPaneBackground(optionPane[0], UIHelper.BG_COLOR);
                     optionPane[0].addPropertyChangeListener(LeaveAction.this);
 
-                    showJDialogAsSheet(optionPane[0].createDialog(ISAcreator.this, "Confirm"));
+                    if (!ApplicationManager.isModified()) {
+                        ApplicationManager.resetForNextSession();
+                        closeWindowTimer.start();
+                    } else {
+                        showJDialogAsSheet(optionPane[0].createDialog(ISAcreator.this, "Confirm"));
+                    }
                 }
             });
         }
@@ -987,13 +945,11 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                         switch (type) {
                             case MAIN:
                                 saveProfilesAndGoToMain();
-
                                 break;
 
 
                             case EXIT:
                                 saveProfilesAndExit();
-
                                 break;
 
                             default:
@@ -1006,9 +962,8 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     }
 
-    /***
+    /**
      * Class implementing saving ISAtab files in the different situations
-     *
      */
     class SaveAction extends AbstractAction {
         static final int SAVE_ONLY = 0;
@@ -1170,6 +1125,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     public void saveISATab() {
         outputISATABFromGUI.saveISAFiles(false, getDataEntryEnvironment().getInvestigation());
+        ApplicationManager.setModified(false);
     }
 
     class ScreenResizeAction extends AbstractAction {

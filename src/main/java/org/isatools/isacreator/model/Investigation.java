@@ -175,8 +175,6 @@ public class Investigation extends ISASection {
                     return true;
                 }
             }
-        } else {
-            return true;
         }
         return false;
     }

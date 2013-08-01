@@ -44,10 +44,6 @@ import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
-import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-
-import java.util.List;
 
 /**
  * Created by ISA team

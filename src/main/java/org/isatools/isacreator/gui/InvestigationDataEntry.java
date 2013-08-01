@@ -158,8 +158,6 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         for (String contactField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION)) {
 
-            System.out.println("Creating field for " + contactField);
-
             if (!investigation.getReferenceObject().getFieldDefinition(contactField).isHidden()) {
                 SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
                 if (generatedField != null) {

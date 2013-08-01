@@ -190,6 +190,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         ApplicationManager.getCurrentApplicationInstance().setCurrentPage(ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment());
                         menu.resetViewAfterProgress();
 
+                        ApplicationManager.setModified(false);
+
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
 
                     } else if (successfulImport) {

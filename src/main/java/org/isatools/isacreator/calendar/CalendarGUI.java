@@ -60,12 +60,6 @@ public class CalendarGUI extends JFrame implements ActionListener {
     static final int WIDTH = 200;
     static final int HEIGHT = 230;
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-        ResourceInjector.get("calendar-package.style").load(
-                CalendarGUI.class.getResource("/dependency-injections/calendar-package.properties"));
-    }
-
     @InjectedResource
     private ImageIcon closeIcon, closeIconOver, okIcon, okIconOver;
 

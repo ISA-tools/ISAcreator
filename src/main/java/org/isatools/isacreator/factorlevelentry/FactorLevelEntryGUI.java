@@ -43,8 +43,6 @@ import org.isatools.isacreator.common.CustomSpreadsheetCellRenderer;
 import org.isatools.isacreator.common.CustomTableHeaderRenderer;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.Ontology;
-import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.SpreadsheetCellPoint;
 import org.isatools.isacreator.spreadsheet.SpreadsheetModel;
@@ -64,7 +62,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Vector;
@@ -85,13 +82,6 @@ public class FactorLevelEntryGUI extends JFrame {
 
     private JLabel status;
     private ExcelAdaptor ea;
-
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("factorlevelentry-package.style").load(
-                FactorLevelEntryGUI.class.getResource("/dependency-injections/factorlevelentry-package.properties"));
-    }
 
     @InjectedResource
     private ImageIcon headerImage, addRowIcon, addRowOverIcon, removeRowIcon, removeRowOverIcon;

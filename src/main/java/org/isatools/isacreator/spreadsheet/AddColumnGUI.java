@@ -91,6 +91,7 @@ public class AddColumnGUI extends JDialog {
     private JTextField stdTextField;
     private JTextField unitField;
     private JTextField varSelectOntologyField;
+    private OntologyTerm selectedOntologyTerm;
     private Spreadsheet st;
     private int type;
     private DropDownComponent dropdown;
@@ -240,15 +241,17 @@ public class AddColumnGUI extends JDialog {
         ontologySelectionTool.createGUI();
 
         dropdown = new DropDownComponent(field, ontologySelectionTool, DropDownComponent.ONTOLOGY);
+
         ontologySelectionTool.addPropertyChangeListener("selectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
                         dropdown.hidePopup(ontologySelectionTool);
+
                         // we need to get the selected terms, get the first object and modify the output so that it gives us something conforming to
                         // term (source:accession)
-                        OntologyTerm term = OntologyManager.getOntologySelectionHistory().get(evt.getNewValue().toString());
+                        OntologyTerm term = OntologyManager.getOntologyTerm(evt.getNewValue().toString());
+                        selectedOntologyTerm = term;
                         if (term != null) {
-
                             field.setText(isHeaderType ? getStringForHeaderFromOntologyTerm(term) : term.getUniqueId());
                         } else {
                             field.setText(evt.getNewValue().toString());
@@ -268,7 +271,7 @@ public class AddColumnGUI extends JDialog {
 
     private String getStringForHeaderFromOntologyTerm(OntologyTerm ontologyTerm) {
         // we just need the one term.
-        return ontologyTerm.getOntologyTermName() + "(" +  ontologyTerm.getOntologyTermAccession()  + ")";
+        return ontologyTerm.getOntologySource() +"-" + ontologyTerm.getOntologyTermName() + "-" +  ontologyTerm.getOntologyTermAccession();
     }
 
     /**
@@ -278,18 +281,18 @@ public class AddColumnGUI extends JDialog {
      * @return JPanel containing the label and the Ontology field.
      */
     private JPanel createStdOntologyField(String typeToAdd) {
-        JPanel olsFieldCont = new JPanel(new GridLayout(1, 2));
-        olsFieldCont.setBackground(UIHelper.BG_COLOR);
+        JPanel ontologyFieldCont = new JPanel(new GridLayout(1, 2));
+        ontologyFieldCont.setBackground(UIHelper.BG_COLOR);
 
         varSelectOntologyField = new RoundedJTextField(10);
 
         JLabel stdFieldLab = UIHelper.createLabel("select " + typeToAdd, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
 
-        olsFieldCont.add(stdFieldLab);
+        ontologyFieldCont.add(stdFieldLab);
 
-        olsFieldCont.add(createOntologyDropDown(varSelectOntologyField, false, false, null, true));
+        ontologyFieldCont.add(createOntologyDropDown(varSelectOntologyField, false, false, null, true));
 
-        return olsFieldCont;
+        return ontologyFieldCont;
     }
 
     /**
@@ -459,6 +462,8 @@ public class AddColumnGUI extends JDialog {
 
                         if (varSelectOntologyField != null) {
                             toAdd = varSelectOntologyField.getText();
+                            OntologyManager.addToUserHistory(selectedOntologyTerm);
+
                         } else {
                             if (optionList.getSelectedItem() != null) {
                                 toAdd = optionList.getSelectedItem()

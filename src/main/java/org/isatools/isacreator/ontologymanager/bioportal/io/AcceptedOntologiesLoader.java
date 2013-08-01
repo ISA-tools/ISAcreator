@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class AcceptedOntologiesLoader {
 
-    private static final String FILE = "/defaultConfigs/bioportal-accepted-ontologies.xml";
+    private static final String FILE = "/defaults/bioportal-accepted-ontologies.xml";
 
 
     public static void populateAcceptedOntologies(){

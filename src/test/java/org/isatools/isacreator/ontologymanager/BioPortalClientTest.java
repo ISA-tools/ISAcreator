@@ -239,7 +239,7 @@ public class BioPortalClientTest {
         System.out.println("URL for term "+termAccession+ " is "+ url );
     }
 
-    @Test
+    //@Test
     public void getTermIRITest2(){
         System.out.println("_____Testing getTermIRI()____");
 

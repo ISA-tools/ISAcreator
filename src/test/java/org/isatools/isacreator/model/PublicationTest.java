@@ -23,30 +23,34 @@ public class PublicationTest {
 
     @Test
     public void equality1Test(){
-        pub1 = new StudyPublication("17439666", "", "authors", "title", "", "", "");
-        pub2 = new StudyPublication("17439666", "","","", "", "","");
+        pub1 = new InvestigationPublication("17439666", "", "authors", "title", "", "", "");
+        pub2 = new StudyPublication("17439666", "","","title", "", "","");
         assert(pub1.equals(pub2));
+        assert(pub1.hashCode()==pub2.hashCode());
     }
 
     @Test
     public void equality2Test(){
-        pub1 = new StudyPublication("17439666", "doi:10.1186/jbiol54", "authors", "title", "", "", "");
+        pub1 = new InvestigationPublication("17439666", "doi:10.1186/jbiol54", "authors", "title", "", "", "");
         pub2 = new StudyPublication("17439666", "","","", "", "","");
-        assert(pub1.equals(pub2));
+        assert(!pub1.equals(pub2));
+        assert(pub1.hashCode()!=pub2.hashCode());
     }
 
     @Test
     public void equality3Test(){
-        pub1 = new StudyPublication("", "doi:10.1186/jbiol54", "authors", "title", "", "", "");
-        pub2 = new StudyPublication("17439666", "doi:10.1186/jbiol54","","", "", "","");
+        pub1 = new InvestigationPublication("", "doi:10.1186/jbiol54", "authors", "title", "", "", "");
+        pub2 = new StudyPublication("17439666", "doi:10.1186/jbiol54","","title", "", "","");
         assert(pub1.equals(pub2));
+        assert(pub1.hashCode()==pub2.hashCode());
     }
 
     @Test
     public void equality4Test(){
-        pub1 = new StudyPublication("", "doi:10.1186/jbiol54", "authors", "title", "", "", "");
+        pub1 = new InvestigationPublication("", "doi:10.1186/jbiol54", "authors", "title", "", "", "");
         pub2 = new StudyPublication("17439666", "","","", "", "","");
         assert(!pub1.equals(pub2));
+        assert(pub1.hashCode()!=pub2.hashCode());
     }
 
 }
