@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.7.0</version>
+    <version>1.7.2</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -80,9 +80,7 @@
                     <executable>apt</executable>
                     <fork>true</fork>
                     <debug>true</debug>
-                    <compilerArguments>
-                        <s>${project.build.directory}</s>
-                    </compilerArguments>
+
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
                 </configuration>
@@ -192,7 +190,9 @@
                     </execution>
 
                 </executions>
+
                 <dependencies>
+
                     <dependency>
                         <groupId>com.sun.xml.ws</groupId>
                         <artifactId>jaxws-tools</artifactId>
@@ -204,6 +204,7 @@
                             </exclusion>
                         </exclusions>
                     </dependency>
+
                     <dependency>
                         <groupId>org.jvnet.staxex</groupId>
                         <artifactId>stax-ex</artifactId>
@@ -215,6 +216,7 @@
                             </exclusion>
                         </exclusions>
                     </dependency>
+
                 </dependencies>
 
             </plugin>
@@ -230,6 +232,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
@@ -290,9 +293,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.prefuse</groupId>
+            <groupId>prefuse</groupId>
             <artifactId>prefuse</artifactId>
-            <version>20071021</version>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
@@ -404,35 +407,14 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
-            <version>1.8.0</version>
+            <version>4.2.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.isatools</groupId>
-            <artifactId>automacron</artifactId>
-            <version>0.1.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-httpclient</artifactId>
-                    <groupId>commons-httpclient</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.isatools</artifactId>
-                    <groupId>ISAcreator</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j</artifactId>
-            <version>1.8.M07</version>
-        </dependency>
 
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.ebi</groupId>
@@ -448,8 +430,6 @@
 
 
         <!-- Dependencies for GS code -->
-
-
         <dependency>
             <groupId>genomespace</groupId>
             <artifactId>cdk</artifactId>
@@ -569,6 +549,15 @@
             <id>toxbank</id>
             <properties>
                 <isacreator.alwaysShowInvestigation>true</isacreator.alwaysShowInvestigation>
+            </properties>
+
+        </profile>
+
+        <profile>
+            <id>build</id>
+            <properties>
+                <isacreator.version>${pom.version}</isacreator.version>
+                <isacreator.alwaysShowInvestigation>false</isacreator.alwaysShowInvestigation>
             </properties>
 
         </profile>

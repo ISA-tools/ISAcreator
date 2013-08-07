@@ -54,7 +54,7 @@ import java.util.Set;
  */
 public class InvestigationStructureLoader {
 
-    private static final String INVESTIGATION_STRUCTURE_FILE = "/defaultConfigs/investigationStructure.xml";
+    private static final String INVESTIGATION_STRUCTURE_FILE = "/defaults/investigationStructure.xml";
 
     private Map<InvestigationFileSection, InvestigationSection> investigationSections;
 

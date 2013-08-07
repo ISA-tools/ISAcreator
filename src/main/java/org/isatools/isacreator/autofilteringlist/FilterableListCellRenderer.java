@@ -62,13 +62,6 @@ public class FilterableListCellRenderer extends JComponent
     DefaultListCellRenderer listCellRenderer;
     JLabel image;
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-        ResourceInjector.get("autofilteringlist-package.style").load(
-                FilterableListCellRenderer.class.getResource("/dependency-injections/autofilteringlist-package.properties"));
-    }
-
-
     /**
      * CustomListCellRenderer Constructor
      */

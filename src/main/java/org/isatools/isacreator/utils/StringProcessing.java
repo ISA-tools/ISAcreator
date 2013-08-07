@@ -96,6 +96,11 @@ public class StringProcessing {
      */
     public static String cleanUpString(String toClean) {
         // replace " with nothing
+        if (toClean == null) {
+            toClean = "";
+            return toClean;
+        }
+
         toClean = toClean.replaceAll("\"", "");
 
         //replace one or more spaces with just one space
@@ -141,15 +146,15 @@ public class StringProcessing {
 
     private static String wordToTitleCase(String word) {
         String result = "";
-		for (int i = 0; i < word.length(); i++){
-			String next = word.substring(i, i + 1);
-			if (i == 0){
-				result += next.toUpperCase();
-			} else {
-				result += next;
-			}
-		}
-		return result;
+        for (int i = 0; i < word.length(); i++) {
+            String next = word.substring(i, i + 1);
+            if (i == 0) {
+                result += next.toUpperCase();
+            } else {
+                result += next;
+            }
+        }
+        return result;
     }
 
     public static boolean isURL(String toCheck) {

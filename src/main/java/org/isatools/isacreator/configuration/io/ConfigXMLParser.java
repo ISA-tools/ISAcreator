@@ -142,7 +142,7 @@ public class ConfigXMLParser {
             log.info("No Investigation definition file found in Configurations directory, will suggest to load default from Resources...");
 
             try {
-                IsatabConfigFileDocument investigationFiles = IsatabConfigFileDocument.Factory.parse(getClass().getResourceAsStream("/defaultConfigs/investigation.xml"));
+                IsatabConfigFileDocument investigationFiles = IsatabConfigFileDocument.Factory.parse(getClass().getResourceAsStream("/defaults/investigation.xml"));
                 definitions.add(investigationFiles.getIsatabConfigFile());
                 log.info("Default Investigation file xml file loaded into the tools");
             } catch (Exception e) {
@@ -236,7 +236,7 @@ public class ConfigXMLParser {
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
 
-                newField.setWizardTemplate(stdField.getGeneratedValueTemplate());
+                newField.setWizardTemplate(StringProcessing.cleanUpString(stdField.getGeneratedValueTemplate()));
 
                 if (stdField.getRecommendedOntologies() != null) {
                     processRecommendedOntologies(stdField, newField);
@@ -262,7 +262,7 @@ public class ConfigXMLParser {
                 }
 
                 if (stdField.getListValues() != null) {
-                    String values = stdField.getListValues();
+                    String values = StringProcessing.cleanUpString(stdField.getListValues());
 
                     if (values.contains(",")) {
                         String[] valueList = values.split(",");

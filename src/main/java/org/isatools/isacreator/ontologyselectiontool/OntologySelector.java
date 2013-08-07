@@ -50,4 +50,6 @@ public interface OntologySelector {
     void makeVisible();
 
     void loadRecommendedOntologiesIfAllowed();
+
+    void setSearchFieldText(String text);
 }

@@ -45,6 +45,7 @@ import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -873,6 +874,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
 
     public static void main(String[] args) {
+        ISAcreatorGUIProperties.setProperties();
         FileChooserUI fc = new FileChooserUI();
         fc.setVisible(true);
     }
@@ -940,8 +942,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
     }
 
     public void windowDeactivated(WindowEvent event) {
-        System.out.println("Window deactivated");
-        firePropertyChange("noSelectedFiles", "", selectedFiles);
         listModel.removeAllElements();
         setVisible(false);
     }
@@ -958,7 +958,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             JPanel container = new JPanel();
             container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
             container.setBackground(UIHelper.BG_COLOR);
-
 
             JPanel headerPanel = new JPanel(new GridLayout(1, 1));
             headerPanel.setBackground(UIHelper.BG_COLOR);

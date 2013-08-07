@@ -69,20 +69,6 @@ public class OntologiserUI extends JDialog {
     public static final int HELP = 1;
     public static final int VISUALISATION = 2;
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("ontologiser-generator-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/ontologiser-generator-package.properties"));
-        ResourceInjector.get("formatmappingutility-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
-        ResourceInjector.get("common-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("ontologyselectiontool-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
-
-    }
-
     private ImageIcon loadingIndicator =
             new ImageIcon(OntologiserUI.class.getResource("/images/ontologiser/working.gif"));
 

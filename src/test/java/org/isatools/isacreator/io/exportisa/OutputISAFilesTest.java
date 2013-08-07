@@ -1,6 +1,7 @@
 package org.isatools.isacreator.io.exportisa;
 
 import org.apache.log4j.Logger;
+import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.io.importisa.ISAtabFilesImporter;
 import org.isatools.isacreator.model.Investigation;
 import org.junit.After;
@@ -41,7 +42,7 @@ public class OutputISAFilesTest {
             }
         }
 
-        configDir = baseDir + "/Configurations/isaconfig-default_v2011-02-18/";
+        configDir = baseDir + ISAcreator.CONFIG_DIR;
 
         log.debug("configDir=" + configDir);
         importer = new ISAtabFilesImporter(configDir);

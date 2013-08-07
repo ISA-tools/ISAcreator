@@ -59,6 +59,9 @@ import java.util.*;
  * Provides a reference to the table to distinguish between fields,
  * field types, validation rules, whether or not they are required fields,
  * and whether or not they are editable/locked.
+ *
+ * @author <a href="mailto:eamonnmag@gmail.com">Eamonn Maguire</a>
+ * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
 public class TableReferenceObject implements Serializable {
     public static final String ROW_NO_TEXT = "Row No.";
@@ -75,7 +78,7 @@ public class TableReferenceObject implements Serializable {
     private Map<Integer, FieldObject> preprocessedTableFields;
     private Vector<String> preDefinedHeaders;
 
-    private Map<String, OntologyTerm> definedOntologies;
+    private Map<String, OntologyTerm> referencedOntologyTerms;
     private Map<String, FieldObject> missingFields;
 
     public TableReferenceObject(TableConfiguration tableConfig) {
@@ -83,7 +86,7 @@ public class TableReferenceObject implements Serializable {
         this.tableName = tableConfig.getTableName();
 
         missingFields = new HashMap<String, FieldObject>();
-        definedOntologies = new HashMap<String, OntologyTerm>();
+        referencedOntologyTerms = new HashMap<String, OntologyTerm>();
 
         referenceData = new ReferenceData();
 
@@ -263,7 +266,7 @@ public class TableReferenceObject implements Serializable {
 
     public TableReferenceObject(String tableName) {
         this.tableName = tableName;
-        definedOntologies = new HashMap<String, OntologyTerm>();
+        referencedOntologyTerms = new HashMap<String, OntologyTerm>();
     }
 
     public boolean acceptsFileLocations(String colName) {
@@ -306,7 +309,51 @@ public class TableReferenceObject implements Serializable {
                 s = "";
             }
 
+            //processing header annotation
+            if (headers[i].contains(":")) {
 
+                String header = headers[i];
+
+                String prevVal = header.substring(header.indexOf('[') + 1, header.indexOf("]"));
+
+                String source = "";
+                String term = "";
+                String accession = "";
+                if (prevVal.contains("-")) {
+                    String[] parts = prevVal.split("-");
+                    source = parts[0];
+                    term = parts[1];
+                    accession = parts[2];
+                } else if (prevVal.contains(":")) {
+                    if (prevVal.startsWith("http://")) {
+                        // we have a PURL. So we'll use this directly
+                        if (prevVal.contains("(")) {
+                            String[] termAndSource = prevVal.split("\\(");
+                            term = termAndSource[0];
+                            accession = termAndSource[1].replace(")", "");
+                        }
+                    } else {
+                        String[] parts = prevVal.split(":");
+                        if (parts[0].contains("(")) {
+                            String[] termAndSource = parts[0].split("\\(");
+                            term = termAndSource[0];
+                            source = termAndSource[1];
+                        }
+                        accession = parts[1].replace(")", "");
+                    }
+                }
+
+
+                prevVal = source + ":" + term;
+
+                if (!referencedOntologyTerms.containsKey(prevVal)) {
+                    referencedOntologyTerms.put(prevVal,
+                            new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                }
+
+            }
+
+            //process rows
             if (headers[i].toLowerCase().contains("source ref")) {
                 if (!s.equals("")) {
                     String prevVal = rowDataModified.get(prevValLoc);
@@ -324,8 +371,8 @@ public class TableReferenceObject implements Serializable {
                             String term = parts[1];
                             String accession = s.trim();
 
-                            if (!definedOntologies.containsKey(prevVal)) {
-                                definedOntologies.put(prevVal,
+                            if (!referencedOntologyTerms.containsKey(prevVal)) {
+                                referencedOntologyTerms.put(prevVal,
                                         new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
                             }
                         }
@@ -411,8 +458,8 @@ public class TableReferenceObject implements Serializable {
         return "";
     }
 
-    public Map<String, OntologyTerm> getDefinedOntologies() {
-        return definedOntologies;
+    public Map<String, OntologyTerm> getReferencedOntologyTerms() {
+        return referencedOntologyTerms;
     }
 
     public FieldObject getFieldByName(String name) {

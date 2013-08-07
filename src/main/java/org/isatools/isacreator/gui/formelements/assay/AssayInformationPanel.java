@@ -40,7 +40,6 @@ package org.isatools.isacreator.gui.formelements.assay;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.model.Assay;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -59,13 +58,6 @@ public class AssayInformationPanel extends JPanel {
     @InjectedResource
     private ImageIcon deleteIcon, deleteIconOver, viewAssayIcon, viewAssayIconOver, microarray, massNMR, sequencing,
             flowCytometry, gelElectrophoresis, histology, hematology, clinicalChemistry, generic;
-
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("gui-package.style").load(
-                AssayInformationPanel.class.getResource("/dependency-injections/gui-package.properties"));
-    }
 
     private Assay assay;
 

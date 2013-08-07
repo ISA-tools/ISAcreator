@@ -39,6 +39,7 @@ package org.isatools.isacreator.ontologyselectiontool;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.ontologymanager.OntologyService;
@@ -48,6 +49,10 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -96,7 +101,7 @@ public class ViewTermDefinitionUI extends JPanel {
         add(swappableContainer, BorderLayout.CENTER);
     }
 
-    private JPanel createOntologyInformationPane(OntologyBranch term) {
+    private JPanel createOntologyInformationPane(final OntologyBranch term) {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.WHITE);
         contentPane.setBorder(new EmptyBorder(2, 2, 2, 2));
@@ -110,6 +115,45 @@ public class ViewTermDefinitionUI extends JPanel {
         IAppWidgetFactory.makeIAppScrollPane(ontologyInfoScroller);
 
         contentPane.add(ontologyInfoScroller, BorderLayout.CENTER);
+
+        JLabel viewOntologyInBrowser = new JLabel("View in resource.");
+        viewOntologyInBrowser.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
+                try {
+                    System.out.println("Source: " + term.getComments().get("Source"));
+                    System.out.println("Accession: " + term.getComments().get("accession"));
+                    String serviceProvider = term.getComments().get("Service Provider");
+                    System.out.println("Service Provider: " + serviceProvider);
+                    String url = "";
+
+                    if (serviceProvider.equalsIgnoreCase("ols")) {
+                        url = "http://www.ebi.ac.uk/ontology-lookup/?termId=" + term.getComments().get("Source") + ":" + term.getComments().get("accession");
+                    } else if (serviceProvider.equalsIgnoreCase("bioportal")) {
+                        url = "http://bioportal.bioontology.org/ontologies/" + term.getComments().get("Source") + "/?p=terms&conceptid=" + term.getComments().get("accession");
+                    }
+
+                    System.out.println(url);
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception e) {
+                    System.err.println("Unable to open URL: " + e.getMessage());
+                }
+            }
+        });
+
+        UIHelper.renderComponent(viewOntologyInBrowser, UIHelper.VER_10_BOLD, new Color(28, 117, 188), false);
+        contentPane.add(viewOntologyInBrowser, BorderLayout.SOUTH);
 
         return contentPane;
     }
@@ -207,7 +251,9 @@ public class ViewTermDefinitionUI extends JPanel {
                     properties = term.getComments();
                     if (ontologyService != null) {
                         setCurrentPage(new JLabel(LOADING));
-
+                        if (!properties.containsKey("Source")) {
+                            properties.put("Source", searchOntology);
+                        }
                         properties.putAll(ontologyService.getTermMetadata(term.getBranchIdentifier(), searchOntology));
                     }
                     setCurrentPage(createOntologyInformationPane(term));

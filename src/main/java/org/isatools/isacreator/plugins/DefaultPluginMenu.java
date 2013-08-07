@@ -33,8 +33,6 @@ public class DefaultPluginMenu implements PluginMenu {
     }
 
     public JMenu removeMenu(JMenu menu) {
-
-
         if (context != null && !disposed) {
             try {
                 menuService = (PluginMenu) context.getService(sRef);

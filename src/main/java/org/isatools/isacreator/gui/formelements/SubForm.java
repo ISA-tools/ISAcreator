@@ -175,6 +175,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     public void createGUI() {
+        ResourceInjector.get("gui-package.style").inject(true, new Object[] {this});
         initialisePanel();
         setupTableModel(initialNoFields);
 
@@ -208,8 +209,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     protected void initialisePanel() {
         this.setLayout(new BorderLayout());
         this.setBackground(UIHelper.BG_COLOR);
-
-        ResourceInjector.get("gui-package.style").inject(true, this);
 
         if (createBorder) {
             setBorder(new TitledBorder(
@@ -441,6 +440,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             public boolean isCellEditable(int row, int col) {
                 return (col != 0) && !uneditableRecords.contains(col);
+            }
+
+            @Override
+            public void setValueAt(Object o, int i, int i2) {
+                super.setValueAt(o, i, i2);
+                ApplicationManager.setModified(true);
             }
         };
     }

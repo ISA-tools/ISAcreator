@@ -50,7 +50,6 @@ public class ClearFieldUtility extends JLabel {
     @InjectedResource
     private ImageIcon clearIcon, clearIconOver;
 
-
     public ClearFieldUtility(final JTextField toClear) {
 
         ResourceInjector.get("common-package.style").inject(this);

@@ -4,7 +4,6 @@
 #
 
 #MVNOPTS="--offline"
-
 get_tag_data () {
     local tag=$1
     local xml_file=$2
@@ -34,16 +33,16 @@ rm -rf src/main/resources/Configurations
 mkdir Configurations
 mkdir src/main/resources/Configurations
 cd Configurations
-wget https://github.com/downloads/ISA-tools/Configuration-Files/isaconfig-default_v2011-02-18.zip --no-check-certificate
-cp isaconfig-default_v2011-02-18.zip ../src/main/resources/Configurations/
-unzip isaconfig-default_v2011-02-18.zip
-rm isaconfig-default_v2011-02-18.zip
+wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/isaconfig-default_v2013-02-13.zip --no-check-certificate
+cp isaconfig-default_v2013-02-13.zip ../src/main/resources/Configurations/
+unzip isaconfig-default_v2013-02-13.zip
+rm isaconfig-default_v2013-02-13.zip
 cd ../
 
 ## keeping configurations in resources so that they are included in the jar
 cd src/main/resources/Configurations
-unzip isaconfig-default_v2011-02-18.zip
-rm isaconfig-default_v2011-02-18.zip
+unzip isaconfig-default_v2013-02-13.zip
+rm isaconfig-default_v2013-02-13.zip
 cd ../../../..
 
 mvn $MVNOPTS -Dmaven.test.skip=true clean assembly:assembly

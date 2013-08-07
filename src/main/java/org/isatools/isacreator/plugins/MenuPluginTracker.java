@@ -2,8 +2,6 @@ package org.isatools.isacreator.plugins;
 
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.plugins.host.service.PluginMenu;
-import org.isatools.isacreator.plugins.host.service.PluginOntologyCVSearch;
-import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -25,6 +23,7 @@ public class MenuPluginTracker extends ServiceTracker {
 
     public MenuPluginTracker(BundleContext context, ISAcreator isacreatorEnvironment) {
         super(context, PluginMenu.class.getName(), null);
+        System.out.println("Registered plugin with menu plugin tracker.");
         this.isacreatorEnvironment = isacreatorEnvironment;
     }
 
@@ -90,8 +89,9 @@ public class MenuPluginTracker extends ServiceTracker {
                 switch (action) {
                     case MODIFIED:
                         menu.removeMenu(isacreatorEnvironment.getPluginMenu());
-
                     case ADDED:
+                        System.out.println(menu);
+                        System.out.println(isacreatorEnvironment.getPluginMenu());
                         menu.addMenu(isacreatorEnvironment.getPluginMenu());
                         break;
 

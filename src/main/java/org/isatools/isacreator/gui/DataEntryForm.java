@@ -48,6 +48,9 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.filechooser.DirectoryFileList;
+import org.isatools.isacreator.filechooser.FileChooserFile;
+import org.isatools.isacreator.filechooser.FileChooserUI;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedCancelledEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
@@ -55,13 +58,18 @@ import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectedEven
 import org.isatools.isacreator.gui.listeners.propertychange.OntologySelectionCancelledEvent;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
 import org.isatools.isacreator.utils.StringProcessing;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -159,6 +167,37 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
         ontologySelectionTool.addPropertyChangeListener("noSelectedOntology", new OntologySelectionCancelledEvent(ontologySelectionTool, dropdown));
 
         return dropdown;
+    }
+
+    public JComponent createFileField(final JTextComponent field) {
+        final FileChooserUI fileChooserUI = new FileChooserUI();
+        final DropDownComponent dropdown = new DropDownComponent(field, fileChooserUI, DropDownComponent.FILE);
+
+        fileChooserUI.addPropertyChangeListener("selectedFiles", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                String contents = "";
+                int count = 0;
+
+                for (String file : fileChooserUI.getSelectedFiles()) {
+                    contents += file;
+                    if (count != fileChooserUI.getSelectedFiles().length - 1) {
+                        contents += ",";
+                    }
+                    count++;
+                }
+                field.setText(contents);
+                dropdown.hidePopup(fileChooserUI);
+            }
+        });
+
+        fileChooserUI.addPropertyChangeListener("noSelectedFiles", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                dropdown.hidePopup(fileChooserUI);
+            }
+        });
+
+        return dropdown;
+
     }
 
     protected JPanel createTextEditEnabledField(JTextComponent component) {
@@ -351,6 +390,8 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
                         invDescScroll.getViewport().setBackground(UIHelper.BG_COLOR);
 
+                        ((JTextArea) textComponent).getDocument().addDocumentListener(new DocumentChangeListener());
+
                         IAppWidgetFactory.makeIAppScrollPane(invDescScroll);
                         fieldPanel.add(UIHelper.createTextEditEnableJTextArea(invDescScroll, (JTextArea) textComponent));
                     } else if (textComponent instanceof JTextComponent) {
@@ -359,12 +400,18 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
                             fieldPanel.add(createOntologyDropDown(fieldName, (JTextComponent) textComponent, true, false, fieldDescriptor.getRecommmendedOntologySource()));
                         } else if (fieldDescriptor.getDatatype() == DataTypes.DATE) {
                             fieldPanel.add(createDateDropDown((JTextComponent) textComponent));
+                        } else if (fieldDescriptor.isAcceptsFileLocations()) {
+                            fieldPanel.add(createFileField((JTextComponent) textComponent));
                         } else {
                             fieldPanel.add(textComponent);
                         }
+                        ((JTextComponent) textComponent).getDocument().addDocumentListener(new DocumentChangeListener());
                     } else {
                         fieldPanel.add(textComponent);
                     }
+
+
+
 
                     fieldDefinitions.put(tmpFieldName, textComponent);
 
@@ -467,6 +514,24 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
             }
         }
         return representation.toString();
+    }
+
+    /**
+     * This listener sets an ISATab to modified if changes have been made to its contents.
+     */
+    class DocumentChangeListener implements DocumentListener {
+
+        public void insertUpdate(DocumentEvent documentEvent) {
+            ApplicationManager.setModified(true);
+        }
+
+        public void removeUpdate(DocumentEvent documentEvent) {
+            ApplicationManager.setModified(true);
+        }
+
+        public void changedUpdate(DocumentEvent documentEvent) {
+            ApplicationManager.setModified(true);
+        }
     }
 
 }

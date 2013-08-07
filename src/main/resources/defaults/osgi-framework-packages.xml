@@ -11,6 +11,7 @@
     <dependency package="org.isatools.isacreator.plugins.host.service"/>
     <dependency package="org.isatools.isacreator.configuration.io"/>
     <dependency package="org.isatools.isacreator.model"/>
+    <dependency package="org.isatools.isacreator.api.utils"/>
     <dependency package="org.isatools.isacreator.spreadsheet.model"/>
     <dependency package="org.isatools.isacreator.managers"/>
     <dependency package="org.isatools.isacreator.gui"/>
@@ -36,7 +37,16 @@
     <dependency package="org.isatools.isacreator.ontologyselectiontool"/>
     <dependency package="org.apache.commons.collections15"/>
     <dependency package="org.apache.commons.collections15.multimap"/>
-    
+    <dependency package="org.isatools.macros.plugin.workflowvisualization.graph"/>
+    <dependency package="org.apache.commons.collections15.set"/>
+    <dependency package="org.isatools.isacreator.visualization.tree"/>
+    <dependency package="org.isatools.isacreator.effects.borders"/>
+    <dependency package="org.isatools.errorreporter.model"/>
+    <dependency package="org.isatools.isacreator.autofilteringlist"/>
+    <dependency package="org.isatools.errorreporter.ui.utils"/>
+    <dependency package="org.apache.commons.collections15.map"/>
+    <dependency package="org.isatools.isacreator.common.CustomMenuItemUI"/>
+
     
     <!-- needed for JDK7 -->
     <dependency package="javax.swing"/>
@@ -60,6 +70,7 @@
     <dependency package="javax.xml.transform"/>
     <dependency package="javax.xml.transform.sax"/>
     <dependency package="javax.xml.validation"/>
+    <dependency package="javax.xml.namespace"/>
 
     <dependency package="org.w3c.dom"/>
     <dependency package="org.w3c.dom.traversal"/>

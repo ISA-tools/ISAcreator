@@ -56,7 +56,7 @@ public class ISAtabFilesImporterTest {
             }
         }
 
-    	configDir = baseDir + "/Configurations/isaconfig-default_v2011-02-18/";
+    	configDir = baseDir + "/Configurations/isaconfig-default_v2013-02-13/";
 
     	log.debug("configDir=" + configDir);
         importer = new ISAtabFilesImporter(configDir);

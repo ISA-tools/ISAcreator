@@ -16,14 +16,21 @@
 
 <a href="http://www.jetbrains.com/idea/" style="width:88px; height:31px;"><span style="margin: 0;padding: 0;position: absolute;top: -1px;left: 4px;font-size: 10px;cursor:pointer;"></span><img src="http://www.jetbrains.com/img/logos/recommend_idea1.gif" alt="The best Java IDE" border="0"/></a>
 
+### Running ISAcreator
+
+To run ISAcreator locally:
+1. Clone the code to your machine. You may clone from the primary repository at ISA-tools/ISAcreator, or from your own fork.
+2. Compile the code (`mvn assembly:assembly -Dmaven.test.skip=true -Pbuild`) - the build profile automatically sets some system variables like version etc. from information held within the pom.
+3. Run the code (`java -cp target/ISAcreator-1.7.1-jar-with-dependencies.jar org.isatools.isacreator.launch.ISAcreatorApplication`)
+
 ### Contributing
 
-You should read this article about Git Flow: <http://scottchacon.com/2011/08/31/github-flow.html>. It's a really useful tutorial on how to use Git for collaborative development.
+You should read this article about Github Flow: <http://scottchacon.com/2011/08/31/github-flow.html>. Although we don't strictly use Github flow, it's a really useful tutorial on how to use Git for collaborative development.
 
 1. Fork it.
 2. Clone your forked repository to your machine
-3. Create a branch (`git checkout -b myisacreator`)
-4. Make your changes
+3. Create a branch off of the development branch (`git checkout -b myisacreator`)
+4. Make and test your changes
 5. Run the tests (`mvn clean test`)
 6. Commit your changes (`git commit -am "Added something useful"`)
 7. Push to the branch (`git push origin myisacreator`)

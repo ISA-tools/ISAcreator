@@ -186,6 +186,7 @@ public class BioPortalClient implements OntologyService {
                 if (bpo.getOntologyPurl() == null ||
                         bpo.getOntologyPurl().trim().equals("")) {
                     bpo = performMetadataQuery(termAccession, ontologyVersion);
+
                     searchResults.put(ontologyVersion + "-" + termAccession, bpo);
                 } else {
                     return bpo;

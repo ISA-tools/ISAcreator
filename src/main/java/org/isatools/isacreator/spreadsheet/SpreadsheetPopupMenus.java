@@ -40,14 +40,11 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
-import org.isatools.isacreator.visualization.glyphbasedworkflow.GraphMLCreator;
-import org.isatools.isacreator.visualization.workflowvisualization.WorkflowVisualization;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -376,25 +373,6 @@ public class SpreadsheetPopupMenus {
             }
         });
 
-        JMenuItem viewWorkflowForAssays = new JMenuItem("View workflow for this assay");
-        viewWorkflowForAssays.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                GraphMLCreator graphMLCreator = new GraphMLCreator();
-                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true);
-                new WorkflowVisualization(graphMLFile).createGUI();
-            }
-        });
-
-        JMenuItem viewWorkflowForSelectedSamples = new JMenuItem("View workflow for selected samples");
-        viewWorkflowForSelectedSamples.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                GraphMLCreator graphMLCreator = new GraphMLCreator();
-                Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
-                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
-                new WorkflowVisualization(graphMLFile).createGUI();
-            }
-        });
-
         JMenuItem mapFilesToDirectory = new JMenuItem("Resolve file names");
         mapFilesToDirectory.setToolTipText("<html>" +
                 "<strong>resolve file names</strong>" +
@@ -458,11 +436,6 @@ public class SpreadsheetPopupMenus {
             popup.add(removeHighlight);
         }
 
-        if (isSpreadsheetSampleDefinitions()) {
-            popup.add(new JSeparator());
-            popup.add(viewWorkflowForAssays);
-            popup.add(viewWorkflowForSelectedSamples);
-        }
         popup.show(jc, x, y);
     }
 
@@ -697,16 +670,6 @@ public class SpreadsheetPopupMenus {
             }
         });
 
-        JMenuItem viewWorkflowForSelectedSamples = new JMenuItem("View workflow for selected samples");
-        viewWorkflowForSelectedSamples.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                GraphMLCreator graphMLCreator = new GraphMLCreator();
-                Set<String> selectedSamples = spreadsheet.getSpreadsheetFunctions().getValuesInSelectedRowsForColumn("Sample Name");
-                File graphMLFile = graphMLCreator.createGraphMLFileForExperiment(true, selectedSamples);
-                System.out.println("graph file is " + graphMLFile);
-                new WorkflowVisualization(graphMLFile).createGUI();
-            }
-        });
 
         popup.add(autoIncrementCells);
         popup.add(new JSeparator());
@@ -714,13 +677,9 @@ public class SpreadsheetPopupMenus {
         popup.add(new JSeparator());
         popup.add(copyData);
         popup.add(clearData);
-        if (isSpreadsheetSampleDefinitions()) {
-            popup.add(new JSeparator());
-            popup.add(viewWorkflowForSelectedSamples);
-        }
+
         popup.add(new JSeparator());
         popup.add(close);
-
 
 
         popup.show(jc, x, y);
