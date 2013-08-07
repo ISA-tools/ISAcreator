@@ -40,6 +40,10 @@
     </scm>
 
     <repositories>
+        <repository>
+            <id>oerc</id>
+            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases/</url>
+        </repository>
 
         <repository>
             <id>mvnrepository</id>
@@ -56,15 +60,6 @@
             <url>http://download.java.net/maven/2/</url>
         </repository>
 
-        <repository>
-            <id>oerc</id>
-            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases/</url>
-        </repository>
-
-        <repository>
-            <id>mvnsearch</id>
-            <url>http://www.mvnsearch.org/maven2/</url>
-        </repository>
 
     </repositories>
 
@@ -232,6 +227,12 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <!--<artifactSet>-->
+                                <!--<excludes>-->
+                                    <!--<exclude>org.apache.lucene:lucene-core</exclude>-->
+                                    <!--<exclude>lucene:*</exclude>-->
+                                <!--</excludes>-->
+                            <!--</artifactSet>-->
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
                                 <transformer
@@ -425,6 +426,12 @@
                     <groupId>uk.ac.ebi</groupId>
                     <artifactId>jutils</artifactId>
                 </exclusion>
+
+                <exclusion>
+                    <groupId>cpdetector</groupId>
+                    <artifactId>cpdetector</artifactId>
+                </exclusion>
+
             </exclusions>
         </dependency>
 
@@ -462,11 +469,6 @@
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-bundle</artifactId>
-            <version>1.11</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.zxing</groupId>
@@ -499,14 +501,6 @@
         <dependency>
             <groupId>genomespace</groupId>
             <artifactId>org.genomespace.jersey-apache-client</artifactId>
-            <version>1.11</version>
-            <scope>runtime</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
             <version>1.11</version>
             <scope>runtime</scope>
         </dependency>
