@@ -38,6 +38,8 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
+import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
+import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
@@ -64,6 +66,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -998,7 +1001,19 @@ public class SpreadsheetFunctions {
         }
 
         if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.LIST) {
-            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getTableReferenceObject().getListItems(columnName)));
+            if (columnName.equalsIgnoreCase("unit")) {
+                FieldObject unitField = spreadsheet.getTableReferenceObject().getNextUnitField(previousColumnName);
+                if (unitField != null) {
+                    System.out.println(Arrays.toString(unitField.getFieldList()));
+
+                    col.setCellEditor(new AutoFilterComboCellEditor(new AutoFilterCombo(
+                            unitField.getFieldList(), false)));
+                }
+            } else {
+                col.setCellEditor(new AutoFilterComboCellEditor(new AutoFilterCombo(
+                        spreadsheet.getTableReferenceObject().getListItems(columnName), false)));
+
+            }
             return;
         }
 
@@ -1257,11 +1272,11 @@ public class SpreadsheetFunctions {
         Set<String> values = new ListOrderedSet<String>();
         for (int columnIndex = 0; columnIndex < spreadsheet.getColumnCount(); columnIndex++) {
             String colName = spreadsheet.spreadsheetModel.getColumnName(columnIndex);
-            
-            if(colName.equals(columnName)) {
+
+            if (colName.equals(columnName)) {
 
                 // add all values for this column.
-                for(int row : selectedRows) {
+                for (int row : selectedRows) {
                     values.add(spreadsheet.spreadsheetModel.getValueAt(row, columnIndex).toString());
                 }
                 break;

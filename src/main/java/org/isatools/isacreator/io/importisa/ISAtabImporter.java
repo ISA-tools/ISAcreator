@@ -137,6 +137,7 @@ public abstract class ISAtabImporter {
                 InvestigationImport investigationFileImporter = new InvestigationImport();
                 Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
 
+
                 messages.addAll(investigationFileImporter.getMessages());
 
                 if (investigationFileImport.fst) {
@@ -251,10 +252,11 @@ public abstract class ISAtabImporter {
                         OntologyManager.addToOntologySelectionHistory(builtReference.getReferencedOntologyTerms());
                     }
                 } catch (MalformedInvestigationException mie) {
+                    mie.printStackTrace();
                     messages.add(new ErrorMessage(ErrorLevel.ERROR, mie.getMessage()));
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                     messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
 
                 } finally {

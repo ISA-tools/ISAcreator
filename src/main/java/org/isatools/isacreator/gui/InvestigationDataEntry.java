@@ -141,6 +141,7 @@ public class InvestigationDataEntry extends DataEntryForm {
         containerScroller.setBorder(null);
 
         IAppWidgetFactory.makeIAppScrollPane(containerScroller);
+        containerScroller.getVerticalScrollBar().setUnitIncrement(16);
 
         add(containerScroller);
     }

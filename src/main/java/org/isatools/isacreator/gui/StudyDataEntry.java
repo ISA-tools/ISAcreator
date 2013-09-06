@@ -70,7 +70,6 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 
-
 /**
  * StudyDataEntry class
  *
@@ -178,6 +177,7 @@ public class StudyDataEntry extends DataEntryForm {
         containerScroller.setBorder(null);
 
         IAppWidgetFactory.makeIAppScrollPane(containerScroller);
+        containerScroller.getVerticalScrollBar().setUnitIncrement(16);
 
         add(containerScroller);
     }

@@ -508,7 +508,6 @@ public class TableReferenceObject implements Serializable {
 
     public void setFieldListItems(String colName, String[] listItems) {
         FieldObject fo = fieldLookup.get(colName);
-
         if (fo != null) {
             fo.setFieldList(listItems);
         }

@@ -295,11 +295,24 @@ public class ConfigXMLParser {
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
-                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "", "",
+                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.resolveDataType(unitField.getDataType()), "", "",
                         unitField.getIsRequired(), false, false, false, unitField.getIsForcedOntology());
 
                 if (unitField.getRecommendedOntologies() != null) {
                     processRecommendedOntologies(unitField, newField);
+                }
+
+                if (unitField.getListValues() != null) {
+                    String values = StringProcessing.cleanUpString(unitField.getListValues());
+
+                    if (values.contains(",")) {
+                        String[] valueList = values.split(",");
+                        newField.setFieldList(valueList);
+                    } else {
+                        if(!values.isEmpty()) {
+                            newField.setFieldList(new String[]{values});
+                        }
+                    }
                 }
 
                 fields.add(newField);
