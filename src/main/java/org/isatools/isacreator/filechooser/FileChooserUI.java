@@ -635,7 +635,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         treeContainer.setBackground(UIHelper.BG_COLOR);
         treeContainer.setBorder(new TitledBorder(
                 UIHelper.GREEN_ROUNDED_BORDER,
-                "navigation", TitledBorder.DEFAULT_JUSTIFICATION,
+                "", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
