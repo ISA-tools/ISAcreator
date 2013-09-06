@@ -156,7 +156,7 @@ public class SpreadsheetImport {
                     // add a field accepting ontology terms
                     FieldObject newFo = startReference.getFieldByName(previousCharFactParam);
 
-                    if (newFo != null) {
+                    if (newFo == null) {
                         newFo = new FieldObject(count,
                                 previousCharFactParam, "", DataTypes.ONTOLOGY_TERM, "",
                                 false, false, false);

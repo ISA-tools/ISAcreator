@@ -39,6 +39,7 @@ package org.isatools.isacreator.filechooser;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.net.ftp.FTPFile;
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
@@ -645,9 +646,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
         final JLabel navToParentDir = new JLabel(upIcon);
         navToParentDir.setOpaque(false);
-        navToParentDir.addMouseListener(new MouseAdapter() {
+        navToParentDir.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 navToParentDir.setIcon(upIcon);
                 try {
                     updateTree(fileBrowser.getParentDirectory());
@@ -657,10 +659,12 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 navToParentDir.setIcon(upIconOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 navToParentDir.setIcon(upIcon);
             }
         });
@@ -670,9 +674,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
         final JLabel navToHomeDir = new JLabel(homeIcon);
         navToHomeDir.setOpaque(false);
-        navToHomeDir.addMouseListener(new MouseAdapter() {
+        navToHomeDir.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 navToHomeDir.setIcon(homeIcon);
                 try {
                     updateTree(fileBrowser.getHomeDirectory());
@@ -687,10 +692,12 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 navToHomeDir.setIcon(homeIconOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 navToHomeDir.setIcon(homeIcon);
             }
         });
@@ -711,10 +718,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         }
 
 
-        directoryTree.addMouseListener(new MouseAdapter() {
-
+        directoryTree.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 int selRow = directoryTree.getRowForLocation(event.getX(),
                         event.getY());
 

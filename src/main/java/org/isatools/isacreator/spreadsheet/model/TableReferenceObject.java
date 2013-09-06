@@ -536,21 +536,23 @@ public class TableReferenceObject implements Serializable {
         // go through fields, find the one in the parameter, and then try and find the next unit for that field.
         FieldObject field = fieldLookup.get(colName);
 
-        int proposedColNumber = field.getColNo() + 1;
+        if (field != null) {
+            int proposedColNumber = field.getColNo() + 1;
 
-        if (tableConfig == null) {
-            // for those tables built from their layout rather than directly from the tablerefenceobject
-            if (fieldIndexLookup.containsKey(proposedColNumber)) {
-                if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
-                    return fieldIndexLookup.get(proposedColNumber);
+            if (tableConfig == null) {
+                // for those tables built from their layout rather than directly from the tablerefenceobject
+                if (fieldIndexLookup.containsKey(proposedColNumber)) {
+                    if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
+                        return fieldIndexLookup.get(proposedColNumber);
+                    }
                 }
-            }
-        } else {
-            if (tableConfig.getFields().size() > proposedColNumber) {
-                FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
+            } else {
+                if (tableConfig.getFields().size() > proposedColNumber) {
+                    FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
 
-                if (candidateUnitField.getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
-                    return candidateUnitField;
+                    if (candidateUnitField.getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
+                        return candidateUnitField;
+                    }
                 }
             }
         }
