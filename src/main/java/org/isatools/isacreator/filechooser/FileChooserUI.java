@@ -46,6 +46,8 @@ import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.effects.components.RoundedJPasswordField;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -143,9 +145,9 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
     private JPanel createTopPanel() {
 
-        final JTextField uri = new JTextField(20);
-        final JTextField username = new JTextField(20);
-        final JPasswordField password = new JPasswordField(20);
+        final JTextField uri = new RoundedJTextField(20);
+        final JTextField username = new RoundedJTextField(20);
+        final JPasswordField password = new RoundedJPasswordField(20);
 
         final JPanel topContainer = new JPanel();
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.PAGE_AXIS));
@@ -256,6 +258,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         JLabel uriLab = UIHelper.createLabel("FTP URI: ", UIHelper.VER_10_BOLD, UIHelper.DARK_GREEN_COLOR);
         UIHelper.renderComponent(uri, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
+
         uriPanel.add(uriLab);
         uriPanel.add(uri);
 
@@ -291,10 +294,9 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         connectLab.setOpaque(false);
         connectLab.setToolTipText("<html><b>Connect</b><p>Connect to the FTP source defined!</p></html>");
 
-        connectLab.addMouseListener(new MouseAdapter() {
-
-
+        connectLab.addMouseListener(new CommonMouseAdapter() {
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 if (uri.getText() != null && !uri.getText().trim().equals("")) {
                     String user = (username.getText() != null) ? username.getText() : "";
                     String pass = (password.getPassword() != null) ? new String(password.getPassword()) : "";
@@ -317,9 +319,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         JLabel historyLab = new JLabel(viewHistoryIcon);
         historyLab.setOpaque(false);
         historyLab.setToolTipText("<html><b>Search previously connected to FTP locations</b><p>Connect to a previously defined FTP location</p></html>");
-        historyLab.addMouseListener(new MouseAdapter() {
+        historyLab.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 SelectFromFTPHistory selectFTP = new SelectFromFTPHistory();
                 selectFTP.addPropertyChangeListener("locationSelected", new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {
