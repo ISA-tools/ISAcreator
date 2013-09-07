@@ -295,7 +295,7 @@ public class ConfigXMLParser {
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
-                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.resolveDataType(unitField.getDataType()), "", "",
+                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.resolveDataType(unitField.getDataType()), unitField.getDefaultValue(), "",
                         unitField.getIsRequired(), false, false, false, unitField.getIsForcedOntology());
 
                 if (unitField.getRecommendedOntologies() != null) {

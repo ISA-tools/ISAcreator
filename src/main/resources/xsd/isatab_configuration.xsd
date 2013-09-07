@@ -69,6 +69,7 @@
             <element name="description" type="string" maxOccurs="1" minOccurs="1"/>
             <element name="list-values" type="string" maxOccurs="1" minOccurs="0"/>
             <element ref="cfg:recommended-ontologies" maxOccurs="1" minOccurs="0"/>
+            <element name="default-value" type="string" maxOccurs="1" minOccurs="0"/>
         </all>
         <attribute name="data-type" type="string"/>
         <attribute name="is-multiple-value" type="boolean"/>
