@@ -1,5 +1,7 @@
 package org.isatools.isacreator.configuration.io;
 
+import org.isatools.isatab.configurator.schema.UnitFieldType;
+import org.isatools.isatab.configurator.schema.impl.UnitFieldTypeImpl;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,6 +19,7 @@ public class ConfigurationLoadTest {
 
             File[] configurationFiles = configurationDirectory.listFiles();
 
+            assert configurationFiles != null;
             for(File file : configurationFiles) {
 
                 if(!file.isHidden() && !file.getName().startsWith(".")) {
@@ -24,7 +27,6 @@ public class ConfigurationLoadTest {
                     ConfigXMLParser parser = new ConfigXMLParser(ConfigurationLoadingSource.ISACREATOR, file.getAbsolutePath());
 
                     System.out.println("___loading configuration " + file.getName().toLowerCase());
-
                     parser.loadConfiguration();
 
                     assertTrue("Oh, the configuration size is 0!", parser.getTables().size() > 0);

@@ -41,11 +41,11 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.isatools.isacreator.configuration.*;
+import uk.ac.ebi.bii.isatabConfiguration.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
-import org.isatools.isatab.configurator.schema.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -164,7 +164,7 @@ public class ConfigXMLParser {
 
     private List<IsaTabConfigFileType> getTableDefinitions() throws XmlException, IOException {
         File dir = new File(configDir);
-        if (dir==null)
+        if (!dir.exists())
             return null;
         File[] configFiles = dir.listFiles();
 
@@ -295,7 +295,8 @@ public class ConfigXMLParser {
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
-                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.resolveDataType(unitField.getDataType()), unitField.getDefaultValue(), "",
+                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()),
+                        DataTypes.resolveDataType(unitField.getDataType()), unitField.getDefaultValue(), "",
                         unitField.getIsRequired(), false, false, false, unitField.getIsForcedOntology());
 
                 if (unitField.getRecommendedOntologies() != null) {

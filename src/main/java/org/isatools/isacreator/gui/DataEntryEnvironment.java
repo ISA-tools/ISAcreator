@@ -167,7 +167,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 JOptionPane optionPane = new JOptionPane(
                         "Problem occurred when attempting to add an Assay... " +
                                 "\n Please ensure assay names for a study are unique, \n and that you have entered text in the assay name field!",
-                        JOptionPane.OK_OPTION);
+                        JOptionPane.ERROR_MESSAGE);
                 optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                         getParentFrame().hideSheet();
@@ -180,7 +180,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             JOptionPane optionPane = new JOptionPane(
                     "An assay definition with the features you have selected doesn't exist... " +
                             "\n Please ensure that the assay definition you have entered is correct!",
-                    JOptionPane.OK_OPTION);
+                    JOptionPane.ERROR_MESSAGE);
             optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                     getParentFrame().hideSheet();
