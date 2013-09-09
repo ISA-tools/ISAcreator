@@ -1,5 +1,8 @@
 <xb:config  xmlns:xb="http://www.bea.com/2002/09/xbean/config">
 
+    <xb:namespace uri="http://www.ebi.ac.uk/bii/isatab_configuration#">
+        <xb:package>org.isatools.isatab.configurator.schema</xb:package>
+    </xb:namespace>
 
     <xb:namespace uri="http://www.ebi.ac.uk/bii/isacreator_mapping_configuration#">
         <xb:package>org.isatools.isacreator.mapping.schema</xb:package>

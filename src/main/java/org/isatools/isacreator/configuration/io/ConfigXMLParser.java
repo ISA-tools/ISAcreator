@@ -40,12 +40,13 @@ package org.isatools.isacreator.configuration.io;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+
 import org.isatools.isacreator.configuration.*;
-import uk.ac.ebi.bii.isatabConfiguration.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.StringProcessing;
+import org.isatools.isatab.configurator.schema.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +91,8 @@ public class ConfigXMLParser {
         try {
             definitions = getTableDefinitions();
 
-            // do check for presence of the Investigation file, if it is not there, this method will load in a default file as well
+            // do check for presence of the Investigation file, if it is not there,
+            // this method will load in a default file as well
             checkInvestigationFileDefinitionFound(definitions);
 
             for (IsaTabConfigFileType isa : definitions) {

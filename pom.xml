@@ -384,7 +384,7 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>ISAtabErrorReporter</artifactId>
-            <version>0.4</version>
+            <version>0.5</version>
         </dependency>
 
         <dependency>
@@ -430,6 +430,11 @@
                 <exclusion>
                     <groupId>cpdetector</groupId>
                     <artifactId>cpdetector</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.isatools</groupId>
+                    <artifactId>ISAtabErrorReporter</artifactId>
                 </exclusion>
 
             </exclusions>
