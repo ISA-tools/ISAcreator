@@ -270,8 +270,7 @@ public class AddColumnGUI extends JDialog {
     }
 
     private String getStringForHeaderFromOntologyTerm(OntologyTerm ontologyTerm) {
-        // we just need the one term.
-        return ontologyTerm.getOntologySource() +"-" + ontologyTerm.getOntologyTermName() + "-" +  ontologyTerm.getOntologyTermAccession();
+        return ontologyTerm.getUniqueId(); //OntologyTermUtils.ontologyTermToString(ontologyTerm);
     }
 
     /**

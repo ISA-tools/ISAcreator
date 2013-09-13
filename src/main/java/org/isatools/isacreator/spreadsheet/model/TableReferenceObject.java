@@ -49,6 +49,7 @@ import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.spreadsheet.StringValidation;
 import org.isatools.isacreator.spreadsheet.ValidationObject;
 
@@ -314,41 +315,12 @@ public class TableReferenceObject implements Serializable {
 
                 String header = headers[i];
 
-                String prevVal = header.substring(header.indexOf('[') + 1, header.indexOf("]"));
+                OntologyTerm ontologyTerm = OntologyTermUtils.stringToOntologyTerm(header);
 
-                String source = "";
-                String term = "";
-                String accession = "";
-                if (prevVal.contains("-")) {
-                    String[] parts = prevVal.split("-");
-                    source = parts[0];
-                    term = parts[1];
-                    accession = parts[2];
-                } else if (prevVal.contains(":")) {
-                    if (prevVal.startsWith("http://")) {
-                        // we have a PURL. So we'll use this directly
-                        if (prevVal.contains("(")) {
-                            String[] termAndSource = prevVal.split("\\(");
-                            term = termAndSource[0];
-                            accession = termAndSource[1].replace(")", "");
-                        }
-                    } else {
-                        String[] parts = prevVal.split(":");
-                        if (parts[0].contains("(")) {
-                            String[] termAndSource = parts[0].split("\\(");
-                            term = termAndSource[0];
-                            source = termAndSource[1];
-                        }
-                        accession = parts[1].replace(")", "");
-                    }
-                }
-
-
-                prevVal = source + ":" + term;
+                String prevVal = ontologyTerm.getUniqueId(); //the uniqueID is source + ":" + term
 
                 if (!referencedOntologyTerms.containsKey(prevVal)) {
-                    referencedOntologyTerms.put(prevVal,
-                            new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                    referencedOntologyTerms.put(prevVal, ontologyTerm);
                 }
 
             }
