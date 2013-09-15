@@ -74,11 +74,6 @@ import java.util.Map;
  */
 public class AddColumnGUI extends JDialog {
 
-    @InjectedResource
-    private ImageIcon addCharacteristicButton, addCharacteristicButtonOver, addFactorButton,
-            addFactorButtonOver, addParameterButton, addParameterButtonOver, addCommentButton, addCommentButtonOver,
-            closeButton, closeButtonOver;
-
     private final static String UNIT_ONTOLOGY = "UO";
 
     final static int ADD_FACTOR_COLUMN = 1;
@@ -103,7 +98,6 @@ public class AddColumnGUI extends JDialog {
     public AddColumnGUI(Spreadsheet st, int type) {
         this.type = type;
         this.st = st;
-        ResourceInjector.get("spreadsheet-package.style").inject(this);
     }
 
     /**

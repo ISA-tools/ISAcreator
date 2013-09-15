@@ -57,9 +57,6 @@ import java.awt.event.MouseEvent;
  */
 public class MultipleSortGUI extends JDialog implements ActionListener {
 
-    @InjectedResource
-    private ImageIcon sortButton, sortButtonOver, closeButton, closeButtonOver;
-
     private JCheckBox sort2Check = new JCheckBox("Sort on 2 columns?", false);
     private JComboBox sortOpt1;
     private JComboBox sortOpt1IsAscending;
@@ -69,8 +66,6 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
 
     public MultipleSortGUI(Spreadsheet st) {
         this.st = st;
-
-        ResourceInjector.get("spreadsheet-package.style").inject(this);
     }
 
     /**

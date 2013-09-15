@@ -60,14 +60,11 @@ import java.awt.event.MouseEvent;
  */
 public class AddMultipleRowsGUI extends JDialog {
 
-    @InjectedResource
-    private ImageIcon addRowButton, addRowButtonOver, closeButton, closeButtonOver;
     private JTextField numRowsTxt;
     private Spreadsheet st;
 
     public AddMultipleRowsGUI(Spreadsheet st) {
         this.st = st;
-        ResourceInjector.get("spreadsheet-package.style").inject(this);
     }
 
     private void addRows() {
