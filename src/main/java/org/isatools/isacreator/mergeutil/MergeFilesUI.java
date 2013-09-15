@@ -507,9 +507,10 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
         final MouseListener[] listeners = new MouseListener[2];
 
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 // go back to the create isatab menu
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -522,10 +523,12 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 backButton.setIcon(backOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 backButton.setIcon(back);
             }
         };
@@ -538,10 +541,10 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                super.mousePressed(event);
                 if (!invTitle.getText().trim().equals("")) {
                     invTitle.setBackground(UIHelper.BG_COLOR);
                     if (!invDescription.getText().trim()
@@ -577,10 +580,12 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 nextButton.setIcon(next);
             }
         };
@@ -700,17 +705,20 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
         final MouseListener[] listeners = new MouseListener[2];
 
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 backButton.setIcon(backOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 backButton.setIcon(back);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 // go back to define assay page.
                 // output files to default directory, and then in last page offer users ability to load the file straight away
                 HistoryComponent hc = previousPage.pop();
@@ -723,17 +731,20 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 nextButton.setIcon(next);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 // go back to define assay page.
                 previousPage.push(new HistoryComponent(finalPane, listeners));
                 setCurrentPage(showDonePage(inv1));
@@ -759,17 +770,20 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
         final MouseListener[] listeners = new MouseListener[2];
 
         backButton.setIcon(back);
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 backButton.setIcon(backOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 backButton.setIcon(back);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         HistoryComponent hc = previousPage.pop();
@@ -784,17 +798,20 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 nextButton.setIcon(next);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 // go back to define assay page.
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
