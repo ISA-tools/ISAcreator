@@ -289,7 +289,6 @@ public class SpreadsheetFunctions {
 
                                 if (oo != null) {
                                     termAccession = oo.getOntologyTermAccession();
-
                                 }
 
                                 if (val.contains(":")) {

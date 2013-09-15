@@ -550,7 +550,7 @@ public class Spreadsheet extends JComponent implements
 
 
     /**
-     * Create the Button panel - a panel which contains graphical representations of the options available
+     * Create the FlatButton panel - a panel which contains graphical representations of the options available
      * to the user when interacting with the software.
      */
     private void createButtonPanel() {

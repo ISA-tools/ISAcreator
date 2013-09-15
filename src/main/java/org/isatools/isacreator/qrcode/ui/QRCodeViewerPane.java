@@ -70,7 +70,7 @@ public class QRCodeViewerPane extends JPanel implements MouseListener {
     // will display a list with the generated codes.
 
     @InjectedResource
-    private ImageIcon leftFilter, rightFilter, separator;
+    private ImageIcon leftFilter, rightFilter;
 
 
     private FilterableJTree<String, QRCode> qrCodeTree;
@@ -99,7 +99,6 @@ public class QRCodeViewerPane extends JPanel implements MouseListener {
         treePanel.setBackground(UIHelper.BG_COLOR);
 
         treePanel.add(createTreePanel());
-        treePanel.add(UIHelper.wrapComponentInPanel(new JLabel(separator)));
 
         add(treePanel, BorderLayout.WEST);
         add(detailedView, BorderLayout.CENTER);

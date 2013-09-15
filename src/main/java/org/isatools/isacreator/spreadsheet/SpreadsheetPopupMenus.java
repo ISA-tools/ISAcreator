@@ -36,6 +36,7 @@
  */
 package org.isatools.isacreator.spreadsheet;
 
+import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
@@ -78,6 +79,13 @@ public class SpreadsheetPopupMenus {
         final JPopupMenu popup = new JPopupMenu("Utilities");
         popup.setLightWeightPopupEnabled(false);
         popup.setBackground(new Color(0, 104, 56, 50));
+
+        JMenuItem rename = new JMenuItem("Rename");
+        rename.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Hi!");
+            }
+        });
 
         JMenuItem undo = new JMenuItem("Undo");
         undo.addActionListener(new ActionListener() {
@@ -401,10 +409,16 @@ public class SpreadsheetPopupMenus {
         popup.add(undo);
         popup.add(redo);
         popup.add(new JSeparator());
+
+        if (SpreadsheetUtils.isFactorParameterOrCharacteristic(columnName)) {
+            popup.add(rename);
+        }
+        popup.add(new JSeparator());
+
         popup.add(addRow);
         popup.add(deleteRow);
-
         popup.add(new JSeparator());
+
         checkAndAddIfShouldAddColumn(columnName, popup, addColumn);
 
         if (spreadsheet.hiddenColumns.size() > 0) {

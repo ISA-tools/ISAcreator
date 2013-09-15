@@ -38,10 +38,7 @@
 package org.isatools.isacreator.mergeutil;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import org.isatools.isacreator.common.DropDownComponent;
-import org.isatools.isacreator.common.FileSelectionPanel;
-import org.isatools.isacreator.common.HistoryComponent;
-import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.*;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
@@ -172,17 +169,20 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
         final MouseListener[] listeners = new MouseListener[2];
 
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 backButton.setIcon(backOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 backButton.setIcon(back);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 backButton.setIcon(back);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -197,18 +197,21 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 nextButton.setIcon(next);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 nextButton.setIcon(next);
 
                 String isatab1Path = isatab1.getSelectedFilePath().trim();

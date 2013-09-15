@@ -37,8 +37,9 @@
 
 package org.isatools.isacreator.longtexteditor;
 
-import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.jdesktop.fuse.InjectedResource;
@@ -47,10 +48,7 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 
 /**
  * TextEditor widget to allow users to edit large bits of text in a light, convenient interface.
@@ -113,20 +111,11 @@ public class TextEditor extends JFrame implements WindowListener {
         JPanel buttonContainer = new JPanel(new BorderLayout());
         buttonContainer.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel ok = new JLabel(Globals.OK_ICON, JLabel.RIGHT);
-        ok.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton ok = new FlatButton(ButtonType.GREEN, "Confirm");
+        ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("enteredText", "OLD_VALUE", textEditor.getEnteredText());
                 setVisible(false);
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                ok.setIcon(Globals.OK_OVER_ICON);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                ok.setIcon(Globals.OK_ICON);
             }
         });
 

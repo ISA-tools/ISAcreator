@@ -39,6 +39,7 @@ package org.isatools.isacreator.wizard;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
@@ -526,10 +527,10 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         final JLayeredPane finalPane = getGeneralLayout(defineStudyHeader, breadcrumb2, studyRef, finalPanel, getHeight());
 
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                super.mousePressed(event);
                 if (!previousPage.isEmpty()) {
                     // remove the previously added study from the investigation
                     SwingUtilities.invokeLater(new Runnable() {
@@ -550,6 +551,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 if (numberOfStudies > 0) {
                     backButton.setIcon(wizardOver);
                 } else {
@@ -558,6 +560,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 if (numberOfStudies > 0) {
                     backButton.setIcon(wizard);
                 } else {
@@ -568,10 +571,10 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                 super.mousePressed(event);
                 Thread performStudyCreation = new Thread(new Runnable() {
                     public void run() {
                         studyBeingEdited = new Study(studyId.getText(),
@@ -601,10 +604,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 nextButton.setIcon(next);
             }
         };

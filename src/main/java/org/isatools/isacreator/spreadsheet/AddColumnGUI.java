@@ -41,6 +41,8 @@ package org.isatools.isacreator.spreadsheet;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.DropDownComponent;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.Ontology;
@@ -115,6 +117,7 @@ public class AddColumnGUI extends JDialog {
         containingPanel.setBackground(UIHelper.BG_COLOR);
 
         JPanel headerCont = new JPanel(new GridLayout(1, 1));
+        headerCont.setSize(new Dimension(300, 25));
         headerCont.setOpaque(false);
 
         Box container = Box.createVerticalBox();
@@ -128,10 +131,7 @@ public class AddColumnGUI extends JDialog {
                 terms[i] = factors.get(i).getFactorName();
             }
 
-            headerCont.add(new JLabel(
-                    new ImageIcon(getClass()
-                            .getResource("/images/spreadsheet/addFactorHeader.png")),
-                    JLabel.RIGHT));
+            headerCont.add(UIHelper.createLabel("Add Factor", UIHelper.VER_14_BOLD, UIHelper.DARK_GREEN_COLOR, JLabel.LEFT));
             container.add(headerCont);
             container.add(Box.createVerticalStrut(5));
             container.add(createDropDownField("factor", terms));
@@ -140,10 +140,7 @@ public class AddColumnGUI extends JDialog {
         }
 
         if (panelType == ADD_CHARACTERISTIC_COLUMN) {
-            headerCont.add(new JLabel(
-                    new ImageIcon(getClass()
-                            .getResource("/images/spreadsheet/addCharacteristicHeader.png")),
-                    JLabel.RIGHT));
+            headerCont.add(UIHelper.createLabel("Add Characteristic", UIHelper.VER_14_BOLD, UIHelper.DARK_GREEN_COLOR, JLabel.LEFT));
             container.add(headerCont);
             container.add(createStdOntologyField("characteristic"));
             container.add(Box.createVerticalStrut(5));
@@ -151,10 +148,7 @@ public class AddColumnGUI extends JDialog {
         }
 
         if (panelType == ADD_PARAMETER_COLUMN) {
-            headerCont.add(new JLabel(
-                    new ImageIcon(getClass()
-                            .getResource("/images/spreadsheet/addParameterHeader.png")),
-                    JLabel.RIGHT));
+            headerCont.add(UIHelper.createLabel("Add Parameter Value", UIHelper.VER_14_BOLD, UIHelper.DARK_GREEN_COLOR, JLabel.LEFT));
             container.add(headerCont);
             container.add(createStdOntologyField("parameter"));
             container.add(Box.createVerticalStrut(5));
@@ -162,10 +156,7 @@ public class AddColumnGUI extends JDialog {
         }
 
         if (panelType == ADD_COMMENT_COLUMN) {
-            headerCont.add(new JLabel(
-                    new ImageIcon(getClass()
-                            .getResource("/images/spreadsheet/addCommentHeader.png")),
-                    JLabel.RIGHT));
+            headerCont.add(UIHelper.createLabel("Add Comment", UIHelper.VER_14_BOLD, UIHelper.DARK_GREEN_COLOR, JLabel.LEFT));
             container.add(headerCont);
 
             JLabel lab = new JLabel("Enter comment qualifier");
@@ -363,39 +354,35 @@ public class AddColumnGUI extends JDialog {
         status = new JLabel("<html><b></b></html>");
         status.setForeground(UIHelper.RED_COLOR);
 
-        final ImageIcon typeText;
-        final ImageIcon[] typeHoverImage = new ImageIcon[1];
+        final String typeText;
 
         switch (type) {
             case ADD_CHARACTERISTIC_COLUMN:
-                typeText = addCharacteristicButton;
-                typeHoverImage[0] = addCharacteristicButtonOver;
+                typeText = "Add Characteristic";
                 break;
 
             case ADD_FACTOR_COLUMN:
-                typeText = addFactorButton;
-                typeHoverImage[0] = addFactorButtonOver;
+                typeText = "Add Factor";
                 break;
 
             case ADD_PARAMETER_COLUMN:
-                typeText = addParameterButton;
-                typeHoverImage[0] = addParameterButtonOver;
+                typeText = "Add Parameter";
                 break;
 
             case ADD_COMMENT_COLUMN:
-                typeText = addCommentButton;
-                typeHoverImage[0] = addCommentButtonOver;
+                typeText = "Add Comment";
                 break;
 
             default:
-                typeText = addCommentButton;
+                typeText = "Add Comment";
         }
 
-        final JLabel addColumn = new JLabel((typeText), JLabel.RIGHT);
+        final JButton addColumn = new FlatButton(ButtonType.GREEN, typeText);
 
-        addColumn.addMouseListener(new MouseAdapter() {
+        addColumn.addActionListener(new ActionListener() {
 
-            public void mousePressed(MouseEvent event) {
+            public void actionPerformed(ActionEvent actionEvent) {
+
                 String typeAsText;
 
                 switch (type) {
@@ -424,6 +411,7 @@ public class AddColumnGUI extends JDialog {
                 }
 
                 if (type == ADD_COMMENT_COLUMN && stdTextField != null) {
+
                     String toAdd = stdTextField.getText();
 
                     if (toAdd.equals("")) {
@@ -436,6 +424,7 @@ public class AddColumnGUI extends JDialog {
 
                     String colName = typeAsText + "[" + toAdd + "]";
 
+                    doAddColumn(typeAsText, toAdd, colName);
                     FieldObject newFieldObject = st.getTableReferenceObject().getFieldByName(colName);
                     if (newFieldObject == null) {
                         newFieldObject = new FieldObject(st.getColumnCount(),
@@ -497,40 +486,7 @@ public class AddColumnGUI extends JDialog {
 
                         String colName = typeAsText + "[" + toAdd + "]";
 
-                        if (!st.getSpreadsheetFunctions().checkColumnExists(colName)) {
-                            boolean useOntology = qualitativeOp.isSelected();
-                            DataTypes type = useOntology ? DataTypes.ONTOLOGY_TERM
-                                    : DataTypes.STRING;
-                            FieldObject charFo = new FieldObject(st.getColumnCount(),
-                                    colName, typeAsText + " value", type,
-                                    "", false, false, false);
-                            st.getSpreadsheetFunctions().addFieldToReferenceObject(charFo);
-
-                            if (!toAdd.equals("")) {
-                                st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, charFo.isRequired(), -1);
-                            }
-
-                            if (quantativeOp.isSelected()) {
-                                FieldObject unitFo = new FieldObject(st.getColumnCount(),
-                                        "Unit",
-                                        "Unit for definition of value",
-                                        DataTypes.ONTOLOGY_TERM, "", false, false,
-                                        false);
-                                st.getSpreadsheetFunctions().addFieldToReferenceObject(unitFo);
-                                st.getSpreadsheetFunctions().addColumnAfterPosition("Unit",
-                                        unitField.getText(), unitFo.isRequired(), -1);
-                            }
-
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    st.getParentFrame().hideSheet();
-                                }
-                            });
-                        } else {
-                            status.setText("<html><b>Duplicate " +
-                                    typeAsText + "</b></html>");
-                            status.setForeground(UIHelper.RED_COLOR);
-                        }
+                        doAddColumn(typeAsText, toAdd, colName);
                     } else {
                         status.setText(
                                 "<html><b>No factors available</b></html>");
@@ -539,34 +495,18 @@ public class AddColumnGUI extends JDialog {
                 }
             }
 
-            public void mouseEntered(MouseEvent event) {
-                addColumn.setIcon(typeHoverImage[0]);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                addColumn.setIcon(typeText);
-            }
         });
 
-        final JLabel close = new JLabel(closeButton,
-                JLabel.LEFT);
-        close.addMouseListener(new MouseAdapter() {
+        final JButton close = new FlatButton(ButtonType.RED, "Cancel");
+        close.addActionListener(new ActionListener() {
 
-            public void mousePressed(MouseEvent event) {
+            public void actionPerformed(ActionEvent event) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         st.getParentFrame().hideSheet();
                         ontologySelectionTool = null;
                     }
                 });
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                close.setIcon(closeButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                close.setIcon(closeButton);
             }
         });
 
@@ -575,6 +515,7 @@ public class AddColumnGUI extends JDialog {
         southPanel.setBackground(UIHelper.BG_COLOR);
 
         JPanel buttonCont = new JPanel(new BorderLayout());
+       buttonCont.setBorder(UIHelper.EMPTY_BORDER);
         buttonCont.setBackground(UIHelper.BG_COLOR);
 
         buttonCont.add(close, BorderLayout.WEST);
@@ -590,5 +531,42 @@ public class AddColumnGUI extends JDialog {
 
         add(southPanel, BorderLayout.SOUTH);
         pack();
+    }
+
+    private void doAddColumn(String typeAsText, String toAdd, String colName) {
+        if (!st.getSpreadsheetFunctions().checkColumnExists(colName)) {
+            boolean useOntology = qualitativeOp.isSelected();
+            DataTypes type = useOntology ? DataTypes.ONTOLOGY_TERM
+                    : DataTypes.STRING;
+            FieldObject charFo = new FieldObject(st.getColumnCount(),
+                    colName, typeAsText + " value", type,
+                    "", false, false, false);
+            st.getSpreadsheetFunctions().addFieldToReferenceObject(charFo);
+
+            if (!toAdd.equals("")) {
+                st.getSpreadsheetFunctions().addColumnAfterPosition(colName, null, charFo.isRequired(), -1);
+            }
+
+            if (quantativeOp.isSelected()) {
+                FieldObject unitFo = new FieldObject(st.getColumnCount(),
+                        "Unit",
+                        "Unit for definition of value",
+                        DataTypes.ONTOLOGY_TERM, "", false, false,
+                        false);
+                st.getSpreadsheetFunctions().addFieldToReferenceObject(unitFo);
+                st.getSpreadsheetFunctions().addColumnAfterPosition("Unit",
+                        unitField.getText(), unitFo.isRequired(), -1);
+            }
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    st.getParentFrame().hideSheet();
+                }
+            });
+        } else {
+            status.setText("<html><b>Duplicate " +
+                    typeAsText + "</b></html>");
+            status.setForeground(UIHelper.RED_COLOR);
+        }
     }
 }
