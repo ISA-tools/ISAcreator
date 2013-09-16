@@ -418,7 +418,6 @@ public class AddColumnGUI extends JDialog {
 
                     String colName = typeAsText + "[" + toAdd + "]";
 
-                    doAddColumn(typeAsText, toAdd, colName);
                     FieldObject newFieldObject = st.getTableReferenceObject().getFieldByName(colName);
                     if (newFieldObject == null) {
                         newFieldObject = new FieldObject(st.getColumnCount(),

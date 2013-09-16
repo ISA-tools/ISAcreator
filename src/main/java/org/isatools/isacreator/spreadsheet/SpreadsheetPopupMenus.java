@@ -84,7 +84,7 @@ public class SpreadsheetPopupMenus {
         rename.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 popup.setVisible(false);
-                spreadsheet.showRenameColumnsGUI(RenameColumnGUI.ADD_CHARACTERISTIC_COLUMN, spreadsheet.getTable().getColumn(columnName));
+                spreadsheet.showRenameColumnsGUI(spreadsheet.getTable().getColumn(columnName));
             }
         });
 
@@ -411,7 +411,7 @@ public class SpreadsheetPopupMenus {
         popup.add(redo);
         popup.add(new JSeparator());
 
-        if (SpreadsheetUtils.isFactorParameterOrCharacteristic(columnName)) {
+        if (SpreadsheetUtils.isCommentParameterOrCharacteristic(columnName)) {
             popup.add(rename);
         }
         popup.add(new JSeparator());

@@ -213,6 +213,7 @@ public class Spreadsheet extends JComponent implements
 
     /**
      * Spreadsheet Constructor.
+     *
      * @param spreadsheetTitle          - name to display on the spreadsheet...
      * @param assayDataEntryEnvironment - The assay data entry object :o)
      */
@@ -273,7 +274,7 @@ public class Spreadsheet extends JComponent implements
         Map<String, OntologyTerm> ontoHistory = OntologyManager.getOntologySelectionHistory();
 
         for (OntologyTerm oo : referencedOntologyTerms.values()) {
-                ontoHistory.put(oo.getUniqueId(), oo);
+            ontoHistory.put(oo.getUniqueId(), oo);
         }
     }
 
@@ -931,9 +932,9 @@ public class Spreadsheet extends JComponent implements
     /**
      * Helper method that adds a number of buttons to a panel.
      *
-     * @param container  - Container to add the components to
+     * @param container             - Container to add the components to
      * @param addSpaceOnLastElement - do you wish to add a space after the last component? If false, there will be no padding added after the last component.
-     * @param components - Components to add. Added in the order they are passed in to the method.
+     * @param components            - Components to add. Added in the order they are passed in to the method.
      */
     public void addComponentsToContainer(Container container, boolean addSpaceOnLastElement, JComponent... components) {
         int count = 0;
@@ -1467,37 +1468,23 @@ public class Spreadsheet extends JComponent implements
         });
     }
 
-    protected void showRenameColumnsGUI(final int toShow, final TableColumn column) {
+    protected void showRenameColumnsGUI(final TableColumn column) {
 
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                RenameColumnGUI goingToDisplay;
+                RenameColumnGUI goingToDisplay = null;
+                String toShow = column.getHeaderValue().toString().substring(0, column.getHeaderValue().toString().indexOf("["));
+                if (toShow.contains("Characteristics")) {
+                    goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                            AddColumnGUI.ADD_CHARACTERISTIC_COLUMN, column);
 
-                switch (toShow) {
-                    case AddColumnGUI.ADD_FACTOR_COLUMN:
-                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
-                                AddColumnGUI.ADD_FACTOR_COLUMN, column);
-                        break;
+                } else if (toShow.contains("Parameter Value")) {
+                    goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                            AddColumnGUI.ADD_PARAMETER_COLUMN, column);
 
-                    case AddColumnGUI.ADD_CHARACTERISTIC_COLUMN:
-                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
-                                AddColumnGUI.ADD_CHARACTERISTIC_COLUMN, column);
-                        break;
-
-                    case AddColumnGUI.ADD_PARAMETER_COLUMN:
-                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
-                                AddColumnGUI.ADD_PARAMETER_COLUMN, column);
-
-                        break;
-
-                    case AddColumnGUI.ADD_COMMENT_COLUMN:
-                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
-                                AddColumnGUI.ADD_COMMENT_COLUMN, column);
-
-                        break;
-
-                    default:
-                        goingToDisplay = null;
+                } else if (toShow.contains("Comment")) {
+                    goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                            AddColumnGUI.ADD_COMMENT_COLUMN, column);
                 }
 
                 if (goingToDisplay != null) {
