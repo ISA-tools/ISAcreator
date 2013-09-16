@@ -85,14 +85,14 @@ public class AddColumnGUI extends JDialog {
     private JLabel status;
     private JRadioButton qualitativeOp;
     private JRadioButton quantativeOp;
-    private JTextField stdTextField;
+    protected JTextField stdTextField;
     private JTextField unitField;
-    private JTextField varSelectOntologyField;
+    protected JTextField varSelectOntologyField;
     private OntologyTerm selectedOntologyTerm;
-    private Spreadsheet st;
-    private int type;
+    protected Spreadsheet st;
+    protected int type;
     private DropDownComponent dropdown;
-    private static OntologySelectionTool ontologySelectionTool;
+    protected static OntologySelectionTool ontologySelectionTool;
 
 
     public AddColumnGUI(Spreadsheet st, int type) {
@@ -179,7 +179,7 @@ public class AddColumnGUI extends JDialog {
      * @param data      - e.g. new String[]{"dose","compound"};
      * @return JPanel containing drop down field and its associated label.
      */
-    private JPanel createDropDownField(String typeToAdd, String[] data) {
+    JPanel createDropDownField(String typeToAdd, String[] data) {
         JPanel olsFieldCont = new JPanel(new GridLayout(1, 2));
         olsFieldCont.setBackground(UIHelper.BG_COLOR);
 
@@ -256,7 +256,7 @@ public class AddColumnGUI extends JDialog {
 
     private String getStringForHeaderFromOntologyTerm(OntologyTerm ontologyTerm) {
         // we just need the one term.
-        return ontologyTerm.getOntologySource() +"-" + ontologyTerm.getOntologyTermName() + "-" +  ontologyTerm.getOntologyTermAccession();
+        return ontologyTerm.getOntologySource() + "-" + ontologyTerm.getOntologyTermName() + "-" + ontologyTerm.getOntologyTermAccession();
     }
 
     /**
@@ -265,7 +265,7 @@ public class AddColumnGUI extends JDialog {
      * @param typeToAdd - Type of field to add, just for definition of label. e.g. characteristic, parameter.
      * @return JPanel containing the label and the Ontology field.
      */
-    private JPanel createStdOntologyField(String typeToAdd) {
+    JPanel createStdOntologyField(String typeToAdd) {
         JPanel ontologyFieldCont = new JPanel(new GridLayout(1, 2));
         ontologyFieldCont.setBackground(UIHelper.BG_COLOR);
 
@@ -286,7 +286,7 @@ public class AddColumnGUI extends JDialog {
      *
      * @return - JPanel containing the elements.
      */
-    private JPanel createUnitField() {
+    JPanel createUnitField() {
         JPanel unitContainer = new JPanel();
         unitContainer.setLayout(new BoxLayout(unitContainer, BoxLayout.PAGE_AXIS));
         unitContainer.setOpaque(false);
@@ -509,7 +509,7 @@ public class AddColumnGUI extends JDialog {
         southPanel.setBackground(UIHelper.BG_COLOR);
 
         JPanel buttonCont = new JPanel(new BorderLayout());
-       buttonCont.setBorder(UIHelper.EMPTY_BORDER);
+        buttonCont.setBorder(UIHelper.EMPTY_BORDER);
         buttonCont.setBackground(UIHelper.BG_COLOR);
 
         buttonCont.add(close, BorderLayout.WEST);

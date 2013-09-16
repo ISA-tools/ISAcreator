@@ -1467,6 +1467,48 @@ public class Spreadsheet extends JComponent implements
         });
     }
 
+    protected void showRenameColumnsGUI(final int toShow, final TableColumn column) {
+
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                RenameColumnGUI goingToDisplay;
+
+                switch (toShow) {
+                    case AddColumnGUI.ADD_FACTOR_COLUMN:
+                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_FACTOR_COLUMN, column);
+                        break;
+
+                    case AddColumnGUI.ADD_CHARACTERISTIC_COLUMN:
+                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_CHARACTERISTIC_COLUMN, column);
+                        break;
+
+                    case AddColumnGUI.ADD_PARAMETER_COLUMN:
+                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_PARAMETER_COLUMN, column);
+
+                        break;
+
+                    case AddColumnGUI.ADD_COMMENT_COLUMN:
+                        goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                                AddColumnGUI.ADD_COMMENT_COLUMN, column);
+
+                        break;
+
+                    default:
+                        goingToDisplay = null;
+                }
+
+                if (goingToDisplay != null) {
+                    goingToDisplay.createGUI();
+                    // do this to ensure that the gui is fully created before displaying it.
+                    parentFrame.showJDialogAsSheet(goingToDisplay);
+                }
+            }
+        });
+    }
+
     /**
      * Displays an error message when a user tries to delete more than one column at a time.
      */

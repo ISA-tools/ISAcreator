@@ -75,7 +75,7 @@ public class SpreadsheetPopupMenus {
      * @param y          vertical position for the location of the popup menu.
      * @param columnName -> name of column where the popup was called.
      */
-    public void popupMenu(JComponent jc, final int x, final int y, String columnName) {
+    public void popupMenu(JComponent jc, final int x, final int y, final String columnName) {
         final JPopupMenu popup = new JPopupMenu("Utilities");
         popup.setLightWeightPopupEnabled(false);
         popup.setBackground(new Color(0, 104, 56, 50));
@@ -83,7 +83,8 @@ public class SpreadsheetPopupMenus {
         JMenuItem rename = new JMenuItem("Rename");
         rename.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Hi!");
+                popup.setVisible(false);
+                spreadsheet.showRenameColumnsGUI(RenameColumnGUI.ADD_CHARACTERISTIC_COLUMN, spreadsheet.getTable().getColumn(columnName));
             }
         });
 

@@ -139,6 +139,7 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     }
 
     public void hideSheet() {
+
         if (sheetInView) {
             glass.removeMouseListener(this);
             glass.setOpaque(false);
