@@ -146,11 +146,17 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     @Override
     public String toString() {
-        return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
+        //return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
+        return getUniqueId();
     }
 
     /***
-     * TODO: Change this to return the PURL instead, if not null or empty
+     *
+     * This method returns the string used for visualising the ontology term in the interface.
+     *
+     * This is "<ontology source>:<ontology label>".
+     *
+     * For example "OBI:parallel group design".
      *
      * @return
      */

@@ -44,7 +44,6 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
@@ -66,7 +65,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -243,12 +241,18 @@ public class SpreadsheetFunctions {
             if (removeEmptyColumns && checkIsEmpty(tc) && !spreadsheet.getTableReferenceObject().isRequired(tc.getHeaderValue().toString())) {
                 emptyColumns.add(tc);
             } else {
-                if (col == 1) {
-                    ps.print("\"" + tc.getHeaderValue() + "\"");
-                } else {
-                    ps.print(separator + "\"" + tc.getHeaderValue() + "\"");
-                }
 
+                String toPrint = null;
+
+                String header = tc.getHeaderValue().toString();
+
+                toPrint = "\"" + header + "\"";
+
+                if (col == 1) {
+                    ps.print(toPrint);
+                } else {
+                    ps.print( separator + toPrint);
+                }
                 if (tc.getCellEditor() instanceof OntologyCellEditor ||
                         tc.getHeaderValue().toString().equalsIgnoreCase("unit")) {
                     ps.print(separator + "\"Term Source REF\"");
