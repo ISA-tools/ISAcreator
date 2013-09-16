@@ -115,7 +115,6 @@ public class SpreadsheetImport {
 
             System.out.println("Column header is " + columnHeader);
 
-
             if (expectedNextUnitLocation == positionInheaders) {
                 System.out.println("Expected a unit here, got a " + columnHeader);
                 if (fieldAsLowercase.contains("unit")) {

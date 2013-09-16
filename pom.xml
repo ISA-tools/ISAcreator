@@ -415,7 +415,7 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
-            <version>1.6.1</version>
+            <version>1.6.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.ebi</groupId>
@@ -510,6 +510,11 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+             <groupId>com.sun.jersey</groupId>
+             <artifactId>jersey-bundle</artifactId>
+             <version>1.11</version>
+        </dependency>
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
