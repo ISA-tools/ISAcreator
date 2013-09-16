@@ -294,6 +294,13 @@ public class TableReferenceObject implements Serializable {
         fieldIndexLookup.put(fo.getColNo(), fo);
     }
 
+    /**
+     *
+     * Adds the row data.
+     *
+     * @param headers free text or full annotated headers (e.g. Characteristics[<label>, <URI or term accession>, <ontology abbreviation>)
+     * @param rowData
+     */
     public void addRowData(String[] headers, String[] rowData) {
         if (referenceData == null) {
             referenceData = new ReferenceData();
@@ -319,7 +326,7 @@ public class TableReferenceObject implements Serializable {
 
                 String prevVal = ontologyTerm.getUniqueId(); //the uniqueID is source + ":" + term
 
-                if (!referencedOntologyTerms.containsKey(prevVal)) {
+                if (!prevVal.equals("") && !referencedOntologyTerms.containsKey(prevVal)) {
                     referencedOntologyTerms.put(prevVal, ontologyTerm);
                 }
 

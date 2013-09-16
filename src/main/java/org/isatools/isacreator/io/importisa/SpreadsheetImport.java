@@ -5,7 +5,6 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
-import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -112,16 +111,9 @@ public class SpreadsheetImport {
         for (String columnHeader : headers) {
             positionInheaders++;
 
-            if (columnHeader.contains(":")) {
-                columnHeader = OntologyTermUtils.fullAnnotatedHeaderToUniqueId(columnHeader);
-                headers[count] = columnHeader;
-            }
-
             String fieldAsLowercase = columnHeader.toLowerCase();
 
             System.out.println("Column header is " + columnHeader);
-
-
 
             if (expectedNextUnitLocation == positionInheaders) {
                 System.out.println("Expected a unit here, got a " + columnHeader);

@@ -1,9 +1,11 @@
 package org.isatools.isacreator.ontologymanager.utils;
 
 import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -59,7 +61,7 @@ public class OntologyTermUtils {
 
            ontologyTerm = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
 
-       } else if (prevVal.contains(":")) {
+       } else if (prevVal.contains(":")) {       //this is the part for the currently accepted syntax
 
            //this should be the currently accepted string
            //such as "Characteristics[dose,efo:EFO_0000428,EFO]" or "Characteristics[dose,http://www.ebi.ac.uk/efo/EFO_0000428,EFO]"
@@ -69,10 +71,12 @@ public class OntologyTermUtils {
                accession = parts[1];
                source = parts[2];
 
+               OntologySourceRefObject ontologySource = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
+
                if (accession.contains("http://"))
-                   ontologyTerm = new OntologyTerm(term, null, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                   ontologyTerm = new OntologyTerm(term, null, accession, ontologySource);
                else
-                   ontologyTerm = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                   ontologyTerm = new OntologyTerm(term, accession, null, ontologySource);
 
            }else if (prevVal.startsWith("http://")) {
                // we have a PURL. So we'll use this directly
@@ -140,10 +144,20 @@ public class OntologyTermUtils {
      */
     public static String fullAnnotatedHeaderToUniqueId(String fullAnnotatedHeader){
         OntologyTerm ontologyTerm = stringToOntologyTerm(fullAnnotatedHeader);
-        String headerName = fullAnnotatedHeader.substring(0,fullAnnotatedHeader.indexOf('['));
 
-        if (ontologyTerm != null)
-           return headerName +"["+ ontologyTerm.getUniqueId() + "]";
+        String headerName = fullAnnotatedHeader.substring(0,fullAnnotatedHeader.indexOf('['));
+        String uniqueId = null;
+        if (ontologyTerm != null) {
+            uniqueId = headerName +"["+ ontologyTerm.getUniqueId() + "]";
+
+            Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
+            if (history.get(ontologyTerm.getUniqueId())==null) {
+                Map<String, OntologyTerm> map = new HashMap<String, OntologyTerm>();
+                map.put(uniqueId, ontologyTerm);
+                OntologyManager.addToOntologySelectionHistory(map);
+            }
+            return uniqueId;
+        }
 
         return null;
     }

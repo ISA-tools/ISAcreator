@@ -46,7 +46,6 @@ import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
@@ -247,17 +246,13 @@ public class SpreadsheetFunctions {
 
                 String header = tc.getHeaderValue().toString();
 
-                if (header.contains(":"))
-                       toPrint = "\"" + OntologyTermUtils.headerToString(header) + "\"";
-                    else
-                       toPrint = "\"" + header + "\"";
+                toPrint = "\"" + header + "\"";
 
                 if (col == 1) {
                     ps.print(toPrint);
                 } else {
                     ps.print( separator + toPrint);
                 }
-
                 if (tc.getCellEditor() instanceof OntologyCellEditor ||
                         tc.getHeaderValue().toString().equalsIgnoreCase("unit")) {
                     ps.print(separator + "\"Term Source REF\"");

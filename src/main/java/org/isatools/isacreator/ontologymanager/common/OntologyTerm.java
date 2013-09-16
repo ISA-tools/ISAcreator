@@ -146,7 +146,8 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     @Override
     public String toString() {
-        return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
+        //return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
+        return getUniqueId();
     }
 
     /***
