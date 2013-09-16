@@ -212,10 +212,20 @@ public class InvestigationImport {
     }
 
     private List<String[]> loadFile(File investigationFile) throws IOException {
-
+        List<String[]> fileContents = new ArrayList<String[]>();
         if (investigationFile.exists()) {
             CSVReader csvReader = new CSVReader(new FileReader(investigationFile), TAB_DELIM);
-            return csvReader.readAll();
+
+            String[] line = null;
+            while((line = csvReader.readNext()) != null) {
+                if(line.length > 0) {
+                    if(!line[0].startsWith("#")) {
+                        fileContents.add(line);
+                    }
+                }
+            }
+
+            return fileContents;
         } else {
             throw new FileNotFoundException("The specified file " + investigationFile.getName() + "does not exist in " + investigationFile.getAbsolutePath());
         }
