@@ -40,6 +40,8 @@ package org.isatools.isacreator.gui.menu;
 import org.isatools.isacreator.api.CreateProfile;
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
 import org.jdesktop.fuse.InjectedResource;
@@ -47,6 +49,7 @@ import org.jdesktop.fuse.InjectedResource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -61,10 +64,8 @@ import java.awt.event.MouseEvent;
 
 
 public class CreateProfileMenu extends UserCreationMenu {
-    @InjectedResource
-    private ImageIcon createProfileButton, createProfileButtonOver, backButtonSml, backButtonSmlOver;
 
-    private JLabel createProfile, backButton;
+    private JButton createProfile, backButton;
 
     private JTextField firstnameVal;
     private JTextField institutionVal;
@@ -131,46 +132,20 @@ public class CreateProfileMenu extends UserCreationMenu {
         buttonContainer.add(back, BorderLayout.WEST);
 
 
-        createProfile = new JLabel(createProfileButton,
-                JLabel.RIGHT);
-        createProfile.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
+        createProfile = new FlatButton(ButtonType.GREEN, "Save");
+        createProfile.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 createProfile();
             }
-
-            public void mouseEntered(MouseEvent event) {
-                createProfile.setIcon(createProfileButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
-            }
         });
 
-        backButton = new JLabel(backButtonSml, JLabel.LEFT);
-        backButton.addMouseListener(new CommonMouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                super.mouseEntered(mouseEvent);
-                backButton.setIcon(backButtonSmlOver);
-            }
 
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                super.mouseExited(mouseEvent);
-                backButton.setIcon(backButtonSml);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                super.mousePressed(mouseEvent);
+        backButton = new FlatButton(ButtonType.GREY, "Back", UIHelper.GREY_COLOR);
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 menu.changeView(menu.getAuthenticationGUI());
-                backButton.setIcon(backButtonSml);
             }
         });
-
 
 
         buttonContainer.add(backButton, BorderLayout.WEST);

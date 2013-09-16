@@ -41,8 +41,9 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
-import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.common.filterableTree.FilterableJTree;
 import org.isatools.isacreator.common.filterableTree.TreeFilterModel;
 import org.isatools.isacreator.configuration.OntologyBranch;
@@ -127,7 +128,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     private WSOntologyTreeCreator wsOntologyTreeCreator;
 
     private JPanel ontologyViewContainer, searchUIContainer, browseUIContainer, historyUIContainer;
-    private JLabel searchOntologiesTab, browseRecommendedOntologiesTab, viewHistoryTab, searchOntologiesButton, confirmOkButton;
+    private JLabel searchOntologiesTab, browseRecommendedOntologiesTab, viewHistoryTab, searchOntologiesButton;
+
+    private JButton confirmOkButton;
 
     private OptionGroup<String> searchSpan;
     private Set<OntologyTerm> selectedTerms;
@@ -699,23 +702,14 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
         termSelectionContainer.add(selectedTerm);
         termSelectionContainer.add(new ClearFieldUtility(selectedTerm));
         termSelectionContainer.add(new JLabel(rightFieldIcon));
-        termSelectionContainer.add(Box.createVerticalStrut(5));
+        termSelectionContainer.add(Box.createVerticalStrut(10));
 
-        confirmOkButton = new JLabel(Globals.OK_ICON);
+        confirmOkButton = new FlatButton(ButtonType.GREEN, "Select Ontology Term");
         confirmOkButton.setOpaque(false);
-        confirmOkButton.addMouseListener(new MouseAdapter() {
+        confirmOkButton.addActionListener(new ActionListener() {
 
-            public void mousePressed(MouseEvent event) {
-                confirmOkButton.setIcon(Globals.OK_ICON);
+            public void actionPerformed(ActionEvent actionEvent) {
                 confirmSelection();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                confirmOkButton.setIcon(Globals.OK_OVER_ICON);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                confirmOkButton.setIcon(Globals.OK_ICON);
             }
         });
 

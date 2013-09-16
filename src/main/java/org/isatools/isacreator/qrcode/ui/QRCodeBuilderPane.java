@@ -60,8 +60,6 @@ import java.util.List;
 
 public class QRCodeBuilderPane extends JPanel {
 
-    @InjectedResource
-    private ImageIcon help;
 
     private String[] columnNames;
     private String[][] spreadsheetDataSnapshot;
@@ -72,7 +70,6 @@ public class QRCodeBuilderPane extends JPanel {
         this.columnNames = columnNames;
         this.spreadsheetDataSnapshot = spreadsheetDataSnapshot;
 
-        ResourceInjector.get("qrcode-generator-package.style").inject(this);
     }
 
     public void createGUI() {
@@ -96,8 +93,6 @@ public class QRCodeBuilderPane extends JPanel {
         IAppWidgetFactory.makeIAppScrollPane(mappingBuilderScroller);
 
         add(mappingBuilderScroller, BorderLayout.CENTER);
-
-        add(UIHelper.wrapComponentInPanel(new JLabel(help)), BorderLayout.WEST);
     }
 
     public List<MappingChoice> getMappings() {

@@ -170,7 +170,7 @@ public class ConfigXMLParser {
             return null;
         File[] configFiles = dir.listFiles();
 
-        if (configFiles == null){
+        if (configFiles == null) {
             log.error("The specified directory " + configDir + " is wrong!");
             problemLog += "<p>There is a problem with the directory " + configDir + " as no files where found.</p>";
             problemsEncountered = true;
@@ -184,8 +184,9 @@ public class ConfigXMLParser {
 
         List<IsaTabConfigFileType> configurations = new ArrayList<IsaTabConfigFileType>();
         for (File tableConfig : configFiles) {
-            if (!tableConfig.getName().startsWith(".")) {
 
+            if (!tableConfig.getName().startsWith(".")) {
+                log.info(tableConfig.getAbsolutePath() + " is being read.");
                 IsaTabConfigFileType isa = parseFile(tableConfig);
                 configurations.add(isa);
             }
@@ -209,6 +210,8 @@ public class ConfigXMLParser {
         addOntologySourceForAssay(technologyInfo);
 
         String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]") ? MappingObject.INVESTIGATION : MappingObject.ASSAY_TYPE;
+
+        log.info("Processing " + isaConf.getTableName());
 
 
         MappingObject mo = new MappingObject(tableType, measurementInfo.getTermLabel(),
@@ -238,6 +241,7 @@ public class ConfigXMLParser {
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
 
+                log.info("Adding " + newField.getFieldName() + " to configuration.");
                 newField.setWizardTemplate(StringProcessing.cleanUpString(stdField.getGeneratedValueTemplate()));
 
                 if (stdField.getRecommendedOntologies() != null) {
@@ -288,6 +292,8 @@ public class ConfigXMLParser {
                             protocolField.getIsRequired(), false, false);
                 }
 
+                log.info("Adding protocol to configuration " + newField.getFieldName());
+
                 newField.setWizardTemplate(newField.getWizardTemplate());
 
                 fields.add(newField);
@@ -296,6 +302,8 @@ public class ConfigXMLParser {
                 colNo++;
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
+
+                log.info("Adding unit to configuration.");
 
                 FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()),
                         DataTypes.resolveDataType(unitField.getDataType()), unitField.getDefaultValue(), "",
@@ -312,7 +320,7 @@ public class ConfigXMLParser {
                         String[] valueList = values.split(",");
                         newField.setFieldList(valueList);
                     } else {
-                        if(!values.isEmpty()) {
+                        if (!values.isEmpty()) {
                             newField.setFieldList(new String[]{values});
                         }
                     }

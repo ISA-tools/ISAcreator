@@ -213,6 +213,7 @@ public class Spreadsheet extends JComponent implements
 
     /**
      * Spreadsheet Constructor.
+     *
      * @param spreadsheetTitle          - name to display on the spreadsheet...
      * @param assayDataEntryEnvironment - The assay data entry object :o)
      */
@@ -273,7 +274,7 @@ public class Spreadsheet extends JComponent implements
         Map<String, OntologyTerm> ontoHistory = OntologyManager.getOntologySelectionHistory();
 
         for (OntologyTerm oo : referencedOntologyTerms.values()) {
-                ontoHistory.put(oo.getUniqueId(), oo);
+            ontoHistory.put(oo.getUniqueId(), oo);
         }
     }
 
@@ -550,7 +551,7 @@ public class Spreadsheet extends JComponent implements
 
 
     /**
-     * Create the Button panel - a panel which contains graphical representations of the options available
+     * Create the FlatButton panel - a panel which contains graphical representations of the options available
      * to the user when interacting with the software.
      */
     private void createButtonPanel() {
@@ -931,9 +932,9 @@ public class Spreadsheet extends JComponent implements
     /**
      * Helper method that adds a number of buttons to a panel.
      *
-     * @param container  - Container to add the components to
+     * @param container             - Container to add the components to
      * @param addSpaceOnLastElement - do you wish to add a space after the last component? If false, there will be no padding added after the last component.
-     * @param components - Components to add. Added in the order they are passed in to the method.
+     * @param components            - Components to add. Added in the order they are passed in to the method.
      */
     public void addComponentsToContainer(Container container, boolean addSpaceOnLastElement, JComponent... components) {
         int count = 0;
@@ -1456,6 +1457,34 @@ public class Spreadsheet extends JComponent implements
 
                     default:
                         goingToDisplay = null;
+                }
+
+                if (goingToDisplay != null) {
+                    goingToDisplay.createGUI();
+                    // do this to ensure that the gui is fully created before displaying it.
+                    parentFrame.showJDialogAsSheet(goingToDisplay);
+                }
+            }
+        });
+    }
+
+    protected void showRenameColumnsGUI(final TableColumn column) {
+
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                RenameColumnGUI goingToDisplay = null;
+                String toShow = column.getHeaderValue().toString().substring(0, column.getHeaderValue().toString().indexOf("["));
+                if (toShow.contains("Characteristics")) {
+                    goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                            AddColumnGUI.ADD_CHARACTERISTIC_COLUMN, column);
+
+                } else if (toShow.contains("Parameter Value")) {
+                    goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                            AddColumnGUI.ADD_PARAMETER_COLUMN, column);
+
+                } else if (toShow.contains("Comment")) {
+                    goingToDisplay = new RenameColumnGUI(Spreadsheet.this,
+                            AddColumnGUI.ADD_COMMENT_COLUMN, column);
                 }
 
                 if (goingToDisplay != null) {

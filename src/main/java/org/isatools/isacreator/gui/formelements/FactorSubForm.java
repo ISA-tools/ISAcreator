@@ -120,8 +120,6 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
 
             Map<String, String> record = getRecord(recordNumber);
 
-//            record.put(Factor.FACTOR_TYPE, record.get(Factor.FACTOR_NAME));
-
             Factor factor = new Factor();
             factor.addToFields(record);
 
@@ -155,61 +153,4 @@ public class FactorSubForm extends HistoricalSelectionEnabledSubForm implements 
             }
         }
     }
-
-//    @Override
-//    public String toString() {
-//        update();
-//
-//        System.out.println("Outputting using new factor output code...");
-//
-//        StringBuilder output = new StringBuilder();
-//        output.append(InvestigationFileSection.STUDY_FACTORS).append("\n");
-//
-//        Map<String, List<String>> valuesToOutput = new HashMap<String, List<String>>();
-//
-//        int cols = dtm.getColumnCount();
-//
-//        for (int recordNumber = 1; recordNumber < cols; recordNumber++) {
-//
-//            Map<String, String> record = getRecord(recordNumber);
-//
-//            Map<Integer, Map<String, String>> ontologyTerms = IOUtils.getOntologyTerms(record.keySet());
-//
-//            // now, do ontology processing
-//            for (int fieldHashCode : ontologyTerms.keySet()) {
-//
-//                Map<String, String> ontologyField = ontologyTerms.get(fieldHashCode);
-//
-//                Map<String, String> processedOntologyField = IOUtils.processOntologyField(ontologyField, record);
-//                record.put(ontologyField.get(IOUtils.TERM), processedOntologyField.get(ontologyField.get(IOUtils.TERM)));
-//                record.put(ontologyField.get(IOUtils.ACCESSION), processedOntologyField.get(ontologyField.get(IOUtils.ACCESSION)));
-//                record.put(ontologyField.get(IOUtils.SOURCE_REF), processedOntologyField.get(ontologyField.get(IOUtils.SOURCE_REF)));
-//            }
-//
-//            for (String fieldName : record.keySet()) {
-//                if (!valuesToOutput.containsKey(fieldName)) {
-//                    valuesToOutput.put(fieldName, new ArrayList<String>());
-//                }
-//
-//                valuesToOutput.get(fieldName).add(StringProcessing.cleanUpString(record.get(fieldName)));
-//            }
-//        }
-//
-//        // now output the values.
-//        for (String fieldName : valuesToOutput.keySet()) {
-//            output.append(fieldName).append("\t");
-//
-//            for (int outputCount = 0; outputCount < valuesToOutput.get(fieldName).size(); outputCount++) {
-//
-//                output.append(valuesToOutput.get(fieldName).get(outputCount));
-//                if (outputCount != valuesToOutput.get(fieldName).size() - 1) {
-//                    output.append("\t");
-//                }
-//
-//            }
-//            output.append("\n");
-//        }
-//
-//        return output.toString();
-//    }
 }

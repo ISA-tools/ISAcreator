@@ -58,9 +58,6 @@ import java.awt.*;
 
 public class QRCodeDetailedView extends JPanel {
 
-    @InjectedResource
-    private ImageIcon qrInfoSectionHeader, qrCodeSectionHeader;
-
     private JLabel qrCodeImage;
     private QRCode qrCode;
     private QRCodeInfoRenderer qrCodeDetailsUI;
@@ -87,18 +84,13 @@ public class QRCodeDetailedView extends JPanel {
 
         container.add(Box.createVerticalStrut(16), BorderLayout.NORTH);
 
-        JLabel sectionHeader = new JLabel(qrCodeSectionHeader);
-        sectionHeader.setHorizontalAlignment(SwingConstants.LEFT);
-        sectionHeader.setVerticalAlignment(SwingConstants.TOP);
-
-        container.add(sectionHeader, BorderLayout.WEST);
 
         qrCodeImage = new JLabel();
         qrCodeImage.setPreferredSize(new Dimension(100, 100));
         qrCodeImage.setVerticalAlignment(SwingConstants.TOP);
         qrCodeImage.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        container.add(qrCodeImage, BorderLayout.EAST);
+        container.add(qrCodeImage, BorderLayout.WEST);
 
         return container;
     }
@@ -152,12 +144,6 @@ public class QRCodeDetailedView extends JPanel {
 
             updateContent();
 
-
-            JLabel infoSectionLabel = new JLabel(qrInfoSectionHeader);
-            infoSectionLabel.setHorizontalAlignment(SwingConstants.LEFT);
-            QRCodeInfoRenderer.this.add(Box.createVerticalStrut(15));
-            QRCodeInfoRenderer.this.add(UIHelper.wrapComponentInPanel(infoSectionLabel));
-            QRCodeInfoRenderer.this.add(Box.createVerticalStrut(15));
             QRCodeInfoRenderer.this.add(content);
         }
 

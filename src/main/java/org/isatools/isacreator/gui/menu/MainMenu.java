@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
@@ -98,19 +99,22 @@ public class MainMenu extends MenuUIComponent {
 
         newISA = new JLabel(createNew,
                 JLabel.LEFT);
-        newISA.addMouseListener(new MouseAdapter() {
+        newISA.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 newISA.setIcon(createNew);
                 confirmExitPanel.setVisible(false);
                 menu.changeView(menu.getCreateISAMenuGUI());
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 newISA.setIcon(createNewOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 newISA.setIcon(createNew);
             }
         });
@@ -119,9 +123,10 @@ public class MainMenu extends MenuUIComponent {
 
         loadPrev = new JLabel(loadExisting,
                 JLabel.LEFT);
-        loadPrev.addMouseListener(new MouseAdapter() {
+        loadPrev.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 loadPrev.setIcon(loadExisting);
                 confirmExitPanel.setVisible(false);
                 menu.getImportISAGUI().getPreviousFiles();
@@ -129,10 +134,12 @@ public class MainMenu extends MenuUIComponent {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 loadPrev.setIcon(loadExistingOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 loadPrev.setIcon(loadExisting);
             }
         });
@@ -141,9 +148,10 @@ public class MainMenu extends MenuUIComponent {
 
         merge = new JLabel(mergeFiles,
                 JLabel.LEFT);
-        merge.addMouseListener(new MouseAdapter() {
+        merge.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 merge.setIcon(mergeFiles);
                 confirmExitPanel.setVisible(false);
                 menu.getMergeStudiesGUI().createGUI();
@@ -152,10 +160,12 @@ public class MainMenu extends MenuUIComponent {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 merge.setIcon(mergeFilesOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 merge.setIcon(mergeFiles);
             }
         });
@@ -165,9 +175,10 @@ public class MainMenu extends MenuUIComponent {
         if (ApplicationManager.getCurrentApplicationInstance().getMode() == Mode.NORMAL_MODE) {
             settingsButton = new JLabel(settings,
                     JLabel.LEFT);
-            settingsButton.addMouseListener(new MouseAdapter() {
+            settingsButton.addMouseListener(new CommonMouseAdapter() {
 
                 public void mousePressed(MouseEvent event) {
+                    super.mousePressed(event);
                     settingsButton.setIcon(settings);
                     confirmExitPanel.setVisible(false);
                     menu.getSettings().createGUI();
@@ -176,10 +187,12 @@ public class MainMenu extends MenuUIComponent {
                 }
 
                 public void mouseEntered(MouseEvent event) {
+                    super.mouseEntered(event);
                     settingsButton.setIcon(settingsOver);
                 }
 
                 public void mouseExited(MouseEvent event) {
+                    super.mouseExited(event);
                     settingsButton.setIcon(settings);
                 }
             });
@@ -189,9 +202,10 @@ public class MainMenu extends MenuUIComponent {
 
         loadAnotherConfiguration = new JLabel(loadConfiguration,
                 JLabel.LEFT);
-        loadAnotherConfiguration.addMouseListener(new MouseAdapter() {
+        loadAnotherConfiguration.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 loadAnotherConfiguration.setIcon(loadConfiguration);
                 confirmExitPanel.setVisible(false);
                 menu.getImportConfigurationGUI().getPreviousFiles();
@@ -199,10 +213,12 @@ public class MainMenu extends MenuUIComponent {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 loadAnotherConfiguration.setIcon(loadConfigurationOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 loadAnotherConfiguration.setIcon(loadConfiguration);
             }
         });
@@ -211,9 +227,10 @@ public class MainMenu extends MenuUIComponent {
 
         logoutButton = new JLabel(logout,
                 JLabel.LEFT);
-        logoutButton.addMouseListener(new MouseAdapter() {
+        logoutButton.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 logoutButton.setIcon(MainMenu.this.logout);
                 confirmExitPanel.setVisible(false);
                 UserProfileManager.setCurrentUser(null);
@@ -221,10 +238,12 @@ public class MainMenu extends MenuUIComponent {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 logoutButton.setIcon(logoutOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 logoutButton.setIcon(MainMenu.this.logout);
             }
         });
@@ -233,18 +252,21 @@ public class MainMenu extends MenuUIComponent {
 
         final JLabel exitProgram = new JLabel(exit,
                 JLabel.LEFT);
-        exitProgram.addMouseListener(new MouseAdapter() {
+        exitProgram.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 exitProgram.setIcon(exit);
                 confirmExitPanel.setVisible(true);
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 exitProgram.setIcon(exitOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 exitProgram.setIcon(exit);
             }
         });

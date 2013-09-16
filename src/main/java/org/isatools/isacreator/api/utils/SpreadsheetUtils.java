@@ -311,10 +311,16 @@ public class SpreadsheetUtils {
         }
     }
 
+    public static boolean isCommentParameterOrCharacteristic(String columnName) {
+        return (columnName.contains("Characteristics") ||
+                columnName.contains("Comment") ||
+                columnName.contains("Parameter Value"));
+    }
+
     public static boolean isFactorParameterOrCharacteristic(String columnName) {
         return (columnName.contains("Characteristics") ||
                 columnName.contains("Factor") ||
-                columnName.equals("Parameter Value"));
+                columnName.contains("Parameter Value"));
     }
 
     /**

@@ -38,6 +38,8 @@
 package org.isatools.isacreator.spreadsheet.transposedview;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
 import org.isatools.isacreator.gui.formelements.SubFormCellRenderer;
@@ -47,8 +49,10 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -70,8 +74,7 @@ import java.util.Map;
 public class TransposedSpreadsheetView extends JDialog {
 
     @InjectedResource
-    private ImageIcon logo, backToSpreadsheet, backToSpreadsheetOver, closeWindow, closeWindowOver, toolboxIcon,
-            highlightOnIcon, highlightOnOver, highlightOffIcon, highlightOffOver, goToRecord, goToRecordOver, go, goOver;
+    private ImageIcon logo, toolboxIcon, highlightOnIcon, highlightOnOver, highlightOffIcon, highlightOffOver, goToRecord, goToRecordOver, go, goOver;
 
     private TransposedSpreadsheetModel transposedSpreadsheetModel;
     private TransposedSubForm transposedSpreadsheetSubform;
@@ -286,22 +289,12 @@ public class TransposedSpreadsheetView extends JDialog {
     private Container createSouthPanel() {
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setBorder(new LineBorder(Color.white, 4));
         buttonPanel.setOpaque(false);
 
-        final JLabel closeButton = new JLabel(closeWindow);
-        closeButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeWindowOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeWindow);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        JButton closeButton = new FlatButton(ButtonType.RED, "Cancel");
+        closeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 confirmChoice = new ConfirmationDialog();
                 confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
@@ -327,20 +320,9 @@ public class TransposedSpreadsheetView extends JDialog {
             }
         });
 
-        final JLabel toSpreadsheet = new JLabel(backToSpreadsheet);
-        toSpreadsheet.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                toSpreadsheet.setIcon(backToSpreadsheetOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                toSpreadsheet.setIcon(backToSpreadsheet);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        JButton toSpreadsheet = new FlatButton(ButtonType.GREEN, "Apply Changes");
+        toSpreadsheet.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 confirmChoice = new ConfirmationDialog();
 
                 confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {

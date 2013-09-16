@@ -71,16 +71,12 @@ public class ISAcreatorGUIProperties {
                 ISAcreator.class.getResource("/dependency-injections/effects-package.properties"));
         ResourceInjector.get("assayselection-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/assayselection-package.properties"));
-        ResourceInjector.get("calendar-package.style").load(
-                ISAcreator.class.getResource("/dependency-injections/calendar-package.properties"));
+
         ResourceInjector.get("validateconvert-package.style").load(
                 ISAcreator.class.getResource("/dependency-injections/validator-package.properties"));
 
         ResourceInjector.get("autofilteringlist-package.style").load(
                 FilterableListCellRenderer.class.getResource("/dependency-injections/autofilteringlist-package.properties"));
-
-        ResourceInjector.get("calendar-package.style").load(
-                CalendarGUI.class.getResource("/dependency-injections/calendar-package.properties"));
 
         ResourceInjector.get("common-package.style").load(
                 ArchiveOutputWindow.class.getResource("/dependency-injections/common-package.properties"));

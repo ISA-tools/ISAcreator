@@ -39,6 +39,8 @@ package org.isatools.isacreator.publicationlocator;
 
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.DraggablePaneMouseInputHandler;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.gui.DataEntryForm;
@@ -83,7 +85,7 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
 
     @InjectedResource
     private ImageIcon searchBy, pubmedOption, pubmedOptionOver, doiOption, doiOptionOver, resultInactive, result,
-            resultOver, end, close, closeOver, accept, acceptOver, search, searchOver, pubmedText, doiText, searchFieldLeft;
+            resultOver, end, search, searchOver, pubmedText, doiText, searchFieldLeft;
 
     private JPanel swappableContainer;
 
@@ -129,41 +131,21 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
     private Container createSouthPanel() {
 
         JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setBorder(UIHelper.EMPTY_BORDER);
         southPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel closeButton = new JLabel(close);
-        closeButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                closeButton.setIcon(close);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        JButton closeButton = new FlatButton(ButtonType.RED, "Cancel");
+        closeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("noSelectedPublication", "noneSelected", "");
                 setVisible(false);
             }
         });
 
-        final JLabel export = new JLabel(accept);
-        export.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                export.setIcon(acceptOver);
-            }
 
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                export.setIcon(accept);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        JButton export = new FlatButton(ButtonType.GREEN, "Select Publication");
+        export.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("selectedPublication", "OLD_VALUE",
                         currentPublication);
                 setVisible(false);

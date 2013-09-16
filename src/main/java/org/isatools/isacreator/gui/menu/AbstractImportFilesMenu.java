@@ -41,12 +41,16 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.managers.ApplicationManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -71,7 +75,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
     protected long timeButtonLastClicked = System.currentTimeMillis();
 
-    protected JLabel chooseFromElsewhere, loadSelected;
+    protected JButton chooseFromElsewhere, loadSelected;
     protected boolean showProblemArea;
 
     public AbstractImportFilesMenu(ISAcreatorMenu menu) {
@@ -179,17 +183,10 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         JPanel selectionPanel = new JPanel(new BorderLayout());
         selectionPanel.setOpaque(false);
 
-        chooseFromElsewhere = new JLabel(getSearchButton(),
-                JLabel.LEFT);
-        chooseFromElsewhere.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-
-                // precautionary meaaure to stop double execution of action...
-
+        chooseFromElsewhere = new FlatButton(ButtonType.GREEN, "Open Another...");
+        chooseFromElsewhere.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (timeButtonLastClicked != System.currentTimeMillis()) {
-
-                    chooseFromElsewhere.setIcon(getSearchButton());
 
                     if (jfc.showOpenDialog(ApplicationManager.getCurrentApplicationInstance()) == JFileChooser.APPROVE_OPTION) {
                         String directory = jfc.getSelectedFile().toString();
@@ -207,33 +204,15 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
                     timeButtonLastClicked = System.currentTimeMillis();
                 }
-            }
 
-
-            public void mouseEntered(MouseEvent event) {
-                chooseFromElsewhere.setIcon(getSearchButtonOver());
-            }
-
-            public void mouseExited(MouseEvent event) {
-                chooseFromElsewhere.setIcon(getSearchButton());
             }
         });
 
-        loadSelected = new JLabel(getLoadButton(),
-                JLabel.RIGHT);
-        loadSelected.addMouseListener(new MouseAdapter() {
 
-            public void mousePressed(MouseEvent event) {
-                loadSelected.setIcon(getLoadButton());
+        loadSelected = new FlatButton(ButtonType.GREEN, "Load File");
+        loadSelected.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 getSelectedFileAndLoad();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                loadSelected.setIcon(getLoadButtonOver());
-            }
-
-            public void mouseExited(MouseEvent event) {
-                loadSelected.setIcon(getLoadButton());
             }
         });
 
@@ -244,7 +223,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     }
 
     protected JPanel createProblemDisplay() {
-        // todo change with table view from validator etc.
+
         JPanel problemCont = new JPanel(new GridLayout(1, 1));
         problemCont.setOpaque(false);
 
@@ -281,14 +260,6 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     public abstract void loadFile(final String dir);
 
     public abstract JPanel createAlternativeExitDisplay();
-
-    public abstract ImageIcon getSearchButton();
-
-    public abstract ImageIcon getSearchButtonOver();
-
-    public abstract ImageIcon getLoadButton();
-
-    public abstract ImageIcon getLoadButtonOver();
 
     public abstract ImageIcon getLeftFilterImage();
 

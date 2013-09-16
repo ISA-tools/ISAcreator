@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.gui.menu;
 
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.formatmappingutility.ui.MappingUtilView;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.modeselection.Mode;
@@ -91,10 +92,10 @@ public class CreateISATABMenu extends MenuUIComponent {
 
         createUsingWizard = new JLabel(useWizardButton,
                 JLabel.LEFT);
-        createUsingWizard.addMouseListener(new MouseAdapter() {
+        createUsingWizard.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                super.mousePressed(event);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         Wizard wizard = new Wizard(menu);
@@ -107,20 +108,22 @@ public class CreateISATABMenu extends MenuUIComponent {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 createUsingWizard.setIcon(useWizardButtonOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 createUsingWizard.setIcon(useWizardButton);
             }
         });
 
         createUsingMapper = new JLabel(useMapperButton,
                 JLabel.LEFT);
-        createUsingMapper.addMouseListener(new MouseAdapter() {
+        createUsingMapper.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                super.mousePressed(event);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -134,10 +137,12 @@ public class CreateISATABMenu extends MenuUIComponent {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 createUsingMapper.setIcon(useMapperButtonOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 createUsingMapper.setIcon(useMapperButton);
             }
         });
@@ -145,18 +150,20 @@ public class CreateISATABMenu extends MenuUIComponent {
 
         createManual = new JLabel(createManuallyButton,
                 JLabel.LEFT);
-        createManual.addMouseListener(new MouseAdapter() {
+        createManual.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                               super.mousePressed(event);
                 createNewISAtabEditView();
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 createManual.setIcon(createManuallyButtonOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 createManual.setIcon(createManuallyButton);
             }
         });
@@ -164,18 +171,21 @@ public class CreateISATABMenu extends MenuUIComponent {
 
         back = new JLabel(backButton,
                 JLabel.LEFT);
-        back.addMouseListener(new MouseAdapter() {
+        back.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 back.setIcon(backButton);
                 menu.changeView(menu.getMainMenuGUI());
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 back.setIcon(backButtonOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 back.setIcon(backButton);
             }
         });

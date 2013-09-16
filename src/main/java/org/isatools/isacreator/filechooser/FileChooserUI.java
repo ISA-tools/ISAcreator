@@ -40,8 +40,9 @@ package org.isatools.isacreator.filechooser;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.net.ftp.FTPFile;
 import org.isatools.isacreator.common.CommonMouseAdapter;
-import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
@@ -533,25 +534,15 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
      */
     private JPanel createBottomPanel() {
         JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setBorder(UIHelper.EMPTY_BORDER);
         southPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel ok = new JLabel(Globals.OK_ICON);
-        ok.setHorizontalAlignment(JLabel.RIGHT);
-        ok.setOpaque(false);
-        ok.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton ok = new FlatButton(ButtonType.GREEN, "Select Files");
+        ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("selectedFiles", "", selectedFiles.getSelectedValues());
                 setVisible(false);
                 listModel.removeAllElements();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                ok.setIcon(Globals.OK_OVER_ICON);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                ok.setIcon(Globals.OK_ICON);
             }
         });
 
@@ -1014,52 +1005,28 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             // create button panel
 
             JPanel buttonPanel = new JPanel(new BorderLayout());
+            buttonPanel.setBorder(UIHelper.EMPTY_BORDER);
             buttonPanel.setBackground(UIHelper.BG_COLOR);
 
-            final JLabel close = new JLabel(Globals.CLOSE_ICON);
-            close.setOpaque(false);
-            close.setHorizontalAlignment(JLabel.LEFT);
-
-            close.addMouseListener(new MouseAdapter() {
-
-                public void mousePressed(MouseEvent event) {
+            JButton close = new FlatButton(ButtonType.RED, "Cancel");
+            close.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
                     closeAndDisposeWindow();
-                }
-
-                public void mouseEntered(MouseEvent event) {
-                    close.setIcon(Globals.CLOSE_OVER_ICON);
-                }
-
-                public void mouseExited(MouseEvent event) {
-                    close.setIcon(Globals.CLOSE_ICON);
                 }
             });
 
             buttonPanel.add(close, BorderLayout.WEST);
 
-            final JLabel ok = new JLabel(Globals.OK_ICON);
-            ok.setHorizontalAlignment(JLabel.RIGHT);
-            ok.setOpaque(false);
-            ok.addMouseListener(new MouseAdapter() {
-
-                public void mousePressed(MouseEvent event) {
+            JButton ok = new FlatButton(ButtonType.GREEN, "Ok");
+            ok.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
                     firePropertyChange("locationSelected", "", locationList.getSelectedValue());
                     closeAndDisposeWindow();
-                }
-
-                public void mouseEntered(MouseEvent event) {
-                    ok.setIcon(Globals.OK_OVER_ICON);
-                }
-
-                public void mouseExited(MouseEvent event) {
-                    ok.setIcon(Globals.OK_ICON);
                 }
             });
 
             buttonPanel.add(ok, BorderLayout.EAST);
-
             container.add(buttonPanel);
-
             add(container);
 
             pack();

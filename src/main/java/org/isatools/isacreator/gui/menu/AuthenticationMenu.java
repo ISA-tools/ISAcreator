@@ -41,6 +41,8 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.api.ImportConfiguration;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.components.RoundedJPasswordField;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
@@ -49,6 +51,7 @@ import org.jdesktop.fuse.InjectedResource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -63,19 +66,14 @@ import java.awt.event.MouseEvent;
  */
 public class AuthenticationMenu extends MenuUIComponent {
 
-    private static final Logger log = Logger.getLogger(AuthenticationMenu.class);
-
     private JLabel status;
     private JPasswordField password;
     private JTextField username;
 
-    private JLabel createProfile, login, exit;
-
     private Authentication authentication = null;
 
     @InjectedResource
-    public ImageIcon pleaseLogin, loginButton, loginButtonOver, createProfileButton,
-            createProfileButtonOver, exitButtonSml, exitButtonSmlOver;
+    public ImageIcon pleaseLogin;
 
     /**
      * Constructor
@@ -152,55 +150,27 @@ public class AuthenticationMenu extends MenuUIComponent {
                 JLabel.RIGHT), BorderLayout.NORTH);
         northPanel.add(fields, BorderLayout.CENTER);
 
-        JPanel southPanel = new JPanel(new GridLayout(4, 1));
-        southPanel.setOpaque(false);
-
-        JPanel buttonContainer = new JPanel(new GridLayout(1, 2));
+        JPanel buttonContainer = new JPanel(new BorderLayout());
         buttonContainer.setOpaque(false);
 
-        createProfile = new JLabel(createProfileButton,
-                JLabel.LEFT);
-        createProfile.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
-
+        JButton createProfile = new FlatButton(ButtonType.GREEN, "Create a new profile");
+        createProfile.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 clearFields();
-
                 confirmExitPanel.setVisible(false);
-
                 menu.changeView(menu.getCreateProfileGUI());
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                createProfile.setIcon(createProfileButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                createProfile.setIcon(createProfileButton);
             }
         });
 
-        buttonContainer.add(createProfile);
-
-        login = new JLabel(loginButton,
-                JLabel.RIGHT);
-        login.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                login.setIcon(AuthenticationMenu.this.loginButton);
+        buttonContainer.add(createProfile, BorderLayout.WEST);
+        JButton login = new FlatButton(ButtonType.GREEN, "Log in");
+        login.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 confirmExitPanel.setVisible(false);
                 login();
             }
-
-            public void mouseEntered(MouseEvent event) {
-                login.setIcon(loginButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                login.setIcon(AuthenticationMenu.this.loginButton);
-            }
         });
+
 
         Action loginAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -213,40 +183,14 @@ public class AuthenticationMenu extends MenuUIComponent {
         username.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "LOGIN");
         username.getActionMap().put("LOGIN", loginAction);
 
-        buttonContainer.add(login);
+        buttonContainer.add(login, BorderLayout.EAST);
 
-        southPanel.add(status);
-        southPanel.add(buttonContainer);
+        fields.add(UIHelper.wrapComponentInPanel(status));
+        fields.add(Box.createVerticalStrut(10));
+        fields.add(buttonContainer);
+        fields.add(Box.createVerticalStrut(10));
 
-        exit = new JLabel(exitButtonSml,
-                JLabel.CENTER);
-        exit.addMouseListener(new MouseAdapter() {
 
-            public void mousePressed(MouseEvent event) {
-                exit.setIcon(exitButtonSml);
-                confirmExitPanel.setVisible(true);
-                confirmExitPanel.getParent().validate();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                exit.setIcon(exitButtonSmlOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                exit.setIcon(exitButtonSml);
-            }
-        });
-
-        JPanel exitContainer = new JPanel(new GridLayout(1, 1));
-        exitContainer.setOpaque(false);
-
-        exitContainer.add(exit);
-
-        southPanel.add(exitContainer);
-
-        southPanel.add(confirmExitPanel);
-
-        northPanel.add(southPanel, BorderLayout.SOUTH);
         northPanel.setOpaque(false);
 
         add(northPanel, BorderLayout.CENTER);
