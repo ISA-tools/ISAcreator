@@ -344,7 +344,10 @@ public class ConfigXMLParser {
     }
 
     private void addOntologySourceForAssay(OntologyEntryType ontologyEntryType) {
-        OntologyManager.addToUsedOntologies(new OntologySourceRefObject(ontologyEntryType.getSourceAbbreviation(), ontologyEntryType.getSourceUri(), ontologyEntryType.getSourceVersion(), ontologyEntryType.getSourceTitle()));
+
+
+        if (ontologyEntryType.getSourceAbbreviation()!=null && !ontologyEntryType.getSourceAbbreviation().equals(""))
+            OntologyManager.addToUsedOntologies(new OntologySourceRefObject(ontologyEntryType.getSourceAbbreviation(), ontologyEntryType.getSourceUri(), ontologyEntryType.getSourceVersion(), ontologyEntryType.getSourceTitle()));
     }
 
     /**
