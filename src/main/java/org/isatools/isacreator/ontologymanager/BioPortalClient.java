@@ -36,7 +36,6 @@
  */
 package org.isatools.isacreator.ontologymanager;
 
-import bioontology.bioportal.classBean.schema.SuccessDocument;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
@@ -69,10 +68,13 @@ public class BioPortalClient implements OntologyService {
 
     private Set<String> noChildren;
 
-    private List<Ontology> ontologies;
+    private static List<Ontology> ontologies;
 
-    private Map<String, String> ontologySources;
-    private Map<String, String> ontologyVersions;
+    //
+    private static Map<String, String> ontologyNames = new HashMap<String, String>();
+    private static Map<String, String> ontologyVersions = new HashMap<String, String>();
+    private static Map<String, String> ontologyFiles = new HashMap<String, String>();
+
 
     private Map<String, OntologyTerm> searchResults;
     private Map<String, Map<String, OntologyTerm>> cachedNodeChildrenQueries;
@@ -83,18 +85,16 @@ public class BioPortalClient implements OntologyService {
      * Constructor
      */
     public BioPortalClient() {
-        ontologySources = new HashMap<String, String>();
-        ontologyVersions = new HashMap<String, String>();
         searchResults = new HashMap<String, OntologyTerm>();
         cachedNodeChildrenQueries = new HashMap<String, Map<String, OntologyTerm>>();
         noChildren = new HashSet<String>();
     }
 
-    public List<Ontology> getAllOntologies() {
+    public static List<Ontology> getAllOntologies() {
         return getAllOntologies(false);
     }
 
-    public List<Ontology> getAllOntologies(boolean loadAll) {
+    public static List<Ontology> getAllOntologies(boolean loadAll) {
 
         if (ontologies == null || ontologies.size() == 0) {
 
@@ -110,8 +110,9 @@ public class BioPortalClient implements OntologyService {
 
             if (ontologies != null) {
                 for (Ontology ontology : ontologies) {
+                    ontologyNames.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
                     ontologyVersions.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
-                    ontologySources.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
+                    ontologyFiles.put(ontology.getOntologyAbbreviation(), ontology.getOntologyID());
                 }
             }
         }
@@ -154,11 +155,31 @@ public class BioPortalClient implements OntologyService {
     }
 
     public Map<String, String> getOntologyNames() {
-        if (ontologySources.size() == 0) {
+        if (ontologyNames.size() == 0) {
             getAllOntologies();
         }
+        return ontologyNames;
+    }
 
-        return ontologySources;
+    public static String getOntologySourceFile(String sourceName) {
+        if (ontologyFiles.size() == 0) {
+                getAllOntologies();
+        }
+        return "http://bioportal.bioontology.org/ontologies/"+ontologyFiles.get(sourceName);
+    }
+
+    public static String getOntologyDescription(String sourceName) {
+        if (ontologyFiles.size() == 0) {
+            getAllOntologies();
+        }
+        return ontologyNames.get(sourceName);
+    }
+
+    public static String getOntologyVersion(String sourceName) {
+        if (ontologyFiles.size() == 0) {
+            getAllOntologies();
+        }
+        return ontologyVersions.get(sourceName);
     }
 
     public Map<String, String> getOntologyVersions() {
