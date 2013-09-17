@@ -92,7 +92,7 @@ public class BioPortalClientTest {
 
         System.out.println("Comments " + term.getComments());
 
-        System.out.println("Ontology PURL "+term.getOntologyPurl());
+        System.out.println("Ontology PURL "+term.getOntologyTermURI());
 
     }
 
@@ -109,7 +109,7 @@ public class BioPortalClientTest {
 
         System.out.println("Comments " + term.getComments());
 
-        System.out.println("Ontology PURL "+term.getOntologyPurl());
+        System.out.println("Ontology PURL "+term.getOntologyTermURI());
 
     }
 

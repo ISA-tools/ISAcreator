@@ -603,7 +603,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         for (OntologyTerm oo : userHistory.values()) {
 
-            if (oo.getUniqueId().equals(uniqueId)) {
+            if (oo.getShortForm().equals(uniqueId)) {
                 return oo;
             }
         }

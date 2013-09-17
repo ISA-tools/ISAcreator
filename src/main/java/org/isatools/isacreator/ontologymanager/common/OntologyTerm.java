@@ -38,6 +38,7 @@ package org.isatools.isacreator.ontologymanager.common;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     private String ontologyTermAccession = null;
     private String ontologyTermName = null;
-    private String purl = null;
+    private String ontologyTermIRI = null;
 
     // extra terms for metadata processing
     private Map<String, String> comments;
@@ -69,8 +70,15 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         ontologyTermName = termName;
         ontologyTermAccession = accession;
         ontologySourceInformation = ontologySourceRefObject;
-        purl = iri;
+        ontologyTermIRI = iri;
+       // completeValues();
     }
+
+//    private void completeValues(){
+//        BioPortalClient bioPortalClient = new BioPortalClient();
+//        if (getOntologyVersionId()!=null && !getOntologyVersionId().equals("") && ontologyTermIRI ==null)
+//          ontologyTermIRI = bioPortalClient.getTermIRI(getOntologyVersionId(), ontologyTermAccession);
+//    }
 
     public String getOntologyVersionId() {
         if (ontologySourceInformation == null) {
@@ -115,8 +123,12 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return ontologyTermName;
     }
 
-    public String getOntologyPurl() {
-        return purl;
+    public String getOntologyTermURI() {
+        if (ontologyTermIRI==null){
+            OntologyTerm oo = OntologyTermUtils.getURI(this);
+            ontologyTermIRI = oo.getOntologyTermURI();
+        }
+        return ontologyTermIRI;
     }
 
 
@@ -125,7 +137,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
     }
 
     public void setOntologyPurl(String purl) {
-        this.purl = purl;
+        this.ontologyTermIRI = purl;
     }
 
     public void addToComments(String key, String value) {
@@ -146,8 +158,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     @Override
     public String toString() {
-        //return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
-        return getUniqueId();
+        return getShortForm();
     }
 
     /***
@@ -160,7 +171,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
      *
      * @return
      */
-    public String getUniqueId() {
+    public String getShortForm() {
         String ontologySource = getOntologySource();
         if (!ontologySource.equals("")) {
             return ontologySource + ":" + getOntologyTermName();
@@ -168,10 +179,18 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return getOntologyTermName();
     }
 
+    public String getLongForm(){
+        String ontologySource = getOntologySource();
+        if (!ontologySource.equals("")) {
+            return getOntologyTermName()+","+ getOntologyTermURI()+","+ontologySource;
+        }
+        return getOntologyTermName();
+    }
+
     public int compareTo(OntologyTerm ontologyTerm) {
-        if (getOntologyPurl()!=null && ontologyTerm.getOntologyPurl()!=null)
-            return getOntologyPurl().compareTo(ontologyTerm.getOntologyPurl());
-        return getUniqueId().toLowerCase().compareTo(ontologyTerm.getUniqueId().toLowerCase());
+        if (getOntologyTermURI()!=null && ontologyTerm.getOntologyTermURI()!=null)
+            return getOntologyTermURI().compareTo(ontologyTerm.getOntologyTermURI());
+        return getShortForm().toLowerCase().compareTo(ontologyTerm.getShortForm().toLowerCase());
     }
 
 }

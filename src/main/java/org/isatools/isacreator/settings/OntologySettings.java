@@ -201,7 +201,7 @@ public class OntologySettings extends SettingsScreen {
     private void updateListContents() {
         historyList.getItems().clear();
         for (OntologyTerm h : userOntologyHistory.values()) {
-            historyList.addItem(h.getUniqueId());
+            historyList.addItem(h.getShortForm());
         }
     }
 

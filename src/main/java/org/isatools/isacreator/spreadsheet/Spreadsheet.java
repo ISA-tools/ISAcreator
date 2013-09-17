@@ -274,7 +274,7 @@ public class Spreadsheet extends JComponent implements
         Map<String, OntologyTerm> ontoHistory = OntologyManager.getOntologySelectionHistory();
 
         for (OntologyTerm oo : referencedOntologyTerms.values()) {
-            ontoHistory.put(oo.getUniqueId(), oo);
+            ontoHistory.put(oo.getShortForm(), oo);
         }
     }
 

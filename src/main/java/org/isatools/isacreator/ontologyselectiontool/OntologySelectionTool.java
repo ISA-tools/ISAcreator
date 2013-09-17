@@ -590,9 +590,9 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         }
                         addSourceToUsedOntologies(historyTerm.getOntologySourceInformation());
                         if (multipleTermsAllowed) {
-                            addToMultipleTerms(historyTerm.getUniqueId());
+                            addToMultipleTerms(historyTerm.getShortForm());
                         } else {
-                            selectedTerm.setText(historyTerm.getUniqueId());
+                            selectedTerm.setText(historyTerm.getShortForm());
                         }
                     }
                 }
@@ -801,11 +801,11 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         if (multipleTermsAllowed) {
             selectedTerms.add(term);
-            addToMultipleTerms(term.getUniqueId());
+            addToMultipleTerms(term.getShortForm());
         } else {
             selectedTerms.clear();
             selectedTerms.add(term);
-            selectedTerm.setText(term.getUniqueId());
+            selectedTerm.setText(term.getShortForm());
         }
 
     }
