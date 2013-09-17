@@ -44,13 +44,16 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
 import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -246,7 +249,12 @@ public class SpreadsheetFunctions {
 
                 String header = tc.getHeaderValue().toString();
 
-                toPrint = "\"" + header + "\"";
+                OntologyTerm oo = history.get(IOUtils.getHeaderValue(header));
+
+                if (oo!=null)
+                    toPrint = "\"" + IOUtils.getHeaderName(header) + "["+ OntologyTermUtils.ontologyTermToString(oo) +"]"+ "\"";
+                else
+                    toPrint = "\"" + header + "\"";
 
                 if (col == 1) {
                     ps.print(toPrint);
@@ -292,7 +300,10 @@ public class SpreadsheetFunctions {
                                 OntologyTerm oo = history.get(val);
 
                                 if (oo != null) {
-                                    termAccession = oo.getOntologyTermAccession();
+                                    if (ISAcreatorProperties.getProperty("ontologyTermURI").equals("true"))
+                                        termAccession = oo.getOntologyTermURI();
+                                    else
+                                        termAccession = oo.getOntologyTermAccession();
                                 }
 
                                 if (val.contains(":")) {
