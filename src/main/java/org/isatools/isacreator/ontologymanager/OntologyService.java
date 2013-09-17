@@ -38,7 +38,6 @@
 
 package org.isatools.isacreator.ontologymanager;
 
-import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
@@ -97,6 +96,6 @@ public interface OntologyService {
 
     public String getOntologyURL();
 
-    public List<Ontology> getAllOntologies();
+    //public List<Ontology> getAllOntologies();
 
 }

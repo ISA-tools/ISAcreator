@@ -204,8 +204,8 @@ public class BioPortalClient implements OntologyService {
         if (searchResults.containsKey(ontologyVersion + "-" + termAccession)) {
             bpo = searchResults.get(ontologyVersion + "-" + termAccession);
             if (bpo != null) {
-                if (bpo.getOntologyPurl() == null ||
-                        bpo.getOntologyPurl().trim().equals("")) {
+                if (bpo.getOntologyTermURI() == null ||
+                        bpo.getOntologyTermURI().trim().equals("")) {
                     bpo = performMetadataQuery(termAccession, ontologyVersion);
 
                     searchResults.put(ontologyVersion + "-" + termAccession, bpo);
