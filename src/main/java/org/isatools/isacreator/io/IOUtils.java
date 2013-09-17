@@ -2,6 +2,7 @@ package org.isatools.isacreator.io;
 
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class IOUtils {
      * Ontology terms are detected when there is a presence of 3 values in the field set with the same base name and
      * the words "Term Accession Number" & "Term Source Ref" are found.
      *
-     * @param fieldNames - field names for the section @see Set<String>
+     * @param fieldNames - field names for the ISA section @see Set<String>
      * @return Map from hashcode for field to a Map indicating which fields are source refs, terms and term accessions.
      */
     public static Map<Integer, Map<String, String>> getOntologyTerms(Set<String> fieldNames) {
@@ -133,7 +134,7 @@ public class IOUtils {
 
             if (oo != null && oo.getOntologyTermName() != null) {
                 tmpTerm = oo.getOntologyTermName();
-                tmpAccession = oo.getOntologyTermAccession();
+                tmpAccession = ISAcreatorProperties.getProperty("ontologyTermURI").equals("true") ? oo.getOntologyPurl() : oo.getOntologyTermAccession();
                 tmpSourceRefs = oo.getOntologySource();
 
                 System.out.println("Got ontology term... good times. Term is now " + tmpTerm);
