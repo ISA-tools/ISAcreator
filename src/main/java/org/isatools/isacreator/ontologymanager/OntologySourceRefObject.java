@@ -63,8 +63,8 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
 
     /**
      * @param sourceName        - e.g. GO
-     * @param sourceFile        - e.g. URL
-     * @param sourceVersion     - e.g. 0.2.1
+     * @param sourceFile        - e.g. URL (e.g. the BioPortal virtual id)
+     * @param sourceVersion     - e.g. 0.2.1 or the BioPortal version id
      * @param sourceDescription e.g. Gene Ontology
      */
     public OntologySourceRefObject(String sourceName, String sourceFile,
@@ -73,8 +73,21 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
         fieldValues.put(SOURCE_FILE, sourceFile);
         fieldValues.put(SOURCE_VERSION, sourceVersion);
         fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
+        autocomplete();
     }
 
+    public void autocomplete(){
+
+        String sourceName = getSourceName();
+        if (getSourceName()!=null){
+            if (getSourceFile()==null && getSourceVersion()==null && getSourceDescription() == null){
+                setSourceFile(BioPortalClient.getOntologySourceFile(sourceName));
+                setSourceDescription(BioPortalClient.getOntologyDescription(sourceName));
+                setSourceVersion(BioPortalClient.getOntologyVersion(sourceName));
+            }
+
+        }
+    }
 
     public String getSourceDescription() {
         return fieldValues.get(SOURCE_DESCRIPTION);
