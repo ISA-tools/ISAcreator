@@ -627,7 +627,12 @@ public class StructureToInvestigationMapper {
 
                 if (!term.trim().equals("") &&
                         !sourceRef.trim().equals("")) {
-                    ontologyTermsDefined.add(new OntologyTerm(
+
+                    if (accession.contains("http://"))
+                        ontologyTermsDefined.add(new OntologyTerm(
+                                term, null, accession, getOntologySource(sourceRef)));
+                    else
+                        ontologyTermsDefined.add(new OntologyTerm(
                             term, accession, null, getOntologySource(sourceRef)));
                 }
 
