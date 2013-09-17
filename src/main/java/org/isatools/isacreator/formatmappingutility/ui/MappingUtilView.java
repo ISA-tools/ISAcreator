@@ -108,6 +108,8 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
     private WorkingScreen workingProgressScreen;
     private Component lastPage;
 
+    private boolean mapToBlankFields = false;
+
     private String[] fileColumns;
     private int reader;
 
@@ -265,6 +267,21 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
 
         selectFilesContainer.add(selectMappingPanel);
+
+        final JCheckBox mapToBlankFieldsCheckbox = new JCheckBox("Do not remove blank fields?", false);
+        UIHelper.renderComponent(mapToBlankFieldsCheckbox, UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
+        mapToBlankFieldsCheckbox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                mapToBlankFields = mapToBlankFieldsCheckbox.isSelected();
+            }
+        });
+
+        JPanel removeBlanksContainer = new JPanel(new BorderLayout());
+        removeBlanksContainer.setOpaque(false);
+
+        removeBlanksContainer.add(mapToBlankFieldsCheckbox, BorderLayout.WEST);
+
+        selectFilesContainer.add(removeBlanksContainer);
 
         JPanel statusPanel = new JPanel(new GridLayout(1, 1));
         statusPanel.setPreferredSize(new Dimension(400, 30));
@@ -599,7 +616,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                 Thread mappingThread = new Thread(new Runnable() {
                     public void run() {
 
-                        final MappingLogic mu = new MappingLogic(mappingTableGUI.getTreeInfo(), tableReference, readerToUse);
+                        final MappingLogic mu = new MappingLogic(mappingTableGUI.getTreeInfo(), tableReference, readerToUse, mapToBlankFields);
 
                         TableReferenceObject populatedTRO = mu.doMapping(fileName, readerToUse);
 
