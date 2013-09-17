@@ -38,12 +38,13 @@
 package org.isatools.isacreator.io.exportisa;
 
 import org.apache.axis.utils.StringUtils;
-import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.managers.ApplicationManager;
-import org.isatools.isacreator.model.*;
+import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.model.Investigation;
+import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 
@@ -75,16 +76,17 @@ public abstract class ISAFileOutput {
         for (int i = 0; i < headerTerms.length; i++) {
             StringBuffer line = new StringBuffer(headerTerms[i] + "\t");
             String val = "";
-            for (OntologySourceRefObject anOntologiesUsed : OntologyManager.getOntologiesUsed()) {
+            List<OntologySourceRefObject> ontologiesUsed = OntologyManager.getOntologiesUsed();
+            for (OntologySourceRefObject anOntologyUsed : ontologiesUsed) {
 
                 if (headerTerms[i].equals("Term Source Name")) {
-                    val = anOntologiesUsed.getSourceName();
+                    val = anOntologyUsed.getSourceName();
                 } else if (headerTerms[i].equals("Term Source File")) {
-                    val = anOntologiesUsed.getSourceFile();
+                    val = anOntologyUsed.getSourceFile();
                 } else if (headerTerms[i].equals("Term Source Version")) {
-                    val = anOntologiesUsed.getSourceVersion();
+                    val = anOntologyUsed.getSourceVersion();
                 } else if (headerTerms[i].equals("Term Source Description")) {
-                    val = anOntologiesUsed.getSourceDescription();
+                    val = anOntologyUsed.getSourceDescription();
                 }
 
                 addToLine(line, StringUtils.isEmpty(val) ? " " : val);
