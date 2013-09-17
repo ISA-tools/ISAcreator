@@ -52,15 +52,11 @@ import org.isatools.isacreator.model.Factor;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologySelectionTool;
-import org.jdesktop.fuse.InjectedResource;
-import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
@@ -237,7 +233,8 @@ public class AddColumnGUI extends JDialog {
                         OntologyTerm term = OntologyManager.getOntologyTerm(evt.getNewValue().toString());
                         selectedOntologyTerm = term;
                         if (term != null) {
-                            field.setText(isHeaderType ? getStringForHeaderFromOntologyTerm(term) : term.getUniqueId());
+                            field.setText(term.getShortForm());
+                            //field.setText(isHeaderType ? getStringForHeaderFromOntologyTerm(term) : term.getShortForm());
                         } else {
                             field.setText(evt.getNewValue().toString());
                         }
@@ -254,9 +251,9 @@ public class AddColumnGUI extends JDialog {
         return dropdown;
     }
 
-    private String getStringForHeaderFromOntologyTerm(OntologyTerm ontologyTerm) {
-        return ontologyTerm.getUniqueId(); //OntologyTermUtils.ontologyTermToString(ontologyTerm);
-    }
+//    private String getStringForHeaderFromOntologyTerm(OntologyTerm ontologyTerm) {
+//        return ontologyTerm.getShortForm(); //OntologyTermUtils.ontologyTermToString(ontologyTerm);
+//    }
 
     /**
      * Create a field which requires ontology lookup.
