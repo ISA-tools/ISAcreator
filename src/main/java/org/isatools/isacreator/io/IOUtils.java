@@ -23,6 +23,26 @@ public class IOUtils {
     public static final String SOURCE_REF = "term source";
     public static final String ACCESSION = "term accession";
 
+
+    /**
+     *
+     * Given the full header (e.g. Characteristics[OBI:organism]) returns the header value inside the square brackets (e.g. OBI:organism).
+     *
+     * @param header
+     * @return
+     */
+    public static String getHeaderValue(String header){
+        if (header.contains("["))
+            return header.substring(header.indexOf('[') + 1, header.indexOf("]"));
+        return null;
+    }
+
+    public static String getHeaderName(String header){
+        if (header.contains("["))
+            return header.substring(0, header.indexOf('['));
+        return null;
+    }
+
     /**
      * Ontology terms are detected when there is a presence of 3 values in the field set with the same base name and
      * the words "Term Accession Number" & "Term Source Ref" are found.
@@ -134,7 +154,7 @@ public class IOUtils {
 
             if (oo != null && oo.getOntologyTermName() != null) {
                 tmpTerm = oo.getOntologyTermName();
-                tmpAccession = ISAcreatorProperties.getProperty("ontologyTermURI").equals("true") ? oo.getOntologyPurl() : oo.getOntologyTermAccession();
+                tmpAccession = ISAcreatorProperties.getProperty("ontologyTermURI").equals("true") ? oo.getOntologyTermURI() : oo.getOntologyTermAccession();
                 tmpSourceRefs = oo.getOntologySource();
 
                 System.out.println("Got ontology term... good times. Term is now " + tmpTerm);
