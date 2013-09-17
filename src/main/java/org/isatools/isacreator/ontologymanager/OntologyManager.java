@@ -53,6 +53,7 @@ public class OntologyManager {
     public static final String OLS = "OLS";
     public static final String BIO_PORTAL = "BioPortal";
 
+    //a map with <investigation, list of ontology source reference objects>
     private static Map<String, List<OntologySourceRefObject>> usedOntologySources = new HashMap<String, List<OntologySourceRefObject>>();
 
     private static Map<String, OntologySourceRefObject> completeOntologySourceDictionary = new HashMap<String, OntologySourceRefObject>();
@@ -71,6 +72,11 @@ public class OntologyManager {
         OntologyManager.ontologySelectionHistory.putAll(ontologySelectionHistory);
     }
 
+    public static void addToOntologySelectionHistory(String label, OntologyTerm term) {
+        OntologyManager.ontologySelectionHistory.put(label, term);
+    }
+
+
     public static void addToOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
         OntologyManager.ontologySelectionHistory.putAll(ontologySelectionHistory);
     }
@@ -81,7 +87,7 @@ public class OntologyManager {
 
     public static String getOntologyTermPurl(String dataValue){
         OntologyTerm ontologyTerm = getOntologyTerm(dataValue);
-        return ontologyTerm!=null? ontologyTerm.getOntologyPurl() : null;
+        return ontologyTerm!=null? ontologyTerm.getOntologyTermURI() : null;
     }
 
     public static String getOntologyTermAccession(String dataValue){
@@ -137,8 +143,9 @@ public class OntologyManager {
      */
     public static void addToUsedOntologies(OntologySourceRefObject osro) {
         String key = getValidKey();
-        removeAnyPreexistingOntologySourceRefForUpdate(key, osro);
+        //removeAnyPreexistingOntologySourceRefForUpdate(key, osro);
         getOntologiesUsed(key).add(osro);
+        //addToUsedOntologySources(key, osro);
     }
 
     private static String getValidKey() {
@@ -150,7 +157,6 @@ public class OntologyManager {
                 return key;
             }
         }
-
         return "investigation";
     }
 
@@ -191,18 +197,18 @@ public class OntologyManager {
         usedOntologySources.put(investigationAccession, ontologiesUsed);
     }
 
-    public static void removeAnyPreexistingOntologySourceRefForUpdate(String investigationAccession, OntologySourceRefObject osro) {
-
-        if (usedOntologySources.get(investigationAccession) != null) {
-            Iterator<OntologySourceRefObject> iterator = usedOntologySources.get(investigationAccession).iterator();
-            while (iterator.hasNext())
-
-                if (iterator.next().getSourceName().equals(osro.getSourceName())) {
-                    iterator.remove();
-                    return;
-                }
-        }
-    }
+//    public static void removeAnyPreexistingOntologySourceRefForUpdate(String investigationAccession, OntologySourceRefObject osro) {
+//
+//        if (usedOntologySources.get(investigationAccession) != null) {
+//            Iterator<OntologySourceRefObject> iterator = usedOntologySources.get(investigationAccession).iterator();
+//            while (iterator.hasNext())
+//
+//                if (iterator.next().getSourceName().equals(osro.getSourceName())) {
+//                    iterator.remove();
+//                    return;
+//                }
+//        }
+//    }
 
     public static void clearReferencedOntologySources() {
         usedOntologySources.clear();
@@ -219,7 +225,7 @@ public class OntologyManager {
     }
 
     public static void addToUsedOntologySources(String investigationAccession, OntologySourceRefObject ontologyToAdd) {
-        removeAnyPreexistingOntologySourceRefForUpdate(investigationAccession, ontologyToAdd);
+        //removeAnyPreexistingOntologySourceRefForUpdate(investigationAccession, ontologyToAdd);
 
         if (!usedOntologySources.containsKey(investigationAccession)) {
             usedOntologySources.put(investigationAccession, new ArrayList<OntologySourceRefObject>());
@@ -234,7 +240,7 @@ public class OntologyManager {
 
     public static void addToUserHistory(OntologyTerm oo) {
         if (oo!=null)
-            ontologySelectionHistory.put(oo.getUniqueId(), oo);
+            ontologySelectionHistory.put(oo.getShortForm(), oo);
     }
 
     public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {
