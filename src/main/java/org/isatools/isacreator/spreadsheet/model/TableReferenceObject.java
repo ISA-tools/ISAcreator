@@ -324,7 +324,7 @@ public class TableReferenceObject implements Serializable {
 
                 OntologyTerm ontologyTerm = OntologyTermUtils.stringToOntologyTerm(header);
 
-                String prevVal = ontologyTerm.getUniqueId(); //the uniqueID is source + ":" + term
+                String prevVal = ontologyTerm.getShortForm(); //the uniqueID is source + ":" + term
 
                 if (!prevVal.equals("") && !referencedOntologyTerms.containsKey(prevVal)) {
                     referencedOntologyTerms.put(prevVal, ontologyTerm);
