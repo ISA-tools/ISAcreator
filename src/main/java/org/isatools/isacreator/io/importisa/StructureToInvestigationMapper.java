@@ -698,8 +698,8 @@ public class StructureToInvestigationMapper {
         for (OntologyTerm oo : ontologyTermsDefined) {
             if (!definedOntologySources.contains(oo.getOntologySource()) &&
                     !oo.getOntologySource().equals("")) {
-                System.out.println(oo.getUniqueId());
-                if (!GeneralUtils.isValueURL(oo.getUniqueId())) {
+                System.out.println(oo.getShortForm());
+                if (!GeneralUtils.isValueURL(oo.getShortForm())) {
                     missingOntologyObjects.add(oo.getOntologySource());
                 }
             }

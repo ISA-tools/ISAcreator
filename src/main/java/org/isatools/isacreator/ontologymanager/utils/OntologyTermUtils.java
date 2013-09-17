@@ -47,7 +47,7 @@ public class OntologyTermUtils {
 
         BioPortalClient bioPortalClient = new BioPortalClient();
         ontologyTerm = bioPortalClient.getTermInformation(ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologySourceInformation().getSourceVersion());
-        OntologyManager.addToOntologySelectionHistory(ontologyTerm.getShortForm(), ontologyTerm);
+        //OntologyManager.addToOntologySelectionHistory(ontologyTerm.getShortForm(), ontologyTerm);
         return ontologyTerm;
     }
 
