@@ -1,5 +1,7 @@
 package org.isatools.isacreator.ontologymanager.utils;
 
+import org.isatools.isacreator.io.IOUtils;
+import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -32,16 +34,28 @@ public class OntologyTermUtils {
      * @return
      */
    public static String ontologyTermToString(OntologyTerm ontologyTerm){
-       if (ontologyTerm.getOntologyPurl()!=null && ISAcreatorProperties.getProperty("ontologyTermURI").equals("true")){
-           return ontologyTerm.getOntologyTermName() +"," + ontologyTerm.getOntologyPurl() + "," + ontologyTerm.getOntologySource();
+       if (ontologyTerm.getOntologyTermURI()!=null && ISAcreatorProperties.getProperty("ontologyTermURI").equals("true")){
+           return ontologyTerm.getOntologyTermName() +"," + ontologyTerm.getOntologyTermURI() + "," + ontologyTerm.getOntologySource();
        }
      return ontologyTerm.getOntologyTermName() + "," +  ontologyTerm.getOntologyTermAccession() +"," + ontologyTerm.getOntologySource();
    }
 
+    public static OntologyTerm getURI(OntologyTerm ontologyTerm){
+        if (ontologyTerm==null || ontologyTerm.getOntologyTermAccession()==null
+                || ontologyTerm.getOntologySourceInformation()==null || ontologyTerm.getOntologySourceInformation().getSourceVersion()==null)
+            return null;
+
+        BioPortalClient bioPortalClient = new BioPortalClient();
+        ontologyTerm = bioPortalClient.getTermInformation(ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologySourceInformation().getSourceVersion());
+        OntologyManager.addToOntologySelectionHistory(ontologyTerm.getShortForm(), ontologyTerm);
+        return ontologyTerm;
+    }
+
+
    public static OntologyTerm stringToOntologyTerm(String header){
        OntologyTerm ontologyTerm = null;
 
-       String prevVal = header.substring(header.indexOf('[') + 1, header.indexOf("]"));
+       String prevVal = IOUtils.getHeaderValue(header);
 
        String source = "";
        String term = "";
@@ -148,10 +162,10 @@ public class OntologyTermUtils {
         String headerName = fullAnnotatedHeader.substring(0,fullAnnotatedHeader.indexOf('['));
         String uniqueId = null;
         if (ontologyTerm != null) {
-            uniqueId = headerName +"["+ ontologyTerm.getUniqueId() + "]";
+            uniqueId = headerName +"["+ ontologyTerm.getShortForm() + "]";
 
             Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
-            if (history.get(ontologyTerm.getUniqueId())==null) {
+            if (history.get(ontologyTerm.getShortForm())==null) {
                 Map<String, OntologyTerm> map = new HashMap<String, OntologyTerm>();
                 map.put(uniqueId, ontologyTerm);
                 OntologyManager.addToOntologySelectionHistory(map);
