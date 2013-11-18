@@ -44,7 +44,10 @@ import org.isatools.isacreator.assayselection.AssaySelection;
 import org.isatools.isacreator.assayselection.AssaySelectionDialog;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.WeakPropertyChangeListener;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.gui.commentui.ContainerAddCommentGUI;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.formelements.assay.AssayInformationPanel;
 import org.isatools.isacreator.gui.formelements.assay.AssayInformationWriter;
@@ -63,6 +66,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -97,6 +102,7 @@ public class StudyDataEntry extends DataEntryForm {
     private ViewAssayListener viewAssayListener = new ViewAssayListener();
     private AddAssayListener addAssayListener = new AddAssayListener();
     private JPanel fieldContainer;
+    private Box studyDetailsFieldContainer;
 
 
     /**
@@ -151,6 +157,21 @@ public class StudyDataEntry extends DataEntryForm {
         Box subPanel = Box.createVerticalBox();
         subPanel.add(Box.createVerticalStrut(20));
 
+        FlatButton addMoreFieldsButton = new FlatButton(ButtonType.GREEN, "+ Add more fields");
+        addMoreFieldsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                new ContainerAddCommentGUI<StudyDataEntry>(StudyDataEntry.this);
+            }
+        });
+
+        JPanel moreFieldsButtonContainer = new JPanel(new BorderLayout());
+        moreFieldsButtonContainer.setOpaque(false);
+        moreFieldsButtonContainer.add(addMoreFieldsButton, BorderLayout.WEST);
+
+        subPanel.add(Box.createVerticalStrut(5));
+        subPanel.add(moreFieldsButtonContainer);
+
+        subPanel.add(Box.createVerticalStrut(20));
         subPanel.add(createStudyAssaySection());
         subPanel.add(Box.createVerticalStrut(20));
 
@@ -310,12 +331,13 @@ public class StudyDataEntry extends DataEntryForm {
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
-        Box verticalContainer = Box.createVerticalBox();
+        studyDetailsFieldContainer = Box.createVerticalBox();
 
-        addFieldsToPanel(verticalContainer, InvestigationFileSection.STUDY_SECTION,
+        addFieldsToPanel(studyDetailsFieldContainer, InvestigationFileSection.STUDY_SECTION,
                 study.getFieldValues(), study.getReferenceObject());
 
-        studyDesc.add(verticalContainer, BorderLayout.NORTH);
+
+        studyDesc.add(studyDetailsFieldContainer, BorderLayout.NORTH);
 
         return studyDesc;
     }
@@ -744,6 +766,10 @@ public class StudyDataEntry extends DataEntryForm {
                 assayContainer.repaint();
             }
         }
+    }
+
+    public Box getStudyDetailsFieldContainer() {
+        return studyDetailsFieldContainer;
     }
 
 }

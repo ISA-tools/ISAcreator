@@ -39,10 +39,9 @@ public abstract class AbstractAddCommentGUI extends JFrame {
     public static final String CUSTOM = "custom";
     private JPanel swappableContainer;
 
-    private Map<String, Container> commentUIs;
     private static Map<String, TableReferenceObject> templateToFields;
     private List<JLabel> labels;
-    private List<String> selectedFields;
+    private List<JCheckBox> selectedFieldComponents;
     private Timer timer;
 
     static {
@@ -58,7 +57,6 @@ public abstract class AbstractAddCommentGUI extends JFrame {
     }
 
     public AbstractAddCommentGUI() {
-        commentUIs = new HashMap<String, Container>();
         labels = new ArrayList<JLabel>();
         createGUI();
     }
@@ -193,7 +191,7 @@ public abstract class AbstractAddCommentGUI extends JFrame {
             return getAddCustomPanel();
         }
 
-        selectedFields = new ArrayList<String>();
+        selectedFieldComponents = new ArrayList<JCheckBox>();
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(UIHelper.BG_COLOR);
@@ -205,21 +203,22 @@ public abstract class AbstractAddCommentGUI extends JFrame {
             field.setBackground(UIHelper.BG_COLOR);
 
             final JCheckBox checkBox = new JCheckBox(fieldName, false);
+            UIHelper.renderComponent(checkBox, UIHelper.VER_10_PLAIN, UIHelper.GREY_COLOR, false);
+
             checkBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
                     JCheckBox source = (JCheckBox) actionEvent.getSource();
 
-                    if(source.isSelected()) {
-                        System.out.println(source.getText() + " is selected.");
-                        selectedFields.add(source.getText());
+                    if (source.isSelected()) {
+                        selectedFieldComponents.add(source);
                     } else {
-                        if(selectedFields.contains(source.getText())) {
-                            selectedFields.remove(source.getText());
+                        if (selectedFieldComponents.contains(source)) {
+                            selectedFieldComponents.remove(source);
                         }
                     }
                 }
             });
-            if(!okToAddField(fieldName)) checkBox.setEnabled(false);
+            if (!okToAddField(fieldName)) checkBox.setEnabled(false);
             field.add(checkBox);
 
             fields.add(field);
@@ -231,8 +230,8 @@ public abstract class AbstractAddCommentGUI extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(fieldContainer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         IAppWidgetFactory.makeIAppScrollPane(scrollPane);
-        panel.setPreferredSize(new Dimension(300,400));
-        scrollPane.setBorder(new EmptyBorder(30,0,0,0));
+        panel.setPreferredSize(new Dimension(300, 400));
+        scrollPane.setBorder(new EmptyBorder(30, 0, 0, 0));
 
         panel.add(scrollPane, BorderLayout.CENTER);
 
@@ -246,8 +245,11 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
 
-                for(String fieldToAdd : selectedFields) {
-                    addFieldsToDisplay(templateToFields.get(templateName).getFieldByName(fieldToAdd));
+                for (JCheckBox fieldToAdd : selectedFieldComponents) {
+                    if (fieldToAdd.isEnabled()) {
+                        addFieldsToDisplay(templateToFields.get(templateName).getFieldByName(fieldToAdd.getText()));
+                        fieldToAdd.setEnabled(false);
+                    }
                 }
 
                 fieldAddStatus.setText("Field added successfully!");
@@ -280,7 +282,6 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         fieldPanel.setBorder(new EmptyBorder(30, 0, 0, 0));
         fieldPanel.setBackground(UIHelper.BG_COLOR);
 
-
         final JPanel field = new JPanel(new GridLayout(1, 3));
         field.setBackground(UIHelper.BG_COLOR);
 
@@ -289,7 +290,7 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         final RoundedJTextField fieldName = new RoundedJTextField(20);
         field.add(fieldName);
 
-        final JComboBox fieldType = new JComboBox(new String[]{"String", "Ontology term", "Date"});
+        final JComboBox fieldType = new JComboBox(new String[]{"String", "Ontology term"});
         field.add(fieldType);
 
         fieldPanel.add(field, BorderLayout.NORTH);
@@ -306,7 +307,7 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
 
-                if(!fieldName.getText().isEmpty()) {
+                if (!fieldName.getText().isEmpty()) {
                     addFieldsToDisplay(new FieldObject(fieldName.getText(), "", DataTypes.resolveDataType(fieldType.getSelectedItem().toString()), "", false, false, false));
 
                     fieldAddStatus.setText("Field added successfully!");
@@ -314,9 +315,6 @@ public abstract class AbstractAddCommentGUI extends JFrame {
                     fieldAddStatus.setForeground(UIHelper.RED_COLOR);
                     fieldAddStatus.setText("Field added successfully!");
                 }
-
-
-
                 timer = new Timer(3000, new ActionListener() {
                     public void actionPerformed(ActionEvent actionEvent) {
                         fieldAddStatus.setText("");

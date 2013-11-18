@@ -128,13 +128,17 @@ public class InvestigationDataEntry extends DataEntryForm {
         FlatButton addMoreFieldsButton = new FlatButton(ButtonType.GREEN, "+ Add more fields");
         addMoreFieldsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                new ContainerAddCommentGUI(InvestigationDataEntry.this);
+                new ContainerAddCommentGUI<InvestigationDataEntry>(InvestigationDataEntry.this);
             }
         });
 
+        JPanel moreFieldsButtonContainer = new JPanel(new BorderLayout());
+        moreFieldsButtonContainer.setOpaque(false);
+        moreFieldsButtonContainer.add(addMoreFieldsButton, BorderLayout.WEST);
+
         investigationFields.add(investigationDetailsPanel);
         investigationFields.add(Box.createVerticalStrut(5));
-        investigationFields.add(addMoreFieldsButton);
+        investigationFields.add(moreFieldsButtonContainer);
         investigationFields.add(Box.createVerticalStrut(20));
         investigationFields.add(createInvestigationPublicationSubForm());
         investigationFields.add(Box.createVerticalStrut(20));

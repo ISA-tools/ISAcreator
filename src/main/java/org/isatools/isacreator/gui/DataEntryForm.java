@@ -71,10 +71,6 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -299,7 +295,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     }
 
-    protected void generateAliases(Set<String> fieldValues) {
+    public void generateAliases(Set<String> fieldValues) {
 
         if (aliasesToRealNames == null) {
             aliasesToRealNames = new HashMap<String, String>();
@@ -311,8 +307,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
             if (fieldName.toLowerCase().startsWith("comment")) {
                 String alias = StringProcessing.extractQualifierFromField(fieldName) + " [c]";
-
-                System.out.println("Alias for " + fieldName + " is " + alias);
                 aliasesToRealNames.put(alias, fieldName);
                 realNamesToAliases.put(fieldName, alias);
             }
@@ -328,6 +322,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
      * @param referenceObject  - A @see DataEntryReferenceObject which gives information about
      */
     public void addFieldsToPanel(Container containerToAddTo, InvestigationFileSection sectionToAddTo, OrderedMap<String, String> fieldValues, DataEntryReferenceObject referenceObject) {
+
 
         if (fieldDefinitions == null) {
             fieldDefinitions = new ListOrderedMap<String, JComponent>();
