@@ -90,6 +90,10 @@ public class DataEntryReferenceObject {
         return fieldDefinition;
     }
 
+    public void addFieldObject(FieldObject fieldObject) {
+        fieldDefinition.put(fieldObject.getFieldName(), fieldObject);
+    }
+
     public Set<String> getFieldsForSection(InvestigationFileSection section) {
         return getSectionDefinition().get(section);
     }

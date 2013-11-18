@@ -175,7 +175,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     public void createGUI() {
-        ResourceInjector.get("gui-package.style").inject(true, new Object[] {this});
+        ResourceInjector.get("gui-package.style").inject(true, new Object[]{this});
         initialisePanel();
         setupTableModel(initialNoFields);
 
@@ -632,7 +632,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     public abstract boolean doAddColumn(DefaultTableModel model, TableColumn col);
 
 
-
     public abstract void reformPreviousContent();
 
     private void removalConfirmation(final FieldTypes whatIsBeingRemoved) {
@@ -757,27 +756,29 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     protected void checkForSourcePresence(String source) {
-        List<OntologySourceRefObject> definedSources = dataEntryForm.getDataEntryEnvironment()
-                .getOntologySources();
-        boolean isPresent = false;
+        if (dataEntryForm != null && dataEntryForm.getDataEntryEnvironment() != null) {
+            List<OntologySourceRefObject> definedSources = dataEntryForm.getDataEntryEnvironment()
+                    .getOntologySources();
+            boolean isPresent = false;
 
-        for (OntologySourceRefObject osro : definedSources) {
-            if (osro.getSourceName().equals(source)) {
-                isPresent = true;
-            }
-        }
-
-        // if it doesn't exist, then add the ontology information to the defined sources
-        if (!isPresent) {
-
-            OntologySourceRefObject osro = UserProfileManager.getCurrentUser()
-                    .getOntologySource(source);
-
-            if (osro == null) {
-                osro = new OntologySourceRefObject(source, "", OntologyManager.getOntologyVersion(source), OntologyManager.getOntologyDescription(source));
+            for (OntologySourceRefObject osro : definedSources) {
+                if (osro.getSourceName().equals(source)) {
+                    isPresent = true;
+                }
             }
 
-            dataEntryForm.getDataEntryEnvironment().getOntologySources().add(osro);
+            // if it doesn't exist, then add the ontology information to the defined sources
+            if (!isPresent) {
+
+                OntologySourceRefObject osro = UserProfileManager.getCurrentUser()
+                        .getOntologySource(source);
+
+                if (osro == null) {
+                    osro = new OntologySourceRefObject(source, "", OntologyManager.getOntologyVersion(source), OntologyManager.getOntologyDescription(source));
+                }
+
+                dataEntryForm.getDataEntryEnvironment().getOntologySources().add(osro);
+            }
         }
     }
 

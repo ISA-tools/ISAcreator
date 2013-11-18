@@ -39,7 +39,11 @@ package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.gui.commentui.AbstractAddCommentGUI;
+import org.isatools.isacreator.gui.commentui.ContainerAddCommentGUI;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
@@ -55,6 +59,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -73,6 +79,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
     private SubForm publicationsSubForm;
     private SubForm contactsSubform;
+    private JPanel investigationDetailsPanel;
 
 
     public InvestigationDataEntry(Investigation investigation, DataEntryEnvironment dep) {
@@ -93,19 +100,19 @@ public class InvestigationDataEntry extends DataEntryForm {
         JPanel container = new JPanel(new BorderLayout());
         container.setBackground(UIHelper.BG_COLOR);
 
-        JPanel invDescPanel = new JPanel();
-        invDescPanel.setLayout(new BoxLayout(invDescPanel, BoxLayout.PAGE_AXIS));
-        UIHelper.renderComponent(invDescPanel, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
-        invDescPanel.setBorder(new TitledBorder(
+        investigationDetailsPanel = new JPanel();
+        investigationDetailsPanel.setLayout(new BoxLayout(investigationDetailsPanel, BoxLayout.PAGE_AXIS));
+        UIHelper.renderComponent(investigationDetailsPanel, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
+        investigationDetailsPanel.setBorder(new TitledBorder(
                 UIHelper.GREEN_ROUNDED_BORDER, "investigation description",
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.CENTER,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
         // create box to contain all the fields
-        Box fields = Box.createVerticalBox();
+        Box investigationFields = Box.createVerticalBox();
         // add a spacer to the layout
-        fields.add(Box.createVerticalStrut(5));
+        investigationFields.add(Box.createVerticalStrut(5));
 
         if (investigation.getReferenceObject() == null) {
             TableReferenceObject tro =
@@ -116,19 +123,28 @@ public class InvestigationDataEntry extends DataEntryForm {
             investigation.setReferenceObject(referenceObject);
         }
 
-        addFieldsToPanel(invDescPanel, InvestigationFileSection.INVESTIGATION_SECTION, investigation.getFieldValues(), investigation.getReferenceObject());
+        addFieldsToPanel(investigationDetailsPanel, InvestigationFileSection.INVESTIGATION_SECTION, investigation.getFieldValues(), investigation.getReferenceObject());
 
-        fields.add(invDescPanel);
-        fields.add(Box.createVerticalStrut(20));
-        fields.add(createInvestigationPublicationSubForm());
-        fields.add(Box.createVerticalStrut(20));
-        fields.add(createInvestigationContactsSubForm());
-        fields.add(Box.createVerticalStrut(20));
-        fields.add(Box.createGlue());
+        FlatButton addMoreFieldsButton = new FlatButton(ButtonType.GREEN, "+ Add more fields");
+        addMoreFieldsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                new ContainerAddCommentGUI(InvestigationDataEntry.this);
+            }
+        });
+
+        investigationFields.add(investigationDetailsPanel);
+        investigationFields.add(Box.createVerticalStrut(5));
+        investigationFields.add(addMoreFieldsButton);
+        investigationFields.add(Box.createVerticalStrut(20));
+        investigationFields.add(createInvestigationPublicationSubForm());
+        investigationFields.add(Box.createVerticalStrut(20));
+        investigationFields.add(createInvestigationContactsSubForm());
+        investigationFields.add(Box.createVerticalStrut(20));
+        investigationFields.add(Box.createGlue());
 
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.setBackground(UIHelper.BG_COLOR);
-        northPanel.add(fields, BorderLayout.CENTER);
+        northPanel.add(investigationFields, BorderLayout.CENTER);
 
         JLabel header = new JLabel(panelHeader,
                 JLabel.RIGHT);
@@ -275,5 +291,9 @@ public class InvestigationDataEntry extends DataEntryForm {
         ApplicationManager.getUserInterfaceForISASection(investigation).removeAll();
 
         investigation = null;
+    }
+
+    public JPanel getInvestigationDetailsPanel() {
+        return investigationDetailsPanel;
     }
 }
