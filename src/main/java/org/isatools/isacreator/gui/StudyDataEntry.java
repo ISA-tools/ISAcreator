@@ -94,8 +94,6 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel assayContainer;
     private AssaySelectionDialog assaySelectionUI;
 
-    private Map<FieldTypes, JPanel> fieldTypeToFieldContainer;
-    private Map<FieldTypes, SubForm> fieldTypeToSubform;
 
 
     private RemoveAssayListener removeAssayListener = new RemoveAssayListener();
@@ -120,8 +118,7 @@ public class StudyDataEntry extends DataEntryForm {
     }
 
     public void createGUI() {
-        fieldTypeToFieldContainer = new HashMap<FieldTypes, JPanel>();
-        fieldTypeToSubform = new HashMap<FieldTypes, SubForm>();
+
 
         Map<String, List<String>> measToAllowedTechnologies =
                 ConfigurationManager.getAllowedTechnologiesPerEndpoint();
@@ -220,7 +217,7 @@ public class StudyDataEntry extends DataEntryForm {
     }
 
     private JPanel getButtonForFieldAddition(final FieldTypes type) {
-        FlatButton addStudyDesignFieldButton = new FlatButton(ButtonType.GREEN, String.format("+ New Field To Study %s Descriptors", type.toString()));
+        FlatButton addStudyDesignFieldButton = new FlatButton(ButtonType.GREEN, String.format("+ New field to %s descriptors", type.toString()));
         addStudyDesignFieldButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -237,17 +234,6 @@ public class StudyDataEntry extends DataEntryForm {
         return addStudyDesignFieldButtonContainer;
     }
 
-    public JPanel getContainerForFieldType(FieldTypes type) {
-        return fieldTypeToFieldContainer.get(type);
-    }
-
-    public SubForm getSubFormForFieldType(FieldTypes type) {
-        return fieldTypeToSubform.get(type);
-    }
-
-    public void setSubFormForFieldType(FieldTypes type, SubForm subform) {
-        fieldTypeToSubform.put(type, subform);
-    }
 
     /**
      * Create the Assay definition section.
@@ -738,53 +724,6 @@ public class StudyDataEntry extends DataEntryForm {
 
     public void reformFactors() {
         fieldTypeToSubform.get(FieldTypes.FACTOR).reformItems();
-    }
-
-    public void removeReferences() {
-        setDataEntryEnvironment(null);
-
-        for (SubForm subform : fieldTypeToSubform.values()) {
-            subform.cleanupReferences();
-        }
-
-        fieldTypeToSubform.clear();
-
-        addRecord.getParent().removeAll();
-        addRecord.removeMouseListener(addRecord.getMouseListeners()[0]);
-        addRecord = null;
-
-        assayContainer.getParent().removeAll();
-        assayContainer.removeAll();
-        assayContainer = null;
-
-        assaySelectionUI.removePropertyChangeListener("assaysChosen", new WeakPropertyChangeListener(addAssayListener));
-        assaySelectionUI.removeAll();
-        assaySelectionUI = null;
-
-        addAssayListener = null;
-        viewAssayListener = null;
-        removeAssayListener = null;
-
-
-        ApplicationManager.getIsaSectionToDataEntryForm().get(study.getStudySample()).setDataEntryEnvironment(null);
-
-        for (String assayReference : study.getAssays().keySet()) {
-            Assay assay = study.getAssays().get(assayReference);
-            ApplicationManager.removeISASectionAndDataEntryForm(assay);
-        }
-
-        study.getAssays().clear();
-
-
-        setDataEntryEnvironment(null);
-        study.setAssays(null);
-        study.setStudySamples(null);
-        study = null;
-
-        fieldContainer.removeAll();
-        ApplicationManager.clearUserInterfaceAssignments();
-
-        removeAll();
     }
 
     class RemoveAssayListener implements PropertyChangeListener {

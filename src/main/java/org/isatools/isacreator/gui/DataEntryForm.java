@@ -49,6 +49,8 @@ import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.filechooser.FileChooserUI;
+import org.isatools.isacreator.gui.formelements.FieldTypes;
+import org.isatools.isacreator.gui.formelements.SubForm;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedCancelledEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
@@ -83,6 +85,9 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public static final int SUBFORM_WIDTH = 300;
 
     private DataEntryEnvironment dataEntryEnvironment;
+    protected Map<FieldTypes, JPanel> fieldTypeToFieldContainer;
+    protected Map<FieldTypes, SubForm> fieldTypeToSubform;
+
 
     // this will house the translation between Comment aliases e.g. Publication Journal [c] to Comment[Publication Journal]
     protected Map<String, String> aliasesToRealNames;
@@ -91,11 +96,14 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     protected OrderedMap<String, JComponent> fieldDefinitions;
 
-    public DataEntryForm(DataEntryEnvironment dataEntryEnvironment) {
-        this.dataEntryEnvironment = dataEntryEnvironment;
+    public DataEntryForm() {
+        this(null);
     }
 
-    public DataEntryForm() {
+    public DataEntryForm(DataEntryEnvironment dataEntryEnvironment) {
+        this.dataEntryEnvironment = dataEntryEnvironment;
+        fieldTypeToFieldContainer = new HashMap<FieldTypes, JPanel>();
+        fieldTypeToSubform = new HashMap<FieldTypes, SubForm>();
     }
 
     public void update() {
@@ -134,6 +142,19 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public void setDataEntryEnvironment(DataEntryEnvironment dataEntryEnvironment) {
         this.dataEntryEnvironment = dataEntryEnvironment;
     }
+
+    public JPanel getContainerForFieldType(FieldTypes type) {
+        return fieldTypeToFieldContainer.get(type);
+    }
+
+    public SubForm getSubFormForFieldType(FieldTypes type) {
+        return fieldTypeToSubform.get(type);
+    }
+
+    public void setSubFormForFieldType(FieldTypes type, SubForm subform) {
+        fieldTypeToSubform.put(type, subform);
+    }
+
 
     /**
      * Method to be overridden by subclasses for creating all fields

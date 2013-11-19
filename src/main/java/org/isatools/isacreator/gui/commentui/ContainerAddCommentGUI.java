@@ -65,4 +65,13 @@ public class ContainerAddCommentGUI<T extends DataEntryForm> extends AbstractAdd
         }
     }
 
+    @Override
+    public boolean isFieldAllowedInSection(String template, String fieldName) {
+        if (entryEnvironment instanceof InvestigationDataEntry) {
+            return templateToFields.get(template).getFieldByName(fieldName).getSection().equals(InvestigationFileSection.INVESTIGATION_SECTION.toString());
+        } else {
+            return templateToFields.get(template).getFieldByName(fieldName).getSection().equals(InvestigationFileSection.STUDY_SECTION.toString());
+        }
+    }
+
 }

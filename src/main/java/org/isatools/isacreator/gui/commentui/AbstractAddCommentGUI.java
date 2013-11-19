@@ -27,19 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eamonnmaguire
- * Date: 30/10/2013
- * Time: 09:07
- * To change this template use File | Settings | File Templates.
- */
 public abstract class AbstractAddCommentGUI extends JFrame {
 
     public static final String CUSTOM = "custom";
+    public static final int WINDOW_WIDTH = 600;
+    public static final int WINDOW_HEIGHT = 500;
     private JPanel swappableContainer;
 
-    private static Map<String, TableReferenceObject> templateToFields;
+    protected static Map<String, TableReferenceObject> templateToFields;
     private List<JLabel> labels;
     private List<JCheckBox> selectedFieldComponents;
     private Timer timer;
@@ -64,8 +59,9 @@ public abstract class AbstractAddCommentGUI extends JFrame {
     private void createGUI() {
         setUndecorated(true);
         setLayout(new BorderLayout());
+        setAlwaysOnTop(true);
         setBackground(new Color(248, 248, 249));
-        setPreferredSize(new Dimension(600, 500));
+        setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
         ((JComponent) getContentPane()).setBorder(UIHelper.EMPTY_BORDER);
         addTitlePanel();
         addSidePanel();
@@ -198,30 +194,39 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         panel.add(UIHelper.createLabel(String.format("Add %s fields to Interface", templateName)), BorderLayout.NORTH);
 
         Box fields = Box.createVerticalBox();
+        int addedFieldsCount = 0;
         for (String fieldName : templateToFields.get(templateName).getFieldLookup().keySet()) {
-            final JPanel field = new JPanel(new GridLayout(1, 1));
-            field.setBackground(UIHelper.BG_COLOR);
+            if (isFieldAllowedInSection(templateName, fieldName)) {
+                final JPanel field = new JPanel(new GridLayout(1, 1));
+                field.setBackground(UIHelper.BG_COLOR);
 
-            final JCheckBox checkBox = new JCheckBox(fieldName, false);
-            UIHelper.renderComponent(checkBox, UIHelper.VER_10_PLAIN, UIHelper.GREY_COLOR, false);
+                final JCheckBox checkBox = new JCheckBox(fieldName, false);
+                UIHelper.renderComponent(checkBox, UIHelper.VER_10_PLAIN, UIHelper.GREY_COLOR, false);
 
-            checkBox.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent actionEvent) {
-                    JCheckBox source = (JCheckBox) actionEvent.getSource();
+                checkBox.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        JCheckBox source = (JCheckBox) actionEvent.getSource();
 
-                    if (source.isSelected()) {
-                        selectedFieldComponents.add(source);
-                    } else {
-                        if (selectedFieldComponents.contains(source)) {
-                            selectedFieldComponents.remove(source);
+                        if (source.isSelected()) {
+                            selectedFieldComponents.add(source);
+                        } else {
+                            if (selectedFieldComponents.contains(source)) {
+                                selectedFieldComponents.remove(source);
+                            }
                         }
                     }
-                }
-            });
-            if (!okToAddField(fieldName)) checkBox.setEnabled(false);
-            field.add(checkBox);
+                });
+                if (!okToAddField(fieldName)) checkBox.setEnabled(false);
+                field.add(checkBox);
 
-            fields.add(field);
+                fields.add(field);
+
+                addedFieldsCount++;
+            }
+        }
+
+        if (addedFieldsCount == 0) {
+            fields.add(UIHelper.createLabel("No available predefined fields for the selected section.", UIHelper.VER_10_BOLD, UIHelper.LIGHT_GREY_COLOR));
         }
 
         JPanel fieldContainer = new JPanel(new BorderLayout());
@@ -235,39 +240,40 @@ public abstract class AbstractAddCommentGUI extends JFrame {
 
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        final JPanel buttonContainer = new JPanel(new BorderLayout());
-        buttonContainer.setOpaque(false);
+        // only add a button if we have fields to add to it.
+        if (addedFieldsCount > 0) {
+            final JPanel buttonContainer = new JPanel(new BorderLayout());
+            buttonContainer.setOpaque(false);
 
-        final JLabel fieldAddStatus = UIHelper.createLabel("", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR);
-        buttonContainer.add(fieldAddStatus, BorderLayout.WEST);
+            final JLabel fieldAddStatus = UIHelper.createLabel("", UIHelper.VER_10_BOLD, UIHelper.GREY_COLOR);
+            buttonContainer.add(fieldAddStatus, BorderLayout.WEST);
 
-        FlatButton button = new FlatButton(ButtonType.GREEN, "Add Field(s)");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
+            FlatButton button = new FlatButton(ButtonType.GREEN, "Add Field(s)");
+            button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
 
-                for (JCheckBox fieldToAdd : selectedFieldComponents) {
-                    if (fieldToAdd.isEnabled()) {
-                        addFieldsToDisplay(templateToFields.get(templateName).getFieldByName(fieldToAdd.getText()));
-                        fieldToAdd.setEnabled(false);
+                    for (JCheckBox fieldToAdd : selectedFieldComponents) {
+                        if (fieldToAdd.isEnabled()) {
+                            addFieldsToDisplay(templateToFields.get(templateName).getFieldByName(fieldToAdd.getText()));
+                            fieldToAdd.setEnabled(false);
+                        }
                     }
+
+                    fieldAddStatus.setText("Field added successfully!");
+
+                    timer = new Timer(2000, new ActionListener() {
+                        public void actionPerformed(ActionEvent actionEvent) {
+                            fieldAddStatus.setText("");
+                            timer.stop();
+
+                        }
+                    });
+                    timer.start();
                 }
-
-                fieldAddStatus.setText("Field added successfully!");
-
-                timer = new Timer(2000, new ActionListener() {
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        fieldAddStatus.setText("");
-                        timer.stop();
-
-                    }
-                });
-                timer.start();
-            }
-        });
-
-
-        buttonContainer.add(button, BorderLayout.EAST);
-        panel.add(buttonContainer, BorderLayout.SOUTH);
+            });
+            buttonContainer.add(button, BorderLayout.EAST);
+            panel.add(buttonContainer, BorderLayout.SOUTH);
+        }
 
         return panel;
     }
@@ -307,12 +313,13 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
 
-                if (!fieldName.getText().isEmpty()) {
-                    addFieldsToDisplay(new FieldObject("Comment[" + fieldName.getText() + "]", "", DataTypes.resolveDataType(fieldType.getSelectedItem().toString()), "", false, false, false));
+                if (!fieldName.getText().isEmpty() && okToAddField(fieldName.getText())) {
+                    addFieldsToDisplay(new FieldObject("Comment[" + fieldName.getText() + "]", "",
+                            DataTypes.resolveDataType(fieldType.getSelectedItem().toString()), "", false, false, false));
                     fieldAddStatus.setText("Field added successfully!");
                 } else {
                     fieldAddStatus.setForeground(UIHelper.RED_COLOR);
-                    fieldAddStatus.setText("Field added successfully!");
+                    fieldAddStatus.setText("Field not added. Already exists!");
                 }
                 timer = new Timer(3000, new ActionListener() {
                     public void actionPerformed(ActionEvent actionEvent) {
@@ -336,5 +343,7 @@ public abstract class AbstractAddCommentGUI extends JFrame {
     public abstract void addFieldsToDisplay(FieldObject fieldObject);
 
     public abstract boolean okToAddField(String fieldName);
+
+    public abstract boolean isFieldAllowedInSection(String template, String fieldName);
 
 }

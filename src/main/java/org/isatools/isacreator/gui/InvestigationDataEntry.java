@@ -42,13 +42,12 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.gui.commentui.AbstractAddCommentGUI;
 import org.isatools.isacreator.gui.commentui.ContainerAddCommentGUI;
+import org.isatools.isacreator.gui.commentui.SubFormAddCommentGUI;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
-import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
@@ -77,8 +76,7 @@ public class InvestigationDataEntry extends DataEntryForm {
 
     private Investigation investigation;
 
-    private SubForm publicationsSubForm;
-    private SubForm contactsSubform;
+
     private JPanel investigationDetailsPanel;
 
 
@@ -93,7 +91,6 @@ public class InvestigationDataEntry extends DataEntryForm {
         createInvestigationSectionFields();
         finalisePane();
     }
-
 
 
     private void createInvestigationSectionFields() {
@@ -142,8 +139,10 @@ public class InvestigationDataEntry extends DataEntryForm {
         investigationFields.add(moreFieldsButtonContainer);
         investigationFields.add(Box.createVerticalStrut(20));
         investigationFields.add(createInvestigationPublicationSubForm());
+        investigationFields.add(getButtonForFieldAddition(FieldTypes.PUBLICATION));
         investigationFields.add(Box.createVerticalStrut(20));
         investigationFields.add(createInvestigationContactsSubForm());
+        investigationFields.add(getButtonForFieldAddition(FieldTypes.CONTACT));
         investigationFields.add(Box.createVerticalStrut(20));
         investigationFields.add(Box.createGlue());
 
@@ -167,18 +166,42 @@ public class InvestigationDataEntry extends DataEntryForm {
         add(containerScroller);
     }
 
+    private JPanel getButtonForFieldAddition(final FieldTypes type) {
+        FlatButton addFieldButton = new FlatButton(ButtonType.GREEN, String.format("+ New field to %s descriptors", type.toString()));
+        addFieldButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new SubFormAddCommentGUI<InvestigationDataEntry>(InvestigationDataEntry.this, type);
+                    }
+                });
+            }
+        });
+
+        JPanel addFieldButtonContainer = new JPanel(new BorderLayout());
+        addFieldButtonContainer.add(addFieldButton, BorderLayout.EAST);
+
+        return addFieldButtonContainer;
+    }
+
     /**
      * Create the Contacts subform for the definition of contacts in the Study form.
      *
      * @return - a JPanel containing the Contacts subform.
      */
     private JPanel createInvestigationContactsSubForm() {
+
+        JPanel contactContainer = new JPanel(new BorderLayout());
+        contactContainer.setBackground(UIHelper.BG_COLOR);
+
         List<SubFormField> contactFields = new ArrayList<SubFormField>();
 
-        Set<String> ontologyFields = investigation.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION);
+        Set<String> fieldList = investigation.getContacts().size() > 0 ? investigation.getContacts().iterator().next().getFieldValues().keySet() : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION);
+
+        Set<String> ontologyFields = investigation.getReferenceObject().getOntologyTerms(fieldList);
         Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
 
-        for (String contactField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION)) {
+        for (String contactField : fieldList) {
 
             if (!investigation.getReferenceObject().getFieldDefinition(contactField).isHidden()) {
                 SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, contactField);
@@ -190,24 +213,33 @@ public class InvestigationDataEntry extends DataEntryForm {
 
         int numColsToAdd = (investigation.getContacts().size() == 0) ? 4 : investigation.getContacts().size();
 
-        contactsSubform = new ContactSubForm(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), FieldTypes.CONTACT,
+        SubForm contactsSubform = new ContactSubForm(InvestigationFileSection.INVESTIGATION_CONTACTS_SECTION.toString(), FieldTypes.CONTACT,
                 contactFields, numColsToAdd, 300, 195, this);
         contactsSubform.createGUI();
 
-        return contactsSubform;
+        contactContainer.add(contactsSubform);
+
+        fieldTypeToFieldContainer.put(FieldTypes.CONTACT, contactContainer);
+        fieldTypeToSubform.put(FieldTypes.CONTACT, contactsSubform);
+
+        return contactContainer;
     }
 
 
     private JPanel createInvestigationPublicationSubForm() {
+        JPanel publicationContainer = new JPanel(new BorderLayout());
+        publicationContainer.setBackground(UIHelper.BG_COLOR);
+
         List<SubFormField> publicationFields = new ArrayList<SubFormField>();
 
-        Set<String> ontologyFields = investigation.getReferenceObject().getOntologyTerms(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION);
-        Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
-        for (String publicationField : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION)) {
+        Set<String> fieldList = investigation.getPublications().size() > 0 ? investigation.getPublications().iterator().next().getFieldValues().keySet() : investigation.getReferenceObject().getFieldsForSection(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION);
 
+        Set<String> ontologyFields = investigation.getReferenceObject().getOntologyTerms(fieldList);
+
+        Set<String> fieldsToIgnore = investigation.getReferenceObject().getFieldsToIgnore();
+        for (String publicationField : fieldList) {
             if (!investigation.getReferenceObject().getFieldDefinition(publicationField).isHidden()) {
                 SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, investigation, publicationField);
-
                 if (generatedField != null) {
                     publicationFields.add(generatedField);
                 }
@@ -218,11 +250,16 @@ public class InvestigationDataEntry extends DataEntryForm {
                 : investigation.getPublications()
                 .size();
 
-        publicationsSubForm = new PublicationSubForm(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(),
+        SubForm publicationsSubForm = new PublicationSubForm(InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION.toString(),
                 FieldTypes.PUBLICATION, publicationFields, numColsToAdd, 300, 125, this);
         publicationsSubForm.createGUI();
 
-        return publicationsSubForm;
+        publicationContainer.add(publicationsSubForm);
+
+        fieldTypeToFieldContainer.put(FieldTypes.PUBLICATION, publicationContainer);
+        fieldTypeToSubform.put(FieldTypes.PUBLICATION, publicationsSubForm);
+
+        return publicationContainer;
     }
 
     public String toString() {
@@ -238,11 +275,11 @@ public class InvestigationDataEntry extends DataEntryForm {
     }
 
     private void populateEmptySections() {
-        if(getInvestigation().getPublications().size() == 0) {
+        if (getInvestigation().getPublications().size() == 0) {
             getInvestigation().addPublication(new InvestigationPublication());
         }
 
-        if(getInvestigation().getContacts().size() == 0) {
+        if (getInvestigation().getContacts().size() == 0) {
             getInvestigation().addContact(new InvestigationContact());
         }
     }
@@ -274,28 +311,11 @@ public class InvestigationDataEntry extends DataEntryForm {
                 investigation.getFieldValues().put(tmpFieldName, ((JComboBox) fieldDefinitions.get(fieldName)).getSelectedItem().toString());
             }
         }
-        publicationsSubForm.update();
-        contactsSubform.update();
-    }
 
-    public void removeReferences() {
-
-        publicationsSubForm.cleanupReferences();
-        publicationsSubForm = null;
-
-        contactsSubform.cleanupReferences();
-        contactsSubform = null;
-
-        getDataEntryEnvironment().removeAll();
-        setDataEntryEnvironment(null);
-
-        for (String s : investigation.getStudies().keySet()) {
-            Study tmpStudy = investigation.getStudies().get(s);
-            ApplicationManager.getUserInterfaceForISASection(tmpStudy).removeAll();
+        for (SubForm form : fieldTypeToSubform.values()) {
+            form.update();
         }
-        ApplicationManager.getUserInterfaceForISASection(investigation).removeAll();
 
-        investigation = null;
     }
 
     public JPanel getInvestigationDetailsPanel() {
