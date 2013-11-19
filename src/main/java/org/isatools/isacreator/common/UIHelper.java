@@ -93,9 +93,9 @@ public class UIHelper {
     public static final Border STD_ETCHED_BORDER = new LineBorder(UIHelper.DARK_GREEN_COLOR, 1, true);
 
     public static final Border EMPTY_BORDER = new EmptyBorder(3, 3, 3, 3);
-    public static final RoundedBorder GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6);
-    public static final RoundedBorder GREY_ROUNDED_BORDER = new RoundedBorder(UIHelper.GREY_COLOR, 6);
-    public static final RoundedBorder DARK_GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 6);
+    public static final RoundedBorder GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 2);
+    public static final RoundedBorder GREY_ROUNDED_BORDER = new RoundedBorder(UIHelper.GREY_COLOR, 2);
+    public static final RoundedBorder DARK_GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 2);
 
     public static final Color VERY_LIGHT_GREY_COLOR = new Color(250, 252, 250);
 

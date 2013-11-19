@@ -11,7 +11,7 @@ public enum ButtonType {
     BLUE(UIHelper.PETER_RIVER, UIHelper.BELIZE_HOLE),
     GREEN(UIHelper.LIGHT_GREEN_COLOR, UIHelper.DARK_GREEN_COLOR),
     RED(UIHelper.POMEGRANATE, UIHelper.ALIZARIN),
-    GREY(new Color(236,240,241), new Color(185,195,199)),
+    GREY(new Color(236,240,241), new Color(230,230,230)),
     ORANGE(UIHelper.CARROT, UIHelper.PUMPKIN);
 
     private Color defaultColor;
