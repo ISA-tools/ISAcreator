@@ -455,7 +455,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
             int fieldType = SubFormField.STRING;
 
-            if (ontologyFields.contains(fieldName)) {
+            boolean matchingOntologyDataType = true;
+            if(fieldDescriptor != null) {
+                matchingOntologyDataType = fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM;
+            }
+
+            if (ontologyFields.contains(fieldName) && matchingOntologyDataType) {
                 fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
 
                 if (fieldDescriptor != null) {
