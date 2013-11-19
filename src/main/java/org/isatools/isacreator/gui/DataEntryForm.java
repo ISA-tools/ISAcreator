@@ -481,20 +481,16 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
      * @return a string with the serialization of the ISASection
      */
     protected String getISASectionAsString(String sectionTitle, List<? extends ISASection> sectionToOutput) {
-
         StringBuilder representation = new StringBuilder();
-
         representation.append(sectionTitle.toUpperCase().trim()).append("\n");
 
-        if (sectionToOutput.size() > 0) {
 
+        if (sectionToOutput.size() > 0) {
             for (String fieldName : sectionToOutput.get(0).getFieldValues().keySet()) {
                 representation.append(fieldName);
-
                 if (sectionToOutput.size() > 0) {
                     representation.append("\t");
                 }
-
                 // now add the field values in
                 int count = 0;
                 for (ISASection section : sectionToOutput) {

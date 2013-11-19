@@ -140,6 +140,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         this(title, fieldType, fields, dataEntryEnvironment, true);
     }
 
+
     public SubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dataEntryEnvironment, boolean createBorder) {
         this.title = title;
         this.fieldType = fieldType;
@@ -186,6 +187,14 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         add(getFrozenTable(defaultTableModel, width, height), BorderLayout.CENTER);
         reformPreviousContent();
+    }
+
+    public FieldTypes getFieldType() {
+        return fieldType;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     private void generateAliases() {
