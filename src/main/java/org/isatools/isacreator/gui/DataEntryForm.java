@@ -48,8 +48,6 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.filechooser.DirectoryFileList;
-import org.isatools.isacreator.filechooser.FileChooserFile;
 import org.isatools.isacreator.filechooser.FileChooserUI;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedCancelledEvent;
@@ -81,6 +79,8 @@ import java.util.Set;
  *
  */
 public class DataEntryForm extends JLayeredPane implements Serializable {
+
+    public static final int SUBFORM_WIDTH = 300;
 
     private DataEntryEnvironment dataEntryEnvironment;
 
@@ -528,5 +528,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
             ApplicationManager.setModified(true);
         }
     }
+
+    public int estimateSubformHeight(int numberOfFields) {
+        // assuming that the option height, table header height and field height are all similar.
+        int sectionHeight = 18;
+        return (sectionHeight * 2) + (numberOfFields * sectionHeight);
+    }
+
 
 }

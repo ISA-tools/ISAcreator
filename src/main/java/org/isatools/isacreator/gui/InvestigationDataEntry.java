@@ -133,8 +133,9 @@ public class InvestigationDataEntry extends DataEntryForm {
         });
 
         JPanel moreFieldsButtonContainer = new JPanel(new BorderLayout());
+        moreFieldsButtonContainer.setBorder(UIHelper.EMPTY_BORDER);
         moreFieldsButtonContainer.setOpaque(false);
-        moreFieldsButtonContainer.add(addMoreFieldsButton, BorderLayout.WEST);
+        moreFieldsButtonContainer.add(addMoreFieldsButton, BorderLayout.EAST);
 
         investigationFields.add(investigationDetailsPanel);
         investigationFields.add(Box.createVerticalStrut(5));

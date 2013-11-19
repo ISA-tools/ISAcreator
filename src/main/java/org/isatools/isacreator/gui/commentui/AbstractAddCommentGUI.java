@@ -308,8 +308,7 @@ public abstract class AbstractAddCommentGUI extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
 
                 if (!fieldName.getText().isEmpty()) {
-                    addFieldsToDisplay(new FieldObject(fieldName.getText(), "", DataTypes.resolveDataType(fieldType.getSelectedItem().toString()), "", false, false, false));
-
+                    addFieldsToDisplay(new FieldObject("Comment[" + fieldName.getText() + "]", "", DataTypes.resolveDataType(fieldType.getSelectedItem().toString()), "", false, false, false));
                     fieldAddStatus.setText("Field added successfully!");
                 } else {
                     fieldAddStatus.setForeground(UIHelper.RED_COLOR);

@@ -48,6 +48,7 @@ import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.commentui.ContainerAddCommentGUI;
+import org.isatools.isacreator.gui.commentui.TableAddCommentGUI;
 import org.isatools.isacreator.gui.formelements.*;
 import org.isatools.isacreator.gui.formelements.assay.AssayInformationPanel;
 import org.isatools.isacreator.gui.formelements.assay.AssayInformationWriter;
@@ -82,6 +83,7 @@ import java.util.List;
  */
 public class StudyDataEntry extends DataEntryForm {
 
+
     @InjectedResource
     private ImageIcon panelHeader, addRecordIcon, addRecordIconOver;
 
@@ -92,6 +94,7 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel assayContainer;
     private AssaySelectionDialog assaySelectionUI;
 
+    private JPanel studyDesignContainer;
     private SubForm studyDesignSubform;
     private SubForm studyPublicationsSubForm;
     private SubForm contactSubForm;
@@ -123,6 +126,7 @@ public class StudyDataEntry extends DataEntryForm {
                 ConfigurationManager.getAllowedTechnologiesPerEndpoint();
 
         assaySelectionUI = new AssaySelectionDialog(measToAllowedTechnologies);
+
         generateAliases(study.getFieldValues().keySet());
         instantiatePane();
         createFields();
@@ -165,17 +169,34 @@ public class StudyDataEntry extends DataEntryForm {
         });
 
         JPanel moreFieldsButtonContainer = new JPanel(new BorderLayout());
+        moreFieldsButtonContainer.setBorder(UIHelper.EMPTY_BORDER);
         moreFieldsButtonContainer.setOpaque(false);
-        moreFieldsButtonContainer.add(addMoreFieldsButton, BorderLayout.WEST);
+        moreFieldsButtonContainer.add(addMoreFieldsButton, BorderLayout.EAST);
 
         subPanel.add(Box.createVerticalStrut(5));
         subPanel.add(moreFieldsButtonContainer);
-
         subPanel.add(Box.createVerticalStrut(20));
         subPanel.add(createStudyAssaySection());
         subPanel.add(Box.createVerticalStrut(20));
 
+        FlatButton addRowItem = new FlatButton(ButtonType.GREEN, "+ New Field To Study Design Descriptors");
+        addRowItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new TableAddCommentGUI<StudyDataEntry>(StudyDataEntry.this);
+                    }
+                });
+            }
+        });
+
+        JPanel addStudyDesignFieldButtonContainer = new JPanel(new BorderLayout());
+        addStudyDesignFieldButtonContainer.add(addRowItem, BorderLayout.EAST);
+
         subPanel.add(createStudyDesignSubForm());
+        subPanel.add(Box.createVerticalStrut(5));
+        subPanel.add(addStudyDesignFieldButtonContainer);
         subPanel.add(Box.createVerticalStrut(20));
 
         subPanel.add(createStudyPublicationSubForm());
@@ -221,7 +242,7 @@ public class StudyDataEntry extends DataEntryForm {
         IAppWidgetFactory.makeIAppScrollPane(assayScroller);
 
         JPanel container = new JPanel(new BorderLayout());
-        container.setPreferredSize(new Dimension(300, 180));
+        container.setPreferredSize(new Dimension(SUBFORM_WIDTH, 180));
         container.setBorder(new TitledBorder(
                 UIHelper.GREEN_ROUNDED_BORDER, InvestigationFileSection.STUDY_ASSAYS.toString(),
                 TitledBorder.DEFAULT_JUSTIFICATION,
@@ -307,7 +328,7 @@ public class StudyDataEntry extends DataEntryForm {
                 .size();
 
         contactSubForm = new ContactSubForm(InvestigationFileSection.STUDY_CONTACTS.toString(), FieldTypes.CONTACT,
-                contactFields, numColsToAdd, 300, 195, this);
+                contactFields, numColsToAdd, SUBFORM_WIDTH, estimateSubformHeight(contactFields.size()), this);
         contactSubForm.createGUI();
 
         return contactSubForm;
@@ -350,10 +371,12 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyFactorsSubForm() {
         List<SubFormField> factorFields = new ArrayList<SubFormField>();
 
-        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_FACTORS);
+        Set<String> fieldList = study.getFactors().size()>0 ? study.getFactors().iterator().next().getFieldValues().keySet() : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_FACTORS);
+
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(fieldList);
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
-        for (String factorField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_FACTORS)) {
+        for (String factorField : fieldList) {
 
             SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, factorField);
 
@@ -367,7 +390,7 @@ public class StudyDataEntry extends DataEntryForm {
                 .size();
 
         factorSubForm = new FactorSubForm(InvestigationFileSection.STUDY_FACTORS.toString(), FieldTypes.FACTOR, factorFields,
-                numColsToAdd, 300, 80, this);
+                numColsToAdd, SUBFORM_WIDTH, estimateSubformHeight(factorFields.size()), this);
 
         factorSubForm.createGUI();
 
@@ -382,13 +405,13 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyProtocolsSubForm() {
         List<SubFormField> protocolFields = new ArrayList<SubFormField>();
 
-        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_PROTOCOLS);
+        Set<String> fieldList = study.getProtocols().size()>0 ? study.getProtocols().iterator().next().getFieldValues().keySet() : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PROTOCOLS);
+
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(fieldList);
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
-        for (String protocolField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PROTOCOLS)) {
-
+        for (String protocolField : fieldList) {
             SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, protocolField);
-
             if (generatedField != null) {
                 protocolFields.add(generatedField);
             }
@@ -397,7 +420,7 @@ public class StudyDataEntry extends DataEntryForm {
         int numColsToAdd = study.getProtocols().size() == 0 ? 1 : study.getProtocols().size();
 
         protocolSubForm = new ProtocolSubForm(InvestigationFileSection.STUDY_PROTOCOLS.toString(), FieldTypes.PROTOCOL,
-                protocolFields, numColsToAdd, 300, 180, this);
+                protocolFields, numColsToAdd, SUBFORM_WIDTH, estimateSubformHeight(protocolFields.size()), this);
         protocolSubForm.createGUI();
 
         return protocolSubForm;
@@ -411,9 +434,13 @@ public class StudyDataEntry extends DataEntryForm {
     private JPanel createStudyPublicationSubForm() {
         List<SubFormField> publicationFields = new ArrayList<SubFormField>();
 
-        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_PUBLICATIONS);
+        Set<String> fieldList = study.getPublications().size()>0 ? study.getPublications().iterator().next().getFieldValues().keySet() : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PUBLICATIONS);
+
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(fieldList);
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
-        for (String publicationField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_PUBLICATIONS)) {
+
+
+        for (String publicationField : fieldList) {
 
             SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, publicationField);
 
@@ -427,7 +454,7 @@ public class StudyDataEntry extends DataEntryForm {
                 .size();
 
         studyPublicationsSubForm = new PublicationSubForm(InvestigationFileSection.STUDY_PUBLICATIONS.toString(), FieldTypes.PUBLICATION,
-                publicationFields, numColsToAdd, 300, 120, this);
+                publicationFields, numColsToAdd, SUBFORM_WIDTH, estimateSubformHeight(publicationFields.size()), this);
         studyPublicationsSubForm.createGUI();
 
         return studyPublicationsSubForm;
@@ -440,13 +467,17 @@ public class StudyDataEntry extends DataEntryForm {
      */
     private JPanel createStudyDesignSubForm() {
 
+        studyDesignContainer = new JPanel(new BorderLayout());
+        studyDesignContainer.setBackground(UIHelper.BG_COLOR);
+
         List<SubFormField> studyDesignFields = new ArrayList<SubFormField>();
 
-        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(InvestigationFileSection.STUDY_DESIGN_SECTION);
+        Set<String> fieldList = study.getStudyDesigns().size()>0 ? study.getStudyDesigns().iterator().next().getFieldValues().keySet() : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_DESIGN_SECTION);
+
+        Set<String> ontologyFields = study.getReferenceObject().getOntologyTerms(fieldList);
         Set<String> fieldsToIgnore = study.getReferenceObject().getFieldsToIgnore();
 
-        for (String studyDesignField : study.getReferenceObject().getFieldsForSection(InvestigationFileSection.STUDY_DESIGN_SECTION)) {
-
+        for (String studyDesignField : fieldList) {
             SubFormField generatedField = generateSubFormField(fieldsToIgnore, ontologyFields, study, studyDesignField);
 
             if (generatedField != null) {
@@ -458,8 +489,23 @@ public class StudyDataEntry extends DataEntryForm {
                 : study.getStudyDesigns().size();
 
         studyDesignSubform = new StudyDesignSubForm(InvestigationFileSection.STUDY_DESIGN_SECTION.toString(), FieldTypes.DESIGN,
-                studyDesignFields, numColsToAdd, 300, 60, this);
+                studyDesignFields, numColsToAdd, SUBFORM_WIDTH, estimateSubformHeight(studyDesignFields.size()), this);
         studyDesignSubform.createGUI();
+
+        studyDesignContainer.add(studyDesignSubform);
+
+        return studyDesignContainer;
+    }
+
+    public JPanel getStudyDesignContainer() {
+        return studyDesignContainer;
+    }
+
+    public void setStudyDesignSubform(SubForm studyDesignSubform) {
+        this.studyDesignSubform = studyDesignSubform;
+    }
+
+    public SubForm getStudyDesignSubform() {
         return studyDesignSubform;
     }
 
@@ -584,23 +630,23 @@ public class StudyDataEntry extends DataEntryForm {
     }
 
     private void populateEmptySections() {
-        if(getStudy().getStudyDesigns().size() == 0) {
+        if (getStudy().getStudyDesigns().size() == 0) {
             getStudy().getStudyDesigns().add(new StudyDesign());
         }
 
-        if(getStudy().getFactors().size() == 0) {
+        if (getStudy().getFactors().size() == 0) {
             getStudy().addFactor(new Factor());
         }
 
-        if(getStudy().getProtocols().size() == 0) {
+        if (getStudy().getProtocols().size() == 0) {
             getStudy().addProtocol(new Protocol());
         }
 
-        if(getStudy().getPublications().size() == 0) {
+        if (getStudy().getPublications().size() == 0) {
             getStudy().addPublication(new StudyPublication());
         }
 
-        if(getStudy().getContacts().size() == 0) {
+        if (getStudy().getContacts().size() == 0) {
             getStudy().addContact(new StudyContact());
         }
     }
@@ -690,7 +736,6 @@ public class StudyDataEntry extends DataEntryForm {
 
         setDataEntryEnvironment(null);
         study.setAssays(null);
-        // todo add in previous removals for cleanup.
         study.setStudySamples(null);
         study = null;
 
@@ -771,5 +816,6 @@ public class StudyDataEntry extends DataEntryForm {
     public Box getStudyDetailsFieldContainer() {
         return studyDetailsFieldContainer;
     }
+
 
 }

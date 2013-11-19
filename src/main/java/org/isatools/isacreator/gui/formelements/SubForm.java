@@ -47,12 +47,15 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -167,7 +170,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         if (dataEntryForm instanceof DataEntryEnvironment) {
             this.dataEntryEnvironment = (DataEntryEnvironment) dataEntryForm;
-        } else if (dataEntryForm instanceof DataEntryForm) {
+        } else if (dataEntryForm != null) {
             this.dataEntryEnvironment = dataEntryForm.getDataEntryEnvironment();
         } else {
             dataEntryEnvironment = null;
@@ -198,8 +201,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             if (fieldName.toLowerCase().startsWith("comment")) {
                 String alias = StringProcessing.extractQualifierFromField(fieldName) + " [c]";
-
-                System.out.println("Alias for " + fieldName + " is " + alias);
                 aliasesToRealNames.put(alias, fieldName);
                 realNamesToAliases.put(fieldName, alias);
             }
@@ -794,6 +795,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         int index = 0;
         for (SubFormField field : fields) {
+
             Object value = defaultTableModel.getValueAt(index, recordNumber);
 
             String fieldName = field.getFieldName();
@@ -991,5 +993,10 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         setDataEntryForm(null);
         removeAll();
     }
+
+    public List<SubFormField> getSubFormFields() {
+        return fields;
+    }
+
 
 }

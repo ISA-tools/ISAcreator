@@ -74,7 +74,6 @@ public class DataEntryReferenceObject {
             if (!sectionDefinition.containsKey(section)) {
                 sectionDefinition.put(section, new ListOrderedSet<String>());
             }
-
             sectionDefinition.get(section).add(fieldName);
         }
     }
@@ -117,24 +116,30 @@ public class DataEntryReferenceObject {
     public Set<String> getOntologyTerms(InvestigationFileSection section) {
         Set<String> ontologyFields = new HashSet<String>();
 
-
         if (sectionDefinition != null) {
             if (sectionDefinition.get(section) != null) {
-
-                fieldsToIgnore = filterFields(sectionDefinition.get(section), "term accession", "term source");
-
-                for (String ontologyTerm : fieldsToIgnore) {
-
-                    String toAdd = ontologyTerm.substring(0, ontologyTerm.toLowerCase().indexOf("term")).trim();
-
-                    // if the field edited was a comment, it will include an unclosed square bracket after running the
-                    // previous function. So, we should close it.
-                    if (toAdd.contains("[")) {
-                        toAdd += "]";
-                    }
-                    ontologyFields.add(toAdd);
-                }
+                ontologyFields = getOntologyTerms(sectionDefinition.get(section));
             }
+        }
+
+        return ontologyFields;
+    }
+
+    public Set<String> getOntologyTerms(Set<String> fields) {
+        Set<String> ontologyFields = new HashSet<String>();
+
+        fieldsToIgnore = filterFields(fields, "term accession", "term source");
+
+        for (String ontologyTerm : fieldsToIgnore) {
+
+            String toAdd = ontologyTerm.substring(0, ontologyTerm.toLowerCase().indexOf("term")).trim();
+
+            // if the field edited was a comment, it will include an unclosed square bracket after running the
+            // previous function. So, we should close it.
+            if (toAdd.contains("[")) {
+                toAdd += "]";
+            }
+            ontologyFields.add(toAdd);
         }
 
         return ontologyFields;
