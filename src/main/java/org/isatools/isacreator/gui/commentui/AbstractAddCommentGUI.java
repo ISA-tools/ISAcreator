@@ -261,18 +261,35 @@ public abstract class AbstractAddCommentGUI extends JFrame {
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
 
-                    for (JCheckBox fieldToAdd : selectedFieldComponents) {
-                        if (fieldToAdd.isEnabled()) {
-                            addFieldsToDisplay(templateToFields.get(templateName).getFieldByName(fieldToAdd.getText()));
-                            fieldToAdd.setEnabled(false);
+                    boolean errors = false;
+                    int error_count = 0;
+
+                    if (selectedFieldComponents.size() > 0) {
+
+                        for (JCheckBox fieldToAdd : selectedFieldComponents) {
+                            if (fieldToAdd.isEnabled() && okToAddField(fieldToAdd.getText())) {
+                                addFieldsToDisplay(templateToFields.get(templateName).getFieldByName(fieldToAdd.getText()));
+                                fieldToAdd.setSelected(false);
+                                fieldToAdd.setEnabled(false);
+
+                            } else {
+                                errors = true;
+                                error_count++;
+                            }
                         }
+
+                        selectedFieldComponents.clear();
+
+                        fieldAddStatus.setText(errors ? String.format("%d fields already exist...", error_count) : "Field added successfully!");
+                        fieldAddStatus.setForeground(errors ? UIHelper.RED_COLOR : UIHelper.GREY_COLOR);
+                    } else {
+                        fieldAddStatus.setText("No fields have been selected!");
                     }
 
-                    fieldAddStatus.setText("Field added successfully!");
-
-                    timer = new Timer(2000, new ActionListener() {
+                    timer = new Timer(3000, new ActionListener() {
                         public void actionPerformed(ActionEvent actionEvent) {
                             fieldAddStatus.setText("");
+                            fieldAddStatus.setForeground(UIHelper.GREY_COLOR);
                             timer.stop();
 
                         }
@@ -321,14 +338,19 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         FlatButton button = new FlatButton(ButtonType.GREEN, "Add Field");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-
-                if (!fieldName.getText().isEmpty() && okToAddField(fieldName.getText())) {
-                    addFieldsToDisplay(new FieldObject("Comment[" + fieldName.getText() + "]", "",
-                            DataTypes.resolveDataType(fieldType.getSelectedItem().toString()), "", false, false, false));
-                    fieldAddStatus.setText("Field added successfully!");
+                if (!fieldName.getText().isEmpty()) {
+                    String fieldNameAsComment = transformFieldNameToComment(fieldName.getText());
+                    if (okToAddField(fieldNameAsComment)) {
+                        addFieldsToDisplay(new FieldObject(fieldNameAsComment, "",
+                                DataTypes.resolveDataType(fieldType.getSelectedItem().toString()), "", false, false, false));
+                        fieldAddStatus.setText("Field added successfully!");
+                    } else {
+                        fieldAddStatus.setForeground(UIHelper.RED_COLOR);
+                        fieldAddStatus.setText("Field not added. Already exists!");
+                    }
                 } else {
                     fieldAddStatus.setForeground(UIHelper.RED_COLOR);
-                    fieldAddStatus.setText("Field not added. Already exists!");
+                    fieldAddStatus.setText("Please enter a value!");
                 }
                 timer = new Timer(3000, new ActionListener() {
                     public void actionPerformed(ActionEvent actionEvent) {
@@ -347,6 +369,10 @@ public abstract class AbstractAddCommentGUI extends JFrame {
         panel.add(buttonContainer, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    private String transformFieldNameToComment(String fieldName) {
+        return "Comment [" + fieldName + "]";
     }
 
     public abstract void addFieldsToDisplay(FieldObject fieldObject);
