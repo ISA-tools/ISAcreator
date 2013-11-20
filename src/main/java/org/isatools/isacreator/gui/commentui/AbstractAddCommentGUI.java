@@ -2,6 +2,7 @@ package org.isatools.isacreator.gui.commentui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.collections15.OrderedMap;
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+
 public abstract class AbstractAddCommentGUI extends JFrame {
 
     public static final String CUSTOM = "custom";
@@ -39,15 +41,22 @@ public abstract class AbstractAddCommentGUI extends JFrame {
     private List<JCheckBox> selectedFieldComponents;
     private Timer timer;
 
+    private static Logger log = Logger.getLogger(AbstractAddCommentGUI.class.getName());
+
     static {
         templateToFields = new HashMap<String, TableReferenceObject>();
 
-        File fieldTemplateDirectory = new File(AbstractAddCommentGUI.class.getResource("/defaults/field_templates/").getPath());
-        ConfigXMLParser parser = new ConfigXMLParser(fieldTemplateDirectory.getAbsolutePath());
-        parser.loadConfiguration();
 
-        for (TableReferenceObject tro : parser.getTables()) {
-            templateToFields.put(tro.getTableName(), tro);
+        File fieldTemplateDirectory = new File("ProgramData/field_templates/");
+        if (fieldTemplateDirectory.exists()) {
+            ConfigXMLParser parser = new ConfigXMLParser(fieldTemplateDirectory.getAbsolutePath());
+            parser.loadConfiguration();
+
+            for (TableReferenceObject tro : parser.getTables()) {
+                templateToFields.put(tro.getTableName(), tro);
+            }
+        } else {
+            log.info("No field_templates directory in Program data directory, so ISAcreator hasn't loaded any field templates.");
         }
     }
 
