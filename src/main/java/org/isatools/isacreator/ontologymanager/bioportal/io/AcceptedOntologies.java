@@ -38,6 +38,8 @@
 
 package org.isatools.isacreator.ontologymanager.bioportal.io;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.List;
 import java.util.Set;
 
@@ -77,6 +79,23 @@ public class AcceptedOntologies {
         for (AcceptedOntology ontology : acceptedOntologies) {
             if (!toIgnore.contains(ontology)) {
                 allowedOntologies.append(ontology.getOntologyID());
+                if (count != acceptedOntologies.size() - 1) {
+                    allowedOntologies.append(",");
+                }
+            }
+            count++;
+        }
+
+        return allowedOntologies.toString();
+    }
+
+    public static String getAllowedOntologyAcronyms(Set<AcceptedOntology> toIgnore) {
+        StringBuilder allowedOntologies = new StringBuilder();
+
+        int count = 0;
+        for (AcceptedOntology ontology : acceptedOntologies) {
+            if (!toIgnore.contains(ontology) && StringUtils.trimToNull(ontology.getOntologyAbbreviation()) != null) {
+                allowedOntologies.append(ontology.getOntologyAbbreviation());
                 if (count != acceptedOntologies.size() - 1) {
                     allowedOntologies.append(",");
                 }

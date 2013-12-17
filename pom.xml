@@ -42,7 +42,7 @@
     <repositories>
         <repository>
             <id>oerc</id>
-            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases/</url>
+            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/groups/oerc</url>
         </repository>
 
         <repository>
@@ -415,7 +415,7 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.ebi</groupId>
@@ -533,6 +533,12 @@
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0</version>
         </dependency>
 
     </dependencies>
