@@ -50,16 +50,13 @@ import java.util.Set;
 
 public class Ontology implements Serializable {
 
-    private String ontologyID;
-    private String ontologyVersion;
-    private String ontologyDisplayLabel;
-    private String ontologyAbbreviation;
+    private String ontologyID, ontologyVersion, ontologyDisplayLabel, ontologyAbbreviation, submissionId;
+    private String contactName, contactEmail, homepage;
+
     private boolean isFoundry;
+
     private OntologyFormats format;
     private OntologyBranch subsectionToQuery;
-    private String contactName;
-    private String contactEmail;
-    private String homepage;
     private Set<String> categories;
     private boolean isView;
 
@@ -174,6 +171,14 @@ public class Ontology implements Serializable {
 
     public String getHomepage() {
         return homepage;
+    }
+
+    public String getSubmissionId() {
+        return submissionId;
+    }
+
+    public void setSubmissionId(String submissionId) {
+        this.submissionId = submissionId;
     }
 
     public Set<String> getCategories() {

@@ -100,7 +100,6 @@ public class BioPortalQueryEndpoint {
             method.addParameter("apikey", API_KEY);
             method.addParameter("pagesize", "500");
 
-
             try {
                 setHostConfiguration(client);
             } catch (Exception e) {
@@ -124,50 +123,48 @@ public class BioPortalQueryEndpoint {
     public Map<String, Ontology> getAllOntologies() {
 
         Map<String, Ontology> result = new HashMap<String, Ontology>();
-
         String content = queryOntologyEndpoint();
 
         StringReader reader = new StringReader(content);
-
         JsonReader rdr = Json.createReader(reader);
+        JsonArray array = rdr.readArray();
 
-        JsonStructure generalStructure = rdr.read();
-        if (generalStructure instanceof JsonArray) {
-            // process array
-            JsonArray array = (JsonArray) generalStructure;
-            System.out.println("There are " + array.size() + " items...");
-            for (JsonObject resultItem : array.getValuesAs(JsonObject.class)) {
-                addOntology(result, resultItem);
-            }
-        } else {
-            // process object
-            JsonObject obj = (JsonObject) generalStructure;
-            addOntology(result, obj);
+        for (JsonObject resultItem : array.getValuesAs(JsonObject.class)) {
+            addOntology(result, resultItem);
         }
 
         return result;
     }
 
     private void addOntology(Map<String, Ontology> result, JsonObject resultItem) {
-        JsonValue summaryOnly = resultItem.get("summaryOnly");
+        JsonObject ontology = resultItem.getJsonObject("ontology");
+        JsonValue summaryOnly = ontology.get("summaryOnly");
         if (summaryOnly != null) {
-            Ontology newOntology = new Ontology(resultItem.getString("@id"), "version", resultItem.getString("acronym"), resultItem.getString("name"));
-
+            Ontology newOntology = new Ontology(ontology.getString("@id"), "version", ontology.getString("acronym"), ontology.getString("name"));
             if (!newOntology.getOntologyAbbreviation().contains("test") &&
-                    !newOntology.getOntologyDisplayLabel().contains("test"))
+                    !newOntology.getOntologyDisplayLabel().contains("test")) {
+
+                String version = resultItem.get("version").toString();
+                JsonNumber submissionId = resultItem.getJsonNumber("submissionId");
+                String homepage = resultItem.get("homepage").toString();
+
+                newOntology.setHomePage(homepage);
+                newOntology.setOntologyVersion(version);
+                newOntology.setSubmissionId(submissionId.toString());
+
                 result.put(resultItem.getString("@id"), newOntology);
+            }
+
         }
     }
 
-    public String queryOntologyEndpoint() {
-        return queryOntologyEndpoint(null);
-    }
 
-    public String queryOntologyEndpoint(String ontology) {
+    public String queryOntologyEndpoint() {
         try {
             HttpClient client = new HttpClient();
 
-            GetMethod method = new GetMethod(BioPortal4Client.REST_URL + "ontologies" + (ontology != null ? "/" + ontology : "") + "?apikey=" + API_KEY);
+            //http://data.bioontology.org/submissions
+            GetMethod method = new GetMethod(BioPortal4Client.REST_URL + "submissions?apikey=" + API_KEY);
 
             try {
                 setHostConfiguration(client);

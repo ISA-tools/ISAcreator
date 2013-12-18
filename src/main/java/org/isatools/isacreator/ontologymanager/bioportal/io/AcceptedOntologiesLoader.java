@@ -21,6 +21,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -33,7 +34,7 @@ import java.util.*;
  */
 public class AcceptedOntologiesLoader {
 
-    private static final String FILE = "/defaults/bioportal-accepted-ontologies.xml";
+    private static final String FILE = "ProgramData/cache/bioportal-ontology-detail.cache";
 
 
     public static void populateAcceptedOntologies() {
@@ -73,11 +74,11 @@ public class AcceptedOntologiesLoader {
                 acceptedOntologyElement.setAttributeNode(name);
 
                 Attr version = doc.createAttribute("version");
-                version.setValue(ontology.getOntologyVersion());
+                version.setValue(ontology.getSubmissionId());
                 acceptedOntologyElement.setAttributeNode(version);
 
                 Attr uri = doc.createAttribute("uri");
-                uri.setValue(ontology.getOntologyVersion());
+                uri.setValue(ontology.getHomepage());
                 acceptedOntologyElement.setAttributeNode(uri);
 
                 Attr id = doc.createAttribute("id");
@@ -88,32 +89,17 @@ public class AcceptedOntologiesLoader {
 
             }
 
-            String baseDir = System.getProperty("basedir");
-
-            if (baseDir == null) {
-                try {
-                    baseDir = new File(".").getCanonicalPath();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
 
             // write the content into xml file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
 
-            String fullPath = baseDir + File.separator + "src" + File.separator + "main" + File.separator + "resources" + FILE;
-            System.out.println("Printing out file " + fullPath);
+            String fullPath = FILE;
 
             File outputFile = new File(fullPath);
 
             StreamResult result = new StreamResult(outputFile.getAbsolutePath());
-
-            //output to standard output for debugging
-            //StreamResult result =  new StreamResult(System.out);
-
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
@@ -129,21 +115,34 @@ public class AcceptedOntologiesLoader {
 
 
     public static Map<String, Ontology> getAcceptedOntologies() {
-        XPathReader reader = new XPathReader(AcceptedOntologiesLoader.class.getResourceAsStream(FILE));
-
         Map<String, Ontology> acceptedOntologies = new HashMap<String, Ontology>();
 
-        NodeList sections = (NodeList) reader.read("/acceptedOntologies/acceptedOntology", XPathConstants.NODESET);
+        if(!new File(FILE).exists()) {
+            // then create it
+            new File(FILE).getParentFile().mkdirs();
+            populateAcceptedOntologies();
+        }
 
-        if (sections.getLength() > 0) {
-            for (int sectionIndex = 0; sectionIndex <= sections.getLength(); sectionIndex++) {
-                String id = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@id", XPathConstants.STRING);
-                String abbreviation = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@abbreviation", XPathConstants.STRING);
-                String name = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@name", XPathConstants.STRING);
-                String version = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@version", XPathConstants.STRING);
+        try {
+            XPathReader reader = new XPathReader(new FileInputStream(FILE));
+            NodeList sections = (NodeList) reader.read("/acceptedOntologies/acceptedOntology", XPathConstants.NODESET);
 
-                acceptedOntologies.put(id, new Ontology(id, version, abbreviation, name));
+            if (sections.getLength() > 0) {
+                for (int sectionIndex = 0; sectionIndex <= sections.getLength(); sectionIndex++) {
+                    String id = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@id", XPathConstants.STRING);
+                    String abbreviation = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@abbreviation", XPathConstants.STRING);
+                    String name = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@name", XPathConstants.STRING);
+                    String version = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@version", XPathConstants.STRING);
+                    String homepage = (String) reader.read("/acceptedOntologies/acceptedOntology[" + sectionIndex + "]/@uri", XPathConstants.STRING);
+
+                    Ontology ontology = new Ontology(id, version, abbreviation, name);
+                    ontology.setHomePage(homepage);
+
+                    acceptedOntologies.put(id, ontology);
+                }
             }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
 
         return acceptedOntologies;

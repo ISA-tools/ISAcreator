@@ -103,8 +103,16 @@ public class BioPortal4Client implements OntologyService {
         for (String ontologyId : toConvert.keySet()) {
             Ontology ontology = AcceptedOntologies.getAcceptedOntologies().get(ontologyId);
             if (ontology != null) {
-                OntologySourceRefObject osro = new OntologySourceRefObject(ontology.getOntologyAbbreviation(), ontologyId, ontology.getOntologyVersion(), ontology.getOntologyDisplayLabel());
-                convertedMap.put(osro, toConvert.get(ontologyId));
+                OntologySourceRefObject osro = new OntologySourceRefObject(ontology.getOntologyAbbreviation(),
+                        ontologyId, ontology.getOntologyVersion(), ontology.getOntologyDisplayLabel());
+
+                convertedMap.put(osro, new ArrayList<OntologyTerm>());
+
+                for(OntologyTerm ontologyTerm : toConvert.get(ontologyId)){
+                    ontologyTerm.setOntologySourceInformation(osro);
+                    convertedMap.get(osro).add(ontologyTerm);
+                }
+
             }
         }
         return convertedMap;

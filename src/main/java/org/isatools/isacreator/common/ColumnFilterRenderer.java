@@ -65,9 +65,6 @@ public class ColumnFilterRenderer extends JComponent
         this.unselectedFont = unselectedFont;
         setLayout(new BorderLayout());
         listCellRenderer = new DefaultListCellRenderer();
-        JLabel image = new JLabel(new ImageIcon(getClass()
-                .getResource("/images/effects/list_image.png")));
-        add(image, BorderLayout.WEST);
         add(listCellRenderer, BorderLayout.CENTER);
         setBorder(null);
     }

@@ -54,6 +54,10 @@ public class AcceptedOntologies {
     private static Map<String, Ontology> acceptedOntologies;
 
     static {
+        updateAcceptedOntologies();
+    }
+
+    public static void updateAcceptedOntologies() {
         acceptedOntologies = AcceptedOntologiesLoader.getAcceptedOntologies();
     }
 

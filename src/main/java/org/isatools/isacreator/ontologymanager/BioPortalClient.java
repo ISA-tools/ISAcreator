@@ -256,8 +256,6 @@ public class BioPortalClient implements OntologyService {
                 }
             }
         }
-
-
         return result;
     }
 

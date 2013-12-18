@@ -137,9 +137,9 @@ public class GeneralViewerEditor<T> extends SettingsScreen {
                 String term = propertyChangeEvent.getNewValue().toString();
                 if (term != null) {
                     updateEditor(term);
-                    removeTerm.setVisible(true);
+                    removeButton.setVisible(true);
                 } else {
-                    removeTerm.setVisible(false);
+                    removeButton.setVisible(false);
                 }
             }
         });
