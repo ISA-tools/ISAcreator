@@ -39,9 +39,9 @@
 package org.isatools.isacreator.ontologymanager.bioportal.io;
 
 import org.apache.commons.lang.StringUtils;
+import org.isatools.isacreator.configuration.Ontology;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * AcceptedOntologies
@@ -51,7 +51,7 @@ import java.util.Set;
  */
 public class AcceptedOntologies {
 
-    private static List<AcceptedOntology> acceptedOntologies;
+    private static Map<String, Ontology> acceptedOntologies;
 
     static {
         acceptedOntologies = AcceptedOntologiesLoader.getAcceptedOntologies();
@@ -64,19 +64,33 @@ public class AcceptedOntologies {
      * @return when 1123 is supplied, OBI will be returned
      */
     public static String getOntologyAbbreviationFromId(String ontologyId) {
-        for (AcceptedOntology ontology : acceptedOntologies) {
-            if (ontology.getOntologyID().equals(ontologyId)) {
-                return ontology.getOntologyAbbreviation();
-            }
-        }
+        if(acceptedOntologies.containsKey(ontologyId))
+            return acceptedOntologies.get(ontologyId).getOntologyAbbreviation();
         return null;
     }
 
-    public static String getAllowedOntologyIds(Set<AcceptedOntology> toIgnore) {
+
+    public static Map<String, String> getOntologySourceToNames() {
+        Map<String, String> ontologySourceToName = new HashMap<String, String>();
+        for (Ontology ontology : acceptedOntologies.values()) {
+            ontologySourceToName.put(ontology.getOntologyAbbreviation(), ontology.getOntologyDisplayLabel());
+        }
+        return ontologySourceToName;
+    }
+
+    public static Map<String, String> getOntologySourceToVersion() {
+        Map<String, String> ontologySourceToName = new HashMap<String, String>();
+        for (Ontology ontology : acceptedOntologies.values()) {
+            ontologySourceToName.put(ontology.getOntologyAbbreviation(), ontology.getOntologyVersion());
+        }
+        return ontologySourceToName;
+    }
+
+    public static String getAllowedOntologyIds(Set<Ontology> toIgnore) {
         StringBuilder allowedOntologies = new StringBuilder();
 
         int count = 0;
-        for (AcceptedOntology ontology : acceptedOntologies) {
+        for (Ontology ontology : acceptedOntologies.values()) {
             if (!toIgnore.contains(ontology)) {
                 allowedOntologies.append(ontology.getOntologyID());
                 if (count != acceptedOntologies.size() - 1) {
@@ -89,11 +103,11 @@ public class AcceptedOntologies {
         return allowedOntologies.toString();
     }
 
-    public static String getAllowedOntologyAcronyms(Set<AcceptedOntology> toIgnore) {
+    public static String getAllowedOntologyAcronyms(Set<Ontology> toIgnore) {
         StringBuilder allowedOntologies = new StringBuilder();
 
         int count = 0;
-        for (AcceptedOntology ontology : acceptedOntologies) {
+        for (Ontology ontology : acceptedOntologies.values()) {
             if (!toIgnore.contains(ontology) && StringUtils.trimToNull(ontology.getOntologyAbbreviation()) != null) {
                 allowedOntologies.append(ontology.getOntologyAbbreviation());
                 if (count != acceptedOntologies.size() - 1) {
@@ -106,7 +120,11 @@ public class AcceptedOntologies {
         return allowedOntologies.toString();
     }
 
-    public static List<AcceptedOntology> values() {
+    public static Map<String, Ontology> getAcceptedOntologies() {
         return acceptedOntologies;
+    }
+
+    public static Collection<Ontology> values() {
+        return acceptedOntologies.values();
     }
 }

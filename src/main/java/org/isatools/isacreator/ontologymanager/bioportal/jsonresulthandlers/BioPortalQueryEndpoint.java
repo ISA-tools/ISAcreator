@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -13,6 +14,7 @@ import org.omg.CORBA.OBJECT_NOT_EXIST;
 
 import javax.json.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +23,18 @@ public class BioPortalQueryEndpoint {
 
     public static final String API_KEY = "fd88ee35-6995-475d-b15a-85f1b9dd7a42";
 
-    public Map<OntologySourceRefObject, List<OntologyTerm>> getSearchResults(String term, String ontologyIds, String subtree) {
+    /**
+     * Returns the result of the search operation
+     *
+     * @param term        - the string being searched for
+     * @param ontologyIds - the ontologies the search is being restricted to
+     * @param @nullable   subtree - a subtree, if any to be searched under (optional)
+     * @return - Map from the id of the ontology to the list of terms found under it.
+     */
+    public Map<String, List<OntologyTerm>> getSearchResults(String term, String ontologyIds, String subtree) {
 
-        Map<OntologySourceRefObject, List<OntologyTerm>> result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+        // map from ontology id to the list of terms found for that id.
+        Map<String, List<OntologyTerm>> result = new HashMap<String, List<OntologyTerm>>();
 
         String content = querySearchEndpoint(term, ontologyIds, subtree);
 
@@ -34,18 +45,36 @@ public class BioPortalQueryEndpoint {
         JsonObject obj = rdr.readObject();
         JsonArray results = obj.getJsonArray("collection");
         for (JsonObject resultItem : results.getValuesAs(JsonObject.class)) {
-            System.out.println(resultItem.getString("prefLabel"));
-            System.out.println(resultItem.getString("@id"));
+
+            JsonObject links = resultItem.getJsonObject("links");
+
+            String ontologyId = links.getJsonString("ontology").toString();
+            if (!result.containsKey(ontologyId)) {
+                result.put(ontologyId, new ArrayList<OntologyTerm>());
+            }
+            OntologyTerm ontologyTerm = new OntologyTerm(resultItem.getString("prefLabel"), resultItem.getString("@id"), "", null);
+
             JsonArray definitions = resultItem.getJsonArray("definition");
             if (definitions != null) {
-                System.out.println("\t" + definitions.get(0));
+                ontologyTerm.addToComments("definition", definitions.get(0).toString());
             }
 
-//            JsonArray links = resultItem.getJS("links");
-//            if (links != null) {
-//                for(JsonValue link : links)
-//                System.out.println("\t" + definitions.get(0));
-//            }
+            JsonArray synonyms = resultItem.getJsonArray("synonyms");
+            if (synonyms != null && synonyms.size() > 0) {
+                StringBuilder synonymList = new StringBuilder();
+                int count = 0;
+                for (JsonValue value : synonyms.getValuesAs(JsonValue.class)) {
+                    synonymList.append(value.toString());
+                    if (count != synonyms.size() - 1) {
+                        synonymList.append(",");
+                    }
+                    count++;
+                }
+                ontologyTerm.addToComments("synonyms", synonymList.toString());
+            }
+
+            result.get(ontologyId).add(ontologyTerm);
+
         }
 
         return result;
@@ -70,7 +99,6 @@ public class BioPortalQueryEndpoint {
             }
             method.addParameter("apikey", API_KEY);
             method.addParameter("pagesize", "500");
-            method.addParameter("require_definition", "true");
 
 
             try {
@@ -83,7 +111,6 @@ public class BioPortalQueryEndpoint {
             int statusCode = client.executeMethod(method);
             if (statusCode != -1) {
                 String contents = method.getResponseBodyAsString();
-                System.out.println(contents);
                 method.releaseConnection();
                 return contents;
             }
@@ -94,9 +121,9 @@ public class BioPortalQueryEndpoint {
         return null;
     }
 
-    public Map<OntologySourceRefObject, List<OntologyTerm>> getAllOntologies() {
+    public Map<String, Ontology> getAllOntologies() {
 
-        Map<OntologySourceRefObject, List<OntologyTerm>> result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
+        Map<String, Ontology> result = new HashMap<String, Ontology>();
 
         String content = queryOntologyEndpoint();
 
@@ -105,27 +132,31 @@ public class BioPortalQueryEndpoint {
         JsonReader rdr = Json.createReader(reader);
 
         JsonStructure generalStructure = rdr.read();
-        if(generalStructure instanceof JsonArray) {
+        if (generalStructure instanceof JsonArray) {
             // process array
             JsonArray array = (JsonArray) generalStructure;
-            System.out.println("There are " + array.size()  + " items...");
+            System.out.println("There are " + array.size() + " items...");
             for (JsonObject resultItem : array.getValuesAs(JsonObject.class)) {
-                System.out.println(resultItem.getString("acronym"));
-                System.out.println(resultItem.getString("name"));
-                System.out.println(resultItem.getString("@id"));
+                addOntology(result, resultItem);
             }
         } else {
-           // process object
+            // process object
             JsonObject obj = (JsonObject) generalStructure;
-            System.out.println(obj.getString("acronym"));
-            System.out.println(obj.getString("name"));
-            System.out.println(obj.getString("@id"));
+            addOntology(result, obj);
         }
 
-//        JsonArray results = obj.getJsonArray("");
-//        System.out.println(results.size() + " results");
-
         return result;
+    }
+
+    private void addOntology(Map<String, Ontology> result, JsonObject resultItem) {
+        JsonValue summaryOnly = resultItem.get("summaryOnly");
+        if (summaryOnly != null) {
+            Ontology newOntology = new Ontology(resultItem.getString("@id"), "version", resultItem.getString("acronym"), resultItem.getString("name"));
+
+            if (!newOntology.getOntologyAbbreviation().contains("test") &&
+                    !newOntology.getOntologyDisplayLabel().contains("test"))
+                result.put(resultItem.getString("@id"), newOntology);
+        }
     }
 
     public String queryOntologyEndpoint() {
@@ -136,7 +167,7 @@ public class BioPortalQueryEndpoint {
         try {
             HttpClient client = new HttpClient();
 
-            GetMethod method = new GetMethod(BioPortal4Client.REST_URL + "ontologies" + (ontology != null ? "/"+ontology :"") + "?apikey="+API_KEY);
+            GetMethod method = new GetMethod(BioPortal4Client.REST_URL + "ontologies" + (ontology != null ? "/" + ontology : "") + "?apikey=" + API_KEY);
 
             try {
                 setHostConfiguration(client);
@@ -147,13 +178,7 @@ public class BioPortalQueryEndpoint {
 
             int statusCode = client.executeMethod(method);
             if (statusCode != -1) {
-
-                System.out.println(method.getURI().toString());
-//                for(NameValuePair param : method.getParams().getp) {
-//                    System.out.println(param);
-//                }
                 String contents = method.getResponseBodyAsString();
-
                 method.releaseConnection();
                 return contents;
             }

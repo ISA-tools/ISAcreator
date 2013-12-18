@@ -3,8 +3,8 @@ package org.isatools.isacreator.ontologiser.logic.impl;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
-import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalAnnotatorResultHandler;
@@ -30,7 +30,7 @@ public class AnnotatorSearchClient {
     public static final String BASE_QUERY_URL = "http://rest.bioontology.org/obs/annotator";
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms) {
-        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(new HashSet<AcceptedOntology>()), true);
+        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(new HashSet<Ontology>()), true);
     }
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn, boolean wholeWordOnly) {

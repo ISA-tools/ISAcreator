@@ -101,9 +101,4 @@ public class ISAtabFilesImporterFromGUI extends ISAtabImporter {
             }
         }
     }
-
-
-
-
-
 }

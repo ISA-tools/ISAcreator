@@ -69,7 +69,7 @@ public class BioPortalClientTest {
     public void getAllOntologies() {
         System.out.println("_____Testing getAllOntologies()____");
 
-        List<Ontology> ontologies = client.getAllOntologies(true);
+        List<Ontology> ontologies = client.getAllOntologies();
 
         assertTrue("Oh no! No returned ontologies (empty result)! ", ontologies.size() > 0);
 

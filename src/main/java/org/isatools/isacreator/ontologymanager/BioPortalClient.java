@@ -36,13 +36,11 @@
  */
 package org.isatools.isacreator.ontologymanager;
 
-import bioontology.bioportal.classBean.schema.SuccessDocument;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
-import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalClassBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
@@ -90,11 +88,8 @@ public class BioPortalClient implements OntologyService {
         noChildren = new HashSet<String>();
     }
 
-    public List<Ontology> getAllOntologies() {
-        return getAllOntologies(false);
-    }
 
-    public List<Ontology> getAllOntologies(boolean loadAll) {
+    public List<Ontology> getAllOntologies() {
 
         if (ontologies == null || ontologies.size() == 0) {
 
@@ -331,7 +326,7 @@ public class BioPortalClient implements OntologyService {
         String allowedOntologies = "";
 
         int count = 0;
-        for (AcceptedOntology ao : AcceptedOntologies.values()) {
+        for (Ontology ao : AcceptedOntologies.values()) {
             allowedOntologies += ao.getOntologyID();
             if (count < AcceptedOntologies.values().size() - 1) {
                 allowedOntologies += ",";
