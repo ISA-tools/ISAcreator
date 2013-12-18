@@ -19,11 +19,7 @@ public class BioPortalClient4Test {
     private static BioPortal4Client client = new BioPortal4Client();
     public static String testOntologyID = "EFO";
     public static String testTermAccession = "efo:EFO_0000428";
-    public static String testOntologyVersion = "45781";
     public static String testSearchTerm = "dose";
-
-    public static String obiID = "1123";
-    public static String obiVersion = "47893";
 
 
     @Test
@@ -46,7 +42,7 @@ public class BioPortalClient4Test {
         System.out.println();
 
         startTime = System.currentTimeMillis();
-        result = client.getTermsByPartialNameFromSource(testSearchTerm, "all", false);
+        result = client.getTermsByPartialNameFromSource("cy5", "all", false);
         System.out.println("Took " + (System.currentTimeMillis()-startTime) + "ms to do that query.");
 
         for (OntologySourceRefObject source : result.keySet()) {
@@ -56,11 +52,6 @@ public class BioPortalClient4Test {
                 System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
-
-    }
-
-    private String ontologySources() {
-        return "CBO,FB-DV,NMR,MESH,ECG,PSIMOD,PR,MA,TADS,OBI,SNPO,ATMO,BT,BSPO,GEOSPECIES,CHEBI,LHN,MEGO,pseudo,WB-LS,GO,FHHO,PAE,BILA,OGI,EFO,OPB,SEP,MEDLINEPLUS,BTO,MAT,CARO,NEMO,REX,FB-SP,BIRNLEX,OCRE,TAO,HAO,TGMA,IMR,BHO,BRO,DC-CL,HP,FBbi,EHDAA,SBO,ZFA,PTO,LOINC,GRO,PATO,TTO,WB-BT,ZEA,GRO-CPD,PDQ,OPL,PECO,SO,CPTAC,NDFRT,CPRO,PRO-ONT,COSTART,BCGO,ICPC,SOPHARM,SNOMEDCT,EHDA,FIX,SYMP,XAO,OBOREL,EVOC,DERMLEX,IDOMAL,PEO,ATO,MFO,WHO-ART,IEV,EMAP,FB-BT,AAO,HC,BP-METADATA,PSDS,NCBITAXON,HOM,FAO,ABA-AMB,WB-PHENOTYPE,ENVO,GALEN,BFO,LIPRO,MAO,ACGT-MO,CTONT,UO,PHYFIELD,OGDI,SPD,FB-CV,OMIM,SPO,EP,CDAO,VO,MHC,APO,SBRO,PROPREO,MS,PPIO,SITBAC,DDANAT,SAO,OGR,RS,ICD9CM,CLO,DOID,PTRANS,NIFSTD,MP,MO,PW,AMINO-ACID,ECO,FYPO";
     }
 
     @Test
@@ -76,5 +67,15 @@ public class BioPortalClient4Test {
             System.out.println(ontology.getOntologyID() + " - " + ontology.getOntologyAbbreviation() + " -> " + ontology.getOntologyDisplayLabel()
                     + " -> " + ontology.getOntologyVersion() + " - " + ontology.getHomepage() + " " + ontology.getContactName());
         }
+    }
+
+    @Test
+    public void getOntologyRoots() {
+        System.out.println("_____Testing getOntologyRoots()____");
+        Map<String, OntologyTerm> ontologyRoots = client.getOntologyRoots(testOntologyID);
+
+        assertTrue("No ontology roots found for " + testOntologyID, ontologyRoots.size() > 0);
+
+        System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyID);
     }
 }

@@ -153,7 +153,7 @@ public class BioPortalClientTest {
     public void getTermsByPartialNameFromSource() {
         System.out.println("_____Testing getTermsByPartialNameFromSource()____");
 
-        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, testOntologyID, false);
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, "all", false);
 
         assertTrue("No results found for " + testSearchTerm + " in " + testOntologyID, result.size() > 0);
 
