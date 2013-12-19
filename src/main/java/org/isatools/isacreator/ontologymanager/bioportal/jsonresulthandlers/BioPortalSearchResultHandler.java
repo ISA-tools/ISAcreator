@@ -1,8 +1,8 @@
 package org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers;
 
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
@@ -11,7 +11,6 @@ import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
-import org.omg.CORBA.OBJECT_NOT_EXIST;
 
 import javax.json.*;
 import java.io.*;
@@ -24,6 +23,8 @@ import java.util.Map;
 public class BioPortalSearchResultHandler {
 
     public static final String API_KEY = "fd88ee35-6995-475d-b15a-85f1b9dd7a42";
+    public static final String PARENTS = "ancestors";
+    public static final String CHILDREN = "children";
 
     /**
      * Returns the result of the search operation
@@ -48,16 +49,13 @@ public class BioPortalSearchResultHandler {
         JsonArray results = obj.getJsonArray("collection");
         for (JsonObject resultItem : results.getValuesAs(JsonObject.class)) {
 
-            JsonObject links = resultItem.getJsonObject("links");
+            String ontologyId = extractOntologyId(resultItem);
 
-            String ontologyId = links.getJsonString("ontology").toString();
             if (!result.containsKey(ontologyId)) {
                 result.put(ontologyId, new ArrayList<OntologyTerm>());
             }
-            OntologyTerm ontologyTerm = new OntologyTerm(resultItem.getString("prefLabel"), resultItem.getString("@id"), "", null);
 
-            extractDefinitionFromOntologyTerms(resultItem, ontologyTerm);
-            extractSynonymsFromOntologyTerm(resultItem, ontologyTerm);
+            OntologyTerm ontologyTerm = createOntologyTerm(resultItem);
 
             result.get(ontologyId).add(ontologyTerm);
 
@@ -66,15 +64,20 @@ public class BioPortalSearchResultHandler {
         return result;
     }
 
-    private void extractDefinitionFromOntologyTerms(JsonObject resultItem, OntologyTerm ontologyTerm) {
-        JsonArray definitions = resultItem.getJsonArray("definition");
+    private String extractOntologyId(JsonObject ontologyItemJsonDictionary) {
+        JsonObject links = ontologyItemJsonDictionary.getJsonObject("links");
+        return links.getJsonString("ontology").toString();
+    }
+
+    private void extractDefinitionFromOntologyTerms(JsonObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
+        JsonArray definitions = ontologyItemJsonDictionary.getJsonArray("definition");
         if (definitions != null && definitions.size() > 0) {
             ontologyTerm.addToComments("definition", definitions.get(0).toString());
         }
     }
 
-    private void extractSynonymsFromOntologyTerm(JsonObject resultItem, OntologyTerm ontologyTerm) {
-        JsonArray synonyms = resultItem.getJsonArray("synonyms");
+    private void extractSynonymsFromOntologyTerm(JsonObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
+        JsonArray synonyms = ontologyItemJsonDictionary.getJsonArray("synonyms");
         if (synonyms != null && synonyms.size() > 0) {
             StringBuilder synonymList = new StringBuilder();
             int count = 0;
@@ -214,8 +217,7 @@ public class BioPortalSearchResultHandler {
 
         // if we have a nice error free page, continue
         if (!obj.containsKey("errors")) {
-            Ontology associatedOntologySource = AcceptedOntologies.getAcceptedOntologies().get(ontologyId);
-            OntologySourceRefObject osro = new OntologySourceRefObject(associatedOntologySource.getOntologyAbbreviation(), associatedOntologySource.getOntologyID(), associatedOntologySource.getOntologyVersion(), associatedOntologySource.getOntologyDisplayLabel());
+            OntologySourceRefObject osro = getOntologySourceRefObject(ontologyId);
 
             OntologyTerm ontologyTerm = new OntologyTerm(obj.getString("prefLabel"), obj.getString("@id"), obj.getString("@id"), osro);
             extractDefinitionFromOntologyTerms(obj, ontologyTerm);
@@ -227,6 +229,11 @@ public class BioPortalSearchResultHandler {
         } else {
             return null;
         }
+    }
+
+    private OntologySourceRefObject getOntologySourceRefObject(String ontologyId) {
+        Ontology associatedOntologySource = AcceptedOntologies.getAcceptedOntologies().get(ontologyId);
+        return new OntologySourceRefObject(associatedOntologySource.getOntologyAbbreviation(), associatedOntologySource.getOntologyID(), associatedOntologySource.getOntologyVersion(), associatedOntologySource.getOntologyDisplayLabel());
     }
 
     public String queryTermMetadataEndpoint(String termId, String ontologyId) {
@@ -256,4 +263,126 @@ public class BioPortalSearchResultHandler {
 
         return null;
     }
+
+    public Map<String, OntologyTerm> getOntologyRoots(String ontologyAbbreviation) {
+
+        Map<String, OntologyTerm> roots = new HashMap<String, OntologyTerm>();
+
+        String queryContents = generalQueryEndpoint(BioPortal4Client.REST_URL + "ontologies/" + ontologyAbbreviation + "/classes/roots?apikey=" + API_KEY);
+        StringReader reader = new StringReader(queryContents);
+        JsonReader rdr = Json.createReader(reader);
+        JsonArray rootArray = rdr.readArray();
+
+        for (JsonObject annotationItem : rootArray.getValuesAs(JsonObject.class)) {
+
+
+            OntologySourceRefObject osro = getOntologySourceRefObject(extractOntologyId(annotationItem));
+
+            OntologyTerm ontologyTerm = createOntologyTerm(annotationItem);
+            ontologyTerm.setOntologySourceInformation(osro);
+
+            roots.put(ontologyTerm.getOntologyTermAccession(), ontologyTerm);
+        }
+
+        return roots;
+    }
+
+    private OntologyTerm createOntologyTerm(JsonObject annotationItem) {
+
+        OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.getString("prefLabel"), annotationItem.getString("@id"), "", null);
+
+        extractDefinitionFromOntologyTerms(annotationItem, ontologyTerm);
+        extractSynonymsFromOntologyTerm(annotationItem, ontologyTerm);
+
+        return ontologyTerm;
+    }
+
+    /**
+     * @param url
+     * @return
+     */
+    private String generalQueryEndpoint(String url) {
+        try {
+            HttpClient client = new HttpClient();
+
+            GetMethod method = new GetMethod(url);
+            try {
+                setHostConfiguration(client);
+            } catch (Exception e) {
+                System.err.println("Problem encountered setting host configuration for ontology search");
+            }
+
+            int statusCode = client.executeMethod(method);
+            if (statusCode != -1) {
+                String contents = method.getResponseBodyAsString();
+                method.releaseConnection();
+                return contents;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Map<String, OntologyTerm> getTermParents(String termAccession, String ontologyAbbreviation) {
+        return getTermChildrenOrParents(termAccession, ontologyAbbreviation, PARENTS);
+    }
+
+    public Map<String, OntologyTerm> getTermChildren(String termAccession, String ontologyAbbreviation) {
+        return getTermChildrenOrParents(termAccession, ontologyAbbreviation, CHILDREN);
+    }
+
+    /**
+     * Will make a call to get the parents or children of a term, identified by its termAccession in a particular
+     * ontology, defined by the ontologyAbbreviation.
+     *
+     * @param termAccession        - e.g. http://purl.obolibrary.org/obo/OBI_0000785
+     * @param ontologyAbbreviation - e.g. EFO
+     * @param parentsOrChildren    - 'parents' or 'children' as an input value
+     * @return Map from the ontology term id to its OntologyTerm object.
+     */
+    public Map<String, OntologyTerm> getTermChildrenOrParents(String termAccession, String ontologyAbbreviation, String parentsOrChildren) {
+        try {
+            Map<String, OntologyTerm> parents = new ListOrderedMap<String, OntologyTerm>();
+
+            String queryContents = generalQueryEndpoint(BioPortal4Client.REST_URL + "ontologies/" + ontologyAbbreviation + "/classes/"
+                    + URLEncoder.encode(termAccession, "UTF-8") + "/" + parentsOrChildren + "?apikey=" + API_KEY);
+            StringReader reader = new StringReader(queryContents);
+            JsonReader rdr = Json.createReader(reader);
+
+            System.out.println(queryContents);
+
+            JsonStructure topLevelStructure = rdr.read();
+            JsonArray rootArray;
+
+
+            if (topLevelStructure instanceof JsonObject) {
+                // the children result returns a dictionary, or JsonStructure, so we have to go down one level to get
+                // the collection of results.
+                rootArray = ((JsonObject) topLevelStructure).getJsonArray("collection");
+            } else {
+                // the parents result returns an array directly, so we can just use it immediately.
+                rootArray = (JsonArray) topLevelStructure;
+            }
+
+            for (JsonObject annotationItem : rootArray.getValuesAs(JsonObject.class)) {
+                OntologySourceRefObject osro = getOntologySourceRefObject(extractOntologyId(annotationItem));
+
+                OntologyTerm ontologyTerm = createOntologyTerm(annotationItem);
+                ontologyTerm.setOntologySourceInformation(osro);
+
+                parents.put(ontologyTerm.getOntologyTermAccession(), ontologyTerm);
+            }
+
+            return parents;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+
 }

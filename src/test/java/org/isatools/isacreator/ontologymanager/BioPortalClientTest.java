@@ -175,12 +175,13 @@ public class BioPortalClientTest {
 
         assertTrue("No ontology roots found for " + testOntologyVersion, ontologyRoots.size() > 0);
 
+
         System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyVersion);
     }
 
     @Test
     public void getTermParents() {
-        System.out.println("_____Testing getTermParents()____");
+        System.out.println("_____Testing getTermChildrenOrParents()____");
 
         Map<String, OntologyTerm> parentTerms = client.getAllTermParents(testTermAccession, testOntologyVersion);
 

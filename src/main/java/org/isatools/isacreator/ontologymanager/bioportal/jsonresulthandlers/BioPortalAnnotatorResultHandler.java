@@ -29,8 +29,6 @@ public class BioPortalAnnotatorResultHandler {
 
     public Map<String, Map<String, AnnotatorResult>> getSearchResults(String queryContents, String originalText, Set<String> originalTerms) {
 
-        System.out.println("Original text is - " + originalText);
-        System.out.println(queryContents);
         // map from search term to a map of full id to the ontology term.
         Map<String, Map<String, AnnotatorResult>> result = new HashMap<String, Map<String, AnnotatorResult>>();
         // for each token, we wan to find the matches and add them to the list
@@ -48,8 +46,6 @@ public class BioPortalAnnotatorResultHandler {
             if (annotatorResult != null) {
 
                 String originalTerm = originalText.substring(annotatorResult.getStartIndex()-1, annotatorResult.getEndIndex());
-                System.out.println("Original term is - " + originalTerm);
-
                 if (originalTerms.contains(originalTerm)) {
 
                     if (!result.containsKey(originalTerm)) {

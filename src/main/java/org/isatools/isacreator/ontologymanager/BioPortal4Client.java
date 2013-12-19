@@ -17,12 +17,13 @@ public class BioPortal4Client implements OntologyService {
     private static final Logger log = Logger.getLogger(BioPortal4Client.class);
 
     private BioPortalSearchResultHandler handler;
-
+    private Map<String, Map<String, OntologyTerm>> cachedNodeChildrenQueries;
 
     public static final String REST_URL = "http://data.bioontology.org/";
 
     public BioPortal4Client() {
         this.handler = new BioPortalSearchResultHandler();
+        this.cachedNodeChildrenQueries = new HashMap<String, Map<String, OntologyTerm>>();
     }
 
     public Map<String, String> getOntologyNames() {
@@ -30,9 +31,7 @@ public class BioPortal4Client implements OntologyService {
     }
 
     public Map<String, String> getTermMetadata(String termId, String ontology) {
-//        http://data.bioontology.org/ontologies/GALEN/classes/http%3A%2F%2Fwww.co-ode.org%2Fontologies%2Fgalen%23Melanoma"
-        OntologyTerm ontologyTerm = handler.getTermMetadata(termId,ontology);
-        return null;
+        return handler.getTermMetadata(termId, ontology).getComments();
     }
 
     public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder) {
@@ -65,7 +64,7 @@ public class BioPortal4Client implements OntologyService {
                     subtree = ro.getBranchToSearchUnder().getBranchIdentifier();
                 }
 
-                Map<String, List<OntologyTerm>> searchResult = handler.getSearchResults(term, ro.getOntology().getOntologyID(), subtree);
+                Map<String, List<OntologyTerm>> searchResult = handler.getSearchResults(term, ro.getOntology().getOntologyAbbreviation(), subtree);
 
                 if (searchResult != null) {
                     result.putAll(convertStringKeyMapToOntologySourceRefKeyMap(searchResult));
@@ -76,12 +75,16 @@ public class BioPortal4Client implements OntologyService {
     }
 
     public Map<String, String> getOntologyVersions() {
+
         return AcceptedOntologies.getOntologySourceToVersion();
     }
 
-    public Map<String, OntologyTerm> getOntologyRoots(String ontology) {
+    public Map<String, OntologyTerm> getOntologyRoots(String ontologyAbbreviation) {
 //        http://data.bioontology.org/ontologies/EFO/classes/roots
-        return null;
+        if (!cachedNodeChildrenQueries.containsKey(ontologyAbbreviation)) {
+            cachedNodeChildrenQueries.put(ontologyAbbreviation, handler.getOntologyRoots(ontologyAbbreviation));
+        }
+        return cachedNodeChildrenQueries.get(ontologyAbbreviation);
     }
 
     public Map<String, OntologyTerm> getTermParent(String termAccession, String ontology) {
@@ -89,14 +92,22 @@ public class BioPortal4Client implements OntologyService {
         return null;
     }
 
-    public Map<String, OntologyTerm> getTermChildren(String termAccession, String ontology) {
-//        http://data.bioontology.org/ontologies/EFO/classes/http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000001/children
-        return null;
+    public Map<String, OntologyTerm> getTermChildren(String termAccession, String ontologyAbbreviation) {
+        String uniqueReferenceId = ontologyAbbreviation + "-" + termAccession + "-children";
+        if (!cachedNodeChildrenQueries.containsKey(uniqueReferenceId)) {
+            cachedNodeChildrenQueries.put(uniqueReferenceId, handler.getTermChildren(termAccession, ontologyAbbreviation));
+        }
+        return cachedNodeChildrenQueries.get(uniqueReferenceId);
     }
 
-    public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology) {
-//        http://data.bioontology.org/ontologies/EFO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FIAO_0000030/parents
-        return null;
+    public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontologyAbbreviation) {
+
+        String uniqueReferenceId = ontologyAbbreviation + "-" + termAccession + "-parents";
+        if (!cachedNodeChildrenQueries.containsKey(uniqueReferenceId)) {
+            cachedNodeChildrenQueries.put(uniqueReferenceId, handler.getTermParents(termAccession, ontologyAbbreviation));
+        }
+        return cachedNodeChildrenQueries.get(uniqueReferenceId);
+
     }
 
     public Collection<Ontology> getAllOntologies() {
@@ -114,7 +125,7 @@ public class BioPortal4Client implements OntologyService {
 
                 convertedMap.put(osro, new ArrayList<OntologyTerm>());
 
-                for(OntologyTerm ontologyTerm : toConvert.get(ontologyId)){
+                for (OntologyTerm ontologyTerm : toConvert.get(ontologyId)) {
                     ontologyTerm.setOntologySourceInformation(osro);
                     convertedMap.get(osro).add(ontologyTerm);
                 }

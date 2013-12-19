@@ -582,9 +582,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         if (portal == OntologyPortal.OLS) {
                             setTermDefinitionView(historyTerm);
                         } else {
-                            if (bioportalClient == null) {
-                                bioportalClient = new BioPortalClient();
-                            }
+                            instantiateBioPortalClientIfNull();
                             Map<String, String> ontologyVersions = bioportalClient.getOntologyVersions();
                             setTermDefinitionView(historyTerm, ontologyVersions);
                         }
@@ -842,13 +840,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private void performSearch() {
 
-        if (olsClient == null) {
-            olsClient = new OLSClient();
-        }
-
-        if (bioportalClient == null) {
-            bioportalClient = new BioPortalClient();
-        }
+        instantiateOLSClientIfNull();
+        instantiateBioPortalClientIfNull();
 
         Thread performer = new Thread(new Runnable() {
             public void run() {
@@ -914,6 +907,18 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
             }
         });
         performer.start();
+    }
+
+    private void instantiateOLSClientIfNull() {
+        if (olsClient == null) {
+            olsClient = new OLSClient();
+        }
+    }
+
+    private void instantiateBioPortalClientIfNull() {
+        if (bioportalClient == null) {
+            bioportalClient = new BioPortal4Client();
+        }
     }
 
     private void searchSpecificOntologies() {

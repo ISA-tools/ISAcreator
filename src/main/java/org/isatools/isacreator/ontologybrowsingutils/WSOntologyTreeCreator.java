@@ -39,6 +39,7 @@ package org.isatools.isacreator.ontologybrowsingutils;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.isatools.isacreator.ontologymanager.OLSClient;
 import org.isatools.isacreator.ontologymanager.OntologyService;
@@ -85,7 +86,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         this.tree = tree;
         observers = new ArrayList<TreeObserver>();
 
-        bioportalClient = new BioPortalClient();
+        bioportalClient = new BioPortal4Client();
         olsClient = new OLSClient();
     }
 

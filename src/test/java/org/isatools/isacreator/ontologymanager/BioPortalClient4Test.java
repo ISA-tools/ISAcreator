@@ -1,7 +1,6 @@
 package org.isatools.isacreator.ontologymanager;
 
 import org.isatools.isacreator.configuration.Ontology;
-import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.junit.Test;
 
@@ -17,10 +16,10 @@ import static org.junit.Assert.assertTrue;
 public class BioPortalClient4Test {
 
     private BioPortal4Client client = new BioPortal4Client();
-    private String testOntologyID = "EFO";
-    private String testTermAccession = "http://www.co-ode.org/ontologies/galen#Melanoma";
+    private String testOntologySource = "EFO";
+    private String testTermAccession = "http://www.ebi.ac.uk/efo/EFO_0000428";
     private String testSearchTerm = "dose";
-    private String ontologyId = "http://data.bioontology.org/ontologies/GALEN";
+    private String ontologyId = "http://data.bioontology.org/ontologies/EFO";
 
 
     @Test
@@ -29,7 +28,7 @@ public class BioPortalClient4Test {
 
         long startTime = System.currentTimeMillis();
         Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, "all", false);
-        System.out.println("Took " + (System.currentTimeMillis()-startTime) + "ms to do that query.");
+        System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do that query.");
 
 
         for (OntologySourceRefObject source : result.keySet()) {
@@ -44,7 +43,7 @@ public class BioPortalClient4Test {
 
         startTime = System.currentTimeMillis();
         result = client.getTermsByPartialNameFromSource("cy5", "all", false);
-        System.out.println("Took " + (System.currentTimeMillis()-startTime) + "ms to do that query.");
+        System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do that query.");
 
         for (OntologySourceRefObject source : result.keySet()) {
             System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
@@ -59,7 +58,8 @@ public class BioPortalClient4Test {
     public void getTermMetadata() {
         System.out.println("_____Testing getTermMetadata()____");
 
-        client.getTermMetadata(testTermAccession,ontologyId);
+        Map<String, String> termInfo = client.getTermMetadata(testTermAccession, ontologyId);
+        assertTrue("Oh no! No additional information for term! ", termInfo.size() > 0);
     }
 
     @Test
@@ -80,10 +80,43 @@ public class BioPortalClient4Test {
     @Test
     public void getOntologyRoots() {
         System.out.println("_____Testing getOntologyRoots()____");
-        Map<String, OntologyTerm> ontologyRoots = client.getOntologyRoots(testOntologyID);
+        Map<String, OntologyTerm> ontologyRoots = client.getOntologyRoots(testOntologySource);
 
-        assertTrue("No ontology roots found for " + testOntologyID, ontologyRoots.size() > 0);
+        assertTrue("No ontology roots found for " + testOntologySource, ontologyRoots.size() > 0);
 
-        System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyID);
+        for(String key : ontologyRoots.keySet()) {
+            System.out.println(key + " - " + ontologyRoots.get(key).getOntologyTermName());
+        }
+
+    }
+
+    @Test
+    public void getTermParents() {
+        System.out.println("_____Testing getTermChildrenOrParents()____");
+
+        Map<String, OntologyTerm> parentTerms = client.getAllTermParents(testTermAccession, testOntologySource);
+
+        assertTrue("No parents roots found for " + testTermAccession, parentTerms.size() > 0);
+
+        for (OntologyTerm term : parentTerms.values()) {
+            System.out.println(term);
+        }
+
+        System.out.println("Found " + parentTerms.size() + " parents for 45781");
+    }
+
+    @Test
+    public void getTermChildren() {
+        System.out.println("_____Testing getTermChildrenOrParents()____");
+
+        Map<String, OntologyTerm> childTerms = client.getTermChildren("http://purl.obolibrary.org/obo/IAO_0000030", testOntologySource);
+
+        assertTrue("No children found for " + testTermAccession, childTerms.size() > 0);
+
+        for (OntologyTerm term : childTerms.values()) {
+            System.out.println(term);
+        }
+
+        System.out.println("Found " + childTerms.size() + " children for information entity in " + testOntologySource);
     }
 }
