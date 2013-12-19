@@ -16,10 +16,11 @@ import static org.junit.Assert.assertTrue;
  */
 public class BioPortalClient4Test {
 
-    private static BioPortal4Client client = new BioPortal4Client();
-    public static String testOntologyID = "EFO";
-    public static String testTermAccession = "efo:EFO_0000428";
-    public static String testSearchTerm = "dose";
+    private BioPortal4Client client = new BioPortal4Client();
+    private String testOntologyID = "EFO";
+    private String testTermAccession = "http://www.co-ode.org/ontologies/galen#Melanoma";
+    private String testSearchTerm = "dose";
+    private String ontologyId = "http://data.bioontology.org/ontologies/GALEN";
 
 
     @Test
@@ -52,6 +53,13 @@ public class BioPortalClient4Test {
                 System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
+    }
+
+    @Test
+    public void getTermMetadata() {
+        System.out.println("_____Testing getTermMetadata()____");
+
+        client.getTermMetadata(testTermAccession,ontologyId);
     }
 
     @Test

@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
-import org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers.BioPortalQueryEndpoint;
+import org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers.BioPortalSearchResultHandler;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import java.util.*;
@@ -16,13 +16,13 @@ public class BioPortal4Client implements OntologyService {
 
     private static final Logger log = Logger.getLogger(BioPortal4Client.class);
 
-    private BioPortalQueryEndpoint handler;
+    private BioPortalSearchResultHandler handler;
 
 
     public static final String REST_URL = "http://data.bioontology.org/";
 
     public BioPortal4Client() {
-        this.handler = new BioPortalQueryEndpoint();
+        this.handler = new BioPortalSearchResultHandler();
     }
 
     public Map<String, String> getOntologyNames() {
@@ -30,6 +30,8 @@ public class BioPortal4Client implements OntologyService {
     }
 
     public Map<String, String> getTermMetadata(String termId, String ontology) {
+//        http://data.bioontology.org/ontologies/GALEN/classes/http%3A%2F%2Fwww.co-ode.org%2Fontologies%2Fgalen%23Melanoma"
+        OntologyTerm ontologyTerm = handler.getTermMetadata(termId,ontology);
         return null;
     }
 
@@ -78,18 +80,22 @@ public class BioPortal4Client implements OntologyService {
     }
 
     public Map<String, OntologyTerm> getOntologyRoots(String ontology) {
+//        http://data.bioontology.org/ontologies/EFO/classes/roots
         return null;
     }
 
     public Map<String, OntologyTerm> getTermParent(String termAccession, String ontology) {
+
         return null;
     }
 
     public Map<String, OntologyTerm> getTermChildren(String termAccession, String ontology) {
+//        http://data.bioontology.org/ontologies/EFO/classes/http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000001/children
         return null;
     }
 
     public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology) {
+//        http://data.bioontology.org/ontologies/EFO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FIAO_0000030/parents
         return null;
     }
 

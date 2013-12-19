@@ -38,7 +38,6 @@ package org.isatools.isacreator.ontologymanager;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
-import org.apache.soap.encoding.soapenc.SoapEncUtils;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;

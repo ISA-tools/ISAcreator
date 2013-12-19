@@ -5,9 +5,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers.BioPortalAnnotatorResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
-import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
-import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalAnnotatorResultHandler;
 import uk.ac.ebi.utils.io.DownloadUtils;
 
 import java.io.File;
@@ -27,29 +26,29 @@ import java.util.Set;
  */
 public class AnnotatorSearchClient {
 
-    public static final String BASE_QUERY_URL = "http://rest.bioontology.org/obs/annotator";
+    public static final String BASE_QUERY_URL = "http://data.bioontology.org/annotator";
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms) {
-        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyIds(new HashSet<Ontology>()), true);
+        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyAcronyms(new HashSet<Ontology>()), true);
     }
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn, boolean wholeWordOnly) {
         try {
+            String flattenedTerms = flattenSetToString(terms);
+
             HttpClient client = new HttpClient();
             PostMethod method = new PostMethod(BASE_QUERY_URL);
 
             // Configure the form parameters
             method.addParameter("wholeWordOnly", wholeWordOnly ? " true" : "false");
-            method.addParameter("scored", "true");
-            method.addParameter("ontologiesToKeepInResult", ontologiesToSearchOn);
-            method.addParameter("isVirtualOntologyId", "true");
-            method.addParameter("withSynonyms", "true");
-            method.addParameter("textToAnnotate", flattenSetToString(terms));
+
+            method.addParameter("ontologies", ontologiesToSearchOn);
+            method.addParameter("text", flattenedTerms);
             method.addParameter("apikey", "fd88ee35-6995-475d-b15a-85f1b9dd7a42");
 
             try {
                 HostConfiguration configuration = new HostConfiguration();
-                configuration.setHost("http://rest.bioontology.org");
+                configuration.setHost("http://data.bioontology.org");
                 configuration.setProxy(System.getProperty("http.proxyHost"), Integer.valueOf(System.getProperty("http.proxyPort")));
                 client.setHostConfiguration(configuration);
             } catch (Exception e) {
@@ -61,7 +60,7 @@ public class AnnotatorSearchClient {
                 String contents = method.getResponseBodyAsString();
 
                 method.releaseConnection();
-                return processContent(contents, terms);
+                return processContent(contents, flattenedTerms, terms);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,27 +69,10 @@ public class AnnotatorSearchClient {
         return null;
     }
 
-    private Map<String, Map<String, AnnotatorResult>> processContent(String content, Set<String> terms) throws FileNotFoundException {
-
-        File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(
-                createFileForContent(content), "http://bioontology.org/bioportal/annotator#", "<success>");
-
+    private Map<String, Map<String, AnnotatorResult>> processContent(String content, String originalText, Set<String> terms) {
         BioPortalAnnotatorResultHandler handler = new BioPortalAnnotatorResultHandler();
-
-        System.out.println("File saved in " + fileWithNameSpace.getAbsolutePath());
-
-        return handler.getSearchResults(fileWithNameSpace.getAbsolutePath(), terms);
+        return handler.getSearchResults(content, originalText, terms);
     }
-
-    private File createFileForContent(String content) throws FileNotFoundException {
-        File toSaveAs = new File(DownloadUtils.DOWNLOAD_FILE_LOC + "annotator-result" + DownloadUtils.XML_EXT);
-        PrintStream ps = new PrintStream(toSaveAs);
-        ps.print(content);
-        ps.close();
-
-        return toSaveAs;
-    }
-
 
     private String flattenSetToString(Set<String> terms) {
         StringBuilder buffer = new StringBuilder();

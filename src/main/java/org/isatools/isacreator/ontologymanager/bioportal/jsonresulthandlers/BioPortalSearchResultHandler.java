@@ -9,17 +9,19 @@ import org.apache.commons.lang.StringUtils;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.omg.CORBA.OBJECT_NOT_EXIST;
 
 import javax.json.*;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BioPortalQueryEndpoint {
+public class BioPortalSearchResultHandler {
 
     public static final String API_KEY = "fd88ee35-6995-475d-b15a-85f1b9dd7a42";
 
@@ -54,30 +56,37 @@ public class BioPortalQueryEndpoint {
             }
             OntologyTerm ontologyTerm = new OntologyTerm(resultItem.getString("prefLabel"), resultItem.getString("@id"), "", null);
 
-            JsonArray definitions = resultItem.getJsonArray("definition");
-            if (definitions != null) {
-                ontologyTerm.addToComments("definition", definitions.get(0).toString());
-            }
-
-            JsonArray synonyms = resultItem.getJsonArray("synonyms");
-            if (synonyms != null && synonyms.size() > 0) {
-                StringBuilder synonymList = new StringBuilder();
-                int count = 0;
-                for (JsonValue value : synonyms.getValuesAs(JsonValue.class)) {
-                    synonymList.append(value.toString());
-                    if (count != synonyms.size() - 1) {
-                        synonymList.append(",");
-                    }
-                    count++;
-                }
-                ontologyTerm.addToComments("synonyms", synonymList.toString());
-            }
+            extractDefinitionFromOntologyTerms(resultItem, ontologyTerm);
+            extractSynonymsFromOntologyTerm(resultItem, ontologyTerm);
 
             result.get(ontologyId).add(ontologyTerm);
 
         }
 
         return result;
+    }
+
+    private void extractDefinitionFromOntologyTerms(JsonObject resultItem, OntologyTerm ontologyTerm) {
+        JsonArray definitions = resultItem.getJsonArray("definition");
+        if (definitions != null && definitions.size() > 0) {
+            ontologyTerm.addToComments("definition", definitions.get(0).toString());
+        }
+    }
+
+    private void extractSynonymsFromOntologyTerm(JsonObject resultItem, OntologyTerm ontologyTerm) {
+        JsonArray synonyms = resultItem.getJsonArray("synonyms");
+        if (synonyms != null && synonyms.size() > 0) {
+            StringBuilder synonymList = new StringBuilder();
+            int count = 0;
+            for (JsonValue value : synonyms.getValuesAs(JsonValue.class)) {
+                synonymList.append(value.toString());
+                if (count != synonyms.size() - 1) {
+                    synonymList.append(",");
+                }
+                count++;
+            }
+            ontologyTerm.addToComments("synonyms", synonymList.toString());
+        }
     }
 
     public String querySearchEndpoint(String term, String ontologyIds, String subtree) {
@@ -99,6 +108,8 @@ public class BioPortalQueryEndpoint {
             }
             method.addParameter("apikey", API_KEY);
             method.addParameter("pagesize", "500");
+//            method.addParameter("no_links", "true");
+            method.addParameter("no_context", "true");
 
             try {
                 setHostConfiguration(client);
@@ -109,6 +120,7 @@ public class BioPortalQueryEndpoint {
 
             int statusCode = client.executeMethod(method);
             if (statusCode != -1) {
+
                 String contents = method.getResponseBodyAsString();
                 method.releaseConnection();
                 return contents;
@@ -189,6 +201,59 @@ public class BioPortalQueryEndpoint {
     private void setHostConfiguration(HttpClient client) {
         HostConfiguration configuration = new HostConfiguration();
         configuration.setHost("http://data.bioontology.org");
+        configuration.setProxy(System.getProperty("http.proxyHost"), Integer.valueOf(System.getProperty("http.proxyPort")));
         client.setHostConfiguration(configuration);
+    }
+
+    public OntologyTerm getTermMetadata(String termId, String ontologyId) {
+
+        String content = queryTermMetadataEndpoint(termId, ontologyId);
+        StringReader reader = new StringReader(content);
+        JsonReader rdr = Json.createReader(reader);
+        JsonObject obj = rdr.readObject();
+
+        // if we have a nice error free page, continue
+        if (!obj.containsKey("errors")) {
+            Ontology associatedOntologySource = AcceptedOntologies.getAcceptedOntologies().get(ontologyId);
+            OntologySourceRefObject osro = new OntologySourceRefObject(associatedOntologySource.getOntologyAbbreviation(), associatedOntologySource.getOntologyID(), associatedOntologySource.getOntologyVersion(), associatedOntologySource.getOntologyDisplayLabel());
+
+            OntologyTerm ontologyTerm = new OntologyTerm(obj.getString("prefLabel"), obj.getString("@id"), obj.getString("@id"), osro);
+            extractDefinitionFromOntologyTerms(obj, ontologyTerm);
+            extractSynonymsFromOntologyTerm(obj, ontologyTerm);
+
+            System.out.println(ontologyTerm.getOntologyTermName() + " - " + ontologyTerm.getOntologyTermAccession());
+
+            return ontologyTerm;
+        } else {
+            return null;
+        }
+    }
+
+    public String queryTermMetadataEndpoint(String termId, String ontologyId) {
+        try {
+            HttpClient client = new HttpClient();
+            String url = ontologyId + "/classes/" + URLEncoder.encode(termId, "UTF-8") + "?apikey=" + API_KEY;
+
+            GetMethod method = new GetMethod(url);
+
+            System.out.println(method.getURI().toString());
+            try {
+                setHostConfiguration(client);
+            } catch (Exception e) {
+                System.err.println("Problem encountered setting host configuration for ontology search");
+            }
+
+            int statusCode = client.executeMethod(method);
+            if (statusCode != -1) {
+                String contents = method.getResponseBodyAsString();
+                System.out.println(contents);
+                method.releaseConnection();
+                return contents;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

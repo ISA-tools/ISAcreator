@@ -37,8 +37,8 @@
 
 package org.isatools.isacreator.wizard;
 
-import org.apache.axis.utils.StringUtils;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;

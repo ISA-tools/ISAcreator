@@ -96,14 +96,11 @@ public class ValidateUI extends JFrame {
 
     public ValidateUI(ISAcreator isacreatorEnvironment, OperatingMode mode) {
         this.mode = mode;
-
         ResourceInjector.get("validateconvert-package.style").inject(this);
-
         this.isacreatorEnvironment = isacreatorEnvironment;
     }
 
     public void createGUI() {
-
         setTitle(mode == OperatingMode.VALIDATE ? "Validate ISAtab" : "Convert ISAtab");
         setUndecorated(true);
 
@@ -153,6 +150,8 @@ public class ValidateUI extends JFrame {
                     log.info("Saving current ISAtab file");
                     ApplicationManager.getCurrentApplicationInstance().saveISATab();
                     log.info("ISAtab file saved");
+
+                    System.out.println("Setting config path before validation to " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
                     ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
