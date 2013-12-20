@@ -1,15 +1,11 @@
 package org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers;
 
-import bioontology.bioportal.annotator.schema.AnnotationBeanDocument;
-import bioontology.bioportal.annotator.schema.ConceptDocument;
-import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import javax.json.*;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

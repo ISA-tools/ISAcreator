@@ -1173,7 +1173,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                         if (OntologyUtils.getSourceOntologyPortalByVersion(ontologySource.getSourceVersion()) == OntologyPortal.BIOPORTAL) {
                             boolean sourceIsInPlugins = OntologySearchPluginRegistry.isOntologySourceAbbreviationDefinedInPlugins(ontologyTerm.getOntologySource());
-                            viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceVersion(), sourceIsInPlugins ? null : bioportalClient == null ? new BioPortalClient() : bioportalClient);
+                            viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceFile(), sourceIsInPlugins ? null : bioportalClient == null ? new BioPortal4Client() : bioportalClient);
                         } else {
                             viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceVersion(), olsClient);
                         }
@@ -1192,7 +1192,7 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                         if (OntologyUtils.getSourceOntologyPortal(termNode.getOntology()) == OntologyPortal.BIOPORTAL) {
                             viewTermDefinition.setContent(termNode.getBranch(),
-                                    termNode.getOntology().getOntologyVersion(), bioportalClient == null ? new BioPortalClient() : bioportalClient);
+                                    termNode.getOntology().getOntologyAbbreviation(), bioportalClient == null ? new BioPortal4Client() : bioportalClient);
                         } else {
 
                             viewTermDefinition.setContent(termNode.getBranch(),

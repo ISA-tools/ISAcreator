@@ -53,12 +53,16 @@ public class AcceptedOntologies {
 
     private static Map<String, Ontology> acceptedOntologies;
 
+    // This is used to cache lookups on ontology sources, e.g. EFO to their equivalent ID in BioPortal
+    private static Map<String,String> ontologySourceToIDCache;
+
     static {
         updateAcceptedOntologies();
     }
 
     public static void updateAcceptedOntologies() {
         acceptedOntologies = AcceptedOntologiesLoader.getAcceptedOntologies();
+        ontologySourceToIDCache = new HashMap<String, String>();
     }
 
     /**
@@ -90,22 +94,18 @@ public class AcceptedOntologies {
         return ontologySourceToName;
     }
 
-    public static String getAllowedOntologyIds(Set<Ontology> toIgnore) {
-        StringBuilder allowedOntologies = new StringBuilder();
-
-        int count = 0;
-        for (Ontology ontology : acceptedOntologies.values()) {
-            if (!toIgnore.contains(ontology)) {
-                allowedOntologies.append(ontology.getOntologyID());
-                if (count != acceptedOntologies.size() - 1) {
-                    allowedOntologies.append(",");
-                }
+    public static String getOntologyIdForAbbreviation(String abbreviation) {
+        if(ontologySourceToIDCache.containsKey(abbreviation)) return ontologySourceToIDCache.get(abbreviation);
+        for(Ontology ontology :  acceptedOntologies.values()) {
+            if(ontology.getOntologyAbbreviation().equals(abbreviation)) {
+                ontologySourceToIDCache.put(abbreviation, ontology.getOntologyID());
+                return ontology.getOntologyID();
             }
-            count++;
         }
 
-        return allowedOntologies.toString();
+        return null;
     }
+
 
     public static String getAllowedOntologyAcronyms(Set<Ontology> toIgnore) {
         StringBuilder allowedOntologies = new StringBuilder();
@@ -123,6 +123,8 @@ public class AcceptedOntologies {
 
         return allowedOntologies.toString();
     }
+
+
 
     public static Map<String, Ontology> getAcceptedOntologies() {
         return acceptedOntologies;

@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.BioPortal4Client;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -220,6 +221,7 @@ public class BioPortalSearchResultHandler {
             OntologySourceRefObject osro = getOntologySourceRefObject(ontologyId);
 
             OntologyTerm ontologyTerm = new OntologyTerm(obj.getString("prefLabel"), obj.getString("@id"), obj.getString("@id"), osro);
+            ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
             extractDefinitionFromOntologyTerms(obj, ontologyTerm);
             extractSynonymsFromOntologyTerm(obj, ontologyTerm);
 
@@ -290,7 +292,7 @@ public class BioPortalSearchResultHandler {
     private OntologyTerm createOntologyTerm(JsonObject annotationItem) {
 
         OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.getString("prefLabel"), annotationItem.getString("@id"), "", null);
-
+        ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
         extractDefinitionFromOntologyTerms(annotationItem, ontologyTerm);
         extractSynonymsFromOntologyTerm(annotationItem, ontologyTerm);
 
