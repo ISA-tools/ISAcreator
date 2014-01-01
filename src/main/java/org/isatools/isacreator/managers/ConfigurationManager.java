@@ -111,7 +111,7 @@ public class ConfigurationManager {
     }
 
 
-    private static TableReferenceObject searchMappingsForMatch(String measurementEndpoint, String technologyType) {
+    public static TableReferenceObject searchMappingsForMatch(String measurementEndpoint, String technologyType) {
         for (MappingObject mo : getMappings()) {
             if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
                     mo.getTechnologyType().equalsIgnoreCase(technologyType)) {

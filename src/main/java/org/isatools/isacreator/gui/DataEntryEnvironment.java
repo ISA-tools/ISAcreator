@@ -133,8 +133,11 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                           String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
+        System.out.println("Getting assay for " + measurementEndpoint);
         TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,
                 techType);
+
+        System.out.println("Tro is " + tro);
 
         if (tro != null) {
             if ((selectedNode != null) && selectedNode.getAllowsChildren() &&

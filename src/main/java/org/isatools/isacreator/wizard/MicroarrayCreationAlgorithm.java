@@ -178,8 +178,8 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         System.out.println("Study user interface is null? " + (studyUISection == null));
         System.out.println("Study user interface dep is null? " + (studyUISection.getDataEntryEnvironment() == null));
 
-        label1Capture = new LabelCapture("Label (e.g. Cy3)", studyUISection.getDataEntryEnvironment());
-        label2Capture = new LabelCapture("Label (e.g. Cy5)", studyUISection.getDataEntryEnvironment());
+        label1Capture = new LabelCapture("Label (e.g. Cy3)");
+        label2Capture = new LabelCapture("Label (e.g. Cy5)");
         label2Capture.setVisible(false);
 
         // create dye swap check box
