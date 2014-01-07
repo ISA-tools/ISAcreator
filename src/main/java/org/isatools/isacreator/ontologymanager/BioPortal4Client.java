@@ -16,10 +16,12 @@ public class BioPortal4Client implements OntologyService {
 
     private static final Logger log = Logger.getLogger(BioPortal4Client.class);
 
-    private BioPortalSearchResultHandler handler;
-    private Map<String, Map<String, OntologyTerm>> cachedNodeChildrenQueries;
-
+    public static final String DIRECT_ONTOLOGY_URL = "http://bioportal.bioontology.org/ontologies/";
     public static final String REST_URL = "http://data.bioontology.org/";
+
+    private BioPortalSearchResultHandler handler;
+
+    private Map<String, Map<String, OntologyTerm>> cachedNodeChildrenQueries;
 
     public BioPortal4Client() {
         this.handler = new BioPortalSearchResultHandler();
@@ -38,9 +40,6 @@ public class BioPortal4Client implements OntologyService {
 
         term = correctTermForHTTPTransport(term);
 
-        if (source.equals("all")) {
-            source = AcceptedOntologies.getAllowedOntologyAcronyms(new HashSet<Ontology>());
-        }
         Map<String, List<OntologyTerm>> searchResult = handler.getSearchResults(term, source, null);
 
         return convertStringKeyMapToOntologySourceRefKeyMap(searchResult);

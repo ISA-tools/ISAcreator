@@ -101,15 +101,11 @@ public class BioPortalSearchResultHandler {
             // Configure the form parameters
             method.addParameter("q", term);
 
-
+            if(!ontologyIds.equals("all")) method.addParameter("ontology", ontologyIds);
             if (StringUtils.trimToNull(subtree) != null) {
                 method.addParameter("subtree", subtree);
-                method.addParameter("ontology", ontologyIds);
-            } else {
-                if (StringUtils.trimToNull(ontologyIds) != null) {
-                    method.addParameter("ontologies", ontologyIds);
-                }
             }
+
             method.addParameter("apikey", API_KEY);
             method.addParameter("pagesize", "500");
 //            method.addParameter("no_links", "true");
