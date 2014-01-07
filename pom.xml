@@ -376,14 +376,14 @@
             <groupId>uk.ac.ebi</groupId>
             <artifactId>jutils</artifactId>
             <version>1.4</version>
-            <!--
+
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
-            -->
+
         </dependency>
 
         <dependency>
