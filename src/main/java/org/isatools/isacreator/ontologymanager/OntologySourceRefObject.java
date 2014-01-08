@@ -78,12 +78,13 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
 
     public void autocomplete(){
 
+        BioPortalClient client = new BioPortalClient();
         String sourceName = getSourceName();
         if (getSourceName()!=null){
             if (getSourceFile()==null && getSourceVersion()==null && getSourceDescription() == null){
-                setSourceFile(BioPortalClient.getOntologySourceFile(sourceName));
-                setSourceDescription(BioPortalClient.getOntologyDescription(sourceName));
-                setSourceVersion(BioPortalClient.getOntologyVersion(sourceName));
+                setSourceFile(client.getOntologySourceFile(sourceName));
+                setSourceDescription(client.getOntologyDescription(sourceName));
+                setSourceVersion(client.getOntologyVersion(sourceName));
             }
 
         }
