@@ -62,13 +62,11 @@ import java.util.Map;
 public class LabelCapture extends JPanel {
 
     private String initialVal;
-    private DataEntryEnvironment dep;
-
     private JTextField labelVal;
 
-    public LabelCapture(String initialVal, DataEntryEnvironment dep) {
+    public LabelCapture(String initialVal) {
         this.initialVal = initialVal;
-        this.dep = dep;
+
         setBackground(UIHelper.BG_COLOR);
         instantiatePanel();
     }
@@ -96,8 +94,6 @@ public class LabelCapture extends JPanel {
 
     private JComponent createOntologyDropDown(JTextComponent field,
                                               boolean allowsMultiple, boolean forceOntology, Map<String, RecommendedOntology> recommendedOntologySource) {
-
-        System.out.println("DataEntryEnvironment parent frame is null? " + (dep == null));
 
         OntologySelectionTool ontologySelectionTool = new OntologySelectionTool(allowsMultiple, forceOntology, recommendedOntologySource);
         ontologySelectionTool.createGUI();

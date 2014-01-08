@@ -119,7 +119,7 @@ public class BioPortalSearchBeanResultHandler {
     private OntologySourceRefObject createOntologySourceReferenceFromSearchResult(SearchBeanDocument.SearchBean searchResult) {
         OntologySourceRefObject refObject = new OntologySourceRefObject();
 
-        if (AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()) != null) {
+        if (AcceptedOntologies.getAcceptedOntologies().get(searchResult.getPreferredName()) != null) {
             refObject.setSourceName(AcceptedOntologies.getOntologyAbbreviationFromId(searchResult.getOntologyId()));
             refObject.setSourceDescription(searchResult.getOntologyDisplayLabel());
             refObject.setSourceVersion(searchResult.getOntologyVersionId());

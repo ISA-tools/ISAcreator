@@ -247,7 +247,7 @@ public class GeneralCreationAlgorithm extends CreationAlgorithm {
         JPanel labelPanel = new JPanel(new GridLayout(1, 2));
         labelPanel.setBackground(UIHelper.BG_COLOR);
 
-        labelCapture = new LabelCapture("Label", ApplicationManager.getUserInterfaceForISASection(study).getDataEntryEnvironment());
+        labelCapture = new LabelCapture("Label");
         labelCapture.setVisible(false);
 
         labelUsed = new JCheckBox("Label used?", false);

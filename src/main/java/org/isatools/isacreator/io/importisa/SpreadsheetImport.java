@@ -25,8 +25,6 @@ import java.util.Vector;
 public class SpreadsheetImport {
 
 
-    private Set<String> messages;
-
     /**
      * Create tablemodel for item!
      *
@@ -39,7 +37,6 @@ public class SpreadsheetImport {
      */
     public TableReferenceObject loadInTables(String fileName,
                                              TableReferenceObject defaultTableRef) throws IOException, MalformedInvestigationException {
-        messages = new HashSet<String>();
 
         File f = new File(fileName);
 
@@ -100,7 +97,6 @@ public class SpreadsheetImport {
 
         // way of storing previously seen protocol to determine where the parameters are which associated with it.
         int previousProtocol = -1;
-        System.out.println("Reforming table definition...");
         // way of storing previously read characteristic, factor, or parameter to determine what type it is
         String previousCharFactParam = null;
         int expectedNextUnitLocation = -1;
@@ -112,11 +108,7 @@ public class SpreadsheetImport {
             positionInheaders++;
 
             String fieldAsLowercase = columnHeader.toLowerCase();
-
-            System.out.println("Column header is " + columnHeader);
-
             if (expectedNextUnitLocation == positionInheaders) {
-                System.out.println("Expected a unit here, got a " + columnHeader);
                 if (fieldAsLowercase.contains("unit")) {
                     // add two fields...one accepting string values and the unit, also accepting string values :o)
 

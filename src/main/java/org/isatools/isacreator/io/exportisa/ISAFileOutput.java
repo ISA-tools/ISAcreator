@@ -37,7 +37,7 @@
 
 package org.isatools.isacreator.io.exportisa;
 
-import org.apache.axis.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.io.exportisa.exportadaptors.ISASectionExportAdaptor;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;

@@ -153,9 +153,8 @@ public class OntologyManager {
             usedOntologySources.put("investigation", new ArrayList<OntologySourceRefObject>());
             return "investigation";
         } else {
-            for (String key : usedOntologySources.keySet()) {
-                return key;
-            }
+            if(usedOntologySources != null && usedOntologySources.size() > 0)
+                return usedOntologySources.keySet().iterator().next();
         }
         return "investigation";
     }

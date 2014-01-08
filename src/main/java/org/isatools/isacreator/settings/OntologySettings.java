@@ -41,6 +41,8 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
@@ -48,12 +50,16 @@ import org.isatools.isacreator.io.OntologyLibrary;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologiesLoader;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -69,11 +75,12 @@ public class OntologySettings extends SettingsScreen {
 
     private JLabel loadedOntologyStats;
     private JLabel ontologyTermInformation;
-
+    private FlatButton updateCacheButton;
 
     private JFileChooser jfc;
 
     private Map<String, OntologyTerm> userOntologyHistory;
+    private JLabel information;
 
     public OntologySettings(ISAcreatorMenu menu) {
         this.menu = menu;
@@ -83,13 +90,57 @@ public class OntologySettings extends SettingsScreen {
 
         setLayout(new BorderLayout());
         setOpaque(false);
-        add(createOntologyConfigPanel(), BorderLayout.NORTH);
+        add(createOntologySourceUpdatePanel(), BorderLayout.NORTH);
+        add(createOntologyConfigPanel(), BorderLayout.CENTER);
+
         setBorder(new TitledBorder(
                 new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
                 "configure ontologies", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
                 UIHelper.GREY_COLOR));
 
+    }
+
+    private JPanel createOntologySourceUpdatePanel() {
+        JPanel informationPanel = new JPanel(new GridLayout(1, 2));
+
+        information = UIHelper.createLabel(String.format("<html><strong>%d ontologies</strong> are currently available.</html>", AcceptedOntologies.getAcceptedOntologies().size()), UIHelper.VER_10_PLAIN, UIHelper.GREY_COLOR);
+        informationPanel.add(information);
+
+        updateCacheButton = new FlatButton(ButtonType.BLUE, "Update Ontology Detail Cache");
+        updateCacheButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                Thread updateCacheThread = new Thread(new Runnable() {
+                    public void run() {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                updateCacheButton.setText("Updating");
+                                updateCacheButton.setEnabled(false);
+
+                            }
+                        });
+                        AcceptedOntologiesLoader.populateAcceptedOntologies();
+                        AcceptedOntologies.updateAcceptedOntologies();
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                information.setText(String.format("<html>Update complete - <strong>%d ontologies</strong> are currently available.</html>", AcceptedOntologies.getAcceptedOntologies().size()));
+                                updateCacheButton.setText("Update Ontology Detail Cache");
+                                updateCacheButton.setEnabled(true);
+
+                            }
+                        });
+
+                    }
+                });
+                updateCacheThread.start();
+            }
+        });
+        informationPanel.add(updateCacheButton);
+
+        return informationPanel;
     }
 
     private JPanel createOntologyConfigPanel() {
@@ -152,10 +203,10 @@ public class OntologySettings extends SettingsScreen {
                 if (historyTerm != null) {
                     updateOntologyTermInfo(userOntologyHistory.get(historyTerm));
                     ontologyTermInformation.setVisible(true);
-                    removeTerm.setVisible(true);
+                    removeButton.setVisible(true);
                 } else {
                     ontologyTermInformation.setVisible(false);
-                    removeTerm.setVisible(false);
+                    removeButton.setVisible(false);
                 }
             }
         });

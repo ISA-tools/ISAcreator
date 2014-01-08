@@ -207,6 +207,7 @@ public class StructureToInvestigationMapper {
 
                 Pair<Set<String>, List<StudyDesign>> processedStudyDesignSection = processStudyDesigns(studySections.get(studySection));
                 sectionFields.put(studySection, processedStudyDesignSection.fst);
+
                 studyDesigns = processedStudyDesignSection.snd;
 
             } else if (studySection == InvestigationFileSection.STUDY_ASSAYS) {
@@ -240,6 +241,7 @@ public class StructureToInvestigationMapper {
             study.addToAssays(assays);
             study.setProtocols(protocols);
             study.setContacts(contacts);
+
             study.setStudyDesigns(studyDesigns);
             study.setFactors(factors);
             study.setPublications(publications);
@@ -553,7 +555,6 @@ public class StructureToInvestigationMapper {
     }
 
     /**
-     *
      * @param fieldBeingCombined
      * @param term
      * @param accession
@@ -644,6 +645,7 @@ public class StructureToInvestigationMapper {
 
     /**
      * It returns an OntologySourceRefObject given an ontology abbreviation
+     *
      * @param source
      * @return
      */
@@ -652,7 +654,8 @@ public class StructureToInvestigationMapper {
     }
 
     /**
-     *  Checks for duplicate assay names across all studies.
+     * Checks for duplicate assay names across all studies.
+     *
      * @param investigation
      * @return
      */

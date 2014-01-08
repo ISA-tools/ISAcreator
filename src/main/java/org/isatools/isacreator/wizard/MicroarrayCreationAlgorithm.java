@@ -37,8 +37,8 @@
 
 package org.isatools.isacreator.wizard;
 
-import org.apache.axis.utils.StringUtils;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
@@ -178,8 +178,8 @@ public class MicroarrayCreationAlgorithm extends CreationAlgorithm {
         System.out.println("Study user interface is null? " + (studyUISection == null));
         System.out.println("Study user interface dep is null? " + (studyUISection.getDataEntryEnvironment() == null));
 
-        label1Capture = new LabelCapture("Label (e.g. Cy3)", studyUISection.getDataEntryEnvironment());
-        label2Capture = new LabelCapture("Label (e.g. Cy5)", studyUISection.getDataEntryEnvironment());
+        label1Capture = new LabelCapture("Label (e.g. Cy3)");
+        label2Capture = new LabelCapture("Label (e.g. Cy5)");
         label2Capture.setVisible(false);
 
         // create dye swap check box

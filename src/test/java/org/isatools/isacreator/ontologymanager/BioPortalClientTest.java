@@ -69,7 +69,7 @@ public class BioPortalClientTest {
     public void getAllOntologies() {
         System.out.println("_____Testing getAllOntologies()____");
 
-        List<Ontology> ontologies = client.getAllOntologies(true);
+        List<Ontology> ontologies = client.getAllOntologies();
 
         assertTrue("Oh no! No returned ontologies (empty result)! ", ontologies.size() > 0);
 
@@ -153,7 +153,7 @@ public class BioPortalClientTest {
     public void getTermsByPartialNameFromSource() {
         System.out.println("_____Testing getTermsByPartialNameFromSource()____");
 
-        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, testOntologyID, false);
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, "all", false);
 
         assertTrue("No results found for " + testSearchTerm + " in " + testOntologyID, result.size() > 0);
 
@@ -175,12 +175,13 @@ public class BioPortalClientTest {
 
         assertTrue("No ontology roots found for " + testOntologyVersion, ontologyRoots.size() > 0);
 
+
         System.out.println("Found " + ontologyRoots.size() + " roots for " + testOntologyVersion);
     }
 
     @Test
     public void getTermParents() {
-        System.out.println("_____Testing getTermParents()____");
+        System.out.println("_____Testing getTermChildrenOrParents()____");
 
         Map<String, OntologyTerm> parentTerms = client.getAllTermParents(testTermAccession, testOntologyVersion);
 

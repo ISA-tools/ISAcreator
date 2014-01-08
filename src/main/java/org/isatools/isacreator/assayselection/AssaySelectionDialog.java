@@ -37,16 +37,19 @@ package org.isatools.isacreator.assayselection;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -65,9 +68,20 @@ import java.util.List;
  */
 public class AssaySelectionDialog extends JDialog {
 
+    private static final int PREDEFINED = 0;
+    private static final int CUSTOM = 1;
 
     private AssaySelectionUI assaySelectionUI;
+    private CustomAssaySelectionUI customAssaySelectionUI;
+
     private Map<String, List<String>> measurementsToTechnologies;
+
+    // this will hold either the predefined assay selection panel or the custom assay panel.
+    private Container swappableContainer;
+    private JLabel predefinedAssayTab;
+    private JLabel customAssayTab;
+
+    private int pageInView = PREDEFINED;
 
     public AssaySelectionDialog(Map<String, List<String>> measurementsToTechnologies) {
 
@@ -81,14 +95,53 @@ public class AssaySelectionDialog extends JDialog {
     public void createGUI() {
 
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
+        swappableContainer = new JPanel();
 
         assaySelectionUI = new AssaySelectionUI(measurementsToTechnologies);
-
         assaySelectionUI.createGUI();
 
-        add(Box.createVerticalStrut(10), BorderLayout.NORTH);
+        customAssaySelectionUI = new CustomAssaySelectionUI();
+        customAssaySelectionUI.createGUI();
 
-        add(assaySelectionUI);
+        JPanel tabPanel = new JPanel(new GridLayout(1, 3));
+        tabPanel.setOpaque(false);
+//        int top, int left, int bottom, int right
+        tabPanel.setBorder(new EmptyBorder(15, 5, 20, 0));
+
+        predefinedAssayTab = UIHelper.createLabel("Select from predefined assays", UIHelper.VER_14_BOLD);
+        customAssayTab = UIHelper.createLabel("Create a custom assay", UIHelper.VER_14_PLAIN);
+
+        predefinedAssayTab.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                swapContainers(assaySelectionUI);
+                customAssayTab.setFont(UIHelper.VER_12_PLAIN);
+                predefinedAssayTab.setFont(UIHelper.VER_12_BOLD);
+            }
+        });
+
+        customAssayTab.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                swapContainers(customAssaySelectionUI);
+                customAssayTab.setFont(UIHelper.VER_12_BOLD);
+                predefinedAssayTab.setFont(UIHelper.VER_12_PLAIN);
+            }
+        });
+
+        // check if there is a generic configuration available first.
+        if (ConfigurationManager.searchMappingsForMatch("*", "*") != null) {
+            tabPanel.add(predefinedAssayTab);
+            tabPanel.add(customAssayTab);
+        }
+
+        add(tabPanel, BorderLayout.NORTH);
+
+        swapContainers(assaySelectionUI);
+
+        add(swappableContainer);
 
         add(createSouthPanel(), BorderLayout.SOUTH);
 
@@ -111,12 +164,13 @@ public class AssaySelectionDialog extends JDialog {
             }
         });
 
-
         JButton addAssay = new FlatButton(ButtonType.GREEN, "Confirm");
         addAssay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                firePropertyChange("assaysChosen", false, true);
-                closeWindow();
+                if ((pageInView == CUSTOM && customAssaySelectionUI.valid()) || pageInView == PREDEFINED) {
+                    firePropertyChange("assaysChosen", false, true);
+                    closeWindow();
+                }
             }
         });
 
@@ -135,7 +189,25 @@ public class AssaySelectionDialog extends JDialog {
     }
 
     public List<AssaySelection> getSelectedAssays() {
-        return assaySelectionUI.getAssaysToDefine();
+        return pageInView == PREDEFINED ? assaySelectionUI.getAssaysToDefine() : customAssaySelectionUI.getAssaysToDefine();
     }
 
+    private void swapContainers(final JPanel newContainer) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (newContainer != null) {
+                    swappableContainer.removeAll();
+                    swappableContainer.add(newContainer);
+                    swappableContainer.repaint();
+                    swappableContainer.validate();
+
+                    if (newContainer instanceof CustomAssaySelectionUI) {
+                        pageInView = CUSTOM;
+                    } else {
+                        pageInView = PREDEFINED;
+                    }
+                }
+            }
+        });
+    }
 }

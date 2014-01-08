@@ -89,6 +89,7 @@ public class ConfigXMLParser {
     public void loadConfiguration() {
         List<IsaTabConfigFileType> definitions;
         try {
+
             definitions = getTableDefinitions();
 
             // do check for presence of the Investigation file, if it is not there,
@@ -129,6 +130,7 @@ public class ConfigXMLParser {
     private void checkInvestigationFileDefinitionFound(List<IsaTabConfigFileType> definitions) {
 
         boolean found = false;
+
         for (IsaTabConfigFileType isaConfigFile : definitions) {
             for (IsaTabConfigurationType doc : isaConfigFile.getIsatabConfigurationArray()) {
 

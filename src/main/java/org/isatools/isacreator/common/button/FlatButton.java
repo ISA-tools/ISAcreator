@@ -33,6 +33,9 @@ public class FlatButton extends JButton implements MouseListener {
         super(text);
         this.type = type;
         this.fontColor = fontColor;
+        if(type == ButtonType.GREY && fontColor == Color.white) {
+            this.fontColor = UIHelper.DARK_GREEN_COLOR;
+        }
         this.font = font;
         setForeground(Color.WHITE);
         addMouseListener(this);
@@ -86,6 +89,8 @@ public class FlatButton extends JButton implements MouseListener {
         container.add(new FlatButton(ButtonType.RED, "Hi Lauren!"));
         container.add(new FlatButton(ButtonType.BLUE, "Hi Annapaola!"));
         container.add(new FlatButton(ButtonType.ORANGE, "Hi Paul!"));
+        container.add(new FlatButton(ButtonType.GREY, "Hi Eamonn!"));
+        container.add(new FlatButton(ButtonType.GREEN, "+"));
 
 
         testFrame.add(container);

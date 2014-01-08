@@ -40,8 +40,6 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
-import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.utils.BioPortalXMLModifier;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalClassBeanResultHandler;
 import org.isatools.isacreator.ontologymanager.bioportal.xmlresulthandlers.BioPortalOntologyListResultHandler;
@@ -90,11 +88,8 @@ public class BioPortalClient implements OntologyService {
         noChildren = new HashSet<String>();
     }
 
-    public static List<Ontology> getAllOntologies() {
-        return getAllOntologies(false);
-    }
 
-    public static List<Ontology> getAllOntologies(boolean loadAll) {
+    public List<Ontology> getAllOntologies() {
 
         if (ontologies == null || ontologies.size() == 0) {
 
@@ -161,21 +156,21 @@ public class BioPortalClient implements OntologyService {
         return ontologyNames;
     }
 
-    public static String getOntologySourceFile(String sourceName) {
+    public  String getOntologySourceFile(String sourceName) {
         if (ontologyFiles.size() == 0) {
                 getAllOntologies();
         }
         return "http://bioportal.bioontology.org/ontologies/"+ontologyFiles.get(sourceName);
     }
 
-    public static String getOntologyDescription(String sourceName) {
+    public  String getOntologyDescription(String sourceName) {
         if (ontologyFiles.size() == 0) {
             getAllOntologies();
         }
         return ontologyNames.get(sourceName);
     }
 
-    public static String getOntologyVersion(String sourceName) {
+    public  String getOntologyVersion(String sourceName) {
         if (ontologyFiles.size() == 0) {
             getAllOntologies();
         }
@@ -282,16 +277,12 @@ public class BioPortalClient implements OntologyService {
                 }
             }
         }
-
-
         return result;
     }
 
 
     private Map<OntologySourceRefObject, List<OntologyTerm>> downloadAndProcessBranch(String term, String searchString) {
         String downloadLocation = DownloadUtils.DOWNLOAD_FILE_LOC + term + DownloadUtils.XML_EXT;
-
-
         DownloadUtils.downloadFile(searchString, downloadLocation);
 
         BioPortalSearchBeanResultHandler handler = new BioPortalSearchBeanResultHandler();
@@ -299,12 +290,7 @@ public class BioPortalClient implements OntologyService {
         File fileWithNameSpace = BioPortalXMLModifier.addNameSpaceToFile(new File(downloadLocation), "http://bioontology.org/bioportal/resultBeanSchema#", "<success>");
 
         if (fileWithNameSpace != null) {
-            Map<OntologySourceRefObject, List<OntologyTerm>> result = handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
-
-            //commeting this out for now to check performance improvement
-            //updateOntologyManagerWithOntologyInformation();
-
-            return result;
+            return handler.getSearchResults(fileWithNameSpace.getAbsolutePath());
         }
 
         return new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
@@ -323,44 +309,13 @@ public class BioPortalClient implements OntologyService {
                         ? "?" : "/?ontologyids=" +source + "&") + API_KEY;
 
         log.info("search string " + searchString);
+        System.out.println("search string " + searchString);
 
         Map<OntologySourceRefObject, List<OntologyTerm>> searchResult = downloadAndProcessBranch(term, searchString);
 
         log.info("found " + (searchResult == null ? "0" : searchResult.size()) + " ontology terms");
 
         return searchResult == null ? new HashMap<OntologySourceRefObject, List<OntologyTerm>>() : searchResult;
-    }
-
-    /*
-    //commeting this out for now to check performance improvement
-
-    private void updateOntologyManagerWithOntologyInformation() {
-        if (!doneOntologyCheck) {
-            for (AcceptedOntology ao : AcceptedOntologies.values()) {
-                Ontology o = getOntologyById(ao.getOntologyID());
-                if (o != null) {
-                    OntologyManager.addOLSOntologyDefinitions(Collections.singletonMap(o.getOntologyAbbreviation(),
-                            o.getOntologyDisplayLabel()), Collections.singletonMap(o.getOntologyAbbreviation(), o.getOntologyVersion()));
-                }
-            }
-            doneOntologyCheck = true;
-        }
-    }
-    */
-
-    private String constructSourceStringFromAllowedOntologies() {
-        String allowedOntologies = "";
-
-        int count = 0;
-        for (AcceptedOntology ao : AcceptedOntologies.values()) {
-            allowedOntologies += ao.getOntologyID();
-            if (count < AcceptedOntologies.values().size() - 1) {
-                allowedOntologies += ",";
-            }
-            count++;
-        }
-
-        return allowedOntologies;
     }
 
     /**

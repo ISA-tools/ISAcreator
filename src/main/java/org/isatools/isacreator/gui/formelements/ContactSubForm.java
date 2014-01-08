@@ -37,6 +37,8 @@
 
 package org.isatools.isacreator.gui.formelements;
 
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.gui.DataEntryForm;
 import org.isatools.isacreator.gui.InvestigationDataEntry;
 import org.isatools.isacreator.gui.StudyDataEntry;
@@ -44,7 +46,10 @@ import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.InvestigationContact;
 import org.isatools.isacreator.model.StudyContact;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

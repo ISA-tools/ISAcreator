@@ -28,10 +28,10 @@ public class ConfigurationManager {
      */
     public static void loadConfigurations(String configDirectory) {
         if (configDirectory != null) {
-            ConfigXMLParser cp = new ConfigXMLParser(configDirectory);
-            cp.loadConfiguration();
-            mappings = cp.getMappings();
-            assayDefinitions = cp.getTables();
+            ConfigXMLParser configXMLParser = new ConfigXMLParser(configDirectory);
+            configXMLParser.loadConfiguration();
+            mappings = configXMLParser.getMappings();
+            assayDefinitions = configXMLParser.getTables();
         }
     }
 
@@ -110,6 +110,21 @@ public class ConfigurationManager {
         return measToAllowedTechs;
     }
 
+
+    public static TableReferenceObject searchMappingsForMatch(String measurementEndpoint, String technologyType) {
+        for (MappingObject mo : getMappings()) {
+            if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
+                    mo.getTechnologyType().equalsIgnoreCase(technologyType)) {
+                for (TableReferenceObject tro : assayDefinitions) {
+                    if (tro.getTableName().equalsIgnoreCase(mo.getAssayName())) {
+                        return tro;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Select the TableReferenceObject which is required for a given measurement endpoint
      * and technology type using the MappingObject.
@@ -124,18 +139,16 @@ public class ConfigurationManager {
         measurementEndpoint = getTrimmedName(measurementEndpoint);
         techType = getTrimmedName(techType);
 
-        for (MappingObject mo : getMappings()) {
-            if (mo.getMeasurementEndpointType().equalsIgnoreCase(measurementEndpoint) &&
-                    mo.getTechnologyType().equalsIgnoreCase(techType)) {
-                for (TableReferenceObject tro : assayDefinitions) {
-                    if (tro.getTableName().equalsIgnoreCase(mo.getAssayName())) {
-                        return tro;
-                    }
-                }
-            }
+
+        TableReferenceObject matchedReferenceObject = searchMappingsForMatch(measurementEndpoint, techType);
+
+
+        // attempt use of wildcard configuration for loading.
+        if(matchedReferenceObject == null) {
+            matchedReferenceObject = searchMappingsForMatch("*", "*");
         }
 
-        return null;
+        return matchedReferenceObject;
     }
 
     private static String getTrimmedName(String string) {
