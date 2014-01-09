@@ -101,10 +101,15 @@ public class BioPortalSearchResultHandler {
             // Configure the form parameters
             method.addParameter("q", term);
 
-            if(!ontologyIds.equals("all")) method.addParameter("ontology", ontologyIds);
             if (StringUtils.trimToNull(subtree) != null) {
                 method.addParameter("subtree", subtree);
+
+                if (ontologyIds!=null)
+                    method.addParameter("ontology", ontologyIds);
+            } else if(!ontologyIds.equals("all"))  {
+                method.addParameter("ontologies", ontologyIds);
             }
+
 
             method.addParameter("apikey", API_KEY);
             method.addParameter("pagesize", "500");
@@ -201,6 +206,9 @@ public class BioPortalSearchResultHandler {
     private void setHostConfiguration(HttpClient client) {
         HostConfiguration configuration = new HostConfiguration();
         configuration.setHost("http://data.bioontology.org");
+        String proxyPort = System.getProperty("http.proxyPort");
+        if (proxyPort ==null)
+            return;
         configuration.setProxy(System.getProperty("http.proxyHost"), Integer.valueOf(System.getProperty("http.proxyPort")));
         client.setHostConfiguration(configuration);
     }
@@ -287,7 +295,7 @@ public class BioPortalSearchResultHandler {
 
     private OntologyTerm createOntologyTerm(JsonObject annotationItem) {
 
-        OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.getString("prefLabel"), annotationItem.getString("@id"), "", null);
+        OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.getString("prefLabel"), annotationItem.getString("@id"), annotationItem.getString("@id"), null);
         ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
         extractDefinitionFromOntologyTerms(annotationItem, ontologyTerm);
         extractSynonymsFromOntologyTerm(annotationItem, ontologyTerm);
