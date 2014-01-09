@@ -20,12 +20,30 @@ public class BioPortalClient4Test {
     private String testTermAccession = "http://www.ebi.ac.uk/efo/EFO_0000428";
     private String testSearchTerm = "dose";
     private String ontologyId = "http://data.bioontology.org/ontologies/EFO";
+    private String obiOntologyId = "OBI";
 
 
     @Test
-    public void getTermsByPartialNameFromSource() {
+    public void getTermsByPartialNameFromSource1Test() {
         System.out.println("_____Testing getTermsByPartialNameFromSource()____");
 
+        long startTime = System.currentTimeMillis();
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource("dose", obiOntologyId, false);
+        System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do query 'dose' in OBI.");
+
+
+        for (OntologySourceRefObject source : result.keySet()) {
+            System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
+
+            for (OntologyTerm term : result.get(source)) {
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
+            }
+        }
+
+    }
+
+    @Test
+    public void getTermsByPartialNameFromSource2Test() {
         long startTime = System.currentTimeMillis();
         Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, "all", false);
         System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do that query.");
@@ -39,10 +57,13 @@ public class BioPortalClient4Test {
             }
         }
 
-        System.out.println();
+    }
 
-        startTime = System.currentTimeMillis();
-        result = client.getTermsByPartialNameFromSource("cy5", "all", false);
+    @Test
+    public void getTermsByPartialNameFromSource3Test() {
+        long startTime = System.currentTimeMillis();
+
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource("cy5", "all", false);
         System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do that query.");
 
         for (OntologySourceRefObject source : result.keySet()) {
@@ -52,7 +73,9 @@ public class BioPortalClient4Test {
                 System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
+
     }
+
 
     @Test
     public void getTermMetadata() {
@@ -119,4 +142,5 @@ public class BioPortalClient4Test {
 
         System.out.println("Found " + childTerms.size() + " children for information entity in " + testOntologySource);
     }
+
 }
