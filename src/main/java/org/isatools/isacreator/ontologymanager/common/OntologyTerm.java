@@ -71,14 +71,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         ontologyTermAccession = accession;
         ontologySourceInformation = ontologySourceRefObject;
         ontologyTermIRI = iri;
-       // completeValues();
     }
-
-//    private void completeValues(){
-//        BioPortalClient bioPortalClient = new BioPortalClient();
-//        if (getOntologyVersionId()!=null && !getOntologyVersionId().equals("") && ontologyTermIRI ==null)
-//          ontologyTermIRI = bioPortalClient.getTermIRI(getOntologyVersionId(), ontologyTermAccession);
-//    }
 
     public String getOntologyVersionId() {
         if (ontologySourceInformation == null) {
@@ -125,8 +118,12 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     public String getOntologyTermURI() {
         if (ontologyTermIRI==null){
-            OntologyTerm oo = OntologyTermUtils.getURI(this);
-            ontologyTermIRI = oo.getOntologyTermURI();
+            String iri = OntologyTermUtils.getURI(this);
+            System.out.println("term====>" + getOntologyTermName()+"iri ===> "+iri);
+            if (iri!=null)
+                ontologyTermIRI = iri;
+            else
+                ontologyTermIRI = "";
         }
         return ontologyTermIRI;
     }
@@ -136,7 +133,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         this.ontologyTermName = ontologyTermName;
     }
 
-    public void setOntologyPurl(String purl) {
+    public void setOntologyTermIRI(String purl) {
         this.ontologyTermIRI = purl;
     }
 

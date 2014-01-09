@@ -1,14 +1,16 @@
 package org.isatools.isacreator.ontologymanager.utils;
 
 import org.isatools.isacreator.io.IOUtils;
-import org.isatools.isacreator.ontologymanager.BioPortalClient;
+import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by the ISATeam.
@@ -40,15 +42,30 @@ public class OntologyTermUtils {
      return ontologyTerm.getOntologyTermName() + "," +  ontologyTerm.getOntologyTermAccession() +"," + ontologyTerm.getOntologySource();
    }
 
-    public static OntologyTerm getURI(OntologyTerm ontologyTerm){
+    public static String getURI(OntologyTerm ontologyTerm){
         if (ontologyTerm==null || ontologyTerm.getOntologyTermAccession()==null
-                || ontologyTerm.getOntologySourceInformation()==null || ontologyTerm.getOntologySourceInformation().getSourceVersion()==null)
+                || ontologyTerm.getOntologySourceInformation()==null || ontologyTerm.getOntologySourceInformation().getSourceName()==null)
             return null;
 
-        BioPortalClient bioPortalClient = new BioPortalClient();
-        ontologyTerm = bioPortalClient.getTermInformation(ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologySourceInformation().getSourceVersion());
-        //OntologyManager.addToOntologySelectionHistory(ontologyTerm.getShortForm(), ontologyTerm);
-        return ontologyTerm;
+        BioPortal4Client bioPortalClient = new BioPortal4Client();
+        Map<String, List<OntologyTerm>> result = bioPortalClient.exactSearch(ontologyTerm.getOntologyTermName(),
+                ontologyTerm.getOntologySourceInformation().getSourceName());
+
+
+        //TODO keep info about what terms couldn't be found
+        Set<String> set = result.keySet();
+        if (!set.isEmpty()){
+            List<OntologyTerm> list = result.get(set.iterator().next());
+            if (list.size()>0){
+                OntologyTerm oo = list.get(0);
+
+                ontologyTerm.setOntologyTermIRI(oo.getOntologyTermURI());
+                return ontologyTerm.getOntologyTermURI();
+                //ontologyTerm.setOntologyTermAccession(oo.getOntologyTermAccession());
+            }
+        }
+
+        return null;
     }
 
 
