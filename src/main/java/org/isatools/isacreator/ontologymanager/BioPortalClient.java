@@ -156,6 +156,14 @@ public class BioPortalClient implements OntologyService {
         return ontologyNames;
     }
 
+    public OntologyTerm getTerm(String termId, String ontology) {
+        return null;
+    }
+
+    public Map<String, List<OntologyTerm>> exactSearch(String term, String ontology) {
+        return null;
+    }
+
     public  String getOntologySourceFile(String sourceName) {
         if (ontologyFiles.size() == 0) {
                 getAllOntologies();

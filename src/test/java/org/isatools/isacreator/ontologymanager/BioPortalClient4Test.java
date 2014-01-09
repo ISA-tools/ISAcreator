@@ -20,8 +20,31 @@ public class BioPortalClient4Test {
     private String testTermAccession = "http://www.ebi.ac.uk/efo/EFO_0000428";
     private String testSearchTerm = "dose";
     private String ontologyId = "http://data.bioontology.org/ontologies/EFO";
-    private String obiOntologyId = "OBI";
+    private String obiOntologyId = "http://data.bioontology.org/ontologies/OBI";
 
+
+    @Test
+    public void exactSearchTest(){
+        System.out.println("_____Testing exactSearch()____");
+
+        Map<String, List<OntologyTerm>> result = client.exactSearch(testSearchTerm, obiOntologyId);
+
+        List<OntologyTerm> terms = result.get(obiOntologyId);
+
+        OntologyTerm term = terms.get(0);
+
+        System.out.println("term URI ="+term.getOntologyTermURI());
+
+    }
+
+    @Test
+    public void getTermTest(){
+        System.out.println("_____Testing getTerm()____");
+
+        OntologyTerm result = client.getTerm(testTermAccession, ontologyId);
+
+        System.out.println(result.getOntologyTermName() + " - " + result.getOntologySource() + " - " + result.getOntologyTermURI() );
+    }
 
     @Test
     public void getTermsByPartialNameFromSource1Test() {

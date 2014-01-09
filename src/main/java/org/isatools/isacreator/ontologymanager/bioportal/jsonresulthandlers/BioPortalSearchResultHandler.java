@@ -27,6 +27,11 @@ public class BioPortalSearchResultHandler {
     public static final String PARENTS = "ancestors";
     public static final String CHILDREN = "children";
 
+
+    public Map<String, List<OntologyTerm>> getSearchResults(String term, String ontologyIds, String subtree) {
+       return getSearchResults(term, ontologyIds, subtree, false);
+    }
+
     /**
      * Returns the result of the search operation
      *
@@ -35,12 +40,12 @@ public class BioPortalSearchResultHandler {
      * @param @nullable   subtree - a subtree, if any to be searched under (optional)
      * @return - Map from the id of the ontology to the list of terms found under it.
      */
-    public Map<String, List<OntologyTerm>> getSearchResults(String term, String ontologyIds, String subtree) {
+    public Map<String, List<OntologyTerm>> getSearchResults(String term, String ontologyIds, String subtree, boolean exactMatch) {
 
         // map from ontology id to the list of terms found for that id.
         Map<String, List<OntologyTerm>> result = new HashMap<String, List<OntologyTerm>>();
 
-        String content = querySearchEndpoint(term, ontologyIds, subtree);
+        String content = querySearchEndpoint(term, ontologyIds, subtree, exactMatch);
 
         StringReader reader = new StringReader(content);
 
@@ -48,6 +53,10 @@ public class BioPortalSearchResultHandler {
 
         JsonObject obj = rdr.readObject();
         JsonArray results = obj.getJsonArray("collection");
+
+        if (results==null)
+            return result;
+
         for (JsonObject resultItem : results.getValuesAs(JsonObject.class)) {
 
             String ontologyId = extractOntologyId(resultItem);
@@ -93,7 +102,9 @@ public class BioPortalSearchResultHandler {
         }
     }
 
-    public String querySearchEndpoint(String term, String ontologyIds, String subtree) {
+
+
+    private String querySearchEndpoint(String term, String ontologyIds, String subtree, boolean exactMatch) {
         try {
             HttpClient client = new HttpClient();
             PostMethod method = new PostMethod(BioPortal4Client.REST_URL + "search");
@@ -115,6 +126,10 @@ public class BioPortalSearchResultHandler {
             method.addParameter("pagesize", "500");
 //            method.addParameter("no_links", "true");
             method.addParameter("no_context", "true");
+
+            if (exactMatch){
+                method.addParameter("exact_match", "true");
+            }
 
             try {
                 setHostConfiguration(client);
@@ -229,7 +244,7 @@ public class BioPortalSearchResultHandler {
             extractDefinitionFromOntologyTerms(obj, ontologyTerm);
             extractSynonymsFromOntologyTerm(obj, ontologyTerm);
 
-            System.out.println(ontologyTerm.getOntologyTermName() + " - " + ontologyTerm.getOntologyTermAccession());
+            System.out.println(ontologyTerm.getOntologyTermName() + " - " + ontologyTerm.getOntologyTermAccession() + " - " + ontologyTerm.getOntologyTermURI() );
 
             return ontologyTerm;
         } else {
@@ -242,10 +257,10 @@ public class BioPortalSearchResultHandler {
         return new OntologySourceRefObject(associatedOntologySource.getOntologyAbbreviation(), associatedOntologySource.getOntologyID(), associatedOntologySource.getOntologyVersion(), associatedOntologySource.getOntologyDisplayLabel());
     }
 
-    public String queryTermMetadataEndpoint(String termId, String ontologyId) {
+    public String queryTermMetadataEndpoint(String termId, String ontologyURI) {
         try {
             HttpClient client = new HttpClient();
-            String url = ontologyId + "/classes/" + URLEncoder.encode(termId, "UTF-8") + "?apikey=" + API_KEY;
+            String url = ontologyURI + "/classes/" + URLEncoder.encode(termId, "UTF-8") + "?apikey=" + API_KEY;
 
             GetMethod method = new GetMethod(url);
 

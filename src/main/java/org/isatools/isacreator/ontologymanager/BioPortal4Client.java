@@ -32,6 +32,20 @@ public class BioPortal4Client implements OntologyService {
         return AcceptedOntologies.getOntologySourceToNames();
     }
 
+    /**
+     * Retrieves an OntologyTerm given the URI of a term and the ontology bioPortal URI
+     * @param termId
+     * @param ontology
+     * @return
+     */
+    public OntologyTerm getTerm(String termId, String ontology) {
+        return handler.getTermMetadata(termId, ontology);
+    }
+
+    public Map<String, List<OntologyTerm>> exactSearch(String term, String ontology) {
+        return handler.getSearchResults(term, ontology, null, true);
+    }
+
     public Map<String, String> getTermMetadata(String termId, String ontology) {
         return handler.getTermMetadata(termId, ontology).getComments();
     }
