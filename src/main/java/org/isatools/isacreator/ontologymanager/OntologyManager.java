@@ -40,6 +40,7 @@ package org.isatools.isacreator.ontologymanager;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.util.*;
 
@@ -60,12 +61,19 @@ public class OntologyManager {
 
     private static Map<String, OntologyTerm> ontologySelectionHistory = new HashMap<String, OntologyTerm>();
 
-    public static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
+    private static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
 
+    //map with <shortForm, new OntologyTerm> used, for ontology terms for which it is not possible to find a URI
+    private static Map<String, OntologyTerm> newTermMap = new HashMap<String, OntologyTerm>();
 
-    public static Map<String, OntologyTerm> getOntologySelectionHistory() {
-        return ontologySelectionHistory;
+    public static void addToNewTermMap(String k, OntologyTerm v){
+        newTermMap.put(k, v);
     }
+
+    //TODO remove this method
+    //public static Map<String, OntologyTerm> getOntologySelectionHistory() {
+    //    return ontologySelectionHistory;
+    //}
 
     public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
         OntologyManager.ontologySelectionHistory = new HashMap<String, OntologyTerm>();
@@ -81,8 +89,25 @@ public class OntologyManager {
         OntologyManager.ontologySelectionHistory.putAll(ontologySelectionHistory);
     }
 
+    public static int getOntologySelectionHistorySize(){
+        return ontologySelectionHistory.size();
+    }
+
+    public static Collection<OntologyTerm> getOntologySelectionHistoryValues(){
+        return ontologySelectionHistory.values();
+    }
+
+    public static Set<String> getOntologySelectionHistoryKeySet(){
+        return ontologySelectionHistory.keySet();
+    }
+
     public static OntologyTerm getOntologyTerm(String key){
-        return ontologySelectionHistory.get(key);
+        if (ISAcreatorProperties.getProperty(ISAcreatorProperties.ONTOLOGY_TERM_URI).equals("true")){
+            if (newTermMap.containsKey(key))
+                return newTermMap.get(key);
+            else
+                return null;
+        }else return ontologySelectionHistory.get(key);
     }
 
     public static String getOntologyTermPurl(String dataValue){
@@ -253,5 +278,21 @@ public class OntologyManager {
 
     public static void clearResultCache() {
         searchResultCache.clearCache();
+    }
+
+    public static Map<OntologySourceRefObject, List<OntologyTerm>> getSearchResultCacheValue(String key) {
+        return searchResultCache.get(key);
+    }
+
+    public static void addToCache(String key, Map<OntologySourceRefObject, List<OntologyTerm>> value) {
+        searchResultCache.put(key, value);
+    }
+
+    public static boolean searchResultCacheContainsKey(String key){
+        return searchResultCache.containsKey(key);
+    }
+
+    public static int searchResultCacheSize(){
+        return searchResultCache.size();
     }
 }

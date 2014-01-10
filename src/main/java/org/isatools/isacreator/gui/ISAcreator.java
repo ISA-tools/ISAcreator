@@ -598,7 +598,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         options.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                clearOntologySearchCache.setEnabled(OntologyManager.searchResultCache.size() > 0);
+                clearOntologySearchCache.setEnabled(OntologyManager.searchResultCacheSize() > 0);
             }
         });
 
