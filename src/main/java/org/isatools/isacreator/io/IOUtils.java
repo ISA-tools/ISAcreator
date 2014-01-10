@@ -113,7 +113,8 @@ public class IOUtils {
 
             int numberAdded = 0;
             for (String ontologyTerm : ontologies) {
-                OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(ontologyTerm);
+
+                OntologyTerm oo = OntologyManager.getOntologyTerm(ontologyTerm);
 
                 if (oo != null) {
                     tmpTerm += oo.getOntologyTermName();
@@ -145,7 +146,8 @@ public class IOUtils {
         } else if (term != null && term.contains(":")) {
 
             System.out.println("Getting ontology object for " + term);
-            OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(term);
+
+            OntologyTerm oo = OntologyManager.getOntologyTerm(term);
 
             System.out.println("oo = " + oo);
             tmpTerm = term;
@@ -161,7 +163,11 @@ public class IOUtils {
             } else {
                 if (term.contains(":")) {
                     String[] termAndSource = term.split(":");
-                    tmpSourceRefs = termAndSource[0];
+                    if (ISAcreatorProperties.getOntologyTermURIProperty()){
+                        tmpSourceRefs = "";
+                    } else {
+                        tmpSourceRefs = termAndSource[0];
+                    }
                     if (termAndSource.length == 2) {
                         tmpTerm = termAndSource[1];
                     } else {
