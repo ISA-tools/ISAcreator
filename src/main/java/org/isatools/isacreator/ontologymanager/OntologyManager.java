@@ -63,7 +63,7 @@ public class OntologyManager {
 
     private static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
 
-    //map with <shortForm, new OntologyTerm> used, for ontology terms for which it is not possible to find a URI
+    //map with <shortForm, OntologyTerm> - used for ontology terms for which it is not possible to find a URI
     private static Map<String, OntologyTerm> noURITermMap = new HashMap<String, OntologyTerm>();
 
     private static void addToNoURITermMap(String k, OntologyTerm v){
@@ -72,7 +72,7 @@ public class OntologyManager {
 
     public static void addToUserHistory(OntologyTerm oo) {
         if (oo!=null)
-            addToOntologySelectionHistory(oo.getShortForm(), oo);//ontologySelectionHistory.put(oo.getShortForm(), oo);
+            addToOntologySelectionHistory(oo.getShortForm(), oo);
     }
 
     public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
@@ -89,12 +89,10 @@ public class OntologyManager {
             ontologySelectionHistory.put(label, term);
         } else {
             addToNoURITermMap(label, term);
-            //System.out.println("Term does not have a URI ---> " + label);
         }
     }
 
     public static void addToOntologySelectionHistory(Map<String, OntologyTerm> osh) {
-        //OntologyManager.ontologySelectionHistory.putAll(osh);
         for(String key: osh.keySet())
             addToOntologySelectionHistory(key, osh.get(key));
     }
@@ -113,12 +111,6 @@ public class OntologyManager {
 
     public static OntologyTerm getOntologyTerm(String key){
         return ontologySelectionHistory.get(key);
-//        if (ISAcreatorProperties.getProperty(ISAcreatorProperties.ONTOLOGY_TERM_URI).equals("true")){
-//            if (noURITermMap.containsKey(key))
-//                return noURITermMap.get(key);
-//            else
-//                return null;
-//        }else return ontologySelectionHistory.get(key);
     }
 
     public static String getOntologyTermPurl(String dataValue){

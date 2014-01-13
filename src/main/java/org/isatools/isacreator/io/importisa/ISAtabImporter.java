@@ -210,7 +210,7 @@ public abstract class ISAtabImporter {
                 }
 
                 System.out.println("********************\n"+OntologyManager.getURIMappingInfo());
-                messages.add(new ErrorMessage(ErrorLevel.WARNING, OntologyManager.getURIMappingInfoHTML()));
+                messages.add(new ErrorMessage(ErrorLevel.INFO, OntologyManager.getURIMappingInfoHTML()));
 
 
             } catch (IOException e) {
