@@ -1,29 +1,16 @@
 package org.isatools.isacreator.io.importisa;
 
+import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.isacreator.api.utils.SpreadsheetUtils;
-import org.isatools.isacreator.configuration.FieldObject;
-import org.isatools.isacreator.gui.AssaySpreadsheet;
-import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.settings.ISAcreatorProperties;
-import org.isatools.isacreator.spreadsheet.Spreadsheet;
-import org.isatools.isacreator.spreadsheet.model.ReferenceData;
-import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.apache.log4j.Logger;
-
-import org.isatools.isacreator.model.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -91,8 +78,8 @@ public class ISAtabFilesImporterTest {
 
         System.out.println("ontologies used=" + OntologyManager.getOntologiesUsed());
         System.out.println("ontology description=" + OntologyManager.getOntologyDescription("OBI"));
-        System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
-        System.out.println("ontology selection history size=" + OntologyManager.getOntologySelectionHistory().keySet().size());
+        //System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
+        System.out.println("ontology selection history size=" + OntologyManager.getOntologySelectionHistorySize());
         System.out.println("ontology term=" + OntologyManager.getOntologyTerm("OBI:metabolite profiling"));
 
         assertTrue("Oh no, I didnt' get the expected number of studies :(", inv.getStudies().size() == 2);

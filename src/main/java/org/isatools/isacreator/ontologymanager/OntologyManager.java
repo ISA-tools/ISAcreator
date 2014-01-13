@@ -64,16 +64,16 @@ public class OntologyManager {
     private static ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>> searchResultCache = new ResultCache<String, Map<OntologySourceRefObject, List<OntologyTerm>>>();
 
     //map with <shortForm, new OntologyTerm> used, for ontology terms for which it is not possible to find a URI
-    private static Map<String, OntologyTerm> newTermMap = new HashMap<String, OntologyTerm>();
+    private static Map<String, OntologyTerm> noURITermMap = new HashMap<String, OntologyTerm>();
 
-    public static void addToNewTermMap(String k, OntologyTerm v){
-        newTermMap.put(k, v);
+    private static void addToNoURITermMap(String k, OntologyTerm v){
+        noURITermMap.put(k, v);
     }
 
-    //TODO remove this method
-    //public static Map<String, OntologyTerm> getOntologySelectionHistory() {
-    //    return ontologySelectionHistory;
-    //}
+    public static void addToUserHistory(OntologyTerm oo) {
+        if (oo!=null)
+            addToOntologySelectionHistory(oo.getShortForm(), oo);//ontologySelectionHistory.put(oo.getShortForm(), oo);
+    }
 
     public static void setOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
         OntologyManager.ontologySelectionHistory = new HashMap<String, OntologyTerm>();
@@ -81,12 +81,24 @@ public class OntologyManager {
     }
 
     public static void addToOntologySelectionHistory(String label, OntologyTerm term) {
-        OntologyManager.ontologySelectionHistory.put(label, term);
+        if (noURITermMap.containsKey(label))
+            return;
+        if (ontologySelectionHistory.containsKey(label))
+            return;
+        if (ISAcreatorProperties.getOntologyTermURIProperty() && term.getOntologyTermURI()!=null && !term.getOntologyTermURI().equals("")){
+            ontologySelectionHistory.put(label, term);
+        } else {
+            //term.setOntologySourceInformation(null);
+            //term.setOntologyTermAccession("");
+            addToNoURITermMap(label, term);
+            System.out.println("Term does not have a URI ---> " + label);
+        }
     }
 
-
-    public static void addToOntologySelectionHistory(Map<String, OntologyTerm> ontologySelectionHistory) {
-        OntologyManager.ontologySelectionHistory.putAll(ontologySelectionHistory);
+    public static void addToOntologySelectionHistory(Map<String, OntologyTerm> osh) {
+        //OntologyManager.ontologySelectionHistory.putAll(osh);
+        for(String key: osh.keySet())
+            addToOntologySelectionHistory(key, osh.get(key));
     }
 
     public static int getOntologySelectionHistorySize(){
@@ -102,12 +114,13 @@ public class OntologyManager {
     }
 
     public static OntologyTerm getOntologyTerm(String key){
-        if (ISAcreatorProperties.getProperty(ISAcreatorProperties.ONTOLOGY_TERM_URI).equals("true")){
-            if (newTermMap.containsKey(key))
-                return newTermMap.get(key);
-            else
-                return null;
-        }else return ontologySelectionHistory.get(key);
+        return ontologySelectionHistory.get(key);
+//        if (ISAcreatorProperties.getProperty(ISAcreatorProperties.ONTOLOGY_TERM_URI).equals("true")){
+//            if (noURITermMap.containsKey(key))
+//                return noURITermMap.get(key);
+//            else
+//                return null;
+//        }else return ontologySelectionHistory.get(key);
     }
 
     public static String getOntologyTermPurl(String dataValue){
@@ -262,11 +275,6 @@ public class OntologyManager {
         usedOntologySources.put(investigationAccession, new ArrayList<OntologySourceRefObject>());
     }
 
-    public static void addToUserHistory(OntologyTerm oo) {
-        if (oo!=null)
-            ontologySelectionHistory.put(oo.getShortForm(), oo);
-    }
-
     public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {
         for (OntologySourceRefObject ontologySourceRefObject : getOntologiesUsed()) {
             if (source.equalsIgnoreCase(ontologySourceRefObject.getSourceName())) {
@@ -295,4 +303,27 @@ public class OntologyManager {
     public static int searchResultCacheSize(){
         return searchResultCache.size();
     }
+
+    public static String getURIMappingInfo(){
+
+        StringBuilder builder = new StringBuilder();
+
+        if (!noURITermMap.isEmpty()){
+            builder.append("ISA-TAB dataset loaded with URIs");
+            builder.append("\nTerms that could not be mapped to a URI: ");
+            for(String key: noURITermMap.keySet()){
+                OntologyTerm ot = noURITermMap.get(key);
+                builder.append("\n\t"+ ot.getOntologyTermName()+ "\t"+ ot.getOntologySource() +"\t" + ot.getOntologyTermURI());
+            }
+
+            builder.append("\nTerms that could be mapped to a URI: ");
+            for(String key: ontologySelectionHistory.keySet()){
+                OntologyTerm ot = ontologySelectionHistory.get(key);
+                builder.append("\n\t"+ ot.getOntologyTermName() + "\t"+ ot.getOntologySource() +"\t" + ot.getOntologyTermURI());
+            }
+
+        }
+        return builder.toString();
+    }
+
 }

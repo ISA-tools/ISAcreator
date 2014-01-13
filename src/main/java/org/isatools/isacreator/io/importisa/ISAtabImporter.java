@@ -288,7 +288,7 @@ public abstract class ISAtabImporter {
                                 assay.getAssayReference(), assayTableReferenceObject);
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
-                            OntologyManager.getOntologySelectionHistory().putAll(builtReference.getReferencedOntologyTerms());
+                            OntologyManager.addToOntologySelectionHistory(builtReference.getReferencedOntologyTerms());
                         }
                     } catch (IOException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));

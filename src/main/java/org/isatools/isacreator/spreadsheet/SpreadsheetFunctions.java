@@ -236,8 +236,6 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
-
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
             // only hide columns which are empty and that are not necessarily required!
@@ -249,7 +247,7 @@ public class SpreadsheetFunctions {
 
                 String header = tc.getHeaderValue().toString();
 
-                OntologyTerm oo = history.get(IOUtils.getHeaderValue(header));
+                OntologyTerm oo = OntologyManager.getOntologyTerm(IOUtils.getHeaderValue(header));
 
                 if (oo!=null)
                     toPrint = "\"" + IOUtils.getHeaderName(header) + "["+ OntologyTermUtils.ontologyTermToString(oo) +"]"+ "\"";
@@ -297,7 +295,8 @@ public class SpreadsheetFunctions {
                             String termAccession = "";
 
                             if (!GeneralUtils.isValueURL(val)) {
-                                OntologyTerm oo = history.get(val);
+
+                                OntologyTerm oo = OntologyManager.getOntologyTerm(val);
 
                                 if (oo != null) {
                                     if (ISAcreatorProperties.getProperty("ontologyTermURI").equals("true"))
