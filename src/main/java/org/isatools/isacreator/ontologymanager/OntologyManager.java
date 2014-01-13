@@ -88,10 +88,8 @@ public class OntologyManager {
         if (ISAcreatorProperties.getOntologyTermURIProperty() && term.getOntologyTermURI()!=null && !term.getOntologyTermURI().equals("")){
             ontologySelectionHistory.put(label, term);
         } else {
-            //term.setOntologySourceInformation(null);
-            //term.setOntologyTermAccession("");
             addToNoURITermMap(label, term);
-            System.out.println("Term does not have a URI ---> " + label);
+            //System.out.println("Term does not have a URI ---> " + label);
         }
     }
 
@@ -304,6 +302,7 @@ public class OntologyManager {
         return searchResultCache.size();
     }
 
+
     public static String getURIMappingInfo(){
 
         StringBuilder builder = new StringBuilder();
@@ -314,12 +313,33 @@ public class OntologyManager {
             for(String key: noURITermMap.keySet()){
                 OntologyTerm ot = noURITermMap.get(key);
                 builder.append("\n\t"+ ot.getOntologyTermName()+ "\t"+ ot.getOntologySource() +"\t" + ot.getOntologyTermURI());
-            }
+                }
 
             builder.append("\nTerms that could be mapped to a URI: ");
             for(String key: ontologySelectionHistory.keySet()){
                 OntologyTerm ot = ontologySelectionHistory.get(key);
                 builder.append("\n\t"+ ot.getOntologyTermName() + "\t"+ ot.getOntologySource() +"\t" + ot.getOntologyTermURI());
+            }
+            }
+        return builder.toString();
+     }
+
+    public static String getURIMappingInfoHTML(){
+
+        StringBuilder builder = new StringBuilder();
+
+        if (!noURITermMap.isEmpty()){
+            builder.append("ISA-TAB dataset loaded with URIs");
+            builder.append("<br><br>Terms that could not be mapped to a URI: ");
+            for(String key: noURITermMap.keySet()){
+                OntologyTerm ot = noURITermMap.get(key);
+                builder.append("<p style=\"padding-left:10px\">"+ ot.getOntologySource()+":"+ot.getOntologyTermName() +" </p>");
+            }
+
+            builder.append("<br>Terms that could be mapped to a URI: ");
+            for(String key: ontologySelectionHistory.keySet()){
+                OntologyTerm ot = ontologySelectionHistory.get(key);
+                builder.append("<p style=\"padding-left:10px\">"+ ot.getOntologySource()+":"+ot.getOntologyTermName() +" -> <b>" + ot.getOntologyTermURI()+" </b> </p>");
             }
 
         }

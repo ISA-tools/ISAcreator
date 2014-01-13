@@ -154,8 +154,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     final ISAtabImporter iISA = new ISAtabFilesImporterFromGUI(ApplicationManager.getCurrentApplicationInstance());
                     boolean successfulImport = iISA.importFile(dir);
 
-                    System.out.println("********************\n"+OntologyManager.getURIMappingInfo());
-
                     if (successfulImport && iISA.getMessages().size() == 0) {
 
                         System.out.println("ISA-TAB dataset loaded");

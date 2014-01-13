@@ -66,7 +66,9 @@ public abstract class ISAtabImporter {
      * @return list of ISAFileErrorReports
      */
     public List<ISAFileErrorReport> getMessages() {
+
         return errors;
+
     }
 
     public String getMessagesAsString() {
@@ -206,6 +208,11 @@ public abstract class ISAtabImporter {
 
                     return false;
                 }
+
+                System.out.println("********************\n"+OntologyManager.getURIMappingInfo());
+                messages.add(new ErrorMessage(ErrorLevel.WARNING, OntologyManager.getURIMappingInfoHTML()));
+
+
             } catch (IOException e) {
 
                 messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));

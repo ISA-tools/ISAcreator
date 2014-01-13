@@ -124,7 +124,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
     public String getOntologyTermURI() {
         if (ontologyTermIRI==null){
             String iri = OntologyTermUtils.getURI(this);
-            System.out.println("term====>" + getOntologyTermName()+", iri ===> "+iri);
+            //System.out.println("term====>" + getOntologyTermName()+", iri ===> "+iri);
             if (iri!=null)
                 ontologyTermIRI = iri;
             else
