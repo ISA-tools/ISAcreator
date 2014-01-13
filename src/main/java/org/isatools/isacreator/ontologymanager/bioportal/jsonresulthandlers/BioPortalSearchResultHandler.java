@@ -14,7 +14,8 @@ import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import javax.json.*;
-import java.io.*;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,6 +138,10 @@ public class BioPortalSearchResultHandler {
                 System.err.println("Problem encountered setting host configuration for search");
             }
 
+//            System.out.println(method.getURI().toString());
+//            for(NameValuePair pair : method.getParameters()) {
+//                System.out.println(pair.getName() + "=" + pair.getValue());
+//            }
 
             int statusCode = client.executeMethod(method);
             if (statusCode != -1) {

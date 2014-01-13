@@ -49,6 +49,7 @@ import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.utils.GeneralUtils;
 import uk.ac.ebi.utils.collections.Pair;
 
@@ -363,6 +364,7 @@ public class StructureToInvestigationMapper {
 
                     try {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        //TODO add URI to accession
                         design.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
                     } catch (MalformedOntologyTermException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
@@ -437,7 +439,12 @@ public class StructureToInvestigationMapper {
 
                     try {
                         String value = groupElements(ontologyField.get(IOUtils.TERM), record.get(ontologyField.get(IOUtils.TERM)), record.get(ontologyField.get(IOUtils.ACCESSION)), record.get(ontologyField.get(IOUtils.SOURCE_REF)));
+                        if (!value.contains(":")){
+                            f.getFieldValues().put(ontologyField.get(IOUtils.ACCESSION), "");
+                            f.getFieldValues().put(ontologyField.get(IOUtils.SOURCE_REF), "");
+                        }
                         f.getFieldValues().put(ontologyField.get(IOUtils.TERM), value);
+
                     } catch (MalformedOntologyTermException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
                     }
@@ -632,9 +639,16 @@ public class StructureToInvestigationMapper {
                     if (accession.contains("http://"))
                         ontologyTermsDefined.add(new OntologyTerm(
                                 term, null, accession, getOntologySource(sourceRef)));
-                    else
-                        ontologyTermsDefined.add(new OntologyTerm(
-                            term, accession, null, getOntologySource(sourceRef)));
+                    else {
+                        OntologyTerm ot = new OntologyTerm(term, accession, null, getOntologySource(sourceRef));
+                        ontologyTermsDefined.add(ot);
+                        if (!(ISAcreatorProperties.getOntologyTermURIProperty() && ot.getOntologyTermURI()!=null && !ot.getOntologyTermURI().equals("")))
+                            toReturn = term;
+                        //else {
+                        //    System.out.println("Keeping term in mapping, without URI ===>"+ term);
+
+                        //}
+                    }
                 }
 
             }

@@ -621,7 +621,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
     private List<OntologyTerm> getSortedHistory() {
         List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
-        ontologyTerms.addAll(OntologyManager.getOntologySelectionHistory().values());
+        //ontologyTerms.addAll(OntologyManager.getOntologySelectionHistory().values());
+        ontologyTerms.addAll(OntologyManager.getOntologySelectionHistoryValues());
         Collections.sort(ontologyTerms);
         return ontologyTerms;
     }
@@ -719,7 +720,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
         firePropertyChange("selectedOntology", "OLD_VALUE", selectedTerm.getText());
         if (historyList.getSelectedIndex() != -1) {
-            OntologyManager.getOntologySelectionHistory().put(historyList.getSelectedValue().toString(), (OntologyTerm) historyList.getSelectedValue());
+            //OntologyManager.getOntologySelectionHistory().put(historyList.getSelectedValue().toString(), (OntologyTerm) historyList.getSelectedValue());
+            OntologyManager.addToOntologySelectionHistory(historyList.getSelectedValue().toString(), (OntologyTerm) historyList.getSelectedValue());
         }
         historyList.getFilterField().setText("");
         historyList.clearSelection();
@@ -856,7 +858,8 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         String cacheKeyLookup = "term" + ":" + searchOn + ":" +
                                 searchField.getText();
 
-                        if (!OntologyManager.searchResultCache.containsKey(cacheKeyLookup)) {
+                        //if (!OntologyManager.searchResultCache.containsKey(cacheKeyLookup)) {
+                        if (!OntologyManager.searchResultCacheContainsKey(cacheKeyLookup)) {
                             result = new HashMap<OntologySourceRefObject, List<OntologyTerm>>();
 
                             if (searchAllOntologies) {
@@ -867,11 +870,11 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
 
                             // only add to the cache if we got a result!
                             if (result.size() > 0) {
-                                OntologyManager.searchResultCache.addToCache(cacheKeyLookup, result);
+                                OntologyManager.addToCache(cacheKeyLookup, result);
                             }
 
                         } else {
-                            result = OntologyManager.searchResultCache.get(cacheKeyLookup);
+                            result = OntologyManager.getSearchResultCacheValue(cacheKeyLookup);
                         }
 
 
@@ -992,9 +995,11 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
     public void updatehistory() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if ((historyList != null) && (OntologyManager.getOntologySelectionHistory() != null)) {
+               // if ((historyList != null) && (OntologyManager.getOntologySelectionHistory() != null)) {
+               if ((historyList != null)){ // && (OntologyManager.getOntologySelectionHistory() != null)) {
 
-                    OntologyTerm[] newHistory = new OntologyTerm[OntologyManager.getOntologySelectionHistory().size()];
+                    //OntologyTerm[] newHistory = new OntologyTerm[OntologyManager.getOntologySelectionHistory().size()];
+                   OntologyTerm[] newHistory = new OntologyTerm[OntologyManager.getOntologySelectionHistorySize()];
 
                     int count = 0;
                     for (OntologyTerm oo : getSortedHistory()) {

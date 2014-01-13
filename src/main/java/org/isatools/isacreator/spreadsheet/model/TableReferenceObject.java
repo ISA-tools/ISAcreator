@@ -50,6 +50,7 @@ import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.StringValidation;
 import org.isatools.isacreator.spreadsheet.ValidationObject;
 
@@ -350,10 +351,18 @@ public class TableReferenceObject implements Serializable {
                             String term = parts[1];
                             String accession = s.trim();
 
+                            OntologyTerm ot = null;
                             if (!referencedOntologyTerms.containsKey(prevVal)) {
-                                referencedOntologyTerms.put(prevVal,
-                                        new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                                ot = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                                referencedOntologyTerms.put(prevVal, ot);
+
+                            } else {
+                                ot = referencedOntologyTerms.get(prevVal);
+
                             }
+                            if (!(ISAcreatorProperties.getOntologyTermURIProperty() && ot.getOntologyTermURI()!=null && !ot.getOntologyTermURI().equals("")))
+                                rowDataModified.set(prevValLoc, term);
+
                         }
                     }
                 }
