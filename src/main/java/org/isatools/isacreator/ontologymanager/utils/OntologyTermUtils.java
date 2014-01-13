@@ -52,7 +52,6 @@ public class OntologyTermUtils {
                 ontologyTerm.getOntologySourceInformation().getSourceName());
 
 
-        //TODO keep info about what terms couldn't be found
         Set<String> set = result.keySet();
         if (!set.isEmpty()){
             List<OntologyTerm> list = result.get(set.iterator().next());
@@ -60,10 +59,13 @@ public class OntologyTermUtils {
                 OntologyTerm oo = list.get(0);
 
                 ontologyTerm.setOntologyTermIRI(oo.getOntologyTermURI());
+                //ontologyTerm.setOntologyTermAccession(oo.getOntologyTermName());
                 return ontologyTerm.getOntologyTermURI();
                 //ontologyTerm.setOntologyTermAccession(oo.getOntologyTermAccession());
             }
-        }
+        } //else {
+          //  OntologyManager.addToNoURITermMap(ontologyTerm.getShortForm(), ontologyTerm);
+        //}
 
         return null;
     }
@@ -105,9 +107,13 @@ public class OntologyTermUtils {
                OntologySourceRefObject ontologySource = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
 
                if (accession.contains("http://"))
-                   ontologyTerm = new OntologyTerm(term, null, accession, ontologySource);
-               else
-                   ontologyTerm = new OntologyTerm(term, accession, null, ontologySource);
+                   ontologyTerm = new OntologyTerm(term, accession, accession, ontologySource);
+               else {
+                   if (ISAcreatorProperties.getOntologyTermURIProperty())
+                    ontologyTerm = null;
+                   else
+                    ontologyTerm = new OntologyTerm(term, accession, null, ontologySource);
+               }
 
            }else if (prevVal.startsWith("http://")) {
                // we have a PURL. So we'll use this directly
@@ -132,10 +138,6 @@ public class OntologyTermUtils {
 
 
        }
-
-
-
-
      return ontologyTerm;
    }
 
@@ -152,16 +154,17 @@ public class OntologyTermUtils {
 
        //convert the ontologyUniqueId to the ontology term string
 
-       Map<String, OntologyTerm> ontologySelectionHistory = OntologyManager.getOntologySelectionHistory();
+       //Map<String, OntologyTerm> ontologySelectionHistory = OntologyManager.getOntologySelectionHistory();
 
-       if (ontologySelectionHistory!=null){
+       //if (ontologySelectionHistory!=null){
 
-           OntologyTerm ontologyTerm = ontologySelectionHistory.get(ontologyUniqueId);
+           //OntologyTerm ontologyTerm = ontologySelectionHistory.get(ontologyUniqueId);
+       OntologyTerm ontologyTerm = OntologyManager.getOntologyTerm(ontologyUniqueId);
 
            if (ontologyTerm!=null){
               return headerName + "[" +ontologyTermToString(ontologyTerm) +"]";
            }
-       }
+       //}
 
        return null;
    }
@@ -181,8 +184,9 @@ public class OntologyTermUtils {
         if (ontologyTerm != null) {
             uniqueId = headerName +"["+ ontologyTerm.getShortForm() + "]";
 
-            Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
-            if (history.get(ontologyTerm.getShortForm())==null) {
+            //Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
+            //if (history.get(ontologyTerm.getShortForm())==null) {
+            if (OntologyManager.getOntologyTerm(ontologyTerm.getShortForm())==null) {
                 Map<String, OntologyTerm> map = new HashMap<String, OntologyTerm>();
                 map.put(uniqueId, ontologyTerm);
                 OntologyManager.addToOntologySelectionHistory(map);

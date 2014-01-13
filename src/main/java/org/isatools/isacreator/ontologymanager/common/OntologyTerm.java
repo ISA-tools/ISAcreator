@@ -39,6 +39,7 @@ package org.isatools.isacreator.ontologymanager.common;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +71,11 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         ontologyTermName = termName;
         ontologyTermAccession = accession;
         ontologySourceInformation = ontologySourceRefObject;
-        ontologyTermIRI = iri;
+
+        if (iri!=null)
+            ontologyTermIRI = iri;
+        else
+            ontologyTermIRI = getOntologyTermURI();
     }
 
     public String getOntologyVersionId() {
@@ -119,7 +124,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
     public String getOntologyTermURI() {
         if (ontologyTermIRI==null){
             String iri = OntologyTermUtils.getURI(this);
-            System.out.println("term====>" + getOntologyTermName()+"iri ===> "+iri);
+            System.out.println("term====>" + getOntologyTermName()+", iri ===> "+iri);
             if (iri!=null)
                 ontologyTermIRI = iri;
             else
@@ -170,8 +175,10 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
      */
     public String getShortForm() {
         String ontologySource = getOntologySource();
-        if (!ontologySource.equals("")) {
-            return ontologySource + ":" + getOntologyTermName();
+        if (!ontologySource.equals("")){
+            if (ISAcreatorProperties.getOntologyTermURIProperty())
+                if (ontologyTermIRI!=null && !ontologyTermIRI.equals(""))
+                    return ontologySource + ":" + getOntologyTermName();
         }
         return getOntologyTermName();
     }
