@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.7.3</version>
+    <version>1.7.4</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -396,7 +396,7 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
-            <version>1.6.4</version>
+            <version>1.6.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.ebi</groupId>
