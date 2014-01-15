@@ -37,7 +37,9 @@
 
 package org.isatools.isacreator.ontologymanager;
 
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.model.ISASection;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 
 import java.io.Serializable;
 
@@ -56,7 +58,6 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
     public static final String SOURCE_VERSION = "Term Source Version";
     public static final String SOURCE_DESCRIPTION = "Term Source Description";
 
-
     public OntologySourceRefObject() {
         super();
     }
@@ -69,25 +70,27 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
      */
     public OntologySourceRefObject(String sourceName, String sourceFile,
                                    String sourceVersion, String sourceDescription) {
+        super();
         fieldValues.put(SOURCE_NAME, sourceName);
         fieldValues.put(SOURCE_FILE, sourceFile);
         fieldValues.put(SOURCE_VERSION, sourceVersion);
         fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
-        autocomplete();
+        update();
     }
 
-    public void autocomplete(){
+    public void update(){
+        if (getSourceName()==null)
+            return;
+        String ontologyId = "http://data.bioontology.org/ontologies/"+getSourceName();
 
-        BioPortalClient client = new BioPortalClient();
-        String sourceName = getSourceName();
-        if (getSourceName()!=null){
-            if (getSourceFile()==null && getSourceVersion()==null && getSourceDescription() == null){
-                setSourceFile(client.getOntologySourceFile(sourceName));
-                setSourceDescription(client.getOntologyDescription(sourceName));
-                setSourceVersion(client.getOntologyVersion(sourceName));
-            }
+        Ontology associatedOntologySource = AcceptedOntologies.getAcceptedOntologies().get(ontologyId);
 
-        }
+        if (associatedOntologySource==null)
+            return;
+
+        setSourceFile(associatedOntologySource.getOntologyID());
+        setSourceVersion( associatedOntologySource.getOntologyVersion());
+        setSourceDescription(associatedOntologySource.getOntologyDisplayLabel());
     }
 
     public String getSourceDescription() {
@@ -133,4 +136,48 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
             return getSourceName().compareToIgnoreCase(o.getSourceName());
         }
     }
+
+    public boolean equals(Object object){
+        if (object == null)
+            return false;
+        if (object == this)
+            return true;
+        if (!(object instanceof OntologySourceRefObject))
+            return false;
+
+        OntologySourceRefObject sourceRefObject = (OntologySourceRefObject) object;
+        boolean result = true;
+        if (getSourceName()!=null && sourceRefObject.getSourceName()!=null)
+            result = result && (getSourceName().equals(sourceRefObject.getSourceName()));
+
+        if (getSourceDescription()!=null && sourceRefObject.getSourceDescription()!=null)
+            result = result && getSourceDescription().equals(sourceRefObject.getSourceDescription());
+
+        if (getSourceFile()!=null && sourceRefObject.getSourceFile()!=null)
+            result = result &&  getSourceFile().equals(sourceRefObject.getSourceFile());
+
+         if (getSourceVersion()!=null && sourceRefObject.getSourceFile()!=null)
+             result = result && getSourceVersion().equals(sourceRefObject.getSourceVersion());
+
+        return result;
+    }
+
+    public int hashCode(){
+        int result = 0;
+
+        if (getSourceName()!=null)
+            result += getSourceName().hashCode();
+
+        if (getSourceDescription()!=null)
+            result += getSourceDescription().hashCode();
+
+        if (getSourceFile()!=null)
+            result += getSourceFile().hashCode();
+
+        if (getSourceVersion()!=null)
+            result += getSourceVersion().hashCode();
+
+        return result;
+    }
+
 }
