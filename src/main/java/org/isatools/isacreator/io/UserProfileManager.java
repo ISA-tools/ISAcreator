@@ -247,7 +247,7 @@ public class UserProfileManager {
                 up.setFtpManager(Spreadsheet.fileSelectEditor.getFTPManager());
 
                 // update used ontology sources
-                for (OntologySourceRefObject osro : OntologyManager.getOntologiesUsed()) {
+                for (OntologySourceRefObject osro : OntologyManager.getOntologySources()) {
                     up.addOntologyReference(osro);
                 }
             }
@@ -258,7 +258,7 @@ public class UserProfileManager {
         for (UserProfile up : UserProfileManager.getUserProfiles()) {
 
             if (up.getUsername()!=null && up.getUsername().equals(UserProfileManager.getCurrentUser().getUsername())) {
-                Set<String> keySet = OntologyManager.getOntologySelectionHistoryKeySet();
+                Set<String> keySet = OntologyManager.getOntologyTermsKeySet();
                 for(String key: keySet){
                     up.addToUserHistory(key, OntologyManager.getOntologyTerm(key));
                 }
