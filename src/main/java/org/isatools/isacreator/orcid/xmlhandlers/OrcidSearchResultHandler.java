@@ -88,7 +88,10 @@ public class OrcidSearchResultHandler {
         GivenNamesDocument.GivenNames givenNames = personalDetails.getGivenNames();
 
         orcidAuthor.setGivenNames(removeFragments(givenNames.xmlText()));
-        orcidAuthor.setFamilyName(removeFragments(personalDetails.getFamilyName().xmlText()));
+        if (personalDetails.getFamilyName() != null) {
+            orcidAuthor.setFamilyName(removeFragments(personalDetails.getFamilyName().xmlText()));
+        }
+
 
         if (affiliations != null) {
             AffiliationDocument.Affiliation[] affiliationArray = affiliations.getAffiliationArray();
