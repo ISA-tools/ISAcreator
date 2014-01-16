@@ -280,7 +280,7 @@ public class SpreadsheetImport {
             String colText = invalidHeaders.size() > 1 ? "The columns " : "The column ";
             String linkText = invalidHeaders.size() > 1 ? " are " : " is ";
 
-            throw new MalformedInvestigationException(colText + invalidHeaderNames + linkText + " not supported in this assay");
+            throw new MalformedInvestigationException(colText + invalidHeaderNames + linkText + "not supported in this assay");
         }
 
         return tro;

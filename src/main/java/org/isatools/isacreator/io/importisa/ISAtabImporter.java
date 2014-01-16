@@ -72,10 +72,10 @@ public abstract class ISAtabImporter {
     public String getMessagesAsString() {
         StringBuilder builder = new StringBuilder();
         for (ISAFileErrorReport errorReport : errors) {
-            builder.append("Error filename: " + errorReport.getFileName());
+            builder.append("Error filename: ").append(errorReport.getFileName());
             builder.append("\n Error messages: ");
             for (ErrorMessage error : errorReport.getMessages()) {
-                builder.append("\n" + error.getMessage());
+                builder.append("\n").append(error.getMessage());
             }
         }
         return builder.toString();
@@ -114,11 +114,13 @@ public abstract class ISAtabImporter {
 
             File[] isaDirectorFiles = investigationFile.listFiles();
 
-            for (File isaFile : isaDirectorFiles) {
-                if (isaFile.getName().toLowerCase().startsWith("i_")) {
-                    investigationFileFound = true;
-                    investigationFile = isaFile;
-                    break;
+            if (isaDirectorFiles != null) {
+                for (File isaFile : isaDirectorFiles) {
+                    if (isaFile.getName().toLowerCase().startsWith("i_")) {
+                        investigationFileFound = true;
+                        investigationFile = isaFile;
+                        break;
+                    }
                 }
             }
 
@@ -192,10 +194,6 @@ public abstract class ISAtabImporter {
                             ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                             errors.add(investigationErrorReport);
                         }
-                    } else {
-                        //if (isacreator!=null){
-                        //    investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
-                        //}
                     }
 
                 } else {
