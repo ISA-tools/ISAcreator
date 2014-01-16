@@ -116,7 +116,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     private boolean createBorder = true;
 
-    protected Map<String, OntologyTerm> userHistory;
     protected Set<Integer> uneditableRecords = new HashSet<Integer>();
 
     // this will house the translation between Comment aliases e.g. Publication Journal [c] to Comment[Publication Journal]
@@ -567,7 +566,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
                 String s = scrollTable.getValueAt(rowSelected, columnSelected)
                         .toString();
 
-                OntologyTerm ooForSelectedTerm = searchUserHistory(s);
+                OntologyTerm ooForSelectedTerm = OntologyManager.getOntologyTerm(s);
 
                 if (ooForSelectedTerm != null) {
                     dataEntryForm.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
@@ -605,21 +604,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         }
 
     }
-
-    private OntologyTerm searchUserHistory(String uniqueId) {
-        if (userHistory == null) {
-            return null;
-        }
-
-        for (OntologyTerm oo : userHistory.values()) {
-
-            if (oo.getShortForm().equals(uniqueId)) {
-                return oo;
-            }
-        }
-        return null;
-    }
-
 
     public void focusGained(FocusEvent event) {
         removeRecord.setVisible(true);
