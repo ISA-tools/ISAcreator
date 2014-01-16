@@ -79,7 +79,7 @@ public class ISAtabFilesImporterTest {
         System.out.println("ontologies used=" + OntologyManager.getOntologiesUsed());
         System.out.println("ontology description=" + OntologyManager.getOntologyDescription("OBI"));
         //System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
-        System.out.println("ontology selection history size=" + OntologyManager.getOntologySelectionHistorySize());
+        System.out.println("ontology selection history size=" + OntologyManager.getOntologyTermsSize());
         System.out.println("ontology term=" + OntologyManager.getOntologyTerm("OBI:metabolite profiling"));
 
         assertTrue("Oh no, I didnt' get the expected number of studies :(", inv.getStudies().size() == 2);

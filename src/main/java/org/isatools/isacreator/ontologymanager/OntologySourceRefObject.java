@@ -62,6 +62,12 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
         super();
     }
 
+    public OntologySourceRefObject(String sourceName){
+        super();
+        fieldValues.put(SOURCE_NAME, sourceName);
+        completeFields();
+    }
+
     /**
      * @param sourceName        - e.g. GO
      * @param sourceFile        - e.g. URL (e.g. the BioPortal virtual id)
@@ -75,10 +81,10 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
         fieldValues.put(SOURCE_FILE, sourceFile);
         fieldValues.put(SOURCE_VERSION, sourceVersion);
         fieldValues.put(SOURCE_DESCRIPTION, sourceDescription);
-        update();
+        completeFields();
     }
 
-    public void update(){
+    public void completeFields(){
         if (getSourceName()==null)
             return;
         String ontologyId = "http://data.bioontology.org/ontologies/"+getSourceName();

@@ -189,7 +189,7 @@ public class OntologyTermUtils {
             if (OntologyManager.getOntologyTerm(ontologyTerm.getShortForm())==null) {
                 Map<String, OntologyTerm> map = new HashMap<String, OntologyTerm>();
                 map.put(uniqueId, ontologyTerm);
-                OntologyManager.addToOntologySelectionHistory(map);
+                OntologyManager.addToOntologyTerms(map);
             }
             return uniqueId;
         }

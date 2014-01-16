@@ -440,7 +440,7 @@ public class AddColumnGUI extends JDialog {
 
                         if (varSelectOntologyField != null) {
                             toAdd = varSelectOntologyField.getText();
-                            OntologyManager.addToUserHistory(selectedOntologyTerm);
+                            OntologyManager.addToOntologyTerms(selectedOntologyTerm);
 
                         } else {
                             if (optionList.getSelectedItem() != null) {

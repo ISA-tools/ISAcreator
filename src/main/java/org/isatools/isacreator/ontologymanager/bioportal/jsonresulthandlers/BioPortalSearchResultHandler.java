@@ -80,7 +80,7 @@ public class BioPortalSearchResultHandler {
         return links.getJsonString("ontology").toString();
     }
 
-    private void extractDefinitionFromOntologyTerms(JsonObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
+    private void extractDefinitionFromOntologyTerm(JsonObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
         JsonArray definitions = ontologyItemJsonDictionary.getJsonArray("definition");
         if (definitions != null && definitions.size() > 0) {
             ontologyTerm.addToComments("definition", definitions.get(0).toString());
@@ -246,7 +246,7 @@ public class BioPortalSearchResultHandler {
 
             OntologyTerm ontologyTerm = new OntologyTerm(obj.getString("prefLabel"), obj.getString("@id"), obj.getString("@id"), osro);
             ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
-            extractDefinitionFromOntologyTerms(obj, ontologyTerm);
+            extractDefinitionFromOntologyTerm(obj, ontologyTerm);
             extractSynonymsFromOntologyTerm(obj, ontologyTerm);
 
             System.out.println(ontologyTerm.getOntologyTermName() + " - " + ontologyTerm.getOntologyTermAccession() + " - " + ontologyTerm.getOntologyTermURI() );
@@ -317,9 +317,15 @@ public class BioPortalSearchResultHandler {
 
         OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.getString("prefLabel"), annotationItem.getString("@id"), annotationItem.getString("@id"), null);
         ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
-        extractDefinitionFromOntologyTerms(annotationItem, ontologyTerm);
+        extractDefinitionFromOntologyTerm(annotationItem, ontologyTerm);
         extractSynonymsFromOntologyTerm(annotationItem, ontologyTerm);
-
+        String ontologyId = extractOntologyId(annotationItem);
+        if (ontologyId!=null){
+            String ontologyAbbreviation = ontologyId.substring(ontologyId.lastIndexOf('/')+1);
+            OntologySourceRefObject sourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(ontologyAbbreviation);
+            if (sourceRefObject!=null)
+                ontologyTerm.setOntologySourceInformation(sourceRefObject);
+        }
         return ontologyTerm;
     }
 

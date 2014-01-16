@@ -270,7 +270,7 @@ public class Spreadsheet extends JComponent implements
 
     private void addOntologyTermsToUserHistory() {
         Map<String, OntologyTerm> referencedOntologyTerms = tableReferenceObject.getReferencedOntologyTerms();
-        OntologyManager.addToOntologySelectionHistory(referencedOntologyTerms);
+        OntologyManager.addToOntologyTerms(referencedOntologyTerms);
     }
 
     private void populateSpreadsheetWithContent() {

@@ -115,6 +115,11 @@ public class OntologyManager {
             addToOntologyTerms(key, osh.get(key));
     }
 
+    public static void addToOntologyTerms(Collection<OntologyTerm> terms) {
+        for(OntologyTerm term: terms)
+            addToOntologyTerms(term.getShortForm(), term);
+    }
+
     public static void addToOntologyTerms(OntologyTerm term){
         if (term!=null)
             addToOntologyTerms(term.getShortForm(), term);
@@ -233,6 +238,10 @@ public class OntologyManager {
         return ontologySources.values();
     }
 
+    public static void clearOntologySources(){
+        ontologySources.clear();
+    }
+
     public static void setOntologySources(Set<OntologySourceRefObject> ontologiesUsed) {
         for (OntologySourceRefObject sourceRefObject: ontologiesUsed)
             ontologySources.put(sourceRefObject.getSourceName(), sourceRefObject);
@@ -277,33 +286,6 @@ public class OntologyManager {
     }
     /*** end of searchResultCache methods ***/
 
-    /*** methods required for merging functionality ***/
-
-    //Used in Investigation.initialise()
-    public static void newInvestigation(String investigationAccession) {
-        investigationAccession = investigationAccession.equals("") ? "investigation-" + System.currentTimeMillis() : investigationAccession;
-        ontologySourcesForMerging.put(investigationAccession, new HashSet<OntologySourceRefObject>());
-    }
-
-    private static String getValidKey() {
-        if (ontologySources.isEmpty()) {
-            ontologySourcesForMerging.put("investigation", new HashSet<OntologySourceRefObject>());
-            return "investigation";
-        } else {
-            if(ontologySources != null && ontologySources.size() > 0)
-                return ontologySources.keySet().iterator().next();
-        }
-        return "investigation";
-    }
-
-    //USED in MergeFilesUI.mergeFiles
-    public static void clearUsedOntologies(String investigationAccession) {
-        if (ontologySourcesForMerging.containsKey(investigationAccession)) {
-            ontologySourcesForMerging.remove(investigationAccession);
-        }
-    }
-
-    /*** end of methods required for merging functionality ***/
 
     /*** getURIMappingInfo ***/
 

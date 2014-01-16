@@ -3,8 +3,8 @@ package org.isatools.isacreator.ontologiser.adaptors;
 import org.isatools.isacreator.api.utils.InvestigationUtils;
 import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.configuration.Ontology;
-import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -55,9 +55,6 @@ public class InvestigationAdaptor implements ContentAdaptor {
 
                 OntologySourceRefObject ontologySourceRefObject = OntologyUtils.convertOntologyToOntologySourceReferenceObject(sourceOntology);
 
-                // adding ontology source in case it has not already been added
-                OntologyManager.addToUsedOntologySources("annotator", ontologySourceRefObject);
-
                 OntologyTerm ontologyTerm = annotation.getAssignedOntology().getOntologyTerm();
 
                 // add the term to the ontology history.
@@ -65,7 +62,7 @@ public class InvestigationAdaptor implements ContentAdaptor {
 
                 mappingsForReplacement.put(annotation.getFreeTextTerm(), ontologyObject);
 
-                OntologyManager.addToUserHistory(ontologyObject);
+                OntologyManager.addToOntologyTerms(ontologyObject);
             }
         }
 
