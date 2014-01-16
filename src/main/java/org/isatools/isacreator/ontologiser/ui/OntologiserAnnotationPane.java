@@ -153,7 +153,7 @@ public class OntologiserAnnotationPane extends JPanel {
 
                 setAnnotation(selectedItem, currentlySelectedOntologyTerm);
 
-                System.out.println("Term purl " + selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyPurl() +
+                System.out.println("Term purl " + selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermURI() +
                         " Name = " + selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermName());
 
                 definitionUI.setContent(

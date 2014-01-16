@@ -44,13 +44,16 @@ import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
 import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -233,8 +236,6 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
-
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
             // only hide columns which are empty and that are not necessarily required!
@@ -246,7 +247,12 @@ public class SpreadsheetFunctions {
 
                 String header = tc.getHeaderValue().toString();
 
-                toPrint = "\"" + header + "\"";
+                OntologyTerm oo = OntologyManager.getOntologyTerm(IOUtils.getHeaderValue(header));
+
+                if (oo!=null)
+                    toPrint = "\"" + IOUtils.getHeaderName(header) + "["+ OntologyTermUtils.ontologyTermToString(oo) +"]"+ "\"";
+                else
+                    toPrint = "\"" + header + "\"";
 
                 if (col == 1) {
                     ps.print(toPrint);
@@ -289,10 +295,14 @@ public class SpreadsheetFunctions {
                             String termAccession = "";
 
                             if (!GeneralUtils.isValueURL(val)) {
-                                OntologyTerm oo = history.get(val);
+
+                                OntologyTerm oo = OntologyManager.getOntologyTerm(val);
 
                                 if (oo != null) {
-                                    termAccession = oo.getOntologyTermAccession();
+                                    if (ISAcreatorProperties.getProperty("ontologyTermURI").equals("true"))
+                                        termAccession = oo.getOntologyTermURI();
+                                    else
+                                        termAccession = oo.getOntologyTermAccession();
                                 }
 
                                 if (val.contains(":")) {

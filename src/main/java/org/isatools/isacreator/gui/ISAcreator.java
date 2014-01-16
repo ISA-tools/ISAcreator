@@ -39,17 +39,17 @@
 package org.isatools.isacreator.gui;
 
 import org.apache.log4j.Logger;
-
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.api.Authentication;
 import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.TitlePanel;
+import org.isatools.isacreator.gs.GSSaveAction;
+import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
-import org.isatools.isacreator.io.UserProfile;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.managers.ConfigurationManager;
@@ -57,7 +57,6 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologiser.adaptors.InvestigationAdaptor;
 import org.isatools.isacreator.ontologiser.ui.OntologiserUI;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.plugins.MenuPluginTracker;
 import org.isatools.isacreator.plugins.OntologyPluginTracker;
 import org.isatools.isacreator.plugins.SpreadsheetPluginTracker;
@@ -73,8 +72,6 @@ import org.isatools.isacreator.validateconvert.ui.ValidateUI;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 import org.osgi.framework.BundleContext;
-import org.isatools.errorreporter.model.ErrorMessage;
-import org.isatools.isacreator.gs.GSSaveAction;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -598,7 +595,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         options.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                clearOntologySearchCache.setEnabled(OntologyManager.searchResultCache.size() > 0);
+                clearOntologySearchCache.setEnabled(OntologyManager.searchResultCacheSize() > 0);
             }
         });
 
@@ -782,8 +779,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
             checkMenuRequired();
 
             ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, "");
-
-            OntologyManager.clearReferencedOntologySources();
+            OntologyManager.clearOntologyTerms();
 
 
         } catch (Exception e) {
@@ -1022,7 +1018,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 closeWindowTimer.start();
 
                 if (type != SAVE_ONLY) {
-                    OntologyManager.clearReferencedOntologySources();
+                    OntologyManager.clearOntologyTerms();
                 }
             } else {
                 // need to get a new reference from the user!

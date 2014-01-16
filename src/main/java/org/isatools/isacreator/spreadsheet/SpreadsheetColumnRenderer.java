@@ -135,7 +135,10 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
             text.setText(shortHeader);
         } else {
             if (valueString.contains(":")){
-                text.setText(OntologyTermUtils.fullAnnotatedHeaderToUniqueId(valueString));
+                if (valueString.contains("http://"))
+                    text.setText(OntologyTermUtils.fullAnnotatedHeaderToUniqueId(valueString));
+                else
+                    text.setText(valueString);
             }else{
                 text.setText(valueString);
             }

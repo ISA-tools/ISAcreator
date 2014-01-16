@@ -269,13 +269,8 @@ public class Spreadsheet extends JComponent implements
     }
 
     private void addOntologyTermsToUserHistory() {
-
         Map<String, OntologyTerm> referencedOntologyTerms = tableReferenceObject.getReferencedOntologyTerms();
-        Map<String, OntologyTerm> ontoHistory = OntologyManager.getOntologySelectionHistory();
-
-        for (OntologyTerm oo : referencedOntologyTerms.values()) {
-            ontoHistory.put(oo.getUniqueId(), oo);
-        }
+        OntologyManager.addToOntologyTerms(referencedOntologyTerms);
     }
 
     private void populateSpreadsheetWithContent() {
@@ -1291,7 +1286,7 @@ public class Spreadsheet extends JComponent implements
      * @return - OntologyObject matching the unique id if found, null otherwise.
      */
     private OntologyTerm searchUserHistory(String uniqueId) {
-        return OntologyManager.getOntologySelectionHistory().get(uniqueId);
+        return OntologyManager.getOntologyTerm(uniqueId);
     }
 
     /**
@@ -1640,13 +1635,21 @@ public class Spreadsheet extends JComponent implements
                 // update status panel in bottom left hand corner of workspace to contain the ontology
                 // information. this should possibly be extended to visualize the ontology location within
                 // the ontology tree itself.
+
                 studyDataEntryEnvironment.getDataEntryEnvironment().setStatusPaneInfo("<html>" +
                         "<b>ontology term information</b>" + "</hr>" +
                         "<p><term name: >" + ooForSelectedTerm.getOntologyTermName() +
                         "</p>" + "<p><b>source ref: </b> " +
                         ooForSelectedTerm.getOntologySource() + "</p>" +
+
+                        ( ooForSelectedTerm.getOntologyTermAccession().contains("http://") ? "" :
+
                         "<p><b>accession no: </b>" +
-                        ooForSelectedTerm.getOntologyTermAccession() + "</p>" +
+                        ooForSelectedTerm.getOntologyTermAccession() + "</p>" ) +
+
+//                        ((ooForSelectedTerm.getOntologyTermURI()!=null && !ooForSelectedTerm.getOntologyTermURI().equals("")) ?
+//                                "<p><b>uri: </b>" + ooForSelectedTerm.getOntologyTermURI() + "</p>" : "") +
+
                         "</html>");
             }
         }

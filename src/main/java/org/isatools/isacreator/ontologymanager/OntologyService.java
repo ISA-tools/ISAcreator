@@ -51,6 +51,10 @@ public interface OntologyService {
 
     public Map<String, String> getOntologyNames();
 
+    public OntologyTerm getTerm(String termId, String ontology);
+
+    public Map<String, List<OntologyTerm>> exactSearch(String term, String ontology);
+
     public Map<String, String> getTermMetadata(String termId, String ontology);
 
     public Map<OntologySourceRefObject, List<OntologyTerm>> getTermsByPartialNameFromSource(String term, String source, boolean reverseOrder);
@@ -95,6 +99,9 @@ public interface OntologyService {
      * @return Map<String, String> representing the parents of the Term
      */
     public Map<String, OntologyTerm> getAllTermParents(String termAccession, String ontology);
+
+
+    //public String getOntologyURL();
 
     public Collection<Ontology> getAllOntologies();
 

@@ -1,12 +1,16 @@
 package org.isatools.isacreator.ontologymanager.utils;
 
+import org.isatools.isacreator.io.IOUtils;
+import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by the ISATeam.
@@ -32,16 +36,45 @@ public class OntologyTermUtils {
      * @return
      */
    public static String ontologyTermToString(OntologyTerm ontologyTerm){
-       if (ontologyTerm.getOntologyPurl()!=null && ISAcreatorProperties.getProperty("ontologyTermURI").equals("true")){
-           return ontologyTerm.getOntologyTermName() +"," + ontologyTerm.getOntologyPurl() + "," + ontologyTerm.getOntologySource();
+       if (ontologyTerm.getOntologyTermURI()!=null && ISAcreatorProperties.getProperty("ontologyTermURI").equals("true")){
+           return ontologyTerm.getOntologyTermName() +"," + ontologyTerm.getOntologyTermURI() + "," + ontologyTerm.getOntologySource();
        }
      return ontologyTerm.getOntologyTermName() + "," +  ontologyTerm.getOntologyTermAccession() +"," + ontologyTerm.getOntologySource();
    }
 
+    public static String getURI(OntologyTerm ontologyTerm){
+        if (ontologyTerm==null || ontologyTerm.getOntologyTermAccession()==null
+                || ontologyTerm.getOntologySourceInformation()==null || ontologyTerm.getOntologySourceInformation().getSourceName()==null)
+            return null;
+
+        BioPortal4Client bioPortalClient = new BioPortal4Client();
+        Map<String, List<OntologyTerm>> result = bioPortalClient.exactSearch(ontologyTerm.getOntologyTermName(),
+                ontologyTerm.getOntologySourceInformation().getSourceName());
+
+
+        Set<String> set = result.keySet();
+        if (!set.isEmpty()){
+            List<OntologyTerm> list = result.get(set.iterator().next());
+            if (list.size()>0){
+                OntologyTerm oo = list.get(0);
+
+                ontologyTerm.setOntologyTermIRI(oo.getOntologyTermURI());
+                //ontologyTerm.setOntologyTermAccession(oo.getOntologyTermName());
+                return ontologyTerm.getOntologyTermURI();
+                //ontologyTerm.setOntologyTermAccession(oo.getOntologyTermAccession());
+            }
+        } //else {
+          //  OntologyManager.addToNoURITermMap(ontologyTerm.getShortForm(), ontologyTerm);
+        //}
+
+        return null;
+    }
+
+
    public static OntologyTerm stringToOntologyTerm(String header){
        OntologyTerm ontologyTerm = null;
 
-       String prevVal = header.substring(header.indexOf('[') + 1, header.indexOf("]"));
+       String prevVal = IOUtils.getHeaderValue(header);
 
        String source = "";
        String term = "";
@@ -74,9 +107,13 @@ public class OntologyTermUtils {
                OntologySourceRefObject ontologySource = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
 
                if (accession.contains("http://"))
-                   ontologyTerm = new OntologyTerm(term, null, accession, ontologySource);
-               else
-                   ontologyTerm = new OntologyTerm(term, accession, null, ontologySource);
+                   ontologyTerm = new OntologyTerm(term, accession, accession, ontologySource);
+               else {
+                   if (ISAcreatorProperties.getOntologyTermURIProperty())
+                    ontologyTerm = null;
+                   else
+                    ontologyTerm = new OntologyTerm(term, accession, null, ontologySource);
+               }
 
            }else if (prevVal.startsWith("http://")) {
                // we have a PURL. So we'll use this directly
@@ -101,10 +138,6 @@ public class OntologyTermUtils {
 
 
        }
-
-
-
-
      return ontologyTerm;
    }
 
@@ -121,16 +154,17 @@ public class OntologyTermUtils {
 
        //convert the ontologyUniqueId to the ontology term string
 
-       Map<String, OntologyTerm> ontologySelectionHistory = OntologyManager.getOntologySelectionHistory();
+       //Map<String, OntologyTerm> ontologySelectionHistory = OntologyManager.getOntologySelectionHistory();
 
-       if (ontologySelectionHistory!=null){
+       //if (ontologySelectionHistory!=null){
 
-           OntologyTerm ontologyTerm = ontologySelectionHistory.get(ontologyUniqueId);
+           //OntologyTerm ontologyTerm = ontologySelectionHistory.get(ontologyUniqueId);
+       OntologyTerm ontologyTerm = OntologyManager.getOntologyTerm(ontologyUniqueId);
 
            if (ontologyTerm!=null){
               return headerName + "[" +ontologyTermToString(ontologyTerm) +"]";
            }
-       }
+       //}
 
        return null;
    }
@@ -148,13 +182,14 @@ public class OntologyTermUtils {
         String headerName = fullAnnotatedHeader.substring(0,fullAnnotatedHeader.indexOf('['));
         String uniqueId = null;
         if (ontologyTerm != null) {
-            uniqueId = headerName +"["+ ontologyTerm.getUniqueId() + "]";
+            uniqueId = headerName +"["+ ontologyTerm.getShortForm() + "]";
 
-            Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
-            if (history.get(ontologyTerm.getUniqueId())==null) {
+            //Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
+            //if (history.get(ontologyTerm.getShortForm())==null) {
+            if (OntologyManager.getOntologyTerm(ontologyTerm.getShortForm())==null) {
                 Map<String, OntologyTerm> map = new HashMap<String, OntologyTerm>();
                 map.put(uniqueId, ontologyTerm);
-                OntologyManager.addToOntologySelectionHistory(map);
+                OntologyManager.addToOntologyTerms(map);
             }
             return uniqueId;
         }

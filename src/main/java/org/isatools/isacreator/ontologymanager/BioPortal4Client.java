@@ -7,6 +7,8 @@ import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers.BioPortalSearchResultHandler;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -30,6 +32,20 @@ public class BioPortal4Client implements OntologyService {
 
     public Map<String, String> getOntologyNames() {
         return AcceptedOntologies.getOntologySourceToNames();
+    }
+
+    /**
+     * Retrieves an OntologyTerm given the URI of a term and the ontology bioPortal URI
+     * @param termId
+     * @param ontology
+     * @return
+     */
+    public OntologyTerm getTerm(String termId, String ontology) {
+        return handler.getTermMetadata(termId, ontology);
+    }
+
+    public Map<String, List<OntologyTerm>> exactSearch(String term, String ontology) {
+        return handler.getSearchResults(term, ontology, null, true);
     }
 
     public Map<String, String> getTermMetadata(String termId, String ontology) {
@@ -135,6 +151,10 @@ public class BioPortal4Client implements OntologyService {
     }
 
     private String correctTermForHTTPTransport(String term) {
-        return term.replaceAll("[\\s]+", "%20");
+        try {
+            return URLEncoder.encode(term, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return term;
+        }
     }
 }

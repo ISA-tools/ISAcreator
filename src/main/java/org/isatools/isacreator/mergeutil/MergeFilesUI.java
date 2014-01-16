@@ -43,15 +43,16 @@ import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.gui.AbstractDataEntryEnvironment;
-import org.isatools.isacreator.io.importisa.ISAtabImporter;
-import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
-import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.DataEntryEnvironment;
 import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
+import org.isatools.isacreator.io.importisa.ISAtabImporter;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.visualization.ExperimentVisualization;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -59,8 +60,13 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Stack;
 
 
@@ -624,21 +630,24 @@ public class MergeFilesUI extends AbstractDataEntryEnvironment {
 
                     final Investigation inv1 = importISA1.getInvestigation();
 
-                    ISAtabImporter importISA2 = new ISAtabFilesImporterFromGUI(ApplicationManager.getCurrentApplicationInstance());
-                    importISA2.importFile(ISA2 + File.separator);
+                    //Keep the terms used in inv1
+                    Collection<OntologyTerm> terms = new HashSet<OntologyTerm>(OntologyManager.getOntologyTermsValues());
 
-                    if (!importISA2.importFile(ISA2 + File.separator)) {
+                    //clear the terms used
+                    OntologyManager.clearOntologyTerms();
+
+                    ISAtabImporter importISA2 = new ISAtabFilesImporterFromGUI(ApplicationManager.getCurrentApplicationInstance());
+                    boolean successfulImportISA2 = importISA2.importFile(ISA2 + File.separator);
+
+                    if (!successfulImportISA2) {
 //                        status.setText(importISA2.getProblemLog());
                         return;
                     }
 
                     final Investigation inv2 = importISA2.getInvestigation();
 
-                    // add all ontologies used to inv 1
-                    OntologyManager.addToUsedOntologySources(inv1.getInvestigationId(),
-                            OntologyManager.getOntologiesUsed(inv2.getInvestigationId()));
-
-                    OntologyManager.clearUsedOntologies(inv2.getInvestigationId());
+                    // add all terms used by inv2 to those used by inv 1
+                    OntologyManager.addToOntologyTerms(terms);
 
                     // add all publications and contacts...
                     inv1.addToPublications(inv2.getPublications());

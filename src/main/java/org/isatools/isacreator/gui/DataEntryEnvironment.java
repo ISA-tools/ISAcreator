@@ -73,11 +73,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -133,11 +131,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                           String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-        System.out.println("Getting assay for " + measurementEndpoint);
-        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,
-                techType);
-
-        System.out.println("Tro is " + tro);
+        System.out.println("Getting assay for measurement " + measurementEndpoint + " and technology "+techType);
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,techType);
 
         if (tro != null) {
             if ((selectedNode != null) && selectedNode.getAllowsChildren() &&
@@ -268,8 +263,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
             ApplicationManager.assignDataEntryToISASection(newStudy, ui);
 
-            Assay studySampleRec = new Assay("s_" + studyName + ".txt",
-                    tro);
+            Assay studySampleRec = new Assay("s_" + studyName + ".txt", tro);
 
             ApplicationManager.assignDataEntryToISASection(studySampleRec, new AssaySpreadsheet(ui, tro));
 
@@ -589,8 +583,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return investigation;
     }
 
-    public List<OntologySourceRefObject> getOntologySources() {
-        return OntologyManager.getOntologiesUsed();
+    public Collection<OntologySourceRefObject> getOntologySources() {
+        return OntologyManager.getOntologySources();
     }
 
     public ISAcreator getParentFrame() {

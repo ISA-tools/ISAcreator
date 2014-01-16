@@ -67,7 +67,7 @@ public class CreateProfile {
 
         UserProfileManager.getUserProfiles().add(newUser);
         UserProfileManager.setCurrentUser(newUser);
-        OntologyManager.setOntologySelectionHistory(newUser.getUserHistory());
+        OntologyManager.setOntologyTermHistory(newUser.getUserHistory());
         UserProfileManager.saveUserProfiles();
 
         return newUser;

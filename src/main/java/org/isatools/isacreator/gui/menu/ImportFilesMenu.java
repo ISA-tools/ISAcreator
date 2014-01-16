@@ -49,6 +49,7 @@ import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
@@ -56,8 +57,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -166,6 +165,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
 
+
                     } else if (successfulImport) {
 
                         log.error("The following problems were encountered when importing the ISAtab files in " + dir);
@@ -247,6 +247,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 }
             }
         });
+
+
         performer.start();
     }
 

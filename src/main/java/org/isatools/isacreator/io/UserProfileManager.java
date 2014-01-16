@@ -39,7 +39,6 @@ package org.isatools.isacreator.io;
 
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.common.EncryptedObject;
-import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
@@ -58,6 +57,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -247,7 +247,7 @@ public class UserProfileManager {
                 up.setFtpManager(Spreadsheet.fileSelectEditor.getFTPManager());
 
                 // update used ontology sources
-                for (OntologySourceRefObject osro : OntologyManager.getOntologiesUsed()) {
+                for (OntologySourceRefObject osro : OntologyManager.getOntologySources()) {
                     up.addOntologyReference(osro);
                 }
             }
@@ -258,7 +258,10 @@ public class UserProfileManager {
         for (UserProfile up : UserProfileManager.getUserProfiles()) {
 
             if (up.getUsername()!=null && up.getUsername().equals(UserProfileManager.getCurrentUser().getUsername())) {
-                up.setUserHistory(OntologyManager.getOntologySelectionHistory());
+                Set<String> keySet = OntologyManager.getOntologyTermsKeySet();
+                for(String key: keySet){
+                    up.addToUserHistory(key, OntologyManager.getOntologyTerm(key));
+                }
                 updateUserProfileInformation(up);
                 break;
             }

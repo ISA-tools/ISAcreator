@@ -262,7 +262,7 @@ public class SpreadsheetUtils {
                             colIndex).toString();
 
                     if (annotations.containsKey(columnValue)) {
-                        spreadsheet.getTable().setValueAt(annotations.get(columnValue).getUniqueId(), row, colIndex);
+                        spreadsheet.getTable().setValueAt(annotations.get(columnValue).getShortForm(), row, colIndex);
                     }
                 }
             }
