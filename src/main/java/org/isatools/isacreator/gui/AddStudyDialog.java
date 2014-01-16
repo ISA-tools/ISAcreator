@@ -39,6 +39,8 @@ package org.isatools.isacreator.gui;
 
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.jdesktop.fuse.InjectedResource;
@@ -46,11 +48,9 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,12 +60,10 @@ import java.util.regex.Pattern;
 public class AddStudyDialog extends JDialog {
 
     @InjectedResource
-    private ImageIcon addStudyHeader, addStudyButton, addStudyButtonOver,
-            closeButton, closeButtonOver;
+    private ImageIcon addStudyHeader;
 
     private DataEntryEnvironment dataEntryEnvironment;
-    private JLabel add;
-    private JLabel close;
+    private JButton add, close;
     private JLabel status;
     private JTextField name;
     private String type;
@@ -151,47 +149,22 @@ public class AddStudyDialog extends JDialog {
     private JPanel createButtonPanel() {
         JPanel buttonCont = new JPanel(new BorderLayout());
         buttonCont.setBackground(UIHelper.BG_COLOR);
+        buttonCont.setBorder(new EmptyBorder(4,4,4,4));
 
-
-        add = new JLabel(addStudyButton,
-                JLabel.RIGHT);
-        add.addMouseListener(new CommonMouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                super.mousePressed(event);
-                add.setIcon(addStudyButton);
+        add = new FlatButton(ButtonType.GREEN, "Add Study");
+        add.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 addStudy();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                super.mouseEntered(event);
-                add.setIcon(addStudyButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                super.mouseExited(event);
-                add.setIcon(addStudyButton);
             }
         });
 
-        close = new JLabel(closeButton,
-                JLabel.LEFT);
-        close.addMouseListener(new CommonMouseAdapter() {
 
-            public void mousePressed(MouseEvent event) {
-                super.mousePressed(event);
+
+        close = new FlatButton(ButtonType.RED, "Cancel");
+        close.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 status.setText("");
                 hideMe();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                super.mouseEntered(event);
-                close.setIcon(closeButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                super.mouseExited(event);
-                close.setIcon(closeButton);
             }
         });
 

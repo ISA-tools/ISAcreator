@@ -39,12 +39,17 @@ package org.isatools.isacreator.filechooser;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.apache.commons.net.ftp.FTPFile;
-import org.isatools.isacreator.common.Globals;
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.AnimatableJFrame;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
+import org.isatools.isacreator.effects.components.RoundedJPasswordField;
+import org.isatools.isacreator.effects.components.RoundedJTextField;
+import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -141,9 +146,9 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
     private JPanel createTopPanel() {
 
-        final JTextField uri = new JTextField(20);
-        final JTextField username = new JTextField(20);
-        final JPasswordField password = new JPasswordField(20);
+        final JTextField uri = new RoundedJTextField(20);
+        final JTextField username = new RoundedJTextField(20);
+        final JPasswordField password = new RoundedJPasswordField(20);
 
         final JPanel topContainer = new JPanel();
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.PAGE_AXIS));
@@ -254,6 +259,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         JLabel uriLab = UIHelper.createLabel("FTP URI: ", UIHelper.VER_10_BOLD, UIHelper.DARK_GREEN_COLOR);
         UIHelper.renderComponent(uri, UIHelper.VER_10_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
 
+
         uriPanel.add(uriLab);
         uriPanel.add(uri);
 
@@ -289,10 +295,9 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         connectLab.setOpaque(false);
         connectLab.setToolTipText("<html><b>Connect</b><p>Connect to the FTP source defined!</p></html>");
 
-        connectLab.addMouseListener(new MouseAdapter() {
-
-
+        connectLab.addMouseListener(new CommonMouseAdapter() {
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 if (uri.getText() != null && !uri.getText().trim().equals("")) {
                     String user = (username.getText() != null) ? username.getText() : "";
                     String pass = (password.getPassword() != null) ? new String(password.getPassword()) : "";
@@ -315,9 +320,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         JLabel historyLab = new JLabel(viewHistoryIcon);
         historyLab.setOpaque(false);
         historyLab.setToolTipText("<html><b>Search previously connected to FTP locations</b><p>Connect to a previously defined FTP location</p></html>");
-        historyLab.addMouseListener(new MouseAdapter() {
+        historyLab.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 SelectFromFTPHistory selectFTP = new SelectFromFTPHistory();
                 selectFTP.addPropertyChangeListener("locationSelected", new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {
@@ -528,25 +534,15 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
      */
     private JPanel createBottomPanel() {
         JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setBorder(UIHelper.EMPTY_BORDER);
         southPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel ok = new JLabel(Globals.OK_ICON);
-        ok.setHorizontalAlignment(JLabel.RIGHT);
-        ok.setOpaque(false);
-        ok.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton ok = new FlatButton(ButtonType.GREEN, "Select Files");
+        ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("selectedFiles", "", selectedFiles.getSelectedValues());
                 setVisible(false);
                 listModel.removeAllElements();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                ok.setIcon(Globals.OK_OVER_ICON);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                ok.setIcon(Globals.OK_ICON);
             }
         });
 
@@ -633,7 +629,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         treeContainer.setBackground(UIHelper.BG_COLOR);
         treeContainer.setBorder(new TitledBorder(
                 UIHelper.GREEN_ROUNDED_BORDER,
-                "navigation", TitledBorder.DEFAULT_JUSTIFICATION,
+                "", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
                 UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR));
 
@@ -644,9 +640,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
         final JLabel navToParentDir = new JLabel(upIcon);
         navToParentDir.setOpaque(false);
-        navToParentDir.addMouseListener(new MouseAdapter() {
+        navToParentDir.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 navToParentDir.setIcon(upIcon);
                 try {
                     updateTree(fileBrowser.getParentDirectory());
@@ -656,10 +653,12 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 navToParentDir.setIcon(upIconOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 navToParentDir.setIcon(upIcon);
             }
         });
@@ -669,9 +668,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
         final JLabel navToHomeDir = new JLabel(homeIcon);
         navToHomeDir.setOpaque(false);
-        navToHomeDir.addMouseListener(new MouseAdapter() {
+        navToHomeDir.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 navToHomeDir.setIcon(homeIcon);
                 try {
                     updateTree(fileBrowser.getHomeDirectory());
@@ -686,10 +686,12 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 navToHomeDir.setIcon(homeIconOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 navToHomeDir.setIcon(homeIcon);
             }
         });
@@ -710,10 +712,10 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         }
 
 
-        directoryTree.addMouseListener(new MouseAdapter() {
-
+        directoryTree.addMouseListener(new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 int selRow = directoryTree.getRowForLocation(event.getX(),
                         event.getY());
 
@@ -873,6 +875,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
 
 
     public static void main(String[] args) {
+        ISAcreatorGUIProperties.setProperties();
         FileChooserUI fc = new FileChooserUI();
         fc.setVisible(true);
     }
@@ -940,8 +943,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
     }
 
     public void windowDeactivated(WindowEvent event) {
-        System.out.println("Window deactivated");
-        firePropertyChange("noSelectedFiles", "", selectedFiles);
         listModel.removeAllElements();
         setVisible(false);
     }
@@ -958,7 +959,6 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             JPanel container = new JPanel();
             container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
             container.setBackground(UIHelper.BG_COLOR);
-
 
             JPanel headerPanel = new JPanel(new GridLayout(1, 1));
             headerPanel.setBackground(UIHelper.BG_COLOR);
@@ -1005,52 +1005,28 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             // create button panel
 
             JPanel buttonPanel = new JPanel(new BorderLayout());
+            buttonPanel.setBorder(UIHelper.EMPTY_BORDER);
             buttonPanel.setBackground(UIHelper.BG_COLOR);
 
-            final JLabel close = new JLabel(Globals.CLOSE_ICON);
-            close.setOpaque(false);
-            close.setHorizontalAlignment(JLabel.LEFT);
-
-            close.addMouseListener(new MouseAdapter() {
-
-                public void mousePressed(MouseEvent event) {
+            JButton close = new FlatButton(ButtonType.RED, "Cancel");
+            close.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
                     closeAndDisposeWindow();
-                }
-
-                public void mouseEntered(MouseEvent event) {
-                    close.setIcon(Globals.CLOSE_OVER_ICON);
-                }
-
-                public void mouseExited(MouseEvent event) {
-                    close.setIcon(Globals.CLOSE_ICON);
                 }
             });
 
             buttonPanel.add(close, BorderLayout.WEST);
 
-            final JLabel ok = new JLabel(Globals.OK_ICON);
-            ok.setHorizontalAlignment(JLabel.RIGHT);
-            ok.setOpaque(false);
-            ok.addMouseListener(new MouseAdapter() {
-
-                public void mousePressed(MouseEvent event) {
+            JButton ok = new FlatButton(ButtonType.GREEN, "Ok");
+            ok.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
                     firePropertyChange("locationSelected", "", locationList.getSelectedValue());
                     closeAndDisposeWindow();
-                }
-
-                public void mouseEntered(MouseEvent event) {
-                    ok.setIcon(Globals.OK_OVER_ICON);
-                }
-
-                public void mouseExited(MouseEvent event) {
-                    ok.setIcon(Globals.OK_ICON);
                 }
             });
 
             buttonPanel.add(ok, BorderLayout.EAST);
-
             container.add(buttonPanel);
-
             add(container);
 
             pack();

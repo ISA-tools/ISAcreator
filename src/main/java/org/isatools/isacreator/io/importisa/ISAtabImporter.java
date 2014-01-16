@@ -66,16 +66,18 @@ public abstract class ISAtabImporter {
      * @return list of ISAFileErrorReports
      */
     public List<ISAFileErrorReport> getMessages() {
+
         return errors;
+
     }
 
     public String getMessagesAsString() {
         StringBuilder builder = new StringBuilder();
         for (ISAFileErrorReport errorReport : errors) {
-            builder.append("Error filename: " + errorReport.getFileName());
+            builder.append("Error filename: ").append(errorReport.getFileName());
             builder.append("\n Error messages: ");
             for (ErrorMessage error : errorReport.getMessages()) {
-                builder.append("\n" + error.getMessage());
+                builder.append("\n").append(error.getMessage());
             }
         }
         return builder.toString();
@@ -114,11 +116,13 @@ public abstract class ISAtabImporter {
 
             File[] isaDirectorFiles = investigationFile.listFiles();
 
-            for (File isaFile : isaDirectorFiles) {
-                if (isaFile.getName().toLowerCase().startsWith("i_")) {
-                    investigationFileFound = true;
-                    investigationFile = isaFile;
-                    break;
+            if (isaDirectorFiles != null) {
+                for (File isaFile : isaDirectorFiles) {
+                    if (isaFile.getName().toLowerCase().startsWith("i_")) {
+                        investigationFileFound = true;
+                        investigationFile = isaFile;
+                        break;
+                    }
                 }
             }
 
@@ -136,6 +140,7 @@ public abstract class ISAtabImporter {
 
                 InvestigationImport investigationFileImporter = new InvestigationImport();
                 Pair<Boolean, OrderedMap<String, OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>>>> investigationFileImport = investigationFileImporter.importInvestigationFile(investigationFile);
+
 
                 messages.addAll(investigationFileImporter.getMessages());
 
@@ -191,10 +196,6 @@ public abstract class ISAtabImporter {
                             ISAFileErrorReport investigationErrorReport = new ISAFileErrorReport(investigationFile.getName(), FileType.INVESTIGATION, messages);
                             errors.add(investigationErrorReport);
                         }
-                    } else {
-                        //if (isacreator!=null){
-                        //    investigation.setLastConfigurationUsed(isacreator.getLoadedConfiguration());
-                        //}
                     }
 
                 } else {
@@ -205,6 +206,11 @@ public abstract class ISAtabImporter {
 
                     return false;
                 }
+
+                System.out.println("********************\n"+OntologyManager.getURIMappingInfo());
+                messages.add(new ErrorMessage(ErrorLevel.INFO, OntologyManager.getURIMappingInfoHTML()));
+
+
             } catch (IOException e) {
 
                 messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
@@ -248,13 +254,14 @@ public abstract class ISAtabImporter {
 
                     if (builtReference != null) {
                         study.setStudySamples(new Assay(study.getStudySampleFileIdentifier(), builtReference));
-                        OntologyManager.addToOntologySelectionHistory(builtReference.getReferencedOntologyTerms());
+                        OntologyManager.addToOntologyTerms(builtReference.getReferencedOntologyTerms());
                     }
                 } catch (MalformedInvestigationException mie) {
+                    mie.printStackTrace();
                     messages.add(new ErrorMessage(ErrorLevel.ERROR, mie.getMessage()));
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                     messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
 
                 } finally {
@@ -286,7 +293,7 @@ public abstract class ISAtabImporter {
                                 assay.getAssayReference(), assayTableReferenceObject);
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
-                            OntologyManager.getOntologySelectionHistory().putAll(builtReference.getReferencedOntologyTerms());
+                            OntologyManager.addToOntologyTerms(builtReference.getReferencedOntologyTerms());
                         }
                     } catch (IOException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
@@ -354,7 +361,7 @@ public abstract class ISAtabImporter {
     private void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
         for (OntologyTerm oo : ontologiesUsed) {
             if (!oo.getOntologyTermName().trim().equals("")) {
-                OntologyManager.addToUserHistory(oo);
+                OntologyManager.addToOntologyTerms(oo);
             }
         }
     }

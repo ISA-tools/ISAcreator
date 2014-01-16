@@ -43,17 +43,20 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,16 +73,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     private static Logger log = Logger.getLogger(ImportFilesMenu.class);
 
     @InjectedResource
-    private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
-            loadButton, loadButtonOver, backButton, backButtonOver, filterLeft, filterRight;
+    private ImageIcon panelHeader, listImage, backButton, backButtonOver, filterLeft, filterRight;
 
-    private JLabel back;
+    private JButton back;
     private Container loadingImagePanel;
 
 
     public ImportFilesMenu(ISAcreatorMenu menu) {
         super(menu, false);
-        setPreferredSize(new Dimension(400, 400));
     }
 
     public JPanel createAlternativeExitDisplay() {
@@ -87,27 +88,15 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         JPanel previousButtonPanel = new JPanel(new GridLayout(1, 1));
         previousButtonPanel.setOpaque(false);
 
-        back = new JLabel(backButton, JLabel.LEFT);
-        back.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-
+        back = new FlatButton(ButtonType.GREY, "Back", UIHelper.DARK_GREEN_COLOR);
+        back.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (problemScroll != null)
                     problemScroll.setVisible(false);
 
                 ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(menu.getMainMenuGUI());
             }
-
-            public void mouseEntered(MouseEvent event) {
-                back.setIcon(backButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                back.setIcon(backButton);
-            }
         });
-
-        back.setOpaque(false);
 
         previousButtonPanel.add(back);
 
@@ -154,24 +143,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         return loadingImagePanel;
     }
 
-
-    public ImageIcon getSearchButton() {
-        return searchButton;
-    }
-
-    public ImageIcon getSearchButtonOver() {
-        return searchButtonOver;
-    }
-
-    public ImageIcon getLoadButton() {
-        return loadButton;
-    }
-
-    public ImageIcon getLoadButtonOver() {
-        return loadButtonOver;
-    }
-
-
     public void loadFile(final String dir) {
 
 
@@ -190,7 +161,10 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         ApplicationManager.getCurrentApplicationInstance().setCurrentPage(ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment());
                         menu.resetViewAfterProgress();
 
+                        ApplicationManager.setModified(false);
+
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
+
 
                     } else if (successfulImport) {
 
@@ -273,6 +247,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 }
             }
         });
+
+
         performer.start();
     }
 

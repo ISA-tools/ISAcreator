@@ -109,6 +109,7 @@ public class AssaySubForm extends SubForm implements Serializable {
                     assayName += ".txt";
                 }
 
+                assayName = assayName.replaceAll("\\s+","_");
                 tmpAssay.setAssayReference(assayName);
 
                 if (dataEntryForm.getDataEntryEnvironment()
@@ -132,7 +133,7 @@ public class AssaySubForm extends SubForm implements Serializable {
                 JOptionPane optionPane = new JOptionPane(
                         "Problem occurred when attempting to add an Assay... " +
                                 "\n All fields for the assay definition are not complete!",
-                        JOptionPane.OK_OPTION);
+                        JOptionPane.ERROR_MESSAGE);
                 UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
                 optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {

@@ -60,6 +60,7 @@ import java.util.Map;
 public class ApplicationManager {
 
 
+    private static boolean isaCreatorRunning = false;
     private static ISAcreator currentApplicationInstance;
     private static Map<ISASection, DataEntryForm> isaSectionToDataEntryForm = new HashMap<ISASection, DataEntryForm>();
     private static Object screenInView;
@@ -70,19 +71,29 @@ public class ApplicationManager {
     private static String currentLocalISAtabFolder;
     private static String currentRemoteISAtabFolder;
 
+    private static boolean isModified = false;
+
+    public static void setIsaCreatorRunning(boolean b){
+        isaCreatorRunning = b;
+    }
+
+    public static boolean getIsaCreatorRunning(){
+        return isaCreatorRunning;
+    }
+
     public static String getCurrentLocalISAtabFolder(){
         return currentLocalISAtabFolder;
     }
 
-    public static void setCurrentLocalISATABFolder(String folder){
+    public static void setCurrentLocalISATABFolder(String folder) {
         currentLocalISAtabFolder = folder;
     }
 
-    public static String getCurrentRemoteISAtabFolder(){
+    public static String getCurrentRemoteISAtabFolder() {
         return currentRemoteISAtabFolder;
     }
 
-    public static void setCurrentRemoteISATABFolder(String folder){
+    public static void setCurrentRemoteISATABFolder(String folder) {
         currentRemoteISAtabFolder = folder;
     }
 
@@ -158,13 +169,21 @@ public class ApplicationManager {
 
     }
 
+    public static void setModified(boolean modified) {
+        isModified = modified;
+    }
+
+    public static boolean isModified() {
+        return isModified;
+    }
+
     public static void resetForNextSession() {
         isaSectionToDataEntryForm.clear();
         screenInView = null;
     }
 
     public static void setScreenInView(Object objectInView) {
-       screenInView = objectInView;
+        screenInView = objectInView;
     }
 
     public static Object getScreenInView() {

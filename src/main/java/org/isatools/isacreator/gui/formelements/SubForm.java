@@ -47,12 +47,15 @@ import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.factorlevelentry.FactorLevelEntryCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.gui.*;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.longtexteditor.TextCellEditor;
 import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -137,6 +140,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         this(title, fieldType, fields, dataEntryEnvironment, true);
     }
 
+
     public SubForm(String title, FieldTypes fieldType, List<SubFormField> fields, DataEntryEnvironment dataEntryEnvironment, boolean createBorder) {
         this.title = title;
         this.fieldType = fieldType;
@@ -167,7 +171,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         if (dataEntryForm instanceof DataEntryEnvironment) {
             this.dataEntryEnvironment = (DataEntryEnvironment) dataEntryForm;
-        } else if (dataEntryForm instanceof DataEntryForm) {
+        } else if (dataEntryForm != null) {
             this.dataEntryEnvironment = dataEntryForm.getDataEntryEnvironment();
         } else {
             dataEntryEnvironment = null;
@@ -175,6 +179,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     public void createGUI() {
+        ResourceInjector.get("gui-package.style").inject(true, new Object[]{this});
         initialisePanel();
         setupTableModel(initialNoFields);
 
@@ -182,6 +187,14 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         add(getFrozenTable(defaultTableModel, width, height), BorderLayout.CENTER);
         reformPreviousContent();
+    }
+
+    public FieldTypes getFieldType() {
+        return fieldType;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     private void generateAliases() {
@@ -197,8 +210,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
             if (fieldName.toLowerCase().startsWith("comment")) {
                 String alias = StringProcessing.extractQualifierFromField(fieldName) + " [c]";
-
-                System.out.println("Alias for " + fieldName + " is " + alias);
                 aliasesToRealNames.put(alias, fieldName);
                 realNamesToAliases.put(fieldName, alias);
             }
@@ -208,8 +219,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     protected void initialisePanel() {
         this.setLayout(new BorderLayout());
         this.setBackground(UIHelper.BG_COLOR);
-
-        ResourceInjector.get("gui-package.style").inject(true, this);
 
         if (createBorder) {
             setBorder(new TitledBorder(
@@ -442,6 +451,12 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             public boolean isCellEditable(int row, int col) {
                 return (col != 0) && !uneditableRecords.contains(col);
             }
+
+            @Override
+            public void setValueAt(Object o, int i, int i2) {
+                super.setValueAt(o, i, i2);
+                ApplicationManager.setModified(true);
+            }
         };
     }
 
@@ -598,7 +613,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         for (OntologyTerm oo : userHistory.values()) {
 
-            if (oo.getUniqueId().equals(uniqueId)) {
+            if (oo.getShortForm().equals(uniqueId)) {
                 return oo;
             }
         }
@@ -625,7 +640,6 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     public abstract boolean doAddColumn(DefaultTableModel model, TableColumn col);
-
 
 
     public abstract void reformPreviousContent();
@@ -752,27 +766,28 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     }
 
     protected void checkForSourcePresence(String source) {
-        List<OntologySourceRefObject> definedSources = dataEntryForm.getDataEntryEnvironment()
-                .getOntologySources();
-        boolean isPresent = false;
+        if (dataEntryForm != null && dataEntryForm.getDataEntryEnvironment() != null) {
+            Collection<OntologySourceRefObject> definedSources = dataEntryForm.getDataEntryEnvironment()
+                    .getOntologySources();
+            boolean isPresent = false;
 
-        for (OntologySourceRefObject osro : definedSources) {
-            if (osro.getSourceName().equals(source)) {
-                isPresent = true;
-            }
-        }
-
-        // if it doesn't exist, then add the ontology information to the defined sources
-        if (!isPresent) {
-
-            OntologySourceRefObject osro = UserProfileManager.getCurrentUser()
-                    .getOntologySource(source);
-
-            if (osro == null) {
-                osro = new OntologySourceRefObject(source, "", OntologyManager.getOntologyVersion(source), OntologyManager.getOntologyDescription(source));
+            for (OntologySourceRefObject osro : definedSources) {
+                if (osro.getSourceName().equals(source)) {
+                    isPresent = true;
+                }
             }
 
-            dataEntryForm.getDataEntryEnvironment().getOntologySources().add(osro);
+            // if it doesn't exist, then add the ontology information to the defined sources
+            if (!isPresent) {
+
+                OntologySourceRefObject osro = UserProfileManager.getCurrentUser().getOntologySource(source);
+
+                if (osro == null) {
+                    osro = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
+                }
+
+                dataEntryForm.getDataEntryEnvironment().getOntologySources().add(osro);
+            }
         }
     }
 
@@ -788,6 +803,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
         int index = 0;
         for (SubFormField field : fields) {
+
             Object value = defaultTableModel.getValueAt(index, recordNumber);
 
             String fieldName = field.getFieldName();
@@ -985,5 +1001,10 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
         setDataEntryForm(null);
         removeAll();
     }
+
+    public List<SubFormField> getSubFormFields() {
+        return fields;
+    }
+
 
 }

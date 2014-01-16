@@ -49,6 +49,8 @@ import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.StringValidation;
 import org.isatools.isacreator.spreadsheet.ValidationObject;
 
@@ -293,6 +295,13 @@ public class TableReferenceObject implements Serializable {
         fieldIndexLookup.put(fo.getColNo(), fo);
     }
 
+    /**
+     *
+     * Adds the row data.
+     *
+     * @param headers free text or full annotated headers (e.g. Characteristics[<label>, <URI or term accession>, <ontology abbreviation>)
+     * @param rowData
+     */
     public void addRowData(String[] headers, String[] rowData) {
         if (referenceData == null) {
             referenceData = new ReferenceData();
@@ -310,23 +319,16 @@ public class TableReferenceObject implements Serializable {
             }
 
             //processing header annotation
-            if (headers[i].contains(":")){
+            if (headers[i].contains(":")) {
 
                 String header = headers[i];
 
-                String prevVal = header.substring(header.indexOf('[')+1, header.indexOf("]"));
+                OntologyTerm ontologyTerm = OntologyTermUtils.stringToOntologyTerm(header);
 
-                String[] parts = prevVal.split("-");
+                String prevVal = ontologyTerm.getShortForm(); //the uniqueID is source + ":" + term
 
-                String source = parts[0];
-                String term = parts[1];
-                String accession = parts[2];
-
-                prevVal = source + ":" + term;
-
-                if (!referencedOntologyTerms.containsKey(prevVal)) {
-                       referencedOntologyTerms.put(prevVal,
-                                new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                if (!prevVal.equals("") && !referencedOntologyTerms.containsKey(prevVal)) {
+                    referencedOntologyTerms.put(prevVal, ontologyTerm);
                 }
 
             }
@@ -349,10 +351,18 @@ public class TableReferenceObject implements Serializable {
                             String term = parts[1];
                             String accession = s.trim();
 
+                            OntologyTerm ot = null;
                             if (!referencedOntologyTerms.containsKey(prevVal)) {
-                                referencedOntologyTerms.put(prevVal,
-                                        new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                                ot = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                                referencedOntologyTerms.put(prevVal, ot);
+
+                            } else {
+                                ot = referencedOntologyTerms.get(prevVal);
+
                             }
+                            if (!(ISAcreatorProperties.getOntologyTermURIProperty() && ot.getOntologyTermURI()!=null && !ot.getOntologyTermURI().equals("")))
+                                rowDataModified.set(prevValLoc, term);
+
                         }
                     }
                 }
@@ -486,7 +496,6 @@ public class TableReferenceObject implements Serializable {
 
     public void setFieldListItems(String colName, String[] listItems) {
         FieldObject fo = fieldLookup.get(colName);
-
         if (fo != null) {
             fo.setFieldList(listItems);
         }
@@ -515,21 +524,23 @@ public class TableReferenceObject implements Serializable {
         // go through fields, find the one in the parameter, and then try and find the next unit for that field.
         FieldObject field = fieldLookup.get(colName);
 
-        int proposedColNumber = field.getColNo() + 1;
+        if (field != null) {
+            int proposedColNumber = field.getColNo() + 1;
 
-        if (tableConfig == null) {
-            // for those tables built from their layout rather than directly from the tablerefenceobject
-            if (fieldIndexLookup.containsKey(proposedColNumber)) {
-                if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
-                    return fieldIndexLookup.get(proposedColNumber);
+            if (tableConfig == null) {
+                // for those tables built from their layout rather than directly from the tablerefenceobject
+                if (fieldIndexLookup.containsKey(proposedColNumber)) {
+                    if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
+                        return fieldIndexLookup.get(proposedColNumber);
+                    }
                 }
-            }
-        } else {
-            if (tableConfig.getFields().size() > proposedColNumber) {
-                FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
+            } else {
+                if (tableConfig.getFields().size() > proposedColNumber) {
+                    FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
 
-                if (candidateUnitField.getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
-                    return candidateUnitField;
+                    if (candidateUnitField.getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
+                        return candidateUnitField;
+                    }
                 }
             }
         }

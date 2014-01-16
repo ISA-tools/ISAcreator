@@ -43,8 +43,8 @@ import org.isatools.isacreator.common.CustomSpreadsheetCellRenderer;
 import org.isatools.isacreator.common.CustomTableHeaderRenderer;
 import org.isatools.isacreator.common.ExcelAdaptor;
 import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.configuration.Ontology;
-import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.spreadsheet.SpreadsheetCellPoint;
 import org.isatools.isacreator.spreadsheet.SpreadsheetModel;
@@ -64,7 +64,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Vector;
@@ -85,13 +84,6 @@ public class FactorLevelEntryGUI extends JFrame {
 
     private JLabel status;
     private ExcelAdaptor ea;
-
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("factorlevelentry-package.style").load(
-                FactorLevelEntryGUI.class.getResource("/dependency-injections/factorlevelentry-package.properties"));
-    }
 
     @InjectedResource
     private ImageIcon headerImage, addRowIcon, addRowOverIcon, removeRowIcon, removeRowOverIcon;
@@ -457,15 +449,12 @@ public class FactorLevelEntryGUI extends JFrame {
     }
 
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setBorder(UIHelper.EMPTY_BORDER);
 
-        final JLabel ok = new JLabel(UIHelper.OK_BUTTON, JLabel.RIGHT);
-        ok.setOpaque(false);
-        ok.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
-
-            public void mousePressed(MouseEvent event) {
+        JButton ok = new FlatButton(ButtonType.GREEN, "Confirm");
+        ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (checkLevelsAndUnits()) {
                     firePropertyChange("changedFactorLevels", "OLD_VALUE", new LevelsAndUnits(getLevels(), getUnits()));
                     rows.clear();
@@ -476,41 +465,15 @@ public class FactorLevelEntryGUI extends JFrame {
                     status.setVisible(true);
                 }
             }
-
-            public void mouseReleased(MouseEvent event) {
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                ok.setIcon(UIHelper.OK_BUTTON_OVER);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                ok.setIcon(UIHelper.OK_BUTTON);
-            }
         });
 
-        final JLabel cancel = new JLabel(UIHelper.CLOSE_BUTTON, JLabel.LEFT);
-        cancel.setOpaque(false);
-        cancel.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent event) {
-            }
-
-            public void mousePressed(MouseEvent event) {
+        JButton cancel = new FlatButton(ButtonType.RED, "Cancel");
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("noChange", "canceled", "");
                 status.setVisible(false);
                 rows.clear();
                 setVisible(false);
-            }
-
-            public void mouseReleased(MouseEvent event) {
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                cancel.setIcon(UIHelper.CLOSE_BUTTON_OVER);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                cancel.setIcon(UIHelper.CLOSE_BUTTON);
             }
         });
 

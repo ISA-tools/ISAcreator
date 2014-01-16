@@ -41,8 +41,9 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
 import org.isatools.isacreator.common.ClearFieldUtility;
-import org.isatools.isacreator.common.Globals;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.gui.formelements.FieldTypes;
@@ -311,25 +312,16 @@ public class HistoricalSelectionGUI extends JFrame implements MouseListener, Win
 
         // need button panel to allow for selection of terms, or to cancel/close
         JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setBorder(UIHelper.EMPTY_BORDER);
         buttonPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel okButton = new JLabel(Globals.OK_ICON,
-                JLabel.RIGHT);
-        okButton.setOpaque(false);
-        okButton.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton okButton = new FlatButton(ButtonType.GREEN, "Select");
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("selectedTerms", "", "values selected");
             }
-
-            public void mouseEntered(MouseEvent event) {
-                okButton.setIcon(Globals.OK_OVER_ICON);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                okButton.setIcon(Globals.OK_ICON);
-            }
         });
+
         buttonPanel.add(okButton, BorderLayout.EAST);
 
         southPanel.add(buttonPanel);

@@ -38,18 +38,22 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
+import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
+import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
+import org.isatools.isacreator.io.IOUtils;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.plugins.registries.SpreadsheetPluginRegistry;
 import org.isatools.isacreator.protocolselector.ProtocolSelectorCellEditor;
 import org.isatools.isacreator.sampleselection.SampleSelectorCellEditor;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -232,20 +236,29 @@ public class SpreadsheetFunctions {
 
         Set<TableColumn> emptyColumns = new HashSet<TableColumn>();
 
-        Map<String, OntologyTerm> history = OntologyManager.getOntologySelectionHistory();
-
         for (int col = 1; col < spreadsheet.getTable().getColumnCount(); col++) {
             TableColumn tc = spreadsheet.getTable().getColumnModel().getColumn(col);
             // only hide columns which are empty and that are not necessarily required!
             if (removeEmptyColumns && checkIsEmpty(tc) && !spreadsheet.getTableReferenceObject().isRequired(tc.getHeaderValue().toString())) {
                 emptyColumns.add(tc);
             } else {
-                if (col == 1) {
-                    ps.print("\"" + tc.getHeaderValue() + "\"");
-                } else {
-                    ps.print(separator + "\"" + tc.getHeaderValue() + "\"");
-                }
 
+                String toPrint = null;
+
+                String header = tc.getHeaderValue().toString();
+
+                OntologyTerm oo = OntologyManager.getOntologyTerm(IOUtils.getHeaderValue(header));
+
+                if (oo!=null)
+                    toPrint = "\"" + IOUtils.getHeaderName(header) + "["+ OntologyTermUtils.ontologyTermToString(oo) +"]"+ "\"";
+                else
+                    toPrint = "\"" + header + "\"";
+
+                if (col == 1) {
+                    ps.print(toPrint);
+                } else {
+                    ps.print( separator + toPrint);
+                }
                 if (tc.getCellEditor() instanceof OntologyCellEditor ||
                         tc.getHeaderValue().toString().equalsIgnoreCase("unit")) {
                     ps.print(separator + "\"Term Source REF\"");
@@ -282,11 +295,14 @@ public class SpreadsheetFunctions {
                             String termAccession = "";
 
                             if (!GeneralUtils.isValueURL(val)) {
-                                OntologyTerm oo = history.get(val);
+
+                                OntologyTerm oo = OntologyManager.getOntologyTerm(val);
 
                                 if (oo != null) {
-                                    termAccession = oo.getOntologyTermAccession();
-
+                                    if (ISAcreatorProperties.getProperty("ontologyTermURI").equals("true"))
+                                        termAccession = oo.getOntologyTermURI();
+                                    else
+                                        termAccession = oo.getOntologyTermAccession();
                                 }
 
                                 if (val.contains(":")) {
@@ -998,7 +1014,19 @@ public class SpreadsheetFunctions {
         }
 
         if (spreadsheet.getTableReferenceObject().getClassType(columnName) == DataTypes.LIST) {
-            col.setCellEditor(new FilterableListCellEditor(spreadsheet.getTableReferenceObject().getListItems(columnName)));
+            if (columnName.equalsIgnoreCase("unit")) {
+                FieldObject unitField = spreadsheet.getTableReferenceObject().getNextUnitField(previousColumnName);
+                if (unitField != null) {
+                    System.out.println(Arrays.toString(unitField.getFieldList()));
+
+                    col.setCellEditor(new AutoFilterComboCellEditor(new AutoFilterCombo(
+                            unitField.getFieldList(), false)));
+                }
+            } else {
+                col.setCellEditor(new AutoFilterComboCellEditor(new AutoFilterCombo(
+                        spreadsheet.getTableReferenceObject().getListItems(columnName), false)));
+
+            }
             return;
         }
 
@@ -1257,11 +1285,11 @@ public class SpreadsheetFunctions {
         Set<String> values = new ListOrderedSet<String>();
         for (int columnIndex = 0; columnIndex < spreadsheet.getColumnCount(); columnIndex++) {
             String colName = spreadsheet.spreadsheetModel.getColumnName(columnIndex);
-            
-            if(colName.equals(columnName)) {
+
+            if (colName.equals(columnName)) {
 
                 // add all values for this column.
-                for(int row : selectedRows) {
+                for (int row : selectedRows) {
                     values.add(spreadsheet.spreadsheetModel.getValueAt(row, columnIndex).toString());
                 }
                 break;

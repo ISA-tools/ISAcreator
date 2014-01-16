@@ -38,6 +38,8 @@
 package org.isatools.isacreator.calendar;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -60,15 +62,6 @@ public class CalendarGUI extends JFrame implements ActionListener {
     static final int WIDTH = 200;
     static final int HEIGHT = 230;
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-        ResourceInjector.get("calendar-package.style").load(
-                CalendarGUI.class.getResource("/dependency-injections/calendar-package.properties"));
-    }
-
-    @InjectedResource
-    private ImageIcon closeIcon, closeIconOver, okIcon, okIconOver;
-
     private static Calendar calendar;
     private JComboBox months;
     private JComboBox years;
@@ -81,10 +74,6 @@ public class CalendarGUI extends JFrame implements ActionListener {
     private int selectedMonth;
     private int selectedYear;
 
-
-    public CalendarGUI() {
-        ResourceInjector.get("calendar-package.style").inject(this);
-    }
 
     /**
      * CreateGUI method is called by any class wishing to properly instantiate the calendar. Until
@@ -139,42 +128,23 @@ public class CalendarGUI extends JFrame implements ActionListener {
         JPanel buttonsCont = new JPanel(new BorderLayout());
         buttonsCont.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel confirm = new JLabel(okIcon, JLabel.RIGHT);
-        confirm.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton confirm = new FlatButton(ButtonType.GREEN, "Confirm");
+        confirm.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("selectedDate", "OLD_VALUE", getSelectedDay());
                 setVisible(false);
             }
-
-            public void mouseEntered(MouseEvent event) {
-                confirm.setIcon(okIconOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                confirm.setIcon(okIcon);
-            }
         });
 
-        final JLabel discard = new JLabel(closeIcon, JLabel.LEFT);
-        discard.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton cancel = new FlatButton(ButtonType.RED, "Cancel");
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("noneSelected", "", getSelectedDay());
                 setVisible(false);
             }
-
-            public void mouseEntered(MouseEvent event) {
-                discard.setIcon(closeIconOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                discard.setIcon(closeIcon);
-            }
         });
 
-
-        buttonsCont.add(discard, BorderLayout.WEST);
+        buttonsCont.add(cancel, BorderLayout.WEST);
         buttonsCont.add(confirm, BorderLayout.EAST);
 
         add(buttonsCont, BorderLayout.SOUTH);

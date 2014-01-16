@@ -62,6 +62,7 @@ public class DropDownComponent extends JComponent implements ActionListener,
     public static final int CALENDAR = 0;
     public static final int ONTOLOGY = 1;
     public static final int TABLE_BROWSER = 2;
+    public static final int FILE = 3;
 
     @InjectedResource
     private ImageIcon calendarIcon, calendarIconOver, ontologyIcon, ontologyIconOver, tableBrowserIcon, tableBrowserIconOver;
@@ -102,22 +103,22 @@ public class DropDownComponent extends JComponent implements ActionListener,
 
 
     private void createIcon(final Window container, final int type) {
-        icon = new JLabel(type == CALENDAR ? calendarIcon : type == ONTOLOGY ? ontologyIcon : tableBrowserIcon);
+        icon = new JLabel(type == CALENDAR ? calendarIcon : tableBrowserIcon);
 
         icon.setToolTipText(type == CALENDAR ? "<html>select <b>date</b> from a calendar utility</html>" :
-                type == ONTOLOGY ? "<html>select <b>ontology</b> from the ontology lookup utility</html>" :
+                (type == ONTOLOGY) ? "<html>select <b>ontology</b> from the ontology lookup utility</html>" : (type == FILE) ? "<html>select <b>file</b> using the file selection utility</html>" :
                         "<html>select <b>column</b> from the incoming file browsing utility</html>");
 
         icon.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-                icon.setIcon(type == CALENDAR ? calendarIcon : type == ONTOLOGY ? ontologyIcon : tableBrowserIcon);
+                icon.setIcon(type == CALENDAR ? calendarIcon : tableBrowserIcon);
 
                 if (container instanceof OntologySelector) {
                     OntologySelector ost = (OntologySelector) container;
 
-                    if (visibleComponent instanceof  JTextField)
-                        ost.setSearchFieldText(((JTextField)visibleComponent).getText());
+                    if (visibleComponent instanceof JTextField)
+                        ost.setSearchFieldText(((JTextField) visibleComponent).getText());
 
                     ost.updatehistory();
 
@@ -128,11 +129,13 @@ public class DropDownComponent extends JComponent implements ActionListener,
             }
 
             public void mouseEntered(MouseEvent event) {
-                icon.setIcon(type == CALENDAR ? calendarIconOver : type == ONTOLOGY ? ontologyIconOver : tableBrowserIconOver);
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                icon.setIcon(type == CALENDAR ? calendarIconOver : tableBrowserIconOver);
             }
 
             public void mouseExited(MouseEvent event) {
-                icon.setIcon(type == CALENDAR ? calendarIcon : type == ONTOLOGY ? ontologyIcon : tableBrowserIcon);
+                setCursor(Cursor.getDefaultCursor());
+                icon.setIcon(type == CALENDAR ? calendarIcon : tableBrowserIcon);
             }
         });
     }
@@ -182,18 +185,6 @@ public class DropDownComponent extends JComponent implements ActionListener,
     public void enableElements() {
         visibleComponent.setEnabled(true);
         icon.setEnabled(true);
-    }
-
-    protected Frame getFrame(Component comp) {
-        if (comp == null) {
-            comp = this;
-        }
-
-        if (comp.getParent() instanceof Frame) {
-            return (Frame) comp.getParent();
-        }
-
-        return getFrame(comp.getParent());
     }
 
     /**

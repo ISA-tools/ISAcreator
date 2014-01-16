@@ -139,6 +139,7 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
     }
 
     public void hideSheet() {
+
         if (sheetInView) {
             glass.removeMouseListener(this);
             glass.setOpaque(false);
@@ -192,7 +193,7 @@ public class AnimatableJFrame extends JFrame implements ActionListener, MouseLis
      */
     public void showJDialogAsSheet(JDialog dialog) {
         sheet = (JComponent) dialog.getContentPane();
-        sheet.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 2));
+        sheet.setBorder(new LineBorder(UIHelper.LIGHT_GREEN_COLOR, 1));
         setupAnimation();
     }
 

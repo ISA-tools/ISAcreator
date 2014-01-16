@@ -6,6 +6,8 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.gs.GSDataManager;
 import org.isatools.isacreator.gs.GSIdentityManager;
 import org.isatools.isacreator.gui.ISAcreator;
@@ -20,6 +22,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -40,12 +44,12 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     private static Logger log = Logger.getLogger(GSImportFilesMenu.class);
 
     @InjectedResource
-    private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
-            backButton, backButtonOver, loadButton, loadButtonOver, filterLeft, filterRight, searchButtonGS, searchButtonGSOver,gslistImage;
+    private ImageIcon panelHeader, listImage,
+            backButton, backButtonOver, filterLeft, filterRight, gslistImage;
 
     private JLabel back;
     private Container loadingImagePanel;
-    private JLabel chooseFromGS;
+    private JButton chooseFromGS;
 
     GSFileChooser gsFileChooser = null;
     GSDataManager gsDataManager = null;
@@ -247,34 +251,6 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     }
 
     @Override
-    public ImageIcon getSearchButton() {
-        return searchButton;
-    }
-
-    @Override
-    public ImageIcon getSearchButtonOver() {
-        return searchButtonOver;
-    }
-
-    public ImageIcon getSearchButtonGS() {
-        return searchButtonGS;
-    }
-
-    public ImageIcon getSearchButtonGSOver() {
-        return searchButtonGSOver;
-    }
-
-    @Override
-    public ImageIcon getLoadButton() {
-        return loadButton;
-    }
-
-    @Override
-    public ImageIcon getLoadButtonOver() {
-        return loadButtonOver;
-    }
-
-    @Override
     public ImageIcon getLeftFilterImage() {
         return filterLeft;
     }
@@ -291,17 +267,10 @@ public class GSImportFilesMenu extends ImportFilesMenu {
         Box selectionPanel = Box.createHorizontalBox();
         selectionPanel.setOpaque(false);
 
-        chooseFromElsewhere = new JLabel(getSearchButton(),
-                JLabel.LEFT);
-        chooseFromElsewhere.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-
-                // precautionary measure to stop double execution of action...
-
+        chooseFromElsewhere = new FlatButton(ButtonType.GREEN, "Open Another...");
+        chooseFromElsewhere.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (timeButtonLastClicked != System.currentTimeMillis()) {
-
-                    chooseFromElsewhere.setIcon(getSearchButton());
 
                     if (jfc.showOpenDialog(ApplicationManager.getCurrentApplicationInstance()) == JFileChooser.APPROVE_OPTION) {
                         String directory = jfc.getSelectedFile().toString();
@@ -317,26 +286,12 @@ public class GSImportFilesMenu extends ImportFilesMenu {
                     timeButtonLastClicked = System.currentTimeMillis();
                 }
             }
-
-
-            public void mouseEntered(MouseEvent event) {
-                chooseFromElsewhere.setIcon(getSearchButtonOver());
-            }
-
-            public void mouseExited(MouseEvent event) {
-                chooseFromElsewhere.setIcon(getSearchButton());
-            }
         });
 
-
-        chooseFromGS = new JLabel(getSearchButtonGS(),
-                JLabel.CENTER);
-        chooseFromGS.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent event) {
-                // precautionary measure to stop double execution of action...
+        chooseFromGS = new FlatButton(ButtonType.BLUE, "Load from GenomeSpace");
+        chooseFromGS.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (timeButtonLastClicked != System.currentTimeMillis()) {
-
-                    chooseFromGS.setIcon(getSearchButtonGS());
 
                     gsFileChooser = new GSFileChooser(menu, GSFileChooser.GSFileChooserMode.OPEN);
 
@@ -351,32 +306,12 @@ public class GSImportFilesMenu extends ImportFilesMenu {
                     timeButtonLastClicked = System.currentTimeMillis();
                 }
             }
-
-
-            public void mouseEntered(MouseEvent event) {
-                chooseFromGS.setIcon(getSearchButtonGSOver());
-            }
-
-            public void mouseExited(MouseEvent event) {
-                chooseFromGS.setIcon(getSearchButtonGS());
-            }
         });
 
-        loadSelected = new JLabel(getLoadButton(),
-                JLabel.CENTER);
-        loadSelected.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                loadSelected.setIcon(getLoadButton());
+        loadSelected = new FlatButton(ButtonType.GREEN, "Load File");
+        loadSelected.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 getSelectedFileAndLoad();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                loadSelected.setIcon(getLoadButtonOver());
-            }
-
-            public void mouseExited(MouseEvent event) {
-                loadSelected.setIcon(getLoadButton());
             }
         });
 

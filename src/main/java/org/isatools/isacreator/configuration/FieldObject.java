@@ -181,7 +181,7 @@ public class FieldObject implements Serializable {
     }
 
     public String[] getFieldList() {
-        return fieldList;
+        return fieldList == null ? new String[]{"No units available"} : fieldList;
     }
 
     public String getFieldName() {

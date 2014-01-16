@@ -59,8 +59,7 @@ public class ModeSelector extends JFrame implements BundleActivator {
     static {
         ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
 
-        ResourceInjector.get("gui-package.style").load(
-                ModeSelector.class.getResource("/dependency-injections/gui-package.properties"));
+
     }
 
     private JLabel lightMode;
@@ -78,7 +77,6 @@ public class ModeSelector extends JFrame implements BundleActivator {
     public ModeSelector() {
         ResourceInjector.get("gui-package.style").inject(this);
     }
-
 
     /**
      * Creates GUI for mode selection

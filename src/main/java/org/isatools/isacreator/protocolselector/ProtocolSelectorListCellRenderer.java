@@ -25,13 +25,6 @@ public class ProtocolSelectorListCellRenderer extends JComponent implements List
 
     JLabel selectedIconContainer;
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-        ResourceInjector.get("sample-selection-package.style").load(
-                ProtocolSelectorListCellRenderer.class.getResource("/dependency-injections/autofilterfield-package.properties"));
-    }
-
-
     /**
      * CustomListCellRenderer Constructor
      */

@@ -48,7 +48,7 @@ import org.isatools.isacreator.ontologiser.model.OntologisedResult;
 import org.isatools.isacreator.ontologiser.model.SuggestedAnnotation;
 import org.isatools.isacreator.ontologiser.ui.listrenderer.OntologyAssignedListRenderer;
 import org.isatools.isacreator.ontologiser.ui.listrenderer.ScoringConfidenceListRenderer;
-import org.isatools.isacreator.ontologymanager.BioPortalClient;
+import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologyService;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologyselectiontool.ViewTermDefinitionUI;
@@ -94,7 +94,7 @@ public class OntologiserAnnotationPane extends JPanel {
     private static OntologyService ontologyService;
 
     static {
-        ontologyService = new BioPortalClient();
+        ontologyService = new BioPortal4Client();
     }
 
     public OntologiserAnnotationPane(Map<String, Map<String, AnnotatorResult>> searchMatches) {
@@ -153,13 +153,13 @@ public class OntologiserAnnotationPane extends JPanel {
 
                 setAnnotation(selectedItem, currentlySelectedOntologyTerm);
 
-                System.out.println("Term purl " + selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyPurl() +
+                System.out.println("Term purl " + selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermURI() +
                         " Name = " + selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermName());
 
                 definitionUI.setContent(
                         new OntologyBranch(selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermAccession(),
                                 selectedItem.getAnnotatorResult().getOntologyTerm().getOntologyTermName()),
-                        selectedItem.getAnnotatorResult().getOntologySource().getOntologyVersion(), ontologyService);
+                        selectedItem.getAnnotatorResult().getOntologySource().getOntologyID(), ontologyService);
 
                 repaint();
                 // should clear other selections to ensure that other suggested terms are not mapping to the ontology result too
@@ -173,7 +173,7 @@ public class OntologiserAnnotationPane extends JPanel {
         listPanel.add(suggestedTermListContainer);
 
         definitionUI.setBorder(new TitledBorder(new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6), "Definition",
-                TitledBorder.DEFAULT_POSITION, TitledBorder.DEFAULT_JUSTIFICATION, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR));
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR));
 
         listPanel.add(definitionUI);
 

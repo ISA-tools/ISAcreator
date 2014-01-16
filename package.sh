@@ -4,7 +4,6 @@
 #
 
 #MVNOPTS="--offline"
-
 get_tag_data () {
     local tag=$1
     local xml_file=$2

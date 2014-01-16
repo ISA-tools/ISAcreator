@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.spreadsheet;
 
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import javax.swing.*;
@@ -482,15 +483,11 @@ public class SpreadsheetModel extends DefaultTableModel {
     public void setCellAt(Object input, int aRow, int aColumn) {
         SpreadsheetCell temp = getCellAt(aRow, aColumn);
 
-        /* if for some reason value out of bounds ignore */
         if (temp != null) {
-            //always remove references old formula referred to
-
-            //insert new formula
-
             temp.setData(input);
-
         }
+
+        ApplicationManager.setModified(true);
     }
 
     /**

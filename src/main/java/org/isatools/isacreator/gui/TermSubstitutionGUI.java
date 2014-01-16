@@ -39,6 +39,8 @@ package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -162,16 +164,9 @@ public class TermSubstitutionGUI extends JPanel {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 1));
         buttonPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel okButton = new JLabel(new ImageIcon(getClass().getResource("/images/common/ok.png")), JLabel.RIGHT);
-        okButton.setOpaque(false);
-
-        okButton.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                // check to ensure that all terms have been replaced uniquely.
-
-                // Hashmap containing the category for replacement and the terms selected. as soon as we come across a term added twice, it will be
-                // reported to the user...
+        JButton okButton = new FlatButton(ButtonType.GREY, "Ok");
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 Map<String, Set<String>> uniquenessCheck = new HashMap<String, Set<String>>();
 
                 for (String category : categorySubstitutionPanels.keySet()) {
@@ -191,14 +186,6 @@ public class TermSubstitutionGUI extends JPanel {
                 }
                 status.setText("");
                 firePropertyChange("substitutionComplete", "", getDefinedSubstitutions());
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                okButton.setIcon(new ImageIcon(getClass().getResource("/images/common/ok_over.png")));
-            }
-
-            public void mouseExited(MouseEvent event) {
-                okButton.setIcon(new ImageIcon(getClass().getResource("/images/common/ok.png")));
             }
         });
 

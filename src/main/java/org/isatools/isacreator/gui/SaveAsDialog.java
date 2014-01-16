@@ -46,6 +46,8 @@
 package org.isatools.isacreator.gui;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -69,8 +71,7 @@ public class SaveAsDialog extends JDialog {
     private RoundedJTextField fileName;
 
     @InjectedResource
-    private ImageIcon dialogHeader, closeButton, closeButtonOver,
-            saveSubmission, saveSubmissionOver;
+    private ImageIcon dialogHeader;
 
     public SaveAsDialog() {
         ResourceInjector.get("gui-package.style").inject(this);
@@ -155,42 +156,21 @@ public class SaveAsDialog extends JDialog {
     private void createAndAddSouthPanel() {
         // setup south panel with buttons and so forth :o)
         JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setBorder(UIHelper.EMPTY_BORDER);
         southPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel close = new JLabel(closeButton,
-                JLabel.LEFT);
-        close.setOpaque(false);
-        close.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton close = new FlatButton(ButtonType.RED, "Cancel");
+        close.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("windowClosed", "", "none");
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                close.setIcon(closeButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                close.setIcon(closeButton);
             }
         });
 
 
-        final JLabel save = new JLabel(saveSubmission,
-                JLabel.RIGHT);
-        save.setOpaque(false);
-        save.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton save = new FlatButton(ButtonType.GREEN, "Save");
+        save.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 save(fileName.getText().trim());
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                save.setIcon(saveSubmissionOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                save.setIcon(saveSubmission);
             }
         });
 

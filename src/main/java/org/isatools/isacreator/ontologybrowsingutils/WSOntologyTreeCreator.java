@@ -39,10 +39,8 @@ package org.isatools.isacreator.ontologybrowsingutils;
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.configuration.RecommendedOntology;
-import org.isatools.isacreator.ontologymanager.BioPortalClient;
-import org.isatools.isacreator.ontologymanager.OLSClient;
+import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologyService;
-import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -77,7 +75,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
     private Container browser;
     private static OntologyService bioportalClient;
-    private static OntologyService olsClient;
+
     private JTree tree;
 
     public WSOntologyTreeCreator(Container browser, JTree tree) {
@@ -85,8 +83,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         this.tree = tree;
         observers = new ArrayList<TreeObserver>();
 
-        bioportalClient = new BioPortalClient();
-        olsClient = new OLSClient();
+        bioportalClient = new BioPortal4Client();
     }
 
     public DefaultMutableTreeNode createTree(Map<String, RecommendedOntology> ontologies) throws FileNotFoundException {
@@ -167,12 +164,8 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
                 }
 
                 if (!addedTerms) {
-                    if (service instanceof BioPortalClient) {
                         addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " (version "
                                 + recommendedOntology.getOntology().getOntologyVersion() + ") from BioPortal!");
-                    } else {
-                        addInformationToTree(ontologyNode, "Problem loading " + recommendedOntology.getOntology().getOntologyAbbreviation() + " from OLS");
-                    }
                 }
             }
             updateTree();
@@ -185,11 +178,11 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
     }
 
     private OntologyService getCorrectOntologyService(Ontology ontology) {
-        return OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS ? olsClient : bioportalClient;
+        return bioportalClient;
     }
 
     private String getCorrectQueryString(OntologyService service, Ontology ontology) {
-        return service instanceof BioPortalClient ? ontology.getOntologyVersion() : ontology.getOntologyAbbreviation();
+        return ontology.getOntologyVersion();
     }
 
     public void updateTree() {
@@ -247,9 +240,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
             DefaultMutableTreeNode childNode =
                     new DefaultMutableTreeNode(new OntologyTreeItem(
-                            new OntologyBranch((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
-                                    ? ontologyTerm.getOntologySource() + ":" + ontologyTerm.getOntologyTermAccession()
-                                    : ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologyTermName()), ontology));
+                            new OntologyBranch(ontologyTerm.getOntologyTermAccession(), ontologyTerm.getOntologyTermName()), ontology));
 
             if (parent == null) {
                 parent = rootNode;
@@ -288,9 +279,7 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
 
         OntologyService service = getCorrectOntologyService(ontology);
 
-        Map<String, OntologyTerm> nodeParentsFromRoot = service.getAllTermParents((OntologyUtils.getSourceOntologyPortal(ontology) == OntologyPortal.OLS)
-                ? term.getOntologySource() + ":" + term.getOntologyTermAccession()
-                : term.getOntologyTermAccession(), service instanceof OLSClient ? term.getOntologySource() : term.getOntologySourceInformation().getSourceVersion());
+        Map<String, OntologyTerm> nodeParentsFromRoot = service.getAllTermParents(term.getOntologyTermAccession(), term.getOntologySourceInformation().getSourceVersion());
         TreePath lastPath = null;
 
         for (OntologyTerm node : nodeParentsFromRoot.values()) {

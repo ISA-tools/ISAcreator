@@ -262,7 +262,7 @@ public class SpreadsheetUtils {
                             colIndex).toString();
 
                     if (annotations.containsKey(columnValue)) {
-                        spreadsheet.getTable().setValueAt(annotations.get(columnValue).getUniqueId(), row, colIndex);
+                        spreadsheet.getTable().setValueAt(annotations.get(columnValue).getShortForm(), row, colIndex);
                     }
                 }
             }
@@ -311,10 +311,16 @@ public class SpreadsheetUtils {
         }
     }
 
+    public static boolean isCommentParameterOrCharacteristic(String columnName) {
+        return (columnName.contains("Characteristics") ||
+                columnName.contains("Comment") ||
+                columnName.contains("Parameter Value"));
+    }
+
     public static boolean isFactorParameterOrCharacteristic(String columnName) {
         return (columnName.contains("Characteristics") ||
                 columnName.contains("Factor") ||
-                columnName.equals("Parameter Value"));
+                columnName.contains("Parameter Value"));
     }
 
     /**

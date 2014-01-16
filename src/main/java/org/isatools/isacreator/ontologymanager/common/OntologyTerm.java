@@ -38,6 +38,8 @@ package org.isatools.isacreator.ontologymanager.common;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +52,7 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     private String ontologyTermAccession = null;
     private String ontologyTermName = null;
-    private String purl = null;
+    private String ontologyTermIRI = null;
 
     // extra terms for metadata processing
     private Map<String, String> comments;
@@ -69,7 +71,11 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         ontologyTermName = termName;
         ontologyTermAccession = accession;
         ontologySourceInformation = ontologySourceRefObject;
-        purl = iri;
+
+        if (iri!=null)
+            ontologyTermIRI = iri;
+        else
+            ontologyTermIRI = getOntologyTermURI();
     }
 
     public String getOntologyVersionId() {
@@ -115,8 +121,16 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         return ontologyTermName;
     }
 
-    public String getOntologyPurl() {
-        return purl;
+    public String getOntologyTermURI() {
+        if (ontologyTermIRI==null){
+            String iri = OntologyTermUtils.getURI(this);
+            //System.out.println("term====>" + getOntologyTermName()+", iri ===> "+iri);
+            if (iri!=null)
+                ontologyTermIRI = iri;
+            else
+                ontologyTermIRI = "";
+        }
+        return ontologyTermIRI;
     }
 
 
@@ -124,8 +138,8 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         this.ontologyTermName = ontologyTermName;
     }
 
-    public void setOntologyPurl(String purl) {
-        this.purl = purl;
+    public void setOntologyTermIRI(String purl) {
+        this.ontologyTermIRI = purl;
     }
 
     public void addToComments(String key, String value) {
@@ -146,26 +160,41 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
 
     @Override
     public String toString() {
-        return getOntologyTermName() + "(" + getOntologyTermAccession() + ")";
+        return getShortForm();
     }
 
     /***
-     * TODO: Change this to return the PURL instead, if not null or empty
+     *
+     * This method returns the string used for visualising the ontology term in the interface.
+     *
+     * This is "<ontology source>:<ontology label>".
+     *
+     * For example "OBI:parallel group design".
      *
      * @return
      */
-    public String getUniqueId() {
+    public String getShortForm() {
+        String ontologySource = getOntologySource();
+        if (!ontologySource.equals("")){
+            if (ISAcreatorProperties.getOntologyTermURIProperty())
+                if (ontologyTermIRI!=null && !ontologyTermIRI.equals(""))
+                    return ontologySource + ":" + getOntologyTermName();
+        }
+        return getOntologyTermName();
+    }
+
+    public String getLongForm(){
         String ontologySource = getOntologySource();
         if (!ontologySource.equals("")) {
-            return ontologySource + ":" + getOntologyTermName();
+            return getOntologyTermName()+","+ getOntologyTermURI()+","+ontologySource;
         }
         return getOntologyTermName();
     }
 
     public int compareTo(OntologyTerm ontologyTerm) {
-        if (getOntologyPurl()!=null && ontologyTerm.getOntologyPurl()!=null)
-            return getOntologyPurl().compareTo(ontologyTerm.getOntologyPurl());
-        return getUniqueId().toLowerCase().compareTo(ontologyTerm.getUniqueId().toLowerCase());
+        if (getOntologyTermURI()!=null && ontologyTerm.getOntologyTermURI()!=null)
+            return getOntologyTermURI().compareTo(ontologyTerm.getOntologyTermURI());
+        return getShortForm().toLowerCase().compareTo(ontologyTerm.getShortForm().toLowerCase());
     }
 
 }

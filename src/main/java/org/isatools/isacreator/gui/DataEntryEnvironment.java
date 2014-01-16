@@ -5,11 +5,7 @@
  ISAcreator is licensed under the Common Public Attribution License version 1.0 (CPAL)
 
  EXHIBIT A. CPAL version 1.0
-<<<<<<< HEAD
- �The contents of this file are subject to the CPAL version 1.0 (the �License�);
-=======
  The contents of this file are subject to the CPAL version 1.0 (the License);
->>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  you may not use this file except in compliance with the License. You may obtain a
  copy of the License at http://isa-tools.org/licenses/ISAcreator-license.html.
  The License is based on the Mozilla Public License version 1.1 but Sections
@@ -17,11 +13,7 @@
  provide for limited attribution for the Original Developer. In addition, Exhibit
  A has been modified to be consistent with Exhibit B.
 
-<<<<<<< HEAD
- Software distributed under the License is distributed on an �AS IS� basis,
-=======
  Software distributed under the License is distributed on an AS IS basis,
->>>>>>> 9eb576c237c7bdc3ffbf61636aa76f3cae3d7fb9
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
 
@@ -81,11 +73,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -141,8 +131,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                           String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,
-                techType);
+        System.out.println("Getting assay for measurement " + measurementEndpoint + " and technology "+techType);
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,techType);
 
         if (tro != null) {
             if ((selectedNode != null) && selectedNode.getAllowsChildren() &&
@@ -175,7 +165,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 JOptionPane optionPane = new JOptionPane(
                         "Problem occurred when attempting to add an Assay... " +
                                 "\n Please ensure assay names for a study are unique, \n and that you have entered text in the assay name field!",
-                        JOptionPane.OK_OPTION);
+                        JOptionPane.ERROR_MESSAGE);
                 optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                         getParentFrame().hideSheet();
@@ -188,7 +178,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             JOptionPane optionPane = new JOptionPane(
                     "An assay definition with the features you have selected doesn't exist... " +
                             "\n Please ensure that the assay definition you have entered is correct!",
-                    JOptionPane.OK_OPTION);
+                    JOptionPane.ERROR_MESSAGE);
             optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                     getParentFrame().hideSheet();
@@ -273,8 +263,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
             ApplicationManager.assignDataEntryToISASection(newStudy, ui);
 
-            Assay studySampleRec = new Assay("s_" + studyName + ".txt",
-                    tro);
+            Assay studySampleRec = new Assay("s_" + studyName + ".txt", tro);
 
             ApplicationManager.assignDataEntryToISASection(studySampleRec, new AssaySpreadsheet(ui, tro));
 
@@ -594,8 +583,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return investigation;
     }
 
-    public List<OntologySourceRefObject> getOntologySources() {
-        return OntologyManager.getOntologiesUsed();
+    public Collection<OntologySourceRefObject> getOntologySources() {
+        return OntologyManager.getOntologySources();
     }
 
     public ISAcreator getParentFrame() {

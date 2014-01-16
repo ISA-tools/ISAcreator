@@ -37,6 +37,8 @@
 package org.isatools.isacreator.ontologiser.ui;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.ontologiser.adaptors.ContentAdaptor;
@@ -48,7 +50,10 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -68,20 +73,6 @@ public class OntologiserUI extends JDialog {
     public static final int TERM_TAGGER_VIEW = 0;
     public static final int HELP = 1;
     public static final int VISUALISATION = 2;
-
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("ontologiser-generator-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/ontologiser-generator-package.properties"));
-        ResourceInjector.get("formatmappingutility-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/formatmappingutility-package.properties"));
-        ResourceInjector.get("common-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/common-package.properties"));
-        ResourceInjector.get("ontologyselectiontool-package.style").load(
-                OntologyHelpPane.class.getResource("/dependency-injections/ontologyselectiontool-package.properties"));
-
-    }
 
     private ImageIcon loadingIndicator =
             new ImageIcon(OntologiserUI.class.getResource("/images/ontologiser/working.gif"));
@@ -106,8 +97,7 @@ public class OntologiserUI extends JDialog {
 
     @InjectedResource
     private ImageIcon termTaggerLogo, termTaggerIcon, termTaggerIconOver, visualiseInactiveIcon, visualiseIcon, visualiseIconOver,
-            suggestInactiveIcon, suggestIcon, suggestIconOver, clearAllInactiveIcon, clearAllIcon, clearAllIconOver, helpIcon, helpIconOver, closeWindowIcon,
-            closeWindowIconOver, doneIcon, doneIconOver, buttonPanelFiller, working;
+            suggestInactiveIcon, suggestIcon, suggestIconOver, clearAllInactiveIcon, clearAllIcon, clearAllIconOver, helpIcon, helpIconOver, working;
 
     private OntologiserAnnotationPane annotationPane;
     private OntologyHelpPane helpPane;
@@ -290,22 +280,12 @@ public class OntologiserUI extends JDialog {
     }
 
     private Container createSouthPanel() {
-        Box southPanel = Box.createHorizontalBox();
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setBorder(new LineBorder(Color.white, 4));
 
-        final JLabel closeButton = new JLabel(closeWindowIcon);
-        closeButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeWindowIconOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeWindowIcon);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        JButton closeButton = new FlatButton(ButtonType.RED, "Close");
+        closeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (confirmChoice == null || !confirmChoice.isShowing()) {
                     confirmChoice = new ConfirmationDialog();
 
@@ -335,21 +315,10 @@ public class OntologiserUI extends JDialog {
             }
         });
 
-        final JLabel export = new JLabel(doneIcon);
-        export.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                export.setIcon(doneIconOver);
-            }
 
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                export.setIcon(doneIcon);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-
+        JButton export = new FlatButton(ButtonType.GREEN, "Apply Annotations");
+        export.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 Thread performer = new Thread(new Runnable() {
                     public void run() {
                         if (annotationPane != null) {
@@ -366,9 +335,10 @@ public class OntologiserUI extends JDialog {
             }
         });
 
-        southPanel.add(closeButton);
-        southPanel.add(new JLabel(buttonPanelFiller));
-        southPanel.add(export);
+
+        southPanel.add(closeButton, BorderLayout.WEST);
+
+        southPanel.add(export, BorderLayout.EAST);
 
         return southPanel;
     }

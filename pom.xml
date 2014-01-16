@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.7.1</version>
+    <version>1.7.4</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -40,6 +40,10 @@
     </scm>
 
     <repositories>
+        <repository>
+            <id>oerc</id>
+            <url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/groups/oerc</url>
+        </repository>
 
         <repository>
             <id>mvnrepository</id>
@@ -56,15 +60,6 @@
             <url>http://download.java.net/maven/2/</url>
         </repository>
 
-        <!--<repository>-->
-            <!--<id>oerc</id>-->
-            <!--<url>http://frog.oerc.ox.ac.uk:8080/nexus-2.1.2/content/repositories/releases/</url>-->
-        <!--</repository>-->
-
-        <repository>
-            <id>mvnsearch</id>
-            <url>http://www.mvnsearch.org/maven2/</url>
-        </repository>
 
     </repositories>
 
@@ -232,6 +227,13 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <!--<artifactSet>-->
+                                <!--<excludes>-->
+                                    <!--<exclude>org.apache.lucene:lucene-core</exclude>-->
+                                    <!--<exclude>lucene:*</exclude>-->
+                                <!--</excludes>-->
+                            <!--</artifactSet>-->
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
@@ -304,27 +306,6 @@
         </dependency>
 
         <dependency>
-            <groupId>uk.ac.ebi</groupId>
-            <artifactId>ols</artifactId>
-            <version>1.18</version>
-
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.4</version>
@@ -382,7 +363,7 @@
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>ISAtabErrorReporter</artifactId>
-            <version>0.4</version>
+            <version>0.6</version>
         </dependency>
 
         <dependency>
@@ -395,25 +376,27 @@
             <groupId>uk.ac.ebi</groupId>
             <artifactId>jutils</artifactId>
             <version>1.4</version>
+
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
+
         </dependency>
 
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
-            <version>1.8.0</version>
+            <version>4.2.1</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.isatools</groupId>
             <artifactId>import_layer</artifactId>
-            <version>1.6</version>
+            <version>1.6.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.ebi</groupId>
@@ -424,6 +407,17 @@
                     <groupId>uk.ac.ebi</groupId>
                     <artifactId>jutils</artifactId>
                 </exclusion>
+
+                <exclusion>
+                    <groupId>cpdetector</groupId>
+                    <artifactId>cpdetector</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.isatools</groupId>
+                    <artifactId>ISAtabErrorReporter</artifactId>
+                </exclusion>
+
             </exclusions>
         </dependency>
 
@@ -461,11 +455,6 @@
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-bundle</artifactId>
-            <version>1.11</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.zxing</groupId>
@@ -502,6 +491,11 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+             <groupId>com.sun.jersey</groupId>
+             <artifactId>jersey-bundle</artifactId>
+             <version>1.11</version>
+        </dependency>
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -520,6 +514,12 @@
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0</version>
         </dependency>
 
     </dependencies>
@@ -548,6 +548,15 @@
             <id>toxbank</id>
             <properties>
                 <isacreator.alwaysShowInvestigation>true</isacreator.alwaysShowInvestigation>
+            </properties>
+
+        </profile>
+
+        <profile>
+            <id>build</id>
+            <properties>
+                <isacreator.version>${pom.version}</isacreator.version>
+                <isacreator.alwaysShowInvestigation>false</isacreator.alwaysShowInvestigation>
             </properties>
 
         </profile>

@@ -48,12 +48,17 @@ public class ISAcreatorProperties {
     public static final String CURRENT_CONFIGURATION = "current_configuration";
     public static final String CURRENT_ISATAB = "current_isatab";
     public static final String STRICT_VALIDATION = "strictValidation.isOn";
+    public static final String ONTOLOGY_TERM_URI = "ontologyTermURI";
 
     private static Map<String, String> properties = new HashMap<String, String>();
 
     public static void setProperty(String key, String value) {
         properties.put(key, value);
         saveProperties();
+    }
+
+    public static boolean getOntologyTermURIProperty(){
+        return ISAcreatorProperties.getProperty(ISAcreatorProperties.ONTOLOGY_TERM_URI).equals("true");
     }
 
     public static String getProperty(String key) {

@@ -41,6 +41,7 @@ import org.isatools.isacreator.autofilterfield.DefaultAutoFilterCellEditor;
 import org.isatools.isacreator.calendar.DateCellEditor;
 import org.isatools.isacreator.filechooser.FileSelectCellEditor;
 import org.isatools.isacreator.filterablelistselector.FilterableListCellEditor;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.plugins.host.service.PluginSpreadsheetWidget;
 import org.isatools.isacreator.utils.GeneralUtils;
@@ -166,4 +167,9 @@ public class CustomTable extends JTable {
         scrollPane.scrollRectToVisible(rect);
     }
 
+    @Override
+    public void setValueAt(Object o, int i, int i2) {
+        super.setValueAt(o, i, i2);
+        ApplicationManager.setModified(true);
+    }
 }

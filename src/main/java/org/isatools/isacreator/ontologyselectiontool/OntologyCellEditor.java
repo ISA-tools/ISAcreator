@@ -87,15 +87,25 @@ public class OntologyCellEditor extends JTextField implements TableCellEditor {
         ontologyTool.addPropertyChangeListener("selectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        setCellValue();
-                        stopCellEditing();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                setCellValue();
+                                stopCellEditing();
+                            }
+                        });
+
                     }
                 });
 
         ontologyTool.addPropertyChangeListener("noSelectedOntology",
                 new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent evt) {
-                        cancelCellEditing();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                cancelCellEditing();
+                            }
+                        });
+
                     }
                 });
 
