@@ -58,9 +58,6 @@ public class OntologyManager {
     //All the ontologySourceRefObject, indexed by their (abbreviated) name
     private static Map<String, OntologySourceRefObject> ontologySources = new HashMap<String, OntologySourceRefObject>();
 
-    //a map with <investigation, set of ontology source reference objects> - only used on the Merging facility
-    private static Map<String, Set<OntologySourceRefObject>> ontologySourcesForMerging = new HashMap<String, Set<OntologySourceRefObject>>();
-
     //a map with <ontology term label, ontology term object> for each of the ontology terms used for annotating the ISA-TAB dataset
     private static Map<String, OntologyTerm> ontologyTerms = new HashMap<String, OntologyTerm>();
 
