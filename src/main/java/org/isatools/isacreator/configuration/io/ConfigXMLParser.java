@@ -208,9 +208,6 @@ public class ConfigXMLParser {
         OntologyEntryType measurementInfo = isaConf.getMeasurement();
         OntologyEntryType technologyInfo = isaConf.getTechnology();
 
-        addOntologySourceForAssay(measurementInfo);
-        addOntologySourceForAssay(technologyInfo);
-
         String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]") ? MappingObject.INVESTIGATION : MappingObject.ASSAY_TYPE;
 
         log.info("Processing " + isaConf.getTableName());
@@ -343,13 +340,6 @@ public class ConfigXMLParser {
 
         mappings.add(mo);
         tables.add(new TableReferenceObject(tc));
-    }
-
-    private void addOntologySourceForAssay(OntologyEntryType ontologyEntryType) {
-
-
-        if (ontologyEntryType.getSourceAbbreviation()!=null && !ontologyEntryType.getSourceAbbreviation().equals(""))
-            OntologyManager.addToUsedOntologies(new OntologySourceRefObject(ontologyEntryType.getSourceAbbreviation(), ontologyEntryType.getSourceUri(), ontologyEntryType.getSourceVersion(), ontologyEntryType.getSourceTitle()));
     }
 
     /**

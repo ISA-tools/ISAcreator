@@ -40,6 +40,9 @@ package org.isatools.isacreator.model;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.StudySubData;
 import org.isatools.isacreator.managers.ConfigurationManager;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 
@@ -120,6 +123,25 @@ public class Assay extends ISASection implements StudySubData {
         fieldValues.put(TECHNOLOGY_TYPE_TERM_ACCESSION, mappingObject!=null? mappingObject.getTechnologyAccession(): "");
         fieldValues.put(TECHNOLOGY_TYPE_TERM_SOURCE_REF, mappingObject!=null? mappingObject.getTechnologySource(): "" );
         fieldValues.put(ASSAY_PLATFORM, assayPlatform);
+
+        if (mappingObject!=null){
+            OntologyTerm ot = null;
+            OntologySourceRefObject ontologySourceRefObject = null;
+            if (!mappingObject.getMeasurementAccession().equals("")){
+                ontologySourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(mappingObject.getMeasurementSource());
+                if (ontologySourceRefObject==null)
+                    ontologySourceRefObject = new OntologySourceRefObject(mappingObject.getMeasurementSource());
+                ot = new OntologyTerm(mappingObject.getMeasurementEndpointType(), mappingObject.getMeasurementAccession(), mappingObject.getMeasurementAccession(), ontologySourceRefObject);
+                OntologyManager.addToOntologyTerms(ot);
+            }
+            if (!mappingObject.getTechnologyAccession().equals("")){
+                 ontologySourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(mappingObject.getTechnologySource());
+                if (ontologySourceRefObject==null)
+                    ontologySourceRefObject = new OntologySourceRefObject(mappingObject.getTechnologySource());
+                ot = new OntologyTerm(mappingObject.getTechnologyType(), mappingObject.getTechnologyAccession(), mappingObject.getTechnologyAccession(), ontologySourceRefObject);
+                OntologyManager.addToOntologyTerms(ot);
+            }
+        }
     }
 
 
