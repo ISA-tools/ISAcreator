@@ -58,7 +58,6 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
         resultOver, result,filterInfo, leftFieldIcon, rightFieldIcon;
 
     public OrcidLookupUI() {
-       // this.parent = parent;
         ResourceInjector.get("orcidlookup-package.style").inject(this);
         resultPane = new OrcidSearchResultsPanel();
     }

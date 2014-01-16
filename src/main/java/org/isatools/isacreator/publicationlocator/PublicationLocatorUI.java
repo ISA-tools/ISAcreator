@@ -66,13 +66,6 @@ import java.util.Map;
 
 public class PublicationLocatorUI extends JFrame implements WindowListener {
 
-    static {
-        ResourceInjector.addModule("org.jdesktop.fuse.swing.SwingModule");
-
-        ResourceInjector.get("publication-package.style").load(
-                ArchiveOutputWindow.class.getResource("/dependency-injections/publicationlocator-package.properties"));
-    }
-
     private static final int PUBMED_SEARCH = 0;
     private static final int DOI_SEARCH = 1;
     private static final int RESULT = 2;
