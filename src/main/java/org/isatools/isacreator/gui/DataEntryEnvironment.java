@@ -38,8 +38,10 @@
 package org.isatools.isacreator.gui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.api.utils.SpreadsheetUtils;
 import org.isatools.isacreator.api.utils.StudyUtils;
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.gui.help.Controller;
@@ -71,8 +73,12 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
@@ -87,15 +93,16 @@ import java.util.Map;
 public class DataEntryEnvironment extends AbstractDataEntryEnvironment implements
         TreeSelectionListener {
 
+    private Logger log = Logger.getLogger(DataEntryEnvironment.class.getName());
     @InjectedResource
     private ImageIcon loading, visualizationIcon, visualizationIconOver, addStudyIcon, addStudyIconOver, removeStudyIcon,
             removeStudyIconOver, removeStudyIconInactive, navigationPanelHeader, informationPanelHeader,
-            warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp;
+            warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp, assayHelp, generalHelp;
 
     private DefaultMutableTreeNode overviewTreeRoot;
     private DefaultTreeModel overviewTreeModel;
     private Investigation investigation;
-    private JLabel statusInfo, visualization, removeStudyButton, addStudyButton;
+    private JLabel statusInfo, link, visualization, removeStudyButton, addStudyButton;
     private JTree overviewTree;
 
     private JPanel navigationPanel;
@@ -131,8 +138,8 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                           String assayPlatform, String assayName) {
         // get node
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) overviewTree.getLastSelectedPathComponent();
-        System.out.println("Getting assay for measurement " + measurementEndpoint + " and technology "+techType);
-        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint,techType);
+        System.out.println("Getting assay for measurement " + measurementEndpoint + " and technology " + techType);
+        TableReferenceObject tro = ConfigurationManager.selectTROForUserSelection(measurementEndpoint, techType);
 
         if (tro != null) {
             if ((selectedNode != null) && selectedNode.getAllowsChildren() &&
@@ -671,20 +678,57 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     }
 
 
+    /**
+     * Sets the status pane info pane.
+     * Also hides the link.
+     *
+     * @param info
+     */
     public void setStatusPaneInfo(String info) {
         if (info != null && statusInfo != null) {
             statusInfo.setIcon(null);
             statusInfo.setText(info);
             statusInfo.setHorizontalAlignment(JLabel.LEFT);
         }
+        link.setVisible(false);
     }
 
+    /**
+     * Sets the status pane info pane.
+     * Also hides the link.
+     *
+     * @param icon
+     */
     public void setStatusPaneInfo(Icon icon) {
         if (icon != null && statusInfo != null) {
             statusInfo.setIcon(icon);
             statusInfo.setHorizontalAlignment(JLabel.CENTER);
             statusInfo.setText("");
         }
+        link.setVisible(false);
+    }
+
+    public void setLink(final String uri) {
+
+        // remove the old mouse listeners, otherwise you'll add a new one ever time,
+        // meaning that the browser will open up all links where this method was called.
+        for (MouseListener ml : link.getMouseListeners()) {
+            link.removeMouseListener(ml);
+        }
+
+        // now we can add the new one :)
+        link.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
+                try {
+                    Desktop.getDesktop().browse(new URI(uri));
+                } catch (Exception e) {
+                    log.error("Unable to open URL " + uri);
+                }
+            }
+        });
+        link.setVisible(true);
     }
 
     /**
@@ -699,7 +743,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         // setup status pane
         JPanel statusPane = new JPanel(new BorderLayout());
-        statusPane.setPreferredSize(new Dimension(200, 200));
+        statusPane.setPreferredSize(new Dimension(200, 220));
         statusPane.setBackground(UIHelper.DARK_GREEN_COLOR);
         statusPane.setBorder(BorderFactory.createEmptyBorder());
 
@@ -714,13 +758,16 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         UIHelper.renderComponent(statusInfo, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, UIHelper.BG_COLOR);
         statusInfo.setPreferredSize(new Dimension(175, 160));
 
+        link = UIHelper.createLabel("View Resource", UIHelper.VER_10_BOLD, new Color(28, 117, 188));
+        link.setVisible(false);
+
         // setup tree
         westPanel.add(createNavPanel(investigation), BorderLayout.CENTER);
 
         JScrollPane scroller = new JScrollPane(statusInfo,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scroller.setPreferredSize(new Dimension(180, 170));
+        scroller.setPreferredSize(new Dimension(180, 180));
         scroller.setBackground(UIHelper.BG_COLOR);
         scroller.getViewport().setBackground(UIHelper.BG_COLOR);
         scroller.setBorder(new EmptyBorder(1, 1, 1, 1));
@@ -729,13 +776,16 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
 
         statusPane.add(scroller);
 
+
+        JPanel linkContainer = new JPanel(new GridLayout(1, 1));
+        linkContainer.setBackground(UIHelper.BG_COLOR);
+        linkContainer.add(link);
+
+        statusPane.add(linkContainer, BorderLayout.SOUTH);
+
         westPanel.add(statusPane, BorderLayout.SOUTH);
 
         add(westPanel, BorderLayout.WEST);
-    }
-
-    public DefaultMutableTreeNode getSelectedNodeInOverviewTree() {
-        return selectedNode;
     }
 
     public void valueChanged(TreeSelectionEvent event) {
@@ -773,6 +823,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
             overviewTree.expandPath(new TreePath(selectedNode.getNextNode().getPath()));
         } else if (nodeInfo instanceof Assay) {
             Assay assay = (Assay) nodeInfo;
+            setStatusPaneInfo(assayHelp);
 
             if (currentPage instanceof AssaySpreadsheet) {
                 Spreadsheet spreadsheet = ((AssaySpreadsheet) currentPage).getSpreadsheet();
@@ -781,8 +832,6 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 }
             }
             setCurrentPage(ApplicationManager.getUserInterfaceForISASection(assay));
-
-            setStatusPaneInfo("");
         } else {
             setStatusPaneInfo("");
             setCurrentPage(newSubmission);
