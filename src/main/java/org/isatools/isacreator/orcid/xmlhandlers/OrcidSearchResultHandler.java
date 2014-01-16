@@ -33,20 +33,20 @@ public class OrcidSearchResultHandler {
         return resultDocument;
     }
 
-    public OrcidAuthor[] getOrcidAuthors(OrcidMessageDocument messageDocument){
+    public OrcidAuthor[] getOrcidAuthors(OrcidMessageDocument messageDocument) {
 
         OrcidMessageDocument.OrcidMessage orcidMessage = messageDocument.getOrcidMessage();
         OrcidSearchResultsDocument.OrcidSearchResults searchResults = orcidMessage.getOrcidSearchResults();
 
-        if (searchResults==null)
+        if (searchResults == null)
             return null;
 
         OrcidSearchResultDocument.OrcidSearchResult[] results = searchResults.getOrcidSearchResultArray();
 
         OrcidAuthor[] authors = new OrcidAuthor[results.length];
 
-        int i =0;
-        for(OrcidSearchResultDocument.OrcidSearchResult result: results){
+        int i = 0;
+        for (OrcidSearchResultDocument.OrcidSearchResult result : results) {
             OrcidProfileDocument.OrcidProfile profile = result.getOrcidProfile();
             authors[i] = getOrcidAuthor(profile);
             i++;
@@ -54,19 +54,19 @@ public class OrcidSearchResultHandler {
         return authors;
     }
 
-    public OrcidAuthor getSingleOrcidAuthor(OrcidMessageDocument messageDocument){
+    public OrcidAuthor getSingleOrcidAuthor(OrcidMessageDocument messageDocument) {
 
         OrcidAuthor orcidAuthor = null;
         OrcidMessageDocument.OrcidMessage orcidMessage = messageDocument.getOrcidMessage();
         OrcidSearchResultsDocument.OrcidSearchResults searchResults = orcidMessage.getOrcidSearchResults();
 
-        if (searchResults==null)
+        if (searchResults == null)
             return null;
 
         OrcidSearchResultDocument.OrcidSearchResult[] results = searchResults.getOrcidSearchResultArray();
 
 
-        if (results.length == 1){
+        if (results.length == 1) {
             OrcidProfileDocument.OrcidProfile profile = results[0].getOrcidProfile();
             orcidAuthor = getOrcidAuthor(profile);
         }
@@ -76,7 +76,7 @@ public class OrcidSearchResultHandler {
     }
 
 
-    private OrcidAuthor getOrcidAuthor(OrcidProfileDocument.OrcidProfile profile){
+    private OrcidAuthor getOrcidAuthor(OrcidProfileDocument.OrcidProfile profile) {
         OrcidAuthor orcidAuthor = new OrcidAuthor();
         orcidAuthor.setOrcid(removeFragments(profile.getOrcid().toString()));
 
@@ -85,27 +85,30 @@ public class OrcidSearchResultHandler {
         AffiliationsDocument.Affiliations affiliations = orcidBio.getAffiliations();
 
 
-
         GivenNamesDocument.GivenNames givenNames = personalDetails.getGivenNames();
 
         orcidAuthor.setGivenNames(removeFragments(givenNames.xmlText()));
         orcidAuthor.setFamilyName(removeFragments(personalDetails.getFamilyName().xmlText()));
 
-        AffiliationDocument.Affiliation[] affiliationArray = affiliations.getAffiliationArray();
-        if (affiliationArray.length>0)
-            orcidAuthor.setCurrentPrimaryInstitution(removeFragments(affiliationArray[0].getAffiliationName().xmlText()));
+        if (affiliations != null) {
+            AffiliationDocument.Affiliation[] affiliationArray = affiliations.getAffiliationArray();
+            if (affiliationArray.length > 0)
+                orcidAuthor.setCurrentPrimaryInstitution(removeFragments(affiliationArray[0].getAffiliationName().xmlText()));
+        }
+
 
         ContactDetailsDocument.ContactDetails contactDetails = orcidBio.getContactDetails();
-        if (contactDetails!=null){
+        if (contactDetails != null) {
             Email[] emails = contactDetails.getEmailArray();
-            if (emails.length>0)
+            if (emails.length > 0)
                 orcidAuthor.setEmail(emails[0].getStringValue());
         }
+
         return orcidAuthor;
     }
 
-    private String removeFragments(String text){
-        return text.substring(14,text.length()-15);
+    private String removeFragments(String text) {
+        return text.substring(14, text.length() - 15);
 
     }
 }

@@ -3,12 +3,13 @@ package org.isatools.isacreator.orcid.gui;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.common.ClearFieldUtility;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.common.filterableTree.FilterableJTree;
 import org.isatools.isacreator.common.filterableTree.TreeFilterModel;
 import org.isatools.isacreator.effects.DraggablePaneMouseInputHandler;
 import org.isatools.isacreator.effects.InfiniteProgressPanel;
 import org.isatools.isacreator.ontologyselectiontool.CustomTreeRenderer;
-import org.isatools.isacreator.ontologyselectiontool.FilterableOntologyTreeModel;
 import org.isatools.isacreator.orcid.OrcidClient;
 import org.isatools.isacreator.orcid.impl.OrcidClientImpl;
 import org.isatools.isacreator.orcid.model.OrcidAuthor;
@@ -40,7 +41,6 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
 
     private static InfiniteProgressPanel progressIndicator;
 
-    private JLabel searchTypeLabel;
     private JTextField searchField;
     private FilterableJTree<String, OrcidAuthor> orcidSearchResultsTree = null;
 
@@ -54,7 +54,7 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
     private OrcidAuthor currentOrcidContact;
 
     @InjectedResource
-    private ImageIcon orcidText, searchFieldLeft, search, searchOver, close, closeOver, accept, acceptOver,
+    private ImageIcon orcidText, searchFieldLeft, search, searchOver,
         resultOver, result,filterInfo, leftFieldIcon, rightFieldIcon;
 
     public OrcidLookupUI() {
@@ -72,12 +72,10 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
         progressIndicator = new InfiniteProgressPanel(
                 "searching orcid");
 
-        add(createTopPanel(), BorderLayout.NORTH);
+
         searchUIContainer = new JPanel();
-        searchUIContainer.setPreferredSize(new Dimension(499, 270));
         searchUIContainer.add(createSearchAndResultPanel());
 
-        //searchUIContainer.add(createResultsPanel());
 
         add(searchUIContainer, BorderLayout.CENTER);
         add(createSouthPanel(), BorderLayout.SOUTH);
@@ -89,13 +87,9 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
         searchAndResultsContainer = Box.createVerticalBox();
         searchAndResultsContainer.setBackground(UIHelper.BG_COLOR);
 
+        searchAndResultsContainer.add(Box.createVerticalStrut(10));
+        searchAndResultsContainer.add(UIHelper.wrapComponentInPanel(new JLabel(orcidText)));
         Box textContainer = Box.createHorizontalBox();
-
-        searchTypeLabel = new JLabel(orcidText);
-
-        textContainer.add(searchTypeLabel);
-
-        searchField = new JTextField();
 
         Action searchOrcidContacts = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -103,13 +97,14 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
             }
         };
 
+        searchField = new JTextField();
         searchField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "SEARCH_ORCID");
         searchField.getActionMap().put("SEARCH_ORCID", searchOrcidContacts);
 
         UIHelper.renderComponent(searchField, UIHelper.VER_12_BOLD, UIHelper.LIGHT_GREEN_COLOR, UIHelper.BG_COLOR);
-        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setBorder(new EmptyBorder(2, 2, 2, 2));
-        searchField.setText("enter id");
+        searchField.setText("enter name");
 
         textContainer.add(Box.createHorizontalStrut(5));
         textContainer.add(new JLabel(searchFieldLeft));
@@ -134,7 +129,7 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
 
         textContainer.add(searchButton);
 
-        searchAndResultsContainer.add(Box.createVerticalStrut(100));
+        searchAndResultsContainer.add(Box.createVerticalStrut(20));
         searchAndResultsContainer.add(textContainer);
         searchAndResultsContainer.add(Box.createVerticalGlue());
 
@@ -160,7 +155,7 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         treeScroll.setBorder(new EtchedBorder());
         treeScroll.getViewport().setBackground(UIHelper.BG_COLOR);
-        treeScroll.setPreferredSize(new Dimension(400, 170));
+        treeScroll.setSize(new Dimension(500, 350));
         IAppWidgetFactory.makeIAppScrollPane(treeScroll);
 
         orcidSearchResultsTree.addMouseListener(this);
@@ -201,55 +196,10 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
         orcidSearchResultsTree.setCellRenderer(new CustomTreeRenderer());
         orcidSearchResultsTree.expandRow(0);
         orcidSearchResultsTree.expandRow(1); // expand root and first result node on acquiring result! if there is no result, no exceptions will be thrown!
+
         orcidSearchResultsTree.setShowsRootHandles(false);
         orcidSearchResultsTree.setUI(ui);
     }
-
-    private Container createTopPanel(){
-
-        Box topContainer = Box.createVerticalBox();
-
-        Box topPanel = Box.createHorizontalBox();
-
-        resultButton = new JLabel();
-        resultButton.setHorizontalAlignment(SwingConstants.LEFT);
-
-        resultButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-//                if (resultButton.getIcon() != resultInactive) {
-//                    resultButton.setIcon(resultOver);
-//                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-//                if (resultButton.getIcon() != resultInactive) {
-//                    //resultButton.setIcon(selectedSection == RESULT ? resultOver : result);
-//                }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-//                if (resultButton.getIcon() != resultInactive) {
-                    resetButtons();
-                    //selectedSection = RESULT;
-//                    resultButton.setIcon(resultOver);
-                    swapContainers(resultPane);
-//                }
-            }
-        });
-
-        topPanel.add(resultButton);
-        //topPanel.add(new JLabel(end));
-
-        topContainer.add(topPanel);
-
-        return topContainer;
-
-    }
-
-
 
 
     private Container createSouthPanel() {
@@ -257,39 +207,17 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel closeButton = new JLabel(close);
-        closeButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                closeButton.setIcon(close);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        FlatButton closeButton = new FlatButton(ButtonType.RED, "Close");
+        closeButton .addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("noSelectedOrcidAuthor", "noneSelected", "");
                 setVisible(false);
             }
         });
 
-        final JLabel searchButton = new JLabel(accept);
-        searchButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                searchButton.setIcon(acceptOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                searchButton.setIcon(accept);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        FlatButton acceptButton = new FlatButton(ButtonType.GREEN, "Accept");
+        acceptButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("selectedOrcid", "OLD_VALUE",
                         currentOrcidContact);
 
@@ -297,8 +225,9 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
             }
         });
 
+
         southPanel.add(closeButton, BorderLayout.WEST);
-        southPanel.add(searchButton, BorderLayout.EAST);
+        southPanel.add(acceptButton, BorderLayout.EAST);
 
         return southPanel;
     }

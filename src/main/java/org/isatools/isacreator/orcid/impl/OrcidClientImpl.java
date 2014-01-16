@@ -8,6 +8,7 @@ import org.isatools.isacreator.orcid.xmlhandlers.OrcidSearchResultHandler;
 import org.orcid.ns.orcid.OrcidMessageDocument;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 /**
  * Created by the ISATeam.
@@ -21,16 +22,16 @@ public class OrcidClientImpl implements OrcidClient {
 
     public static final String QUERY_URL = "http://pub.orcid.org/search/orcid-bio/";
 
-    public static final String ACCEPT  = "Accept-Encoding";
+    public static final String ACCEPT = "Accept-Encoding";
     public static final String ORCID_XML = "application/orcid+xml";
     public static final String CONTENT_TYPE = "Content-Type";
 
     private HttpClient client = null;
     private GetMethod getMethod = null;
-    private  OrcidSearchResultHandler handler = null;
+    private OrcidSearchResultHandler handler = null;
 
 
-    public OrcidClientImpl(){
+    public OrcidClientImpl() {
 
         client = new HttpClient();
         getMethod = new GetMethod(QUERY_URL);
@@ -40,11 +41,12 @@ public class OrcidClientImpl implements OrcidClient {
 
     public OrcidAuthor getAuthorInfo(String orcidID) {
 
-        try{
-            getMethod.setQueryString("q=orcid:" + orcidID );
+        try {
+
+            getMethod.setQueryString("q=" + (orcidID.contains("-") ? "orcid" : "text") + ":" + orcidID);
 
             System.out.println("query string=" + getMethod.getQueryString());
-            System.out.println("URI="+ getMethod.getURI());
+            System.out.println("URI=" + getMethod.getURI());
 
 
             getMethod.addRequestHeader(CONTENT_TYPE, ORCID_XML);
@@ -60,11 +62,11 @@ public class OrcidClientImpl implements OrcidClient {
 
                 getMethod.releaseConnection();
                 return processAuthorInfo(contents);
-            }else{
+            } else {
                 System.out.println("status code is -1");
             }
 
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }//catch(HttpException ex){
 
@@ -74,11 +76,11 @@ public class OrcidClientImpl implements OrcidClient {
 
     public OrcidAuthor[] getOrcidProfiles(String searchString) {
 
-        try{
-            getMethod.setQueryString("q=text:'" + searchString +"'");
+        try {
+            getMethod.setQueryString("q=text:" + URLEncoder.encode(searchString, "UTF-8") + "");
 
             System.out.println("query string=" + getMethod.getQueryString());
-            System.out.println("URI="+ getMethod.getURI());
+            System.out.println("URI=" + getMethod.getURI());
 
 
             getMethod.addRequestHeader(CONTENT_TYPE, ORCID_XML);
@@ -93,11 +95,11 @@ public class OrcidClientImpl implements OrcidClient {
 
                 getMethod.releaseConnection();
                 return processOrcidProfles(contents);
-            }else{
+            } else {
                 System.out.println("status code is -1");
             }
 
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }//catch(HttpException ex){
 
@@ -107,13 +109,13 @@ public class OrcidClientImpl implements OrcidClient {
 
     }
 
-    private OrcidAuthor[] processOrcidProfles(String contents){
+    private OrcidAuthor[] processOrcidProfles(String contents) {
         OrcidMessageDocument orcidMessageDocument = handler.getOrcidMessageDocument(contents);
         return handler.getOrcidAuthors(orcidMessageDocument);
     }
 
-    private OrcidAuthor processAuthorInfo(String contents){
-        System.out.println("contents="+contents);
+    private OrcidAuthor processAuthorInfo(String contents) {
+        System.out.println("contents=" + contents);
         OrcidMessageDocument orcidMessageDocument = handler.getOrcidMessageDocument(contents);
         return handler.getSingleOrcidAuthor(orcidMessageDocument);
     }
@@ -122,7 +124,7 @@ public class OrcidClientImpl implements OrcidClient {
     public static void main(String[] args) {
         OrcidClientImpl client = new OrcidClientImpl();
         //client.getAuthorInfo("0000-0003-3499-8262");
-       // client.getOrcidProfiles("English");
+        // client.getOrcidProfiles("English");
         //client.getOrcidProfiles("gonzalez-beltran");
         client.getOrcidProfiles("0000-0003-3499-8262");
     }

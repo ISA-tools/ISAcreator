@@ -45,6 +45,7 @@ import org.isatools.isacreator.common.button.FlatButton;
 
 import org.isatools.isacreator.gui.HistoricalSelectionGUI;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.orcid.OrcidClient;
 import org.isatools.isacreator.orcid.gui.OrcidContactSelectedEvent;
 import org.isatools.isacreator.orcid.gui.OrcidContactSelectionCancelledEvent;
@@ -74,19 +75,17 @@ public class CreateProfileMenu extends UserCreationMenu {
     @InjectedResource
     private ImageIcon createProfileButton, createProfileButtonOver, backButtonSml, backButtonSmlOver, searchOrcid;
 
-    private JButton createProfile, backButton;
-
     private JTextField firstnameVal;
     private JTextField institutionVal;
     private JTextField surnameVal;
     private JTextField orcid;
-    private JLabel searchOrcidLabel;
+    private OrcidLookupUI orcidLookupUI;
 
     public CreateProfileMenu(ISAcreatorMenu menu) {
         super(menu);
         status = new JLabel("");
         status.setForeground(UIHelper.RED_COLOR);
-        setPreferredSize(new Dimension(350, 400));
+        setPreferredSize(new Dimension(390, 400));
         setLayout(new BorderLayout());
         setOpaque(false);
     }
@@ -155,7 +154,7 @@ public class CreateProfileMenu extends UserCreationMenu {
         buttonContainer.add(back, BorderLayout.WEST);
 
 
-        createProfile = new FlatButton(ButtonType.GREEN, "Save");
+        JButton createProfile = new FlatButton(ButtonType.GREEN, "Save");
         createProfile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 createProfile();
@@ -163,7 +162,7 @@ public class CreateProfileMenu extends UserCreationMenu {
         });
 
 
-        backButton = new FlatButton(ButtonType.GREY, "Back", UIHelper.GREY_COLOR);
+        JButton backButton = new FlatButton(ButtonType.GREY, "Back", UIHelper.GREY_COLOR);
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 menu.changeView(menu.getAuthenticationGUI());
@@ -179,7 +178,7 @@ public class CreateProfileMenu extends UserCreationMenu {
 
         JPanel statusContainer = new JPanel(new BorderLayout());
         statusContainer.setOpaque(false);
-        statusContainer.setPreferredSize(new Dimension(300, 30));
+        statusContainer.setPreferredSize(new Dimension(390, 30));
         statusContainer.add(status, BorderLayout.CENTER);
 
         southPanel.add(UIHelper.wrapComponentInPanel(statusContainer));
@@ -190,7 +189,6 @@ public class CreateProfileMenu extends UserCreationMenu {
         northPanel.setOpaque(false);
         add(northPanel, BorderLayout.CENTER);
     }
-
 
 
     private JPanel createInstitutionPanel(Action createProfileAction) {
@@ -229,76 +227,63 @@ public class CreateProfileMenu extends UserCreationMenu {
         return firstNameCont;
     }
 
-    private JPanel createOrcidPanel(Action lookupOrcid){
-        JPanel orcidCont = new JPanel(new GridLayout(2, 2));
+    private JPanel createOrcidPanel(Action lookupOrcid) {
+        JPanel orcidCont = new JPanel(new GridLayout(1, 2));
         orcidCont.setOpaque(false);
+
         JLabel orcidLabel = createLabel("orcid");
+
         orcidCont.add(orcidLabel);
 
         orcid = createTextField();
-        orcidCont.add(orcid);
         assignKeyActionToComponent(lookupOrcid, orcid);
 
-        final JLabel searchOrcidLabel = new JLabel(
-                "orcid",
-                searchOrcid,
-                JLabel.RIGHT);
-
-        UIHelper.renderComponent(searchOrcidLabel, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+        JLabel searchOrcidLabel = UIHelper.createLabel("Look up", UIHelper.VER_11_BOLD, UIHelper.BELIZE_HOLE, JLabel.RIGHT);
 
         searchOrcidLabel.addMouseListener(new MouseAdapter() {
             @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
+                ((JComponent) mouseEvent.getSource()).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
+                ((JComponent) mouseEvent.getSource()).setCursor(Cursor.getDefaultCursor());
+            }
+
+            @Override
+
+
             public void mouseClicked(MouseEvent mouseEvent) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        final OrcidLookupUI orcidLookupUI = new OrcidLookupUI();
-                        orcidLookupUI.createGUI();
-                        orcidLookupUI.installListeners();
+                        if (orcidLookupUI == null) {
+                            orcidLookupUI = new OrcidLookupUI();
+                            orcidLookupUI.createGUI();
+                            orcidLookupUI.installListeners();
+                        }
+
+                        orcidLookupUI.setLocationRelativeTo(ApplicationManager.getCurrentApplicationInstance());
                         orcidLookupUI.setVisible(true);
 
                         orcidLookupUI.addPropertyChangeListener("selectedOrcid", new OrcidContactSelectedEvent(orcidLookupUI, orcid, firstnameVal, surnameVal, emailVal));
-
                         orcidLookupUI.addPropertyChangeListener("noSelectedOrcid", new OrcidContactSelectionCancelledEvent(orcidLookupUI));
-
-                        // set up location on screen
-                        int proposedX = (int) orcid.getLocationOnScreen()
-                                .getX();
-                        int proposedY = (int) orcid.getLocationOnScreen()
-                                .getY();
-
-                        // get the desktop bounds e.g. 1440*990, 800x600, etc.
-                        Rectangle desktopBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                                .getMaximumWindowBounds();
-
-                        if ((proposedX + HistoricalSelectionGUI.WIDTH) > desktopBounds.width)
-
-                        {
-                            int difference = (proposedX +
-                                    HistoricalSelectionGUI.WIDTH) -
-                                    desktopBounds.width;
-                            proposedX = proposedX - difference;
-                        }
-
-                        if ((proposedY + HistoricalSelectionGUI.HEIGHT) > desktopBounds.height)
-
-                        {
-                            int difference = (proposedY +
-                                    HistoricalSelectionGUI.HEIGHT) -
-                                    desktopBounds.height;
-                            proposedY = proposedY - difference;
-                        }
-
-                        orcidLookupUI.setLocation(proposedX, proposedY);
-                        orcidLookupUI.setVisible(true);
-
-
 
                     }//run
                 });//runnable
-            };
-        });
-        orcidCont.add(searchOrcidLabel);
+            }
 
+        });
+
+        JPanel orcidInfoContainer = new JPanel();
+        orcidInfoContainer.setLayout(new BoxLayout(orcidInfoContainer, BoxLayout.LINE_AXIS));
+        orcidInfoContainer.add(orcid);
+        orcidInfoContainer.add(searchOrcidLabel);
+
+        orcidCont.add(orcidInfoContainer);
         return orcidCont;
     }
 
@@ -306,7 +291,7 @@ public class CreateProfileMenu extends UserCreationMenu {
         OrcidClient client = new OrcidClientImpl();
         OrcidAuthor author = client.getAuthorInfo(orcid.getText());
 
-        if (author==null)
+        if (author == null)
             return;
 
         firstnameVal.setText(author.getGivenNames());
@@ -321,7 +306,7 @@ public class CreateProfileMenu extends UserCreationMenu {
                     "<html><b>password is required!</b></html>");
             return;
         }
-        if (!CreateProfile.matchingPasswords(passwordVal.getPassword(),confirmPasswordVal.getPassword())){
+        if (!CreateProfile.matchingPasswords(passwordVal.getPassword(), confirmPasswordVal.getPassword())) {
             status.setText(
                     "<html><b>passwords do not match!</b> the password and confirmation must match!</html>");
             return;
@@ -335,15 +320,15 @@ public class CreateProfileMenu extends UserCreationMenu {
                     if (!CreateProfile.emptyField(institutionVal.getText())) {
                         if (!CreateProfile.emptyField(emailVal.getText())) {
                             if (CreateProfile.validEmail(emailVal.getText())) {
-                                if (CreateProfile.duplicateUser(usernameVal.getText())){
-                                   status.setText(
-                                         "<html><b>user name taken!</b> this username is already in use</html>");
-                                }else{
-                                    CreateProfile.createProfile(usernameVal.getText(), passwordVal.getPassword(),firstnameVal.getText(),surnameVal.getText(),institutionVal.getText(),emailVal.getText());
+                                if (CreateProfile.duplicateUser(usernameVal.getText())) {
+                                    status.setText(
+                                            "<html><b>user name taken!</b> this username is already in use</html>");
+                                } else {
+                                    CreateProfile.createProfile(usernameVal.getText(), passwordVal.getPassword(), firstnameVal.getText(), surnameVal.getText(), institutionVal.getText(), emailVal.getText());
 
-                                    if (ISAcreatorCLArgs.configDir() == null){
+                                    if (ISAcreatorCLArgs.configDir() == null) {
                                         menu.changeView(menu.getImportConfigurationGUI());
-                                    }else {
+                                    } else {
                                         menu.changeView(menu.getMainMenuGUI());
                                     }
                                 }
