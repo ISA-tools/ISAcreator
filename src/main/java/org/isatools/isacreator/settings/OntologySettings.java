@@ -216,6 +216,7 @@ public class OntologySettings extends SettingsScreen {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         historyScroll.setBorder(new EmptyBorder(0, 0, 0, 0));
 
+
         IAppWidgetFactory.makeIAppScrollPane(historyScroll);
 
         UIHelper.renderComponent(historyList.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.GREY_COLOR, false);
@@ -228,22 +229,31 @@ public class OntologySettings extends SettingsScreen {
 
         loadedOntologiesContainer.add(UIHelper.wrapComponentInPanel(loadedOntologyStats));
 
-        // add list and filter field to UI
-        loadedOntologiesContainer.add(historyList.getFilterField());
-        loadedOntologiesContainer.add(Box.createVerticalStrut(5));
+        JPanel ontologyPanel = new JPanel(new BorderLayout());
+
+        ontologyPanel.add(historyList.getFilterField(), BorderLayout.NORTH);
+
         // add the actual list containing the elements!
-        loadedOntologiesContainer.add(historyScroll);
-        loadedOntologiesContainer.add(Box.createVerticalStrut(5));
+        ontologyPanel.add(historyScroll, BorderLayout.CENTER);
+
         // add controls for list!
-        loadedOntologiesContainer.add(createControlPanel());
-        loadedOntologiesContainer.add(Box.createVerticalStrut(5));
+        Container southPanel = Box.createVerticalBox();
+        southPanel.add(createControlPanel());
+        southPanel.add(Box.createVerticalStrut(5));
+
 
         ontologyTermInformation = UIHelper.createLabel("", UIHelper.VER_10_PLAIN);
         ontologyTermInformation.setPreferredSize(new Dimension(200, 60));
         ontologyTermInformation.setVisible(false);
+        southPanel.add(UIHelper.wrapComponentInPanel(ontologyTermInformation));
 
-        loadedOntologiesContainer.add(Box.createVerticalStrut(20));
-        loadedOntologiesContainer.add(UIHelper.wrapComponentInPanel(ontologyTermInformation));
+        ontologyPanel.add(southPanel, BorderLayout.SOUTH);
+
+
+        // add list and filter field to UI
+
+
+        loadedOntologiesContainer.add(ontologyPanel);
 
         return loadedOntologiesContainer;
     }
@@ -303,7 +313,7 @@ public class OntologySettings extends SettingsScreen {
 
 
     public boolean updateSettings() {
-        OntologyManager.setOntologySelectionHistory(userOntologyHistory);
+        OntologyManager.setOntologyTermHistory(userOntologyHistory);
         UserProfileManager.saveUserProfiles();
         return true;
     }
@@ -323,8 +333,7 @@ public class OntologySettings extends SettingsScreen {
             JOptionPane optionPane = null;
 
             try {
-                OntologyLibrary ol = UserProfileManager.loadOntologyLibrary(
-                        file);
+                OntologyLibrary ol = UserProfileManager.loadOntologyLibrary(file);
 
                 userOntologyHistory.putAll(ol.getOntologies());
                 UserProfileManager.getCurrentUser().setUsedOntologySources(ol.getOntologySources());
