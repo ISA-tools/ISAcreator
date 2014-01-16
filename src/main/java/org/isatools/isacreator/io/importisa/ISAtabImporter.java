@@ -256,7 +256,7 @@ public abstract class ISAtabImporter {
 
                     if (builtReference != null) {
                         study.setStudySamples(new Assay(study.getStudySampleFileIdentifier(), builtReference));
-                        OntologyManager.addToOntologySelectionHistory(builtReference.getReferencedOntologyTerms());
+                        OntologyManager.addToOntologyTerms(builtReference.getReferencedOntologyTerms());
                     }
                 } catch (MalformedInvestigationException mie) {
                     mie.printStackTrace();
@@ -295,7 +295,7 @@ public abstract class ISAtabImporter {
                                 assay.getAssayReference(), assayTableReferenceObject);
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
-                            OntologyManager.addToOntologySelectionHistory(builtReference.getReferencedOntologyTerms());
+                            OntologyManager.addToOntologyTerms(builtReference.getReferencedOntologyTerms());
                         }
                     } catch (IOException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));
@@ -363,7 +363,7 @@ public abstract class ISAtabImporter {
     private void assignOntologiesToSession(List<OntologyTerm> ontologiesUsed) {
         for (OntologyTerm oo : ontologiesUsed) {
             if (!oo.getOntologyTermName().trim().equals("")) {
-                OntologyManager.addToUserHistory(oo);
+                OntologyManager.addToOntologyTerms(oo);
             }
         }
     }

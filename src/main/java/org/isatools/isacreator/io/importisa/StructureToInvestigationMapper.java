@@ -107,7 +107,7 @@ public class StructureToInvestigationMapper {
     }
 
     private Investigation processInvestigation(OrderedMap<InvestigationFileSection, OrderedMap<String, List<String>>> investigationSections) {
-        List<OntologySourceRefObject> ontologySources = new ArrayList<OntologySourceRefObject>();
+        Set<OntologySourceRefObject> ontologySources = new HashSet<OntologySourceRefObject>();
         List<Contact> contacts = new ArrayList<Contact>();
         List<Publication> publications = new ArrayList<Publication>();
 
@@ -126,7 +126,7 @@ public class StructureToInvestigationMapper {
 
                 Pair<Set<String>, List<OntologySourceRefObject>> processedFactorsSection = processOntologySourceReferences(investigationSections.get(investigationSection));
                 sectionFields.put(investigationSection, processedFactorsSection.fst);
-                ontologySources = processedFactorsSection.snd;
+                ontologySources = new HashSet<OntologySourceRefObject>(processedFactorsSection.snd);
 
             } else if (investigationSection == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
 
@@ -144,7 +144,7 @@ public class StructureToInvestigationMapper {
         }
 
         if (tmpInvestigation != null) {
-            OntologyManager.setOntologiesUsed(tmpInvestigation.getInvestigationId(), ontologySources);
+            OntologyManager.setOntologySources(ontologySources);
             tmpInvestigation.addToPublications(publications);
             tmpInvestigation.addToContacts(contacts);
 
@@ -293,6 +293,7 @@ public class StructureToInvestigationMapper {
             Map<String, String> record = getRecord(ontologySection, recordIndex);
             if (!isNullRecord(record)) {
                 ontologySource.addToFields(record);
+                ontologySource.completeFields();
                 ontologySources.add(ontologySource);
             }
         }
@@ -705,7 +706,7 @@ public class StructureToInvestigationMapper {
         // build up set of ontology sources that have been defined
         Set<String> definedOntologySources = new HashSet<String>();
 
-        for (OntologySourceRefObject osro : OntologyManager.getOntologiesUsed()) {
+        for (OntologySourceRefObject osro : OntologyManager.getOntologySources()) {
             definedOntologySources.add(osro.getSourceName());
         }
 

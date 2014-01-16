@@ -53,6 +53,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by the ISA team
@@ -73,10 +74,11 @@ public abstract class ISAFileOutput {
         };
         String toReturn = "ONTOLOGY SOURCE REFERENCE\n";
 
+        Set<OntologySourceRefObject> ontologiesUsed = OntologyManager.getOntologiesUsed();
+
         for (int i = 0; i < headerTerms.length; i++) {
             StringBuffer line = new StringBuffer(headerTerms[i] + "\t");
             String val = "";
-            List<OntologySourceRefObject> ontologiesUsed = OntologyManager.getOntologiesUsed();
             for (OntologySourceRefObject anOntologyUsed : ontologiesUsed) {
 
                 if (headerTerms[i].equals("Term Source Name")) {

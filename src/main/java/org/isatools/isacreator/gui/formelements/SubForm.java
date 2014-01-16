@@ -767,7 +767,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
 
     protected void checkForSourcePresence(String source) {
         if (dataEntryForm != null && dataEntryForm.getDataEntryEnvironment() != null) {
-            List<OntologySourceRefObject> definedSources = dataEntryForm.getDataEntryEnvironment()
+            Collection<OntologySourceRefObject> definedSources = dataEntryForm.getDataEntryEnvironment()
                     .getOntologySources();
             boolean isPresent = false;
 
@@ -780,11 +780,10 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
             // if it doesn't exist, then add the ontology information to the defined sources
             if (!isPresent) {
 
-                OntologySourceRefObject osro = UserProfileManager.getCurrentUser()
-                        .getOntologySource(source);
+                OntologySourceRefObject osro = UserProfileManager.getCurrentUser().getOntologySource(source);
 
                 if (osro == null) {
-                    osro = new OntologySourceRefObject(source, "", OntologyManager.getOntologyVersion(source), OntologyManager.getOntologyDescription(source));
+                    osro = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source);
                 }
 
                 dataEntryForm.getDataEntryEnvironment().getOntologySources().add(osro);
