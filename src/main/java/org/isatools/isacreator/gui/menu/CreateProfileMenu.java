@@ -38,12 +38,19 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.api.CreateProfile;
-import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
+
 import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
-import org.isatools.isacreator.effects.components.RoundedJPasswordField;
+
+import org.isatools.isacreator.gui.HistoricalSelectionGUI;
 import org.isatools.isacreator.launch.ISAcreatorCLArgs;
+import org.isatools.isacreator.orcid.OrcidClient;
+import org.isatools.isacreator.orcid.gui.OrcidContactSelectedEvent;
+import org.isatools.isacreator.orcid.gui.OrcidContactSelectionCancelledEvent;
+import org.isatools.isacreator.orcid.gui.OrcidLookupUI;
+import org.isatools.isacreator.orcid.impl.OrcidClientImpl;
+import org.isatools.isacreator.orcid.model.OrcidAuthor;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
@@ -64,12 +71,16 @@ import java.awt.event.MouseEvent;
 
 
 public class CreateProfileMenu extends UserCreationMenu {
+    @InjectedResource
+    private ImageIcon createProfileButton, createProfileButtonOver, backButtonSml, backButtonSmlOver, searchOrcid;
 
     private JButton createProfile, backButton;
 
     private JTextField firstnameVal;
     private JTextField institutionVal;
     private JTextField surnameVal;
+    private JTextField orcid;
+    private JLabel searchOrcidLabel;
 
     public CreateProfileMenu(ISAcreatorMenu menu) {
         super(menu);
@@ -82,7 +93,7 @@ public class CreateProfileMenu extends UserCreationMenu {
 
     public void createGUI() {
         Box fields = Box.createVerticalBox();
-        fields.add(Box.createVerticalStrut(10));
+        fields.add(Box.createVerticalStrut(11));
         fields.setOpaque(false);
 
         Action createProfileAction = new AbstractAction() {
@@ -90,27 +101,39 @@ public class CreateProfileMenu extends UserCreationMenu {
                 createProfile();
             }
         };
+
+        Action lookupUserInfoFromOrcidAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                lookupUserInfoFromOrcid();
+            }
+        };
+
         JPanel userNameCont = createUsernamePanel(createProfileAction);
         JPanel passwordCont = createPasswordPanel(createProfileAction);
         JPanel confirmPasswordCont = createConfirmPasswordPanel(createProfileAction);
+
+        JPanel orcidIdCont = createOrcidPanel(lookupUserInfoFromOrcidAction);
+
         JPanel firstNameCont = createForenamePanel(createProfileAction);
         JPanel surnameCont = createSurnamePanel(createProfileAction);
         JPanel institutionCont = createInstitutionPanel(createProfileAction);
         JPanel emailCont = createEmailPanel(createProfileAction);
 
 
+        fields.add(orcidIdCont);
+        fields.add(Box.createVerticalStrut(8));
         fields.add(userNameCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(passwordCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(confirmPasswordCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(firstNameCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(surnameCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(institutionCont);
-        fields.add(Box.createVerticalStrut(7));
+        fields.add(Box.createVerticalStrut(8));
         fields.add(emailCont);
 
         JLabel info = new JLabel(
@@ -206,6 +229,90 @@ public class CreateProfileMenu extends UserCreationMenu {
         return firstNameCont;
     }
 
+    private JPanel createOrcidPanel(Action lookupOrcid){
+        JPanel orcidCont = new JPanel(new GridLayout(2, 2));
+        orcidCont.setOpaque(false);
+        JLabel orcidLabel = createLabel("orcid");
+        orcidCont.add(orcidLabel);
+
+        orcid = createTextField();
+        orcidCont.add(orcid);
+        assignKeyActionToComponent(lookupOrcid, orcid);
+
+        final JLabel searchOrcidLabel = new JLabel(
+                "orcid",
+                searchOrcid,
+                JLabel.RIGHT);
+
+        UIHelper.renderComponent(searchOrcidLabel, UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR, false);
+
+        searchOrcidLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        final OrcidLookupUI orcidLookupUI = new OrcidLookupUI();
+                        orcidLookupUI.createGUI();
+                        orcidLookupUI.installListeners();
+                        orcidLookupUI.setVisible(true);
+
+                        orcidLookupUI.addPropertyChangeListener("selectedOrcid", new OrcidContactSelectedEvent(orcidLookupUI, orcid, firstnameVal, surnameVal, emailVal));
+
+                        orcidLookupUI.addPropertyChangeListener("noSelectedOrcid", new OrcidContactSelectionCancelledEvent(orcidLookupUI));
+
+                        // set up location on screen
+                        int proposedX = (int) orcid.getLocationOnScreen()
+                                .getX();
+                        int proposedY = (int) orcid.getLocationOnScreen()
+                                .getY();
+
+                        // get the desktop bounds e.g. 1440*990, 800x600, etc.
+                        Rectangle desktopBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                                .getMaximumWindowBounds();
+
+                        if ((proposedX + HistoricalSelectionGUI.WIDTH) > desktopBounds.width)
+
+                        {
+                            int difference = (proposedX +
+                                    HistoricalSelectionGUI.WIDTH) -
+                                    desktopBounds.width;
+                            proposedX = proposedX - difference;
+                        }
+
+                        if ((proposedY + HistoricalSelectionGUI.HEIGHT) > desktopBounds.height)
+
+                        {
+                            int difference = (proposedY +
+                                    HistoricalSelectionGUI.HEIGHT) -
+                                    desktopBounds.height;
+                            proposedY = proposedY - difference;
+                        }
+
+                        orcidLookupUI.setLocation(proposedX, proposedY);
+                        orcidLookupUI.setVisible(true);
+
+
+
+                    }//run
+                });//runnable
+            };
+        });
+        orcidCont.add(searchOrcidLabel);
+
+        return orcidCont;
+    }
+
+    private void lookupUserInfoFromOrcid() {
+        OrcidClient client = new OrcidClientImpl();
+        OrcidAuthor author = client.getAuthorInfo(orcid.getText());
+
+        if (author==null)
+            return;
+
+        firstnameVal.setText(author.getGivenNames());
+        surnameVal.setText(author.getFamilyName());
+        emailVal.setText(author.getEmail());
+    }
 
     private void createProfile() {
         // check password is not empty and that the password and the confirmation match!
