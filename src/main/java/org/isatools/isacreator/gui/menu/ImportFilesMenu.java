@@ -49,11 +49,11 @@ import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
 import org.isatools.isacreator.managers.ApplicationManager;
-import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,7 +76,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     private ImageIcon panelHeader, listImage, backButton, backButtonOver, filterLeft, filterRight;
 
     private JButton back;
-    private Container loadingImagePanel;
+    private JPanel loadingImagePanel;
 
 
     public ImportFilesMenu(ISAcreatorMenu menu) {
@@ -111,7 +111,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 if (candidate.getName()
                         .equals(previousFileList.getSelectedValue()
                                 .toString())) {
-                    getSelectedFileAndLoad(candidate,true);
+                    getSelectedFileAndLoad(candidate, true);
                 }
             }
         }
@@ -119,7 +119,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
 
     public void getSelectedFileAndLoad(File candidate, boolean loadingImagePane) {
-        if (loadingImagePane){
+        if (loadingImagePane) {
             showLoadingImagePane();
         }
         ApplicationManager.setCurrentLocalISATABFolder(candidate.getAbsolutePath());
@@ -136,9 +136,23 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
     }
 
-    private Container createLoadingImagePanel() {
+    private JPanel createLoadingImagePanel() {
+
         if (loadingImagePanel == null) {
-            loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
+            loadingImagePanel = new JPanel();
+            loadingImagePanel.setLayout(new BoxLayout(loadingImagePanel, BoxLayout.PAGE_AXIS));
+            loadingImagePanel.setPreferredSize(new Dimension(400, 400));
+            loadingImagePanel.setOpaque(false);
+            JPanel loadingImageContainer = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
+            loadingImageContainer.setSize(new Dimension(125, 256));
+            loadingImagePanel.add(loadingImageContainer);
+
+            JPanel infoContainer = UIHelper.wrapComponentInPanel(
+                    UIHelper.createLabel("<html><p>In this version of the tool, we automatically upgrade ontology accessions in use to URIs - " +
+                            "this is an artifact of the upgrades to BioPortal's new REST web services (version 4).</p> <p>Loading will take a little bit longer than normal during this upgrade.</p> </html>", UIHelper.VER_12_BOLD, UIHelper.ASPHALT));
+
+            infoContainer.setBorder(new EmptyBorder(0, 50, 50, 0));
+            loadingImagePanel.add(infoContainer);
         }
         return loadingImagePanel;
     }
@@ -239,7 +253,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     createErrorView(reports, false);
                 } finally {
 
-                    if (loadingImagePanel != null){
+                    if (loadingImagePanel != null) {
                         menu.remove(loadingImagePanel);
                     }
                     menu.hideGlassPane();

@@ -1631,15 +1631,18 @@ public class Spreadsheet extends JComponent implements
                         "</p>" + "<p><b>source ref: </b> " +
                         ooForSelectedTerm.getOntologySource() + "</p>" +
 
-                        ( ooForSelectedTerm.getOntologyTermAccession().contains("http://") ? "" :
-
-                        "<p><b>accession no: </b>" +
-                        ooForSelectedTerm.getOntologyTermAccession() + "</p>" ) +
+                        (ooForSelectedTerm.getOntologyTermAccession().startsWith("http://") ? "" :
+                                "<p><b>accession no: </b>" +
+                                        ooForSelectedTerm.getOntologyTermAccession() + "</p>") +
 
 //                        ((ooForSelectedTerm.getOntologyTermURI()!=null && !ooForSelectedTerm.getOntologyTermURI().equals("")) ?
 //                                "<p><b>uri: </b>" + ooForSelectedTerm.getOntologyTermURI() + "</p>" : "") +
 
                         "</html>");
+
+                if (ooForSelectedTerm.getOntologyTermAccession().startsWith("http://")) {
+                    studyDataEntryEnvironment.getDataEntryEnvironment().setLink(ooForSelectedTerm.getOntologyTermAccession());
+                }
             }
         }
     }
