@@ -1278,17 +1278,6 @@ public class Spreadsheet extends JComponent implements
         }
     }
 
-
-    /**
-     * Searches UserHistory for a unique ontology id (source:term pair)
-     *
-     * @param uniqueId- the ID being searched for in the previous user history.
-     * @return - OntologyObject matching the unique id if found, null otherwise.
-     */
-    private OntologyTerm searchUserHistory(String uniqueId) {
-        return OntologyManager.getOntologyTerm(uniqueId);
-    }
-
     /**
      * Add a listener for undoable events
      *
@@ -1629,7 +1618,7 @@ public class Spreadsheet extends JComponent implements
             String s = table.getValueAt(rowSelected, columnSelected)
                     .toString();
 
-            OntologyTerm ooForSelectedTerm = searchUserHistory(s);
+            OntologyTerm ooForSelectedTerm = OntologyManager.getOntologyTerm(s);
 
             if (ooForSelectedTerm != null) {
                 // update status panel in bottom left hand corner of workspace to contain the ontology
