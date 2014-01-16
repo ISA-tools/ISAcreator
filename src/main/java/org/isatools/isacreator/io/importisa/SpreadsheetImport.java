@@ -5,6 +5,7 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -50,8 +51,20 @@ public class SpreadsheetImport {
             while ((nextLine = reader.readNext()) != null) {
                 if (count == 0) {
                     colHeaders = nextLine;
-                    tro = reformTableDefinition(fileName, nextLine,
-                            defaultTableRef);
+                    try {
+                        tro = reformTableDefinition(fileName, nextLine,
+                                defaultTableRef);
+                    } catch (MalformedInvestigationException mie) {
+
+                        System.err.println(mie.toString());
+                        TableReferenceObject generic_tro = ConfigurationManager.selectTROForUserSelection("*", "*");
+                        if (generic_tro != null && defaultTableRef != generic_tro) {
+                            tro = reformTableDefinition(fileName, nextLine, generic_tro);
+                        } else {
+                            throw mie;
+                        }
+                    }
+
 
                     Vector<String> preDefinedHeaders = new Vector<String>();
                     preDefinedHeaders.add("Row No.");
@@ -257,16 +270,17 @@ public class SpreadsheetImport {
             int headerCount = invalidHeaders.size();
             for (String s : invalidHeaders) {
                 invalidHeaderNames += s;
-                if (headerCount < invalidHeaders.size() - 1) {
+
+                if (headerCount != invalidHeaders.size() - 1) {
                     invalidHeaderNames += ", ";
                 }
                 headerCount++;
             }
 
-            String colText = invalidHeaders.size() > 1 ? invalidHeaders.size() + "The columns" : "The column ";
-            String linkText = invalidHeaders.size() > 1 ? invalidHeaders.size() + " are " : " is ";
+            String colText = invalidHeaders.size() > 1 ? "The columns " : "The column ";
+            String linkText = invalidHeaders.size() > 1 ? " are " : " is ";
 
-            throw new MalformedInvestigationException(colText + invalidHeaderNames + linkText + " not supported in this assay");
+            throw new MalformedInvestigationException(colText + invalidHeaderNames + linkText + "not supported in this assay");
         }
 
         return tro;

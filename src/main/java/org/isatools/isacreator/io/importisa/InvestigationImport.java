@@ -216,7 +216,7 @@ public class InvestigationImport {
         if (investigationFile.exists()) {
             CSVReader csvReader = new CSVReader(new FileReader(investigationFile), TAB_DELIM);
 
-            String[] line = null;
+            String[] line;
             while((line = csvReader.readNext()) != null) {
                 if(line.length > 0) {
                     if(!line[0].startsWith("#")) {
