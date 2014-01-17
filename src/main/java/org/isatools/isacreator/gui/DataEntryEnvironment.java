@@ -567,6 +567,14 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         return navigationPanel;
     }
 
+    /**
+     * This is used by plugins, so do not delete.
+     * @return
+     */
+    public DefaultMutableTreeNode getSelectedNodeInOverviewTree() {
+        return selectedNode;
+    }
+
     private DefaultMutableTreeNode createStudyNode(Investigation inv, Study study) {
         if (ApplicationManager.getUserInterfaceForISASection(study) == null) {
             ApplicationManager.assignDataEntryToISASection(study, new StudyDataEntry(DataEntryEnvironment.this, study));

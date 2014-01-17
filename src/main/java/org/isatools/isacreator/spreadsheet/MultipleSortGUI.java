@@ -44,6 +44,7 @@ import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -109,7 +110,9 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
         headerCont.setSize(new Dimension(300, 25));
         headerCont.setLayout(new BoxLayout(headerCont, BoxLayout.LINE_AXIS));
         headerCont.add(UIHelper.createLabel("Perform Multiple Sort", UIHelper.VER_14_BOLD, UIHelper.DARK_GREEN_COLOR, JLabel.LEFT));
+        headerCont.setBorder(new EmptyBorder(10,10,10,10));
         add(headerCont, BorderLayout.NORTH);
+
         instantiatePanel();
 
         pack();
@@ -281,6 +284,7 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
         // panel to contain everything.
         JPanel container = new JPanel(new BorderLayout());
         container.setBackground(UIHelper.BG_COLOR);
+        container.setBorder(new EmptyBorder(10,10,10,10));
         add(options, BorderLayout.CENTER);
         add(doSortPanel, BorderLayout.SOUTH);
     }
