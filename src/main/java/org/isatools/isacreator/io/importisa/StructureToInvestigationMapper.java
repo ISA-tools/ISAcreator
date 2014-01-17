@@ -645,10 +645,7 @@ public class StructureToInvestigationMapper {
                         ontologyTermsDefined.add(ot);
                         if (!(ISAcreatorProperties.getOntologyTermURIProperty() && ot.getOntologyTermURI()!=null && !ot.getOntologyTermURI().equals("")))
                             toReturn = term;
-                        //else {
-                        //    System.out.println("Keeping term in mapping, without URI ===>"+ term);
-
-                        //}
+                        OntologyManager.addToOntologyTerms(ot);
                     }
                 }
 

@@ -208,7 +208,9 @@ public abstract class ISAtabImporter {
                 }
 
                 System.out.println("********************\n"+OntologyManager.getURIMappingInfo());
-                messages.add(new ErrorMessage(ErrorLevel.INFO, OntologyManager.getURIMappingInfoHTML()));
+                String mappingInfo = OntologyManager.getURIMappingInfoHTML();
+                if (mappingInfo!=null && !mappingInfo.equals(""))
+                    messages.add(new ErrorMessage(ErrorLevel.INFO, mappingInfo));
 
 
             } catch (IOException e) {
