@@ -86,6 +86,10 @@ public class OntologyManager {
             addToOntologyTermHistory(oo.getShortForm(), oo);
     }
 
+    public static Map<String, OntologyTerm> getOntologySelectionHistory() {
+        return ontologyTerms;
+    }
+
     /**
      *
      * @param label
