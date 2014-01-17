@@ -110,7 +110,7 @@ Study Public Release Date	"2009-03-10"
 Study File Name	"s_BII-S-2.txt"
 STUDY DESIGN DESCRIPTORS
 Study Design Type	"time series design"
-Study Design Type Term Accession Number	""
+Study Design Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0500020"
 Study Design Type Term Source REF	"OBI"
 STUDY PUBLICATIONS
 Study PubMed ID	"17439666"
