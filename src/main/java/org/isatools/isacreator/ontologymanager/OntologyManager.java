@@ -55,6 +55,8 @@ public class OntologyManager {
     public static final String OLS = "OLS";
     public static final String BIO_PORTAL = "BioPortal";
 
+    private static boolean foundURIs = false;
+
     //All the ontologySourceRefObject, indexed by their (abbreviated) name
     private static Map<String, OntologySourceRefObject> ontologySources = new HashMap<String, OntologySourceRefObject>();
 
@@ -71,6 +73,10 @@ public class OntologyManager {
 
     private static void addToNoURITermMap(String k, OntologyTerm v){
         noURITermMap.put(k, v);
+    }
+
+    public static void foundURI(){
+        foundURIs = true;
     }
 
     /***   ontologyTermHistory methods ****/
@@ -244,11 +250,6 @@ public class OntologyManager {
             ontologySources.put(sourceRefObject.getSourceName(), sourceRefObject);
     }
 
-//    //Used in ISAcreator.saveProfilesAndGoToMain and ISAcreator.SaveAction
-//    public static void clearReferencedOntologySources() {
-//        ontologySources.clear();
-//    }
-
     public static OntologySourceRefObject getOntologySourceReferenceObjectByAbbreviation(String source) {
         for (OntologySourceRefObject ontologySourceRefObject : getOntologySources()) {
             if (source.equalsIgnoreCase(ontologySourceRefObject.getSourceName())) {
@@ -288,6 +289,9 @@ public class OntologyManager {
 
     public static String getURIMappingInfo(){
 
+        if (!foundURIs)
+            return "";
+
         StringBuilder builder = new StringBuilder();
 
         if (!noURITermMap.isEmpty()){
@@ -297,7 +301,9 @@ public class OntologyManager {
                 OntologyTerm ot = noURITermMap.get(key);
                 builder.append("\n\t"+ ot.getOntologyTermName()+ "\t"+ ot.getOntologySource() +"\t" + ot.getOntologyTermURI());
                 }
+        }
 
+        if (!ontologyTerms.isEmpty()){
             builder.append("\nTerms that could be mapped to a URI: ");
             for(String key: ontologyTerms.keySet()){
                 OntologyTerm ot = ontologyTerms.get(key);
@@ -309,6 +315,9 @@ public class OntologyManager {
 
     public static String getURIMappingInfoHTML(){
 
+        if (!foundURIs)
+            return "";
+
         StringBuilder builder = new StringBuilder();
 
         if (!noURITermMap.isEmpty()){
@@ -318,7 +327,9 @@ public class OntologyManager {
                 OntologyTerm ot = noURITermMap.get(key);
                 builder.append("<p style=\"padding-left:10px\">"+ ot.getOntologySource()+":"+ot.getOntologyTermName() +" </p>");
             }
+        }
 
+        if (!ontologyTerms.isEmpty()){
             builder.append("<br>Terms that could be mapped to a URI: ");
             for(String key: ontologyTerms.keySet()){
                 OntologyTerm ot = ontologyTerms.get(key);

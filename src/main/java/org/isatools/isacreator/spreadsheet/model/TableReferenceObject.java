@@ -353,7 +353,10 @@ public class TableReferenceObject implements Serializable {
 
                             OntologyTerm ot = null;
                             if (!referencedOntologyTerms.containsKey(prevVal)) {
-                                ot = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                                if (accession!=null && accession.contains("http://"))
+                                    ot = new OntologyTerm(term, null, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                                else
+                                    ot = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
                                 referencedOntologyTerms.put(prevVal, ot);
 
                             } else {
