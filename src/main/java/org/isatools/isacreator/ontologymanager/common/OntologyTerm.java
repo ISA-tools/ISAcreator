@@ -37,6 +37,7 @@
 package org.isatools.isacreator.ontologymanager.common;
 
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
@@ -125,9 +126,10 @@ public class OntologyTerm implements Comparable<OntologyTerm> {
         if (ontologyTermIRI==null){
             String iri = OntologyTermUtils.getURI(this);
             //System.out.println("term====>" + getOntologyTermName()+", iri ===> "+iri);
-            if (iri!=null)
+            if (iri!=null) {
                 ontologyTermIRI = iri;
-            else
+                OntologyManager.foundURI();
+            }else
                 ontologyTermIRI = "";
         }
         return ontologyTermIRI;
