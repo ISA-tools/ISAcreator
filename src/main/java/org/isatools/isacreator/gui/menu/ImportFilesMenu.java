@@ -148,8 +148,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             loadingImagePanel.add(loadingImageContainer);
 
             JPanel infoContainer = UIHelper.wrapComponentInPanel(
-                    UIHelper.createLabel("<html><p>In this version of the tool, we automatically upgrade ontology accessions in use to URIs - " +
-                            "this is an artifact of the upgrades to BioPortal's new REST web services (version 4).</p> <p>Loading will take a little bit longer than normal during this upgrade.</p> </html>", UIHelper.VER_12_BOLD, UIHelper.ASPHALT));
+                    UIHelper.createLabel("<html><p>In this version of the tool, we automatically upgrade elements annotated with ontology terms from using ontology accessions to using URIs. " +
+                            "This is an artifact of the upgrades to BioPortal's new REST web services (version 4).</p> <p>Loading might take a little bit longer than normal during this upgrade for some ISA-TAB datasets.</p> </html>", UIHelper.VER_12_BOLD, UIHelper.ASPHALT));
 
             infoContainer.setBorder(new EmptyBorder(0, 50, 50, 0));
             loadingImagePanel.add(infoContainer);
