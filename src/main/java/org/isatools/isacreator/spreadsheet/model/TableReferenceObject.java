@@ -340,7 +340,7 @@ public class TableReferenceObject implements Serializable {
                     rowDataModified.set(prevValLoc, s + ":" + prevVal);
                 }
             } else if (headers[i].toLowerCase().trim().contains("term accession number")) {
-                if (!s.equals("")) {
+                //if (!s.equals("")) {
                     String prevVal = rowDataModified.get(prevValLoc);
 
                     if (prevVal.contains(":")) {
@@ -354,7 +354,7 @@ public class TableReferenceObject implements Serializable {
                             OntologyTerm ot = null;
                             if (!referencedOntologyTerms.containsKey(prevVal)) {
                                 if (accession!=null && accession.contains("http://"))
-                                    ot = new OntologyTerm(term, null, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                                    ot = new OntologyTerm(term, accession, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
                                 else
                                     ot = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
                                 referencedOntologyTerms.put(prevVal, ot);
@@ -368,7 +368,7 @@ public class TableReferenceObject implements Serializable {
 
                         }
                     }
-                }
+                //}
             } else {
                 rowDataModified.add(s);
                 prevValLoc = rowDataModified.size() - 1;

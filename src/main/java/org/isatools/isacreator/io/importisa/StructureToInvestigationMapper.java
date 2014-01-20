@@ -639,7 +639,7 @@ public class StructureToInvestigationMapper {
 
                     if (accession.contains("http://"))
                         ontologyTermsDefined.add(new OntologyTerm(
-                                term, null, accession, getOntologySource(sourceRef)));
+                                term, accession, accession, getOntologySource(sourceRef)));
                     else {
                         OntologyTerm ot = new OntologyTerm(term, accession, null, getOntologySource(sourceRef));
                         ontologyTermsDefined.add(ot);
