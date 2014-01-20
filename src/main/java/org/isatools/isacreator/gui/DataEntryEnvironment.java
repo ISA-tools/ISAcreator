@@ -97,7 +97,7 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
     @InjectedResource
     private ImageIcon loading, visualizationIcon, visualizationIconOver, addStudyIcon, addStudyIconOver, removeStudyIcon,
             removeStudyIconOver, removeStudyIconInactive, navigationPanelHeader, informationPanelHeader,
-            warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp, assayHelp, generalHelp;
+            warning_reducedFunctionality, removeStudyDialogImage, investigationHelp, studyHelp, assayHelp, studySampleHelp, generalHelp;
 
     private DefaultMutableTreeNode overviewTreeRoot;
     private DefaultTreeModel overviewTreeModel;
@@ -840,6 +840,11 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
                 }
             }
             setCurrentPage(ApplicationManager.getUserInterfaceForISASection(assay));
+
+            Spreadsheet spreadsheet = ((AssaySpreadsheet) ApplicationManager.getUserInterfaceForISASection(assay)).getSpreadsheet();
+            if (spreadsheet.getSpreadsheetTitle().contains("Sample Definition")) {
+                setStatusPaneInfo(studySampleHelp);
+            }
         } else {
             setStatusPaneInfo("");
             setCurrentPage(newSubmission);
