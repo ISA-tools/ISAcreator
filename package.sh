@@ -3,7 +3,7 @@
 # More details in the POM. 
 #
 
-# should be used by passing in either scidata or isa as a parameter, e.g. ./package.sh scidata
+# should be used by passing in either 'scidata' or 'all' as a parameter, e.g. ./package.sh scidata
 # switching these will result in different actions being performed on packaging.
 
 PACKAGE_TYPE=$1
@@ -11,7 +11,7 @@ echo $PACKAGE_TYPE
 
 if [ "$PACKAGE_TYPE" = ""  ]
 then
-    PACKAGE_TYPE="isa"
+    PACKAGE_TYPE="all"
 fi
 
 alias mvn='/Users/eamonnmaguire/dev/maven/bin/mvn'
@@ -89,18 +89,26 @@ then
     wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/SciData-Datasets-1-and-2.zip --no-check-certificate
     unzip SciData-Datasets-1-and-2.zip
     rm -f SciData-Datasets-1-and-2.zip
+    cd ../
 else
     cp -r ../"isatab files"/* "isatab files"
 fi
 
-cd ../
-zip --exclude .DS_STORE -r ISAcreator-$VERSION-all.zip Configurations ../ProgramData "isatab files"
+pwd
+
+zip --exclude .DS_STORE -r ISAcreator-$VERSION-$PACKAGE_TYPE.zip Configurations ../ProgramData "isatab files"
 mv ISAcreator-$VERSION-jar-with-dependencies.jar ISAcreator.jar
-zip -u ISAcreator-$VERSION-all.zip ISAcreator.jar
+zip -u ISAcreator-$VERSION-$PACKAGE_TYPE.zip ISAcreator.jar
 
 python ../bundler.py
 
 echo "Packaging completed successfully!"
 
-zip --exclude .DS_STORE -r ISAcreator-$VERSION-mac.zip ISAcreator.app Configurations ../ProgramData "isatab files"
+# Creates the folder we then package up as a DMG.
+mkdir ISAcreator-$VERSION-dmg-folder/
+mkdir ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
+mv ISAcreator.app ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
+cp -r Configurations ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
+cp -r ../ProgramData ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
+cp -r "isatab files" ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 
