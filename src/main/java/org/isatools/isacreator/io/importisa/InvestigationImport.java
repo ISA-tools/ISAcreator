@@ -127,9 +127,10 @@ public class InvestigationImport {
 
 
                     String valueToTitleCase = lineLabel;
-                    if (!lineLabel.contains("Comment"))
+                    if (lineLabel.contains("Comment"))
                         valueToTitleCase = StringProcessing.removeSpaceFromQualifiedField(StringProcessing.convertStringToTitleCase(lineLabel));
 
+                    System.out.println(valueToTitleCase);
                     if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(valueToTitleCase)) {
                         importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).put(valueToTitleCase, new ArrayList<String>());
                     }
