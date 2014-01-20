@@ -128,15 +128,15 @@ public class StringProcessing {
     }
 
     /**
-     * From a Comment[qualifier] for example, this method with inject a space
+     * From a Comment [qualifier] for example, this method will remove any spaces
      * between the Comment and [qualifier] so that everything is consistent in the
      * interface
      * @param fieldName field to check and split
      * @return modified field
      */
-    public static String insertSpaceIntoQualifiedField(String fieldName) {
+    public static String removeSpaceFromQualifiedField(String fieldName) {
         if(fieldName.contains("[")) {
-            return fieldName.substring(0,fieldName.indexOf("[")).trim() + " " + fieldName.substring(fieldName.indexOf("["));
+            return fieldName.substring(0,fieldName.indexOf("[")).trim() + fieldName.substring(fieldName.indexOf("["));
         }
         return fieldName;
     }
