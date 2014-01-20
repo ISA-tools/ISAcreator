@@ -40,6 +40,7 @@ package org.isatools.isacreator.configuration.io;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+
 import org.isatools.isacreator.configuration.*;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
@@ -88,9 +89,11 @@ public class ConfigXMLParser {
     public void loadConfiguration() {
         List<IsaTabConfigFileType> definitions;
         try {
+
             definitions = getTableDefinitions();
 
-            // do check for presence of the Investigation file, if it is not there, this method will load in a default file as well
+            // do check for presence of the Investigation file, if it is not there,
+            // this method will load in a default file as well
             checkInvestigationFileDefinitionFound(definitions);
 
             for (IsaTabConfigFileType isa : definitions) {
@@ -127,6 +130,7 @@ public class ConfigXMLParser {
     private void checkInvestigationFileDefinitionFound(List<IsaTabConfigFileType> definitions) {
 
         boolean found = false;
+
         for (IsaTabConfigFileType isaConfigFile : definitions) {
             for (IsaTabConfigurationType doc : isaConfigFile.getIsatabConfigurationArray()) {
 
@@ -164,11 +168,11 @@ public class ConfigXMLParser {
 
     private List<IsaTabConfigFileType> getTableDefinitions() throws XmlException, IOException {
         File dir = new File(configDir);
-        if (dir==null)
+        if (!dir.exists())
             return null;
         File[] configFiles = dir.listFiles();
 
-        if (configFiles == null){
+        if (configFiles == null) {
             log.error("The specified directory " + configDir + " is wrong!");
             problemLog += "<p>There is a problem with the directory " + configDir + " as no files where found.</p>";
             problemsEncountered = true;
@@ -182,8 +186,9 @@ public class ConfigXMLParser {
 
         List<IsaTabConfigFileType> configurations = new ArrayList<IsaTabConfigFileType>();
         for (File tableConfig : configFiles) {
-            if (!tableConfig.getName().startsWith(".")) {
 
+            if (!tableConfig.getName().startsWith(".")) {
+                log.info(tableConfig.getAbsolutePath() + " is being read.");
                 IsaTabConfigFileType isa = parseFile(tableConfig);
                 configurations.add(isa);
             }
@@ -203,10 +208,9 @@ public class ConfigXMLParser {
         OntologyEntryType measurementInfo = isaConf.getMeasurement();
         OntologyEntryType technologyInfo = isaConf.getTechnology();
 
-        addOntologySourceForAssay(measurementInfo);
-        addOntologySourceForAssay(technologyInfo);
-
         String tableType = measurementInfo.getTermLabel().equalsIgnoreCase("[sample]") ? MappingObject.STUDY_SAMPLE : measurementInfo.getTermLabel().equalsIgnoreCase("[investigation]") ? MappingObject.INVESTIGATION : MappingObject.ASSAY_TYPE;
+
+        log.info("Processing " + isaConf.getTableName());
 
 
         MappingObject mo = new MappingObject(tableType, measurementInfo.getTermLabel(),
@@ -236,6 +240,7 @@ public class ConfigXMLParser {
                         stdField.getIsRequired(), stdField.getIsMultipleValue(),
                         stdField.getIsFileField(), stdField.getIsHidden(), stdField.getIsForcedOntology());
 
+                log.info("Adding " + newField.getFieldName() + " to configuration.");
                 newField.setWizardTemplate(StringProcessing.cleanUpString(stdField.getGeneratedValueTemplate()));
 
                 if (stdField.getRecommendedOntologies() != null) {
@@ -286,6 +291,8 @@ public class ConfigXMLParser {
                             protocolField.getIsRequired(), false, false);
                 }
 
+                log.info("Adding protocol to configuration " + newField.getFieldName());
+
                 newField.setWizardTemplate(newField.getWizardTemplate());
 
                 fields.add(newField);
@@ -295,11 +302,27 @@ public class ConfigXMLParser {
             } else if (obj instanceof UnitFieldType) {
                 UnitFieldType unitField = (UnitFieldType) obj;
 
-                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()), DataTypes.ONTOLOGY_TERM, "", "",
+                log.info("Adding unit to configuration.");
+
+                FieldObject newField = new FieldObject(colNo, "Unit", StringProcessing.cleanUpString(unitField.getDescription()),
+                        DataTypes.resolveDataType(unitField.getDataType()), unitField.getDefaultValue(), "",
                         unitField.getIsRequired(), false, false, false, unitField.getIsForcedOntology());
 
                 if (unitField.getRecommendedOntologies() != null) {
                     processRecommendedOntologies(unitField, newField);
+                }
+
+                if (unitField.getListValues() != null) {
+                    String values = StringProcessing.cleanUpString(unitField.getListValues());
+
+                    if (values.contains(",")) {
+                        String[] valueList = values.split(",");
+                        newField.setFieldList(valueList);
+                    } else {
+                        if (!values.isEmpty()) {
+                            newField.setFieldList(new String[]{values});
+                        }
+                    }
                 }
 
                 fields.add(newField);
@@ -317,10 +340,6 @@ public class ConfigXMLParser {
 
         mappings.add(mo);
         tables.add(new TableReferenceObject(tc));
-    }
-
-    private void addOntologySourceForAssay(OntologyEntryType ontologyEntryType) {
-        OntologyManager.addToUsedOntologies(new OntologySourceRefObject(ontologyEntryType.getSourceAbbreviation(), ontologyEntryType.getSourceUri(), ontologyEntryType.getSourceVersion(), ontologyEntryType.getSourceTitle()));
     }
 
     /**

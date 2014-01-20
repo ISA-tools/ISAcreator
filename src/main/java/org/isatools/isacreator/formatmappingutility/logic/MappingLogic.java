@@ -87,15 +87,17 @@ public class MappingLogic {
 
     private String fileName;
     private int readerToUse;
+    private boolean mapToBlankFields;
     private Map<MappingField, List<String>> visMapping;
     private Set<String> fieldsUsingUnits;
 
     // should take in a List of ISATAB columns to be mapped to and a list of JLayeredPanes to get the mappings from.
 
-    public MappingLogic(List<MappedElement> mappings, TableReferenceObject referenceTRO, int readerToUse) {
+    public MappingLogic(List<MappedElement> mappings, TableReferenceObject referenceTRO, int readerToUse, boolean mapToBlankFields) {
         this.mappings = mappings;
         this.referenceTRO = referenceTRO;
         this.readerToUse = readerToUse;
+        this.mapToBlankFields = mapToBlankFields;
         isatabFields = new ArrayList<MappingField>();
         mappingInformation = new ArrayList<MappingInformation>();
         uniqueRowHashes = new HashSet<Integer>();
@@ -107,7 +109,8 @@ public class MappingLogic {
     private void processMappings() {
         for (MappedElement mn : mappings) {
             MappingInformation mi = mn.getDisplay();
-            if (mi.isMappedTo()) {
+            System.out.println("Map to blank fields - " + mapToBlankFields);
+            if (mi.isMappedTo() || mapToBlankFields) {
                 isatabFields.add(new MappingField(mn.getFieldName()));
                 mappingInformation.add(mi);
             }
@@ -142,15 +145,23 @@ public class MappingLogic {
 
             if (mi instanceof NormalFieldEntry) {
                 NormalFieldEntry normalFieldEntry = (NormalFieldEntry) mi;
-                substitutions.add(normalFieldEntry.getFormatBuider().toString());
 
-                visMapping.get(mappingField).addAll(normalFieldEntry.getFormatBuider().getVisualizationText());
+                if (normalFieldEntry.isMappedTo()) {
+                    substitutions.add(normalFieldEntry.getFormatBuider().toString());
+                    visMapping.get(mappingField).addAll(normalFieldEntry.getFormatBuider().getVisualizationText());
+                } else {
+                    substitutions.add("");
+                }
 
             } else if (mi instanceof GeneralAttributeEntry) {
                 GeneralAttributeEntry generalFieldEntry = (GeneralAttributeEntry) mi;
 
-                substitutions.add(generalFieldEntry.getNormalFieldEntry().getFormatBuider().toString());
-                visMapping.get(mappingField).addAll(generalFieldEntry.getNormalFieldEntry().getFormatBuider().getVisualizationText());
+                if (generalFieldEntry.isMappedTo()) {
+                    substitutions.add(generalFieldEntry.getNormalFieldEntry().getFormatBuider().toString());
+                    visMapping.get(mappingField).addAll(generalFieldEntry.getNormalFieldEntry().getFormatBuider().getVisualizationText());
+                } else {
+                    substitutions.add("");
+                }
 
                 if (generalFieldEntry.getUnitPanel().useField()) {
                     fieldsUsingUnits.add(generalFieldEntry.getFieldName());
@@ -161,8 +172,12 @@ public class MappingLogic {
             } else if (mi instanceof ProtocolFieldEntry) {
                 ProtocolFieldEntry protocolFieldFieldEntry = (ProtocolFieldEntry) mi;
 
-                substitutions.add(protocolFieldFieldEntry.getNormalFieldEntry().getFormatBuider().toString());
-                visMapping.get(mappingField).addAll(protocolFieldFieldEntry.getNormalFieldEntry().getFormatBuider().getVisualizationText());
+                if (protocolFieldFieldEntry.isMappedTo()) {
+                    substitutions.add(protocolFieldFieldEntry.getNormalFieldEntry().getFormatBuider().toString());
+                    visMapping.get(mappingField).addAll(protocolFieldFieldEntry.getNormalFieldEntry().getFormatBuider().getVisualizationText());
+                } else {
+                    substitutions.add("");
+                }
 
                 if (protocolFieldFieldEntry.getPerformerPanel().useField()) {
                     fullTable.add(new MappingField("Performer"));

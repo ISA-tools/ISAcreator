@@ -43,6 +43,8 @@ import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.OntologyBranch;
 import org.isatools.isacreator.ontologymanager.OntologyService;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
@@ -116,6 +118,7 @@ public class ViewTermDefinitionUI extends JPanel {
 
         contentPane.add(ontologyInfoScroller, BorderLayout.CENTER);
 
+
         JLabel viewOntologyInBrowser = new JLabel("View in resource.");
         viewOntologyInBrowser.addMouseListener(new CommonMouseAdapter() {
             @Override
@@ -132,16 +135,18 @@ public class ViewTermDefinitionUI extends JPanel {
             public void mousePressed(MouseEvent mouseEvent) {
                 super.mousePressed(mouseEvent);
                 try {
-                    System.out.println("Source: " + term.getComments().get("Source"));
-                    System.out.println("Accession: " + term.getComments().get("accession"));
+                    String termSource = term.getComments().get("Source");
+                    System.out.println("Source: " + termSource);
+                    System.out.println("Accession: " + term.getBranchIdentifier());
                     String serviceProvider = term.getComments().get("Service Provider");
+
                     System.out.println("Service Provider: " + serviceProvider);
                     String url = "";
 
                     if (serviceProvider.equalsIgnoreCase("ols")) {
-                        url = "http://www.ebi.ac.uk/ontology-lookup/?termId=" + term.getComments().get("Source") + ":" + term.getComments().get("accession");
+                        url = "http://www.ebi.ac.uk/ontology-lookup/?termId=" + termSource + ":" + term.getComments().get("accession");
                     } else if (serviceProvider.equalsIgnoreCase("bioportal")) {
-                        url = "http://bioportal.bioontology.org/ontologies/" + term.getComments().get("Source") + "/?p=terms&conceptid=" + term.getComments().get("accession");
+                        url = "http://bioportal.bioontology.org/ontologies/" + termSource.substring(termSource.lastIndexOf("/") + 1) + "?p=classes&conceptid=" + term.getBranchIdentifier();
                     }
 
                     System.out.println(url);
@@ -175,9 +180,13 @@ public class ViewTermDefinitionUI extends JPanel {
         labelContent += "<b>Term name: </b>" + term.getBranchName() + "</p>";
 
         // special handling for ChEBI to get the structural image
+        System.out.println("Showing CHEBI image for " + term.getBranchIdentifier());
         if (term.getBranchIdentifier().toLowerCase().contains("chebi")) {
 
-            String chebiTermId = term.getBranchIdentifier().substring(term.getBranchIdentifier().indexOf(":") + 1);
+            String chebiTermId = term.getBranchIdentifier().substring(term.getBranchIdentifier().lastIndexOf("_") + 1);
+
+            System.out.println("Showing CHEBI image for " + chebiTermId);
+
             String chebiImageURL = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&imageIndex=0&chebiId=" + chebiTermId;
             labelContent += "<p><b>Chemical structure:</b>" +
                     "<p/>" +
@@ -235,7 +244,6 @@ public class ViewTermDefinitionUI extends JPanel {
         return sortedMap;
     }
 
-
     public void setContent(OntologyBranch term, String searchOntology, OntologyService ontologyService) {
 
         if (properties != null) {
@@ -251,10 +259,18 @@ public class ViewTermDefinitionUI extends JPanel {
                     properties = term.getComments();
                     if (ontologyService != null) {
                         setCurrentPage(new JLabel(LOADING));
-                        if (!properties.containsKey("Source")) {
-                            properties.put("Source", searchOntology);
+                        String ontology = searchOntology;
+
+                        System.out.println("Showing term metadata....");
+                        System.out.println(term.getBranchIdentifier());
+                        System.out.println(ontology);
+                        System.out.println();
+
+                        if (term.getBranchIdentifier().startsWith("http") && !ontology.startsWith("http")) {
+                            ontology = AcceptedOntologies.getOntologyIdForAbbreviation(searchOntology);
                         }
-                        properties.putAll(ontologyService.getTermMetadata(term.getBranchIdentifier(), searchOntology));
+                        properties.put("Source", ontology);
+                        properties.putAll(ontologyService.getTermMetadata(term.getBranchIdentifier(), ontology));
                     }
                     setCurrentPage(createOntologyInformationPane(term));
                 } catch (Exception e) {

@@ -66,6 +66,8 @@ public class CustomTreeRenderer implements TreeCellRenderer {
         ResourceInjector.get("ontologyselectiontool-package.style").inject(this);
 
         contents = new JPanel(new BorderLayout());
+        contents.setMinimumSize(new Dimension(260, 25));
+
         contents.setOpaque(false);
 
         icon = new JLabel();

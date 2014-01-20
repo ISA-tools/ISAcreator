@@ -38,6 +38,7 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.utils.GeneralUtils;
 import org.jdesktop.fuse.InjectedResource;
@@ -52,10 +53,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * SpreadsheetColumnRenderer
+ * SpreadsheetColumnRenderer - GUI component for the Spreadsheet table.
  */
-
-
 public class SpreadsheetColumnRenderer extends JPanel implements TableCellRenderer {
 
     @InjectedResource
@@ -129,11 +128,20 @@ public class SpreadsheetColumnRenderer extends JPanel implements TableCellRender
 
         boolean shortNames = Boolean.parseBoolean(ISAcreatorProperties.getProperty("useShortNames"));
 
+        String valueString = value.toString();
+
         if (shortNames) {
-            String shortHeader = GeneralUtils.getShortString(value.toString());
+            String shortHeader = GeneralUtils.getShortString(valueString);
             text.setText(shortHeader);
         } else {
-            text.setText(value.toString());
+            if (valueString.contains(":")){
+                if (valueString.contains("http://"))
+                    text.setText(OntologyTermUtils.fullAnnotatedHeaderToUniqueId(valueString));
+                else
+                    text.setText(valueString);
+            }else{
+                text.setText(valueString);
+            }
         }
 
         return this;

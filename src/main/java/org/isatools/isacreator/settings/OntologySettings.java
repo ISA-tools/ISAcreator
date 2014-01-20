@@ -41,6 +41,8 @@ import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.common.ColumnFilterRenderer;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.borders.RoundedBorder;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.io.CustomizableFileFilter;
@@ -48,12 +50,16 @@ import org.isatools.isacreator.io.OntologyLibrary;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologiesLoader;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -69,11 +75,12 @@ public class OntologySettings extends SettingsScreen {
 
     private JLabel loadedOntologyStats;
     private JLabel ontologyTermInformation;
-
+    private FlatButton updateCacheButton;
 
     private JFileChooser jfc;
 
     private Map<String, OntologyTerm> userOntologyHistory;
+    private JLabel information;
 
     public OntologySettings(ISAcreatorMenu menu) {
         this.menu = menu;
@@ -83,13 +90,57 @@ public class OntologySettings extends SettingsScreen {
 
         setLayout(new BorderLayout());
         setOpaque(false);
-        add(createOntologyConfigPanel(), BorderLayout.NORTH);
+        add(createOntologySourceUpdatePanel(), BorderLayout.NORTH);
+        add(createOntologyConfigPanel(), BorderLayout.CENTER);
+
         setBorder(new TitledBorder(
                 new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 9),
                 "configure ontologies", TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION, UIHelper.VER_12_BOLD,
                 UIHelper.GREY_COLOR));
 
+    }
+
+    private JPanel createOntologySourceUpdatePanel() {
+        JPanel informationPanel = new JPanel(new GridLayout(1, 2));
+
+        information = UIHelper.createLabel(String.format("<html><strong>%d ontologies</strong> are currently available.</html>", AcceptedOntologies.getAcceptedOntologies().size()), UIHelper.VER_10_PLAIN, UIHelper.GREY_COLOR);
+        informationPanel.add(information);
+
+        updateCacheButton = new FlatButton(ButtonType.BLUE, "Update Ontology Detail Cache");
+        updateCacheButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                Thread updateCacheThread = new Thread(new Runnable() {
+                    public void run() {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                updateCacheButton.setText("Updating");
+                                updateCacheButton.setEnabled(false);
+
+                            }
+                        });
+                        AcceptedOntologiesLoader.populateAcceptedOntologies();
+                        AcceptedOntologies.updateAcceptedOntologies();
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                information.setText(String.format("<html>Update complete - <strong>%d ontologies</strong> are currently available.</html>", AcceptedOntologies.getAcceptedOntologies().size()));
+                                updateCacheButton.setText("Update Ontology Detail Cache");
+                                updateCacheButton.setEnabled(true);
+
+                            }
+                        });
+
+                    }
+                });
+                updateCacheThread.start();
+            }
+        });
+        informationPanel.add(updateCacheButton);
+
+        return informationPanel;
     }
 
     private JPanel createOntologyConfigPanel() {
@@ -152,10 +203,10 @@ public class OntologySettings extends SettingsScreen {
                 if (historyTerm != null) {
                     updateOntologyTermInfo(userOntologyHistory.get(historyTerm));
                     ontologyTermInformation.setVisible(true);
-                    removeTerm.setVisible(true);
+                    removeButton.setVisible(true);
                 } else {
                     ontologyTermInformation.setVisible(false);
-                    removeTerm.setVisible(false);
+                    removeButton.setVisible(false);
                 }
             }
         });
@@ -164,6 +215,7 @@ public class OntologySettings extends SettingsScreen {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         historyScroll.setBorder(new EmptyBorder(0, 0, 0, 0));
+
 
         IAppWidgetFactory.makeIAppScrollPane(historyScroll);
 
@@ -177,22 +229,31 @@ public class OntologySettings extends SettingsScreen {
 
         loadedOntologiesContainer.add(UIHelper.wrapComponentInPanel(loadedOntologyStats));
 
-        // add list and filter field to UI
-        loadedOntologiesContainer.add(historyList.getFilterField());
-        loadedOntologiesContainer.add(Box.createVerticalStrut(5));
+        JPanel ontologyPanel = new JPanel(new BorderLayout());
+
+        ontologyPanel.add(historyList.getFilterField(), BorderLayout.NORTH);
+
         // add the actual list containing the elements!
-        loadedOntologiesContainer.add(historyScroll);
-        loadedOntologiesContainer.add(Box.createVerticalStrut(5));
+        ontologyPanel.add(historyScroll, BorderLayout.CENTER);
+
         // add controls for list!
-        loadedOntologiesContainer.add(createControlPanel());
-        loadedOntologiesContainer.add(Box.createVerticalStrut(5));
+        Container southPanel = Box.createVerticalBox();
+        southPanel.add(createControlPanel());
+        southPanel.add(Box.createVerticalStrut(5));
+
 
         ontologyTermInformation = UIHelper.createLabel("", UIHelper.VER_10_PLAIN);
         ontologyTermInformation.setPreferredSize(new Dimension(200, 60));
         ontologyTermInformation.setVisible(false);
+        southPanel.add(UIHelper.wrapComponentInPanel(ontologyTermInformation));
 
-        loadedOntologiesContainer.add(Box.createVerticalStrut(20));
-        loadedOntologiesContainer.add(UIHelper.wrapComponentInPanel(ontologyTermInformation));
+        ontologyPanel.add(southPanel, BorderLayout.SOUTH);
+
+
+        // add list and filter field to UI
+
+
+        loadedOntologiesContainer.add(ontologyPanel);
 
         return loadedOntologiesContainer;
     }
@@ -201,7 +262,7 @@ public class OntologySettings extends SettingsScreen {
     private void updateListContents() {
         historyList.getItems().clear();
         for (OntologyTerm h : userOntologyHistory.values()) {
-            historyList.addItem(h.getUniqueId());
+            historyList.addItem(h.getShortForm());
         }
     }
 
@@ -252,7 +313,7 @@ public class OntologySettings extends SettingsScreen {
 
 
     public boolean updateSettings() {
-        OntologyManager.setOntologySelectionHistory(userOntologyHistory);
+        OntologyManager.setOntologyTermHistory(userOntologyHistory);
         UserProfileManager.saveUserProfiles();
         return true;
     }
@@ -272,8 +333,7 @@ public class OntologySettings extends SettingsScreen {
             JOptionPane optionPane = null;
 
             try {
-                OntologyLibrary ol = UserProfileManager.loadOntologyLibrary(
-                        file);
+                OntologyLibrary ol = UserProfileManager.loadOntologyLibrary(file);
 
                 userOntologyHistory.putAll(ol.getOntologies());
                 UserProfileManager.getCurrentUser().setUsedOntologySources(ol.getOntologySources());

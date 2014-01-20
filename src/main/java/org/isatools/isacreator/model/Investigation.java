@@ -118,7 +118,6 @@ public class Investigation extends ISASection {
         assays = new HashMap<String, String>();
         contacts = new ArrayList<Contact>();
         publications = new ArrayList<Publication>();
-        OntologyManager.newInvestigation(getInvestigationId().equals("") ? "investigation-" + System.currentTimeMillis() : getInvestigationId());
     }
 
     @Override

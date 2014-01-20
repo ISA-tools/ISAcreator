@@ -58,7 +58,7 @@ import java.awt.font.FontRenderContext;
 
 public class QRCodeTreeRenderer extends JComponent implements TreeCellRenderer {
     @InjectedResource
-    private ImageIcon selectedIcon, notSelectedIcon, rootClosed, rootExpanded, separator;
+    private ImageIcon selectedIcon, notSelectedIcon, rootClosed, rootExpanded;
 
     private JLabel leftSide;
     private JLabel text;
@@ -85,7 +85,6 @@ public class QRCodeTreeRenderer extends JComponent implements TreeCellRenderer {
         add(qrCodeContainer, BorderLayout.WEST);
 
         text = UIHelper.createLabel("", UIHelper.VER_12_PLAIN, UIHelper.DARK_GREEN_COLOR);
-        text.setIcon(separator);
         add(text, BorderLayout.CENTER);
 
     }

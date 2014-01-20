@@ -230,8 +230,8 @@ public class UserProfile implements Serializable {
         this.usedOntologySources = usedOntologySources;
     }
 
-    public void setUserHistory(Map<String, OntologyTerm> userHistory) {
-        this.userHistory = userHistory;
+    public void addToUserHistory(String k, OntologyTerm v){
+        userHistory.put(k, v);
     }
 
     public FTPManager getFtpManager() {

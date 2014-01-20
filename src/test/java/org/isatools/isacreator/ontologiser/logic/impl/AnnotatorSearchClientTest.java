@@ -28,8 +28,8 @@ public class AnnotatorSearchClientTest {
 
         for (String key : result.keySet()) {
             System.out.println(key + " matched:");
-            for (String ontologyVersion : result.get(key).keySet()) {
-                System.out.println("\t" + ontologyVersion + " -> " + result.get(key).get(ontologyVersion).getOntologyTerm().getOntologyTermName() + " (" + result.get(key).get(ontologyVersion).getOntologySource().getOntologyDisplayLabel() + ")");
+            for (String ontologyId : result.get(key).keySet()) {
+                System.out.println("\t" + ontologyId + " -> " + result.get(key).get(ontologyId).getOntologyTerm().getOntologyTermName() + " (" + result.get(key).get(ontologyId).getOntologySource().getOntologyDisplayLabel() + ")");
             }
         }
 

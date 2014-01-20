@@ -127,9 +127,10 @@ public class InvestigationImport {
 
 
                     String valueToTitleCase = lineLabel;
-                    if (!lineLabel.contains("Comment"))
-                        valueToTitleCase = StringProcessing.convertStringToTitleCase(lineLabel);
+                    if (lineLabel.contains("Comment"))
+                        valueToTitleCase = StringProcessing.removeSpaceFromQualifiedField(StringProcessing.convertStringToTitleCase(lineLabel));
 
+                    System.out.println(valueToTitleCase);
                     if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(valueToTitleCase)) {
                         importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).put(valueToTitleCase, new ArrayList<String>());
                     }
@@ -212,10 +213,20 @@ public class InvestigationImport {
     }
 
     private List<String[]> loadFile(File investigationFile) throws IOException {
-
+        List<String[]> fileContents = new ArrayList<String[]>();
         if (investigationFile.exists()) {
             CSVReader csvReader = new CSVReader(new FileReader(investigationFile), TAB_DELIM);
-            return csvReader.readAll();
+
+            String[] line;
+            while((line = csvReader.readNext()) != null) {
+                if(line.length > 0) {
+                    if(!line[0].startsWith("#")) {
+                        fileContents.add(line);
+                    }
+                }
+            }
+
+            return fileContents;
         } else {
             throw new FileNotFoundException("The specified file " + investigationFile.getName() + "does not exist in " + investigationFile.getAbsolutePath());
         }

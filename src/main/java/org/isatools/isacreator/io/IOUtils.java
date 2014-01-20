@@ -2,6 +2,7 @@ package org.isatools.isacreator.io;
 
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,11 +23,31 @@ public class IOUtils {
     public static final String SOURCE_REF = "term source";
     public static final String ACCESSION = "term accession";
 
+
+    /**
+     *
+     * Given the full header (e.g. Characteristics[OBI:organism]) returns the header value inside the square brackets (e.g. OBI:organism).
+     *
+     * @param header
+     * @return
+     */
+    public static String getHeaderValue(String header){
+        if (header.contains("["))
+            return header.substring(header.indexOf('[') + 1, header.indexOf("]"));
+        return null;
+    }
+
+    public static String getHeaderName(String header){
+        if (header.contains("["))
+            return header.substring(0, header.indexOf('['));
+        return null;
+    }
+
     /**
      * Ontology terms are detected when there is a presence of 3 values in the field set with the same base name and
      * the words "Term Accession Number" & "Term Source Ref" are found.
      *
-     * @param fieldNames - field names for the section @see Set<String>
+     * @param fieldNames - field names for the ISA section @see Set<String>
      * @return Map from hashcode for field to a Map indicating which fields are source refs, terms and term accessions.
      */
     public static Map<Integer, Map<String, String>> getOntologyTerms(Set<String> fieldNames) {
@@ -92,7 +113,8 @@ public class IOUtils {
 
             int numberAdded = 0;
             for (String ontologyTerm : ontologies) {
-                OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(ontologyTerm);
+
+                OntologyTerm oo = OntologyManager.getOntologyTerm(ontologyTerm);
 
                 if (oo != null) {
                     tmpTerm += oo.getOntologyTermName();
@@ -124,7 +146,8 @@ public class IOUtils {
         } else if (term != null && term.contains(":")) {
 
             System.out.println("Getting ontology object for " + term);
-            OntologyTerm oo = OntologyManager.getOntologySelectionHistory().get(term);
+
+            OntologyTerm oo = OntologyManager.getOntologyTerm(term);
 
             System.out.println("oo = " + oo);
             tmpTerm = term;
@@ -133,14 +156,18 @@ public class IOUtils {
 
             if (oo != null && oo.getOntologyTermName() != null) {
                 tmpTerm = oo.getOntologyTermName();
-                tmpAccession = oo.getOntologyTermAccession();
+                tmpAccession = ISAcreatorProperties.getProperty("ontologyTermURI").equals("true") ? oo.getOntologyTermURI() : oo.getOntologyTermAccession();
                 tmpSourceRefs = oo.getOntologySource();
 
                 System.out.println("Got ontology term... good times. Term is now " + tmpTerm);
             } else {
                 if (term.contains(":")) {
                     String[] termAndSource = term.split(":");
-                    tmpSourceRefs = termAndSource[0];
+                    if (ISAcreatorProperties.getOntologyTermURIProperty()){
+                        tmpSourceRefs = "";
+                    } else {
+                        tmpSourceRefs = termAndSource[0];
+                    }
                     if (termAndSource.length == 2) {
                         tmpTerm = termAndSource[1];
                     } else {

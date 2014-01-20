@@ -63,7 +63,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AssaySelectionUI extends JPanel {
+public class AssaySelectionUI extends JPanel implements AssaySelectionInterface {
 
     public final static String NO_TECHNOLOGY_TEXT = "no technology required";
 
@@ -97,7 +97,7 @@ public class AssaySelectionUI extends JPanel {
 
     public void createGUI() {
         setLayout(new BorderLayout());
-        setSize(new Dimension(400, 500));
+        setPreferredSize(new Dimension(750, 510));
 
         // need to create a gui with two panels on the left hand side for selection of the
         // measurement and technology and one panel on the right hand side showing which ontologies
@@ -288,7 +288,8 @@ public class AssaySelectionUI extends JPanel {
     private void populateMeasurements() {
 
         for (String s : measToAllowedTechnologies.keySet()) {
-            if (!s.equalsIgnoreCase("[sample]") && !s.equalsIgnoreCase("[investigation]")) {
+            s = s.trim();
+            if (!s.equalsIgnoreCase("[sample]") && !s.equalsIgnoreCase("[investigation]") && !s.equals("*")) {
                 assayMeasurementList.addItem(s);
             }
         }
@@ -303,7 +304,7 @@ public class AssaySelectionUI extends JPanel {
             for (String technology : measToAllowedTechnologies.get(measurement)) {
                 if (technology.trim().equals("")) {
                     assayTechnologyList.addItem(NO_TECHNOLOGY_TEXT);
-                } else {
+                } else if(!technology.trim().equals("*")) {
                     assayTechnologyList.addItem(technology);
                 }
             }

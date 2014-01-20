@@ -49,6 +49,8 @@ import org.isatools.isacreator.model.GeneralFieldTypes;
 import org.isatools.isacreator.model.Protocol;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.ontologymanager.utils.OntologyTermUtils;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.StringValidation;
 import org.isatools.isacreator.spreadsheet.ValidationObject;
 
@@ -293,6 +295,13 @@ public class TableReferenceObject implements Serializable {
         fieldIndexLookup.put(fo.getColNo(), fo);
     }
 
+    /**
+     *
+     * Adds the row data.
+     *
+     * @param headers free text or full annotated headers (e.g. Characteristics[<label>, <URI or term accession>, <ontology abbreviation>)
+     * @param rowData
+     */
     public void addRowData(String[] headers, String[] rowData) {
         if (referenceData == null) {
             referenceData = new ReferenceData();
@@ -314,41 +323,12 @@ public class TableReferenceObject implements Serializable {
 
                 String header = headers[i];
 
-                String prevVal = header.substring(header.indexOf('[') + 1, header.indexOf("]"));
+                OntologyTerm ontologyTerm = OntologyTermUtils.stringToOntologyTerm(header);
 
-                String source = "";
-                String term = "";
-                String accession = "";
-                if (prevVal.contains("-")) {
-                    String[] parts = prevVal.split("-");
-                    source = parts[0];
-                    term = parts[1];
-                    accession = parts[2];
-                } else if (prevVal.contains(":")) {
-                    if (prevVal.startsWith("http://")) {
-                        // we have a PURL. So we'll use this directly
-                        if (prevVal.contains("(")) {
-                            String[] termAndSource = prevVal.split("\\(");
-                            term = termAndSource[0];
-                            accession = termAndSource[1].replace(")", "");
-                        }
-                    } else {
-                        String[] parts = prevVal.split(":");
-                        if (parts[0].contains("(")) {
-                            String[] termAndSource = parts[0].split("\\(");
-                            term = termAndSource[0];
-                            source = termAndSource[1];
-                        }
-                        accession = parts[1].replace(")", "");
-                    }
-                }
+                String prevVal = ontologyTerm.getShortForm(); //the uniqueID is source + ":" + term
 
-
-                prevVal = source + ":" + term;
-
-                if (!referencedOntologyTerms.containsKey(prevVal)) {
-                    referencedOntologyTerms.put(prevVal,
-                            new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                if (!prevVal.equals("") && !referencedOntologyTerms.containsKey(prevVal)) {
+                    referencedOntologyTerms.put(prevVal, ontologyTerm);
                 }
 
             }
@@ -360,7 +340,7 @@ public class TableReferenceObject implements Serializable {
                     rowDataModified.set(prevValLoc, s + ":" + prevVal);
                 }
             } else if (headers[i].toLowerCase().trim().contains("term accession number")) {
-                if (!s.equals("")) {
+                //if (!s.equals("")) {
                     String prevVal = rowDataModified.get(prevValLoc);
 
                     if (prevVal.contains(":")) {
@@ -371,13 +351,24 @@ public class TableReferenceObject implements Serializable {
                             String term = parts[1];
                             String accession = s.trim();
 
+                            OntologyTerm ot = null;
                             if (!referencedOntologyTerms.containsKey(prevVal)) {
-                                referencedOntologyTerms.put(prevVal,
-                                        new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source)));
+                                if (accession!=null && accession.contains("http://"))
+                                    ot = new OntologyTerm(term, accession, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                                else
+                                    ot = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
+                                referencedOntologyTerms.put(prevVal, ot);
+
+                            } else {
+                                ot = referencedOntologyTerms.get(prevVal);
+
                             }
+                            if (!(ISAcreatorProperties.getOntologyTermURIProperty() && ot.getOntologyTermURI()!=null && !ot.getOntologyTermURI().equals("")))
+                                rowDataModified.set(prevValLoc, term);
+
                         }
                     }
-                }
+                //}
             } else {
                 rowDataModified.add(s);
                 prevValLoc = rowDataModified.size() - 1;
@@ -508,7 +499,6 @@ public class TableReferenceObject implements Serializable {
 
     public void setFieldListItems(String colName, String[] listItems) {
         FieldObject fo = fieldLookup.get(colName);
-
         if (fo != null) {
             fo.setFieldList(listItems);
         }
@@ -537,21 +527,23 @@ public class TableReferenceObject implements Serializable {
         // go through fields, find the one in the parameter, and then try and find the next unit for that field.
         FieldObject field = fieldLookup.get(colName);
 
-        int proposedColNumber = field.getColNo() + 1;
+        if (field != null) {
+            int proposedColNumber = field.getColNo() + 1;
 
-        if (tableConfig == null) {
-            // for those tables built from their layout rather than directly from the tablerefenceobject
-            if (fieldIndexLookup.containsKey(proposedColNumber)) {
-                if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
-                    return fieldIndexLookup.get(proposedColNumber);
+            if (tableConfig == null) {
+                // for those tables built from their layout rather than directly from the tablerefenceobject
+                if (fieldIndexLookup.containsKey(proposedColNumber)) {
+                    if (fieldIndexLookup.get(proposedColNumber).getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
+                        return fieldIndexLookup.get(proposedColNumber);
+                    }
                 }
-            }
-        } else {
-            if (tableConfig.getFields().size() > proposedColNumber) {
-                FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
+            } else {
+                if (tableConfig.getFields().size() > proposedColNumber) {
+                    FieldObject candidateUnitField = tableConfig.getFields().get(proposedColNumber);
 
-                if (candidateUnitField.getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
-                    return candidateUnitField;
+                    if (candidateUnitField.getFieldName().equalsIgnoreCase(GeneralFieldTypes.UNIT.name)) {
+                        return candidateUnitField;
+                    }
                 }
             }
         }

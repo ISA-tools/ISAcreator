@@ -93,31 +93,7 @@ public class FileSystemTreeCellRenderer extends DefaultTreeCellRenderer {
                 break;
 
             case FileBrowserTreeNode.FILE_TYPE:
-                if (o.toString().contains(".")) {
-                    String extension = o.toString()
-                            .substring(o.toString().lastIndexOf(".") +
-                                    1);
-                    File f = new File(FileImage.FILE_IMG_DIR + File.separator + extension +
-                            "icon.png");
-
-                    if (!f.exists()) {
-                        try {
-                            new FileImage(extension).createImage();
-                            icon.setIcon(new ImageIcon(FileImage.FILE_IMG_DIR + File.separator + extension +
-                                    "icon.png"));
-                        } catch (IOException e) {
-                            icon.setIcon(unknownFileType);
-                        }
-                    } else {
-                        icon.setIcon(new ImageIcon(FileImage.FILE_IMG_DIR + File.separator + extension +
-                                "icon.png"));
-                    }
-
-
-                } else {
-                    icon.setIcon(unknownFileType);
-                }
-
+                icon.setIcon(unknownFileType);
                 break;
 
             case FileBrowserTreeNode.DIRECTORY:

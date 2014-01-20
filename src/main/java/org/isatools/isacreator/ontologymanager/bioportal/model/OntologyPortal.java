@@ -1,6 +1,5 @@
 package org.isatools.isacreator.ontologymanager.bioportal.model;
 
-import org.isatools.isacreator.ontologymanager.OLSClient;
 
 /**
  * Created by the ISA team
@@ -11,6 +10,5 @@ import org.isatools.isacreator.ontologymanager.OLSClient;
  *         Time: 17:38
  */
 public enum OntologyPortal {
-
-    OLS, BIOPORTAL
+    BIOPORTAL
 }

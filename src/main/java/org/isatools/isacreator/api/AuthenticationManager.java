@@ -95,7 +95,7 @@ public class AuthenticationManager implements Authentication {
      */
     private void setCurrentUser(UserProfile up) {
         UserProfileManager.setCurrentUser(up);
-        OntologyManager.setOntologySelectionHistory(up.getUserHistory());
+        OntologyManager.setOntologyTermHistory(up.getUserHistory());
         Spreadsheet.fileSelectEditor.setFtpManager(up.getFtpManager());
     }
 

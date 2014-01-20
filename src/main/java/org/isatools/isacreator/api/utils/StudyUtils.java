@@ -149,6 +149,7 @@ public class StudyUtils {
             return generateUniqueAssayReference(study, assayReference, cycleCount + 1);
         }
 
+        candidateRef = candidateRef.replaceAll("\\s+","_");
         return candidateRef;
     }
 

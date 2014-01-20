@@ -39,6 +39,7 @@ package org.isatools.isacreator.wizard;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
+import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.HistoryComponent;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.configuration.MappingObject;
@@ -526,10 +527,10 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         final JLayeredPane finalPane = getGeneralLayout(defineStudyHeader, breadcrumb2, studyRef, finalPanel, getHeight());
 
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                super.mousePressed(event);
                 if (!previousPage.isEmpty()) {
                     // remove the previously added study from the investigation
                     SwingUtilities.invokeLater(new Runnable() {
@@ -550,6 +551,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 if (numberOfStudies > 0) {
                     backButton.setIcon(wizardOver);
                 } else {
@@ -558,6 +560,7 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 if (numberOfStudies > 0) {
                     backButton.setIcon(wizard);
                 } else {
@@ -568,10 +571,10 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
             public void mousePressed(MouseEvent event) {
-
+                super.mousePressed(event);
                 Thread performStudyCreation = new Thread(new Runnable() {
                     public void run() {
                         studyBeingEdited = new Study(studyId.getText(),
@@ -601,10 +604,12 @@ public class Wizard extends AbstractDataEntryEnvironment {
             }
 
             public void mouseEntered(MouseEvent event) {
+                super.mouseEntered(event);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent event) {
+                super.mouseExited(event);
                 nextButton.setIcon(next);
             }
         };
@@ -1134,17 +1139,20 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         final MouseListener[] listeners = new MouseListener[2];
 
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 backButton.setIcon(backOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 backButton.setIcon(back);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 // go back to define assay page.
                 showPreviousPage(previousPage.pop());
                 // remove the assay from the investigation again to avoid duplicates!
@@ -1160,17 +1168,20 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 nextButton.setIcon(next);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 // go back to define assay page.
                 if (investigationDefinition.getStudies().size() < numberStudiesToDefine) {
                     status.setText("");
@@ -1206,17 +1217,21 @@ public class Wizard extends AbstractDataEntryEnvironment {
         final MouseListener[] listeners = new MouseListener[2];
 
         backButton.setIcon(wizard);
-        listeners[0] = new MouseAdapter() {
+        listeners[0] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 backButton.setIcon(wizardOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
+
                 backButton.setIcon(wizard);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         ApplicationManager.getCurrentApplicationInstance().setCurrentPage(new ISAcreatorMenu(ISAcreatorMenu.SHOW_CREATE_ISA));
@@ -1228,17 +1243,20 @@ public class Wizard extends AbstractDataEntryEnvironment {
 
         assignListenerToLabel(backButton, listeners[0]);
 
-        listeners[1] = new MouseAdapter() {
+        listeners[1] = new CommonMouseAdapter() {
 
             public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
                 nextButton.setIcon(nextOver);
             }
 
             public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);
                 nextButton.setIcon(next);
             }
 
             public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
                 // go back to define assay page.
                 ApplicationManager.getCurrentApplicationInstance().setCurDataEntryPanel(dep);
 

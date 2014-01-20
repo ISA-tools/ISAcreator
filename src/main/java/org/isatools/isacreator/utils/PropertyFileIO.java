@@ -101,7 +101,7 @@ public class PropertyFileIO {
 
     private static Properties loadDefaults(Properties userSettings) {
         for (String key : retrieveDefaultSettings().stringPropertyNames()) {
-            if (!(key.equalsIgnoreCase(IgnoredProperties.APPVERSION.key) && key.equalsIgnoreCase(IgnoredProperties.STRICTVALIDATION.key))) {
+            if (!key.equalsIgnoreCase(IgnoredProperties.APPVERSION.key)) {
                 userSettings.put(key, retrieveDefaultSettings().get(key).toString());
             }
         }

@@ -43,6 +43,8 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.io.importisa.ISAtabFilesImporterFromGUI;
 import org.isatools.isacreator.io.importisa.ISAtabImporter;
@@ -51,9 +53,10 @@ import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.jdesktop.fuse.InjectedResource;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,16 +73,14 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
     private static Logger log = Logger.getLogger(ImportFilesMenu.class);
 
     @InjectedResource
-    private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
-            loadButton, loadButtonOver, backButton, backButtonOver, filterLeft, filterRight;
+    private ImageIcon panelHeader, listImage, backButton, backButtonOver, filterLeft, filterRight;
 
-    private JLabel back;
-    private Container loadingImagePanel;
+    private JButton back;
+    private JPanel loadingImagePanel;
 
 
     public ImportFilesMenu(ISAcreatorMenu menu) {
         super(menu, false);
-        setPreferredSize(new Dimension(400, 400));
     }
 
     public JPanel createAlternativeExitDisplay() {
@@ -87,27 +88,15 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         JPanel previousButtonPanel = new JPanel(new GridLayout(1, 1));
         previousButtonPanel.setOpaque(false);
 
-        back = new JLabel(backButton, JLabel.LEFT);
-        back.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-
+        back = new FlatButton(ButtonType.GREY, "Back", UIHelper.DARK_GREEN_COLOR);
+        back.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (problemScroll != null)
                     problemScroll.setVisible(false);
 
                 ApplicationManager.getCurrentApplicationInstance().setGlassPanelContents(menu.getMainMenuGUI());
             }
-
-            public void mouseEntered(MouseEvent event) {
-                back.setIcon(backButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                back.setIcon(backButton);
-            }
         });
-
-        back.setOpaque(false);
 
         previousButtonPanel.add(back);
 
@@ -122,7 +111,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 if (candidate.getName()
                         .equals(previousFileList.getSelectedValue()
                                 .toString())) {
-                    getSelectedFileAndLoad(candidate,true);
+                    getSelectedFileAndLoad(candidate, true);
                 }
             }
         }
@@ -130,7 +119,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
 
     public void getSelectedFileAndLoad(File candidate, boolean loadingImagePane) {
-        if (loadingImagePane){
+        if (loadingImagePane) {
             showLoadingImagePane();
         }
         ApplicationManager.setCurrentLocalISATABFolder(candidate.getAbsolutePath());
@@ -147,30 +136,26 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
     }
 
-    private Container createLoadingImagePanel() {
+    private JPanel createLoadingImagePanel() {
+
         if (loadingImagePanel == null) {
-            loadingImagePanel = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
+            loadingImagePanel = new JPanel();
+            loadingImagePanel.setLayout(new BoxLayout(loadingImagePanel, BoxLayout.PAGE_AXIS));
+            loadingImagePanel.setPreferredSize(new Dimension(400, 400));
+            loadingImagePanel.setOpaque(false);
+            JPanel loadingImageContainer = UIHelper.wrapComponentInPanel(new JLabel(loadISAanimation));
+            loadingImageContainer.setSize(new Dimension(125, 256));
+            loadingImagePanel.add(loadingImageContainer);
+
+            JPanel infoContainer = UIHelper.wrapComponentInPanel(
+                    UIHelper.createLabel("<html><p>In this version of the tool, we automatically upgrade elements annotated with ontology terms from using ontology accessions to using URIs. " +
+                            "This is an artifact of the upgrades to BioPortal's new REST web services (version 4).</p> <p>Loading might take a little bit longer than normal during this upgrade for some ISA-TAB datasets.</p> </html>", UIHelper.VER_12_BOLD, UIHelper.ASPHALT));
+
+            infoContainer.setBorder(new EmptyBorder(0, 50, 50, 0));
+            loadingImagePanel.add(infoContainer);
         }
         return loadingImagePanel;
     }
-
-
-    public ImageIcon getSearchButton() {
-        return searchButton;
-    }
-
-    public ImageIcon getSearchButtonOver() {
-        return searchButtonOver;
-    }
-
-    public ImageIcon getLoadButton() {
-        return loadButton;
-    }
-
-    public ImageIcon getLoadButtonOver() {
-        return loadButtonOver;
-    }
-
 
     public void loadFile(final String dir) {
 
@@ -193,6 +178,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         ApplicationManager.setModified(false);
 
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
+
 
                     } else if (successfulImport) {
 
@@ -267,7 +253,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                     createErrorView(reports, false);
                 } finally {
 
-                    if (loadingImagePanel != null){
+                    if (loadingImagePanel != null) {
                         menu.remove(loadingImagePanel);
                     }
                     menu.hideGlassPane();
@@ -275,6 +261,8 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 }
             }
         });
+
+
         performer.start();
     }
 

@@ -39,13 +39,17 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -56,15 +60,11 @@ import java.awt.event.MouseEvent;
  */
 public class AddMultipleRowsGUI extends JDialog {
 
-    @InjectedResource
-    private ImageIcon panelHeader, addRowButton, addRowButtonOver, closeButton, closeButtonOver;
-    private JLabel close, addRows;
     private JTextField numRowsTxt;
     private Spreadsheet st;
 
     public AddMultipleRowsGUI(Spreadsheet st) {
         this.st = st;
-        ResourceInjector.get("spreadsheet-package.style").inject(this);
     }
 
     private void addRows() {
@@ -94,15 +94,17 @@ public class AddMultipleRowsGUI extends JDialog {
      * Creates the JFrame for the class.
      */
     private void instantiateFrame() {
+        getInsets().left = 3;
         //setPreferredSize(new Dimension(250, 200));
         setBackground(UIHelper.BG_COLOR);
 
+
         // add panel returned from instantiatePanel() method
         JPanel headerCont = new JPanel(new GridLayout(1, 1));
+        headerCont.setPreferredSize(new Dimension(300, 25));
         headerCont.setBackground(UIHelper.BG_COLOR);
 
-        headerCont.add(new JLabel(panelHeader,
-                JLabel.RIGHT));
+        headerCont.add(UIHelper.createLabel("Add Rows", UIHelper.VER_14_BOLD, UIHelper.DARK_GREEN_COLOR, JLabel.LEFT));
         add(headerCont, BorderLayout.NORTH);
 
         add(instantiatePanel());
@@ -132,29 +134,17 @@ public class AddMultipleRowsGUI extends JDialog {
         numRowsTxt.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "ADDROWS");
         numRowsTxt.getActionMap().put("ADDROWS", addRowsAction);
 
-        addRows = new JLabel(addRowButton,
-                JLabel.RIGHT);
-        addRows.addMouseListener(new MouseAdapter() {
 
-            public void mousePressed(MouseEvent event) {
+        JButton addRows = new FlatButton(ButtonType.GREEN, "Add Rows");
+        addRows.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 addRows();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                addRows.setIcon(addRowButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                addRows.setIcon(addRowButton);
             }
         });
 
-        close = new JLabel(closeButton,
-                JLabel.LEFT);
-        close.addMouseListener(new MouseAdapter() {
-
-
-            public void mousePressed(MouseEvent event) {
+        JButton close = new FlatButton(ButtonType.RED, "Cancel");
+        close.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         st.getParentFrame().hideSheet();
@@ -162,26 +152,21 @@ public class AddMultipleRowsGUI extends JDialog {
                     }
                 });
             }
-
-            public void mouseEntered(MouseEvent event) {
-                close.setIcon(closeButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                close.setIcon(closeButton);
-            }
         });
 
+
         JPanel container = new JPanel(new BorderLayout());
+        container.setPreferredSize(new Dimension(300, 60));
         container.setBackground(UIHelper.BG_COLOR);
 
         JPanel fieldCont = new JPanel(new GridLayout(1, 2));
         fieldCont.setBackground(UIHelper.BG_COLOR);
         fieldCont.add(numRowsLab);
         fieldCont.add(numRowsTxt);
-        container.add(fieldCont, BorderLayout.CENTER);
+        container.add(fieldCont, BorderLayout.NORTH);
 
         JPanel buttonCont = new JPanel(new BorderLayout());
+        buttonCont.setBorder(UIHelper.EMPTY_BORDER);
         buttonCont.setBackground(UIHelper.BG_COLOR);
         buttonCont.add(close, BorderLayout.WEST);
         buttonCont.add(addRows, BorderLayout.EAST);

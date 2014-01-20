@@ -1,34 +1,26 @@
 package org.isatools.isacreator.io.importisa;
 
+import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
-import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
-import org.isatools.isacreator.spreadsheet.model.ReferenceData;
-import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.apache.log4j.Logger;
-
-import org.isatools.isacreator.model.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
 
 /**
- * 
  * Test class for ISAtabFilesImporter
- * 
+ * <p/>
  * It assumes that package.sh was run before running this test, as this script downloads the configuration files into ISAcreator/Configurations (Note: wget must be installed for this to work).
- * 
+ * <p/>
  * Created by ISA Team
- *
+ * <p/>
  * Date: 04/07/2012
  * Time: 05:54
  *
@@ -45,20 +37,19 @@ public class ISAtabFilesImporterTest {
 
     @Before
     public void setUp() {
-    	String baseDir = System.getProperty("basedir");
+        String baseDir = System.getProperty("basedir");
 
-        if ( baseDir == null )
-        {
-            try{
-            baseDir = new File( "." ).getCanonicalPath();
-            }catch(IOException e){
+        if (baseDir == null) {
+            try {
+                baseDir = new File(".").getCanonicalPath();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-    	configDir = baseDir + "/Configurations/isaconfig-default_v2013-02-13/";
+        configDir = baseDir + "/Configurations/isaconfig-default_v2013-02-13/";
 
-    	log.debug("configDir=" + configDir);
+        log.debug("configDir=" + configDir);
         importer = new ISAtabFilesImporter(configDir);
         isatabParentDir = baseDir + "/src/test/resources/test-data/BII-I-1";
         log.debug("isatabParentDir=" + isatabParentDir);
@@ -67,28 +58,28 @@ public class ISAtabFilesImporterTest {
     @After
     public void tearDown() {
     }
-    
+
     @Test
-    public void importFileTest(){
+    public void importFileTest() {
         importer.importFile(isatabParentDir);
         Investigation inv = importer.getInvestigation();
 
-        assert(inv!=null);
+        assert (inv != null);
 
-        for(ISAFileErrorReport report : importer.getMessages()) {
+        for (ISAFileErrorReport report : importer.getMessages()) {
             System.out.println(report.getFileName());
-            for(ErrorMessage message : report.getMessages()) {
+            for (ErrorMessage message : report.getMessages()) {
                 System.out.println(message.getErrorLevel().toString() + " > " + message.getMessage());
             }
         }
 
         //if import worked ok, there should not be error messages
-        assert(importer.getMessages().size()==0);
+        assert (importer.getMessages().size() == 0);
 
-        System.out.println("ontologies used="+OntologyManager.getOntologiesUsed());
-        System.out.println("ontology description="+OntologyManager.getOntologyDescription("OBI"));
-        System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
-        System.out.println("ontology selection history size=" + OntologyManager.getOntologySelectionHistory().keySet().size());
+        System.out.println("ontologies used=" + OntologyManager.getOntologiesUsed());
+        System.out.println("ontology description=" + OntologyManager.getOntologyDescription("OBI"));
+        //System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
+        System.out.println("ontology selection history size=" + OntologyManager.getOntologyTermsSize());
         System.out.println("ontology term=" + OntologyManager.getOntologyTerm("OBI:metabolite profiling"));
 
         assertTrue("Oh no, I didnt' get the expected number of studies :(", inv.getStudies().size() == 2);

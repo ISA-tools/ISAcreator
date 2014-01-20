@@ -39,6 +39,8 @@ package org.isatools.isacreator.qrcode.ui;
 
 import org.isatools.isacreator.common.SelectOutputDirectoryDialog;
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.common.dialog.ConfirmationDialog;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.qrcode.html.HTMLCreator;
@@ -52,6 +54,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -91,8 +95,7 @@ public class QRCodeGeneratorUI extends JDialog {
 
     @InjectedResource
     private ImageIcon qrCodeGeneratorLogo, qrCodeViewIcon, qrCodeViewOver, qrCodeBuilderIcon,
-            qrCodeBuilderIconOver, helpIcon, helpIconOver, closeWindowIcon, closeWindowIconOver, exportIcon,
-            exportIconOver, working, builderFirst;
+            qrCodeBuilderIconOver, helpIcon, helpIconOver, working, builderFirst;
 
     private QRCodeViewerPane viewerPane;
     private QRCodeBuilderPane builderPane;
@@ -319,22 +322,12 @@ public class QRCodeGeneratorUI extends JDialog {
 
     private Container createSouthPanel() {
         JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setBorder(UIHelper.EMPTY_BORDER);
         southPanel.setBackground(UIHelper.BG_COLOR);
 
-        final JLabel closeButton = new JLabel(closeWindowIcon);
-        closeButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeWindowIconOver);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                closeButton.setIcon(closeWindowIcon);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+        JButton closeButton = new FlatButton(ButtonType.RED, "Cancel");
+        closeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 confirmChoice = new ConfirmationDialog();
 
                 confirmChoice.addPropertyChangeListener(ConfirmationDialog.NO, new PropertyChangeListener() {
@@ -359,94 +352,86 @@ public class QRCodeGeneratorUI extends JDialog {
                         confirmChoice.showDialog(isacreatorEnvironment);
                     }
                 });
-
-
             }
         });
 
-        final JLabel export = new JLabel(exportIcon);
-        export.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                export.setIcon(exportIconOver);
-            }
 
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                export.setIcon(exportIcon);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-
-                if (builderPane == null) {
-                    swapContainers(UIHelper.wrapComponentInPanel(new JLabel(builderFirst)));
-                } else {
-                    final SelectOutputDirectoryDialog outputDir = new SelectOutputDirectoryDialog();
-
-                    if (generatedQRCodes == null) {
-
-                        Thread performer = new Thread(new Runnable() {
-                            public void run() {
-                                generatedQRCodes = CodeGenerator.createQRCodeImage(apiHook.generateEncodeInfo(builderPane.getMappings()), new Dimension(100, 100));
-
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        swapContainers(selectedSection == HELP ? helpPane : selectedSection == QR_CODE_VIEW ? viewerPane : builderPane);
-                                        outputDir.createGUI();
-                                        outputDir.showDialog(isacreatorEnvironment);
-                                    }
-                                });
-                            }
-
-                        });
-                        swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
-                        performer.start();
-                    } else {
-                        outputDir.createGUI();
-                        outputDir.showDialog(isacreatorEnvironment);
-                    }
-
-                    outputDir.addPropertyChangeListener(SelectOutputDirectoryDialog.CANCEL, new PropertyChangeListener() {
-                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                            outputDir.hideDialog();
-                            outputDir.dispose();
-                        }
-                    });
-
-                    outputDir.addPropertyChangeListener(SelectOutputDirectoryDialog.CONTINUE, new PropertyChangeListener() {
-                        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                            outputDir.hideDialog();
-                            outputDir.dispose();
-
-                            File outputDir = new File(propertyChangeEvent.getNewValue().toString() + File.separator + "qr-codes");
-
-                            if (!outputDir.exists()) {
-                                outputDir.mkdir();
-                            }
-
-                            CodeGenerator.generateFilesFromQRCodes(generatedQRCodes, outputDir.getAbsolutePath());
-
-                            HTMLCreator htmlOutput = new HTMLCreator(generatedQRCodes);
-                            try {
-                                htmlOutput.createHTML(outputDir);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-
-                            closeWindow();
-                        }
-                    });
-
-
-                }
+        JButton export = new FlatButton(ButtonType.GREEN, "Export QR Codes");
+        export.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                exportQRCodes();
             }
         });
+
 
         southPanel.add(closeButton, BorderLayout.WEST);
         southPanel.add(export, BorderLayout.EAST);
 
         return southPanel;
+    }
+
+    private void exportQRCodes() {
+        if (builderPane == null) {
+            swapContainers(UIHelper.wrapComponentInPanel(new JLabel(builderFirst)));
+        } else {
+            final SelectOutputDirectoryDialog outputDir = new SelectOutputDirectoryDialog();
+
+            if (generatedQRCodes == null) {
+
+                Thread performer = new Thread(new Runnable() {
+                    public void run() {
+                        generatedQRCodes = CodeGenerator.createQRCodeImage(apiHook.generateEncodeInfo(builderPane.getMappings()), new Dimension(100, 100));
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                swapContainers(selectedSection == HELP ? helpPane : selectedSection == QR_CODE_VIEW ? viewerPane : builderPane);
+                                outputDir.createGUI();
+                                outputDir.showDialog(isacreatorEnvironment);
+                            }
+                        });
+                    }
+
+                });
+                swapContainers(UIHelper.wrapComponentInPanel(new JLabel(working)));
+                performer.start();
+            } else {
+                outputDir.createGUI();
+                outputDir.showDialog(isacreatorEnvironment);
+            }
+
+            outputDir.addPropertyChangeListener(SelectOutputDirectoryDialog.CANCEL, new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                    outputDir.hideDialog();
+                    outputDir.dispose();
+                }
+            });
+
+            outputDir.addPropertyChangeListener(SelectOutputDirectoryDialog.CONTINUE, new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                    outputDir.hideDialog();
+                    outputDir.dispose();
+
+                    File outputDir = new File(propertyChangeEvent.getNewValue().toString() + File.separator + "qr-codes");
+
+                    if (!outputDir.exists()) {
+                        outputDir.mkdir();
+                    }
+
+                    CodeGenerator.generateFilesFromQRCodes(generatedQRCodes, outputDir.getAbsolutePath());
+
+                    HTMLCreator htmlOutput = new HTMLCreator(generatedQRCodes);
+                    try {
+                        htmlOutput.createHTML(outputDir);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    closeWindow();
+                }
+            });
+
+
+        }
     }
 
     private void closeWindow() {

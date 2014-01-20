@@ -42,6 +42,9 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.api.ImportConfiguration;
+import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.modeselection.Mode;
@@ -53,6 +56,8 @@ import uk.ac.ebi.utils.io.DownloadUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -64,20 +69,18 @@ import java.util.List;
 /**
  * ImportFilesMenu provides the interface to allow users to import previously saved ISATAB
  * submissions into the software for editing/viewing.
- *
+ * <p/>
  * Date: Mar 3, 2010
  *
  * @author eamonnmaguire
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
- *
  */
 public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
     private static Logger log = Logger.getLogger(ImportConfigurationMenu.class);
 
     @InjectedResource
-    private ImageIcon panelHeader, listImage, searchButton, searchButtonOver,
-            loadButton, loadButtonOver, exitButtonSml, exitButtonSmlOver, filterLeft, filterRight;
+    private ImageIcon panelHeader, listImage, filterLeft, filterRight;
 
     //private boolean initialLoadingPassed = true;
 
@@ -87,35 +90,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
     }
 
     public JPanel createAlternativeExitDisplay() {
-
-        final JLabel exit = new JLabel(exitButtonSml, JLabel.CENTER);
-        exit.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
-                exit.setIcon(exitButtonSml);
-                confirmExitPanel.setVisible(true);
-                confirmExitPanel.getParent().validate();
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                exit.setIcon(exitButtonSmlOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                exit.setIcon(exitButtonSml);
-            }
-        });
-
-        JPanel exitCont = new JPanel(new GridLayout(1, 1));
-        exitCont.setOpaque(false);
-        exitCont.add(exit);
-
-        JPanel exitPanelContainer = new JPanel(new GridLayout(1, 1));
-        exitPanelContainer.add(confirmExitPanel);
-
-        add(exitPanelContainer, BorderLayout.SOUTH);
-
-        return exitCont;
+        return new JPanel();
     }
 
     public void getSelectedFileAndLoad() {
@@ -163,13 +138,13 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
 
-                            if (ISAcreatorCLArgs.mode()== Mode.GS ){
+                            if (ISAcreatorCLArgs.mode() == Mode.GS) {
 
-                               if (ISAcreatorCLArgs.isatabDir()!=null || ISAcreatorCLArgs.isatabFiles()!=null){
+                                if (ISAcreatorCLArgs.isatabDir() != null || ISAcreatorCLArgs.isatabFiles() != null) {
 
-                                   List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
+                                    List<ErrorMessage> errors = GSLocalFilesManager.downloadFiles(menu.getAuthentication());
 
-                                    if (!errors.isEmpty()){
+                                    if (!errors.isEmpty()) {
 
                                         ISAFileErrorReport error = new ISAFileErrorReport("", FileType.INVESTIGATION, errors);
                                         java.util.List<ISAFileErrorReport> list = new ArrayList<ISAFileErrorReport>();
@@ -182,16 +157,16 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                                         menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
                                     }
 
-                               } else {
+                                } else {
                                     //the ISAtab files were not given as parameter, show main menu
                                     menu.changeView(menu.getMainMenuGUI());
-                               }
+                                }
 
-                            } else{
+                            } else {
                                 //mode is not GS
-                                if (ISAcreatorCLArgs.isatabDir()!=null){
+                                if (ISAcreatorCLArgs.isatabDir() != null) {
                                     menu.loadFiles(ISAcreatorCLArgs.isatabDir(), true);
-                                }else {
+                                } else {
                                     menu.changeView(menu.getMainMenuGUI());
                                 }
                             }
@@ -202,7 +177,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
                     }
                 }
-            );
+                );
             }
         }
         );
@@ -221,22 +196,22 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
         previousFiles = f.listFiles();
 
-        if (previousFiles.length==0){
+        if (previousFiles.length == 0) {
 
             String configurationFilesLocation = PropertyFileIO.retrieveDefaultSettings().getProperty("configurationFilesLocation");
             String tmpDirectory = GeneralUtils.createTmpDirectory("Configurations");
-            String downloadedFile = tmpDirectory+"config.zip";
+            String downloadedFile = tmpDirectory + "config.zip";
             boolean downloaded = DownloadUtils.downloadFile(configurationFilesLocation, downloadedFile);
-            System.out.println("downloadedFile="+downloadedFile);
-            ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY =  tmpDirectory;
-            try{
+            System.out.println("downloadedFile=" + downloadedFile);
+            ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY = tmpDirectory;
+            try {
                 String unzipped = GeneralUtils.unzip(downloadedFile);
-                System.out.println("Configurations downloaded and unzipped ="+unzipped);
+                System.out.println("Configurations downloaded and unzipped =" + unzipped);
                 f = new File(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY);
                 previousFiles = f.listFiles();
 
 
-            }catch(IOException ex){
+            } catch (IOException ex) {
                 ex.printStackTrace();
 
             }
@@ -264,22 +239,6 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
         previousFileList.setCellRenderer(new ImportFilesListCellRenderer(listImage));
     }
 
-    public ImageIcon getSearchButton() {
-        return searchButton;
-    }
-
-    public ImageIcon getSearchButtonOver() {
-        return searchButtonOver;
-    }
-
-    public ImageIcon getLoadButton() {
-        return loadButton;
-    }
-
-    public ImageIcon getLoadButtonOver() {
-        return loadButtonOver;
-    }
-
     @Override
     public ImageIcon getLeftFilterImage() {
         return filterLeft;
@@ -289,8 +248,6 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
     public ImageIcon getRightFilterImage() {
         return filterRight;
     }
-
-
 
 
 }

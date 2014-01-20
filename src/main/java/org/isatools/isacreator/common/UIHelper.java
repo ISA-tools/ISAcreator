@@ -65,6 +65,19 @@ public class UIHelper {
     public static final Color LIGHT_GREY_COLOR = new Color(153, 153, 153);
     public static final Color LIGHT_GREEN_COLOR = new Color(140, 198, 63);
     public static final Color TRANSPARENT_LIGHT_GREEN_COLOR = new Color(140, 198, 63, 60);
+
+    public static final Color EMERALD = new Color(79,186,111);
+    public static final Color NEPHRITIS = new Color(36,174,95);
+    public static final Color PETER_RIVER = new Color(52,152,219);
+    public static final Color BELIZE_HOLE = new Color(41,128,185);
+    public static final Color ASPHALT = new Color(52,73,94);
+    public static final Color MIDNIGHT = new Color(44,62,80);
+    public static final Color CARROT = new Color(230,126,34);
+    public static final Color PUMPKIN = new Color(211,84,0);
+    public static final Color ALIZARIN = new Color(240,76,60);
+    public static final Color POMEGRANATE = new Color(192,58,43);
+
+
     public static final Font VER_8_PLAIN = new Font("Verdana", Font.PLAIN, 8);
     public static final Font VER_8_BOLD = new Font("Verdana", Font.BOLD, 8);
     public static final Font VER_9_PLAIN = new Font("Verdana", Font.PLAIN, 9);
@@ -79,15 +92,11 @@ public class UIHelper {
     public static final Font VER_14_BOLD = new Font("Verdana", Font.BOLD, 14);
     public static final Border STD_ETCHED_BORDER = new LineBorder(UIHelper.DARK_GREEN_COLOR, 1, true);
 
-    public static final Border EMPTY_BORDER = new EmptyBorder(0, 0, 0, 0);
-    public static final RoundedBorder GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 6);
-    public static final RoundedBorder GREY_ROUNDED_BORDER = new RoundedBorder(UIHelper.GREY_COLOR, 6);
-    public static final RoundedBorder DARK_GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 6);
+    public static final Border EMPTY_BORDER = new EmptyBorder(3, 3, 3, 3);
+    public static final RoundedBorder GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.LIGHT_GREEN_COLOR, 2);
+    public static final RoundedBorder GREY_ROUNDED_BORDER = new RoundedBorder(UIHelper.GREY_COLOR, 2);
+    public static final RoundedBorder DARK_GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 2);
 
-    public static final ImageIcon OK_BUTTON = new ImageIcon(UIHelper.class.getResource("/images/common/ok.png"));
-    public static final ImageIcon OK_BUTTON_OVER = new ImageIcon(UIHelper.class.getResource("/images/common/ok_over.png"));
-    public static final ImageIcon CLOSE_BUTTON = new ImageIcon(UIHelper.class.getResource("/images/common/close.png"));
-    public static final ImageIcon CLOSE_BUTTON_OVER = new ImageIcon(UIHelper.class.getResource("/images/common/close_over.png"));
     public static final Color VERY_LIGHT_GREY_COLOR = new Color(250, 252, 250);
 
     //

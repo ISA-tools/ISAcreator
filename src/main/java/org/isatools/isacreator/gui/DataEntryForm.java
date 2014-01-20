@@ -48,9 +48,9 @@ import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.configuration.RecommendedOntology;
 import org.isatools.isacreator.effects.components.RoundedJTextField;
-import org.isatools.isacreator.filechooser.DirectoryFileList;
-import org.isatools.isacreator.filechooser.FileChooserFile;
 import org.isatools.isacreator.filechooser.FileChooserUI;
+import org.isatools.isacreator.gui.formelements.FieldTypes;
+import org.isatools.isacreator.gui.formelements.SubForm;
 import org.isatools.isacreator.gui.formelements.SubFormField;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedCancelledEvent;
 import org.isatools.isacreator.gui.listeners.propertychange.DateChangedEvent;
@@ -71,10 +71,6 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +82,12 @@ import java.util.Set;
  */
 public class DataEntryForm extends JLayeredPane implements Serializable {
 
+    public static final int SUBFORM_WIDTH = 300;
+
     private DataEntryEnvironment dataEntryEnvironment;
+    protected Map<FieldTypes, JPanel> fieldTypeToFieldContainer;
+    protected Map<FieldTypes, SubForm> fieldTypeToSubform;
+
 
     // this will house the translation between Comment aliases e.g. Publication Journal [c] to Comment[Publication Journal]
     protected Map<String, String> aliasesToRealNames;
@@ -95,11 +96,14 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     protected OrderedMap<String, JComponent> fieldDefinitions;
 
-    public DataEntryForm(DataEntryEnvironment dataEntryEnvironment) {
-        this.dataEntryEnvironment = dataEntryEnvironment;
+    public DataEntryForm() {
+        this(null);
     }
 
-    public DataEntryForm() {
+    public DataEntryForm(DataEntryEnvironment dataEntryEnvironment) {
+        this.dataEntryEnvironment = dataEntryEnvironment;
+        fieldTypeToFieldContainer = new HashMap<FieldTypes, JPanel>();
+        fieldTypeToSubform = new HashMap<FieldTypes, SubForm>();
     }
 
     public void update() {
@@ -138,6 +142,19 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
     public void setDataEntryEnvironment(DataEntryEnvironment dataEntryEnvironment) {
         this.dataEntryEnvironment = dataEntryEnvironment;
     }
+
+    public JPanel getContainerForFieldType(FieldTypes type) {
+        return fieldTypeToFieldContainer.get(type);
+    }
+
+    public SubForm getSubFormForFieldType(FieldTypes type) {
+        return fieldTypeToSubform.get(type);
+    }
+
+    public void setSubFormForFieldType(FieldTypes type, SubForm subform) {
+        fieldTypeToSubform.put(type, subform);
+    }
+
 
     /**
      * Method to be overridden by subclasses for creating all fields
@@ -299,7 +316,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
     }
 
-    protected void generateAliases(Set<String> fieldValues) {
+    public void generateAliases(Set<String> fieldValues) {
 
         if (aliasesToRealNames == null) {
             aliasesToRealNames = new HashMap<String, String>();
@@ -311,8 +328,6 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
             if (fieldName.toLowerCase().startsWith("comment")) {
                 String alias = StringProcessing.extractQualifierFromField(fieldName) + " [c]";
-
-                System.out.println("Alias for " + fieldName + " is " + alias);
                 aliasesToRealNames.put(alias, fieldName);
                 realNamesToAliases.put(fieldName, alias);
             }
@@ -328,6 +343,7 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
      * @param referenceObject  - A @see DataEntryReferenceObject which gives information about
      */
     public void addFieldsToPanel(Container containerToAddTo, InvestigationFileSection sectionToAddTo, OrderedMap<String, String> fieldValues, DataEntryReferenceObject referenceObject) {
+
 
         if (fieldDefinitions == null) {
             fieldDefinitions = new ListOrderedMap<String, JComponent>();
@@ -439,7 +455,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
 
             int fieldType = SubFormField.STRING;
 
-            if (ontologyFields.contains(fieldName)) {
+            boolean matchingOntologyDataType = true;
+            if(fieldDescriptor != null) {
+                matchingOntologyDataType = fieldDescriptor.getDatatype() == DataTypes.ONTOLOGY_TERM;
+            }
+
+            if (ontologyFields.contains(fieldName) && matchingOntologyDataType) {
                 fieldType = SubFormField.SINGLE_ONTOLOGY_SELECT;
 
                 if (fieldDescriptor != null) {
@@ -486,20 +507,16 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
      * @return a string with the serialization of the ISASection
      */
     protected String getISASectionAsString(String sectionTitle, List<? extends ISASection> sectionToOutput) {
-
         StringBuilder representation = new StringBuilder();
-
         representation.append(sectionTitle.toUpperCase().trim()).append("\n");
 
-        if (sectionToOutput.size() > 0) {
 
+        if (sectionToOutput.size() > 0) {
             for (String fieldName : sectionToOutput.get(0).getFieldValues().keySet()) {
                 representation.append(fieldName);
-
                 if (sectionToOutput.size() > 0) {
                     representation.append("\t");
                 }
-
                 // now add the field values in
                 int count = 0;
                 for (ISASection section : sectionToOutput) {
@@ -533,5 +550,12 @@ public class DataEntryForm extends JLayeredPane implements Serializable {
             ApplicationManager.setModified(true);
         }
     }
+
+    public int estimateSubformHeight(int numberOfFields) {
+        // assuming that the option height, table header height and field height are all similar.
+        int sectionHeight = 18;
+        return (sectionHeight * 2) + (numberOfFields * sectionHeight);
+    }
+
 
 }

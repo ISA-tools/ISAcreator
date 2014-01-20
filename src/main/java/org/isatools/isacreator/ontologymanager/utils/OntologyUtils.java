@@ -2,11 +2,8 @@ package org.isatools.isacreator.ontologymanager.utils;
 
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.OntologyBranch;
-import org.isatools.isacreator.ontologymanager.BioPortalClient;
-import org.isatools.isacreator.ontologymanager.OLSClient;
+import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
-import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
-import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntology;
 import org.isatools.isacreator.ontologymanager.bioportal.model.OntologyPortal;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.utils.StringProcessing;
@@ -26,12 +23,11 @@ public class OntologyUtils {
     }
 
     public static OntologyPortal getSourceOntologyPortalByVersionAndId(Ontology ontology) {
-        return checkVersion(ontology.getOntologyVersion()) || ontology.getOntologyID().equals("")
-                ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
+        return OntologyPortal.BIOPORTAL;
     }
 
     public static OntologyPortal getSourceOntologyPortalByVersion(String version) {
-        return checkVersion(version) ? OntologyPortal.OLS : OntologyPortal.BIOPORTAL;
+        return OntologyPortal.BIOPORTAL;
     }
 
     private static boolean checkVersion(String version) {
@@ -47,27 +43,12 @@ public class OntologyUtils {
         return branchIdentifier;
     }
 
-    public static OntologyPortal getSourcePortalByAbbreviation(String abbreviation) {
-        boolean isBioPortal = false;
-        for (AcceptedOntology bioPortalOntologies : AcceptedOntologies.values()) {
-            if (bioPortalOntologies.getOntologyAbbreviation().equalsIgnoreCase(abbreviation)) {
-                isBioPortal = true;
-                break;
-            }
-        }
-
-        return isBioPortal ? OntologyPortal.BIOPORTAL : OntologyPortal.OLS;
-    }
-
     public static OntologySourceRefObject convertOntologyToOntologySourceReferenceObject(Ontology ontology) {
 
         OntologySourceRefObject converted = new OntologySourceRefObject(
                 ontology.getOntologyAbbreviation(), "", ontology.getOntologyVersion(), ontology.getOntologyDisplayLabel());
 
-        converted.setSourceFile(
-                OntologyUtils.getSourceOntologyPortalByVersion(converted.getSourceVersion()) == OntologyPortal.BIOPORTAL
-                        ? BioPortalClient.DIRECT_ONTOLOGY_URL + converted.getSourceVersion()
-                        : OLSClient.DIRECT_ONTOLOGY_URL + converted.getSourceName());
+        converted.setSourceFile(OntologyUtils.getSourceOntologyPortalByVersion(BioPortal4Client.DIRECT_ONTOLOGY_URL + converted.getSourceVersion()).toString());
 
 
         return converted;

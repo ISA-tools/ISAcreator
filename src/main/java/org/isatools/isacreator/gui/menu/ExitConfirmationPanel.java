@@ -38,8 +38,12 @@
 package org.isatools.isacreator.gui.menu;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -72,24 +76,20 @@ public class ExitConfirmationPanel extends JPanel {
                 JLabel.LEFT);
         UIHelper.renderComponent(existLab, UIHelper.VER_12_BOLD, UIHelper.DARK_GREEN_COLOR, false);
 
-        JLabel yesOption = new JLabel("YES");
-        yesOption.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent event) {
+        JButton yesOption = new FlatButton(ButtonType.GREEN, "Yes");
+        yesOption.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 System.exit(0);
             }
         });
-        yesOption.setForeground(UIHelper.DARK_GREEN_COLOR);
-        yesOption.setFont(UIHelper.VER_12_BOLD);
 
-        JLabel noOption = new JLabel("NO");
-        noOption.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton noOption = new FlatButton(ButtonType.RED, "No");
+        noOption.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 ExitConfirmationPanel.this.setVisible(false);
                 ExitConfirmationPanel.this.revalidate();
             }
         });
-        UIHelper.renderComponent(noOption, UIHelper.VER_12_BOLD, UIHelper.RED_COLOR, false);
 
         confirmExitPanel.add(existLab);
         confirmExitPanel.add(Box.createVerticalStrut(10));

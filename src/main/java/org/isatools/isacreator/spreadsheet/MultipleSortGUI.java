@@ -38,10 +38,13 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.isatools.isacreator.common.UIHelper;
+import org.isatools.isacreator.common.button.ButtonType;
+import org.isatools.isacreator.common.button.FlatButton;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,9 +58,6 @@ import java.awt.event.MouseEvent;
  */
 public class MultipleSortGUI extends JDialog implements ActionListener {
 
-    @InjectedResource
-    private ImageIcon titleIcon, sortButton, sortButtonOver, closeButton, closeButtonOver;
-
     private JCheckBox sort2Check = new JCheckBox("Sort on 2 columns?", false);
     private JComboBox sortOpt1;
     private JComboBox sortOpt1IsAscending;
@@ -67,8 +67,6 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
 
     public MultipleSortGUI(Spreadsheet st) {
         this.st = st;
-
-        ResourceInjector.get("spreadsheet-package.style").inject(this);
     }
 
     /**
@@ -109,10 +107,12 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
 
         JPanel headerCont = new JPanel();
         headerCont.setBackground(UIHelper.BG_COLOR);
+        headerCont.setSize(new Dimension(300, 25));
         headerCont.setLayout(new BoxLayout(headerCont, BoxLayout.LINE_AXIS));
-        headerCont.add(new JLabel(titleIcon,
-                JLabel.RIGHT));
+        headerCont.add(UIHelper.createLabel("Perform Multiple Sort", UIHelper.VER_14_BOLD, UIHelper.DARK_GREEN_COLOR, JLabel.LEFT));
+        headerCont.setBorder(new EmptyBorder(10,10,10,10));
         add(headerCont, BorderLayout.NORTH);
+
         instantiatePanel();
 
         pack();
@@ -139,11 +139,9 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
         sortOpt2IsAscending.setPreferredSize(new Dimension(40, 20));
         sortOpt2IsAscending.setEnabled(false);
 
-        final JLabel sort = new JLabel(sortButton,
-                JLabel.RIGHT);
-        sort.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton sort = new FlatButton(ButtonType.GREEN, "Apply Sort");
+        sort.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 try {
 
                     int primaryCol = getAbsoluteColumn(sortOpt1.getSelectedItem().toString());
@@ -171,36 +169,17 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
                     e.printStackTrace();
                 }
             }
-
-
-            public void mouseEntered(MouseEvent event) {
-                sort.setIcon(sortButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                sort.setIcon(sortButton);
-            }
         });
 
-        final JLabel close = new JLabel(closeButton,
-                JLabel.LEFT);
-        close.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent event) {
+        JButton close = new FlatButton(ButtonType.RED, "Cancel");
+        close.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         st.getParentFrame().hideSheet();
                         dispose();
                     }
                 });
-            }
-
-            public void mouseEntered(MouseEvent event) {
-                close.setIcon(closeButtonOver);
-            }
-
-            public void mouseExited(MouseEvent event) {
-                close.setIcon(closeButton);
             }
         });
 
@@ -305,6 +284,7 @@ public class MultipleSortGUI extends JDialog implements ActionListener {
         // panel to contain everything.
         JPanel container = new JPanel(new BorderLayout());
         container.setBackground(UIHelper.BG_COLOR);
+        container.setBorder(new EmptyBorder(10,10,10,10));
         add(options, BorderLayout.CENTER);
         add(doSortPanel, BorderLayout.SOUTH);
     }

@@ -5,6 +5,7 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
 import org.isatools.isacreator.configuration.FieldObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.GeneralUtils;
 
@@ -25,8 +26,6 @@ import java.util.Vector;
 public class SpreadsheetImport {
 
 
-    private Set<String> messages;
-
     /**
      * Create tablemodel for item!
      *
@@ -39,7 +38,6 @@ public class SpreadsheetImport {
      */
     public TableReferenceObject loadInTables(String fileName,
                                              TableReferenceObject defaultTableRef) throws IOException, MalformedInvestigationException {
-        messages = new HashSet<String>();
 
         File f = new File(fileName);
 
@@ -53,8 +51,20 @@ public class SpreadsheetImport {
             while ((nextLine = reader.readNext()) != null) {
                 if (count == 0) {
                     colHeaders = nextLine;
-                    tro = reformTableDefinition(fileName, nextLine,
-                            defaultTableRef);
+                    try {
+                        tro = reformTableDefinition(fileName, nextLine,
+                                defaultTableRef);
+                    } catch (MalformedInvestigationException mie) {
+
+                        System.err.println(mie.toString());
+                        TableReferenceObject generic_tro = ConfigurationManager.selectTROForUserSelection("*", "*");
+                        if (generic_tro != null && defaultTableRef != generic_tro) {
+                            tro = reformTableDefinition(fileName, nextLine, generic_tro);
+                        } else {
+                            throw mie;
+                        }
+                    }
+
 
                     Vector<String> preDefinedHeaders = new Vector<String>();
                     preDefinedHeaders.add("Row No.");
@@ -100,7 +110,6 @@ public class SpreadsheetImport {
 
         // way of storing previously seen protocol to determine where the parameters are which associated with it.
         int previousProtocol = -1;
-
         // way of storing previously read characteristic, factor, or parameter to determine what type it is
         String previousCharFactParam = null;
         int expectedNextUnitLocation = -1;
@@ -112,12 +121,16 @@ public class SpreadsheetImport {
             positionInheaders++;
 
             String fieldAsLowercase = columnHeader.toLowerCase();
-
             if (expectedNextUnitLocation == positionInheaders) {
                 if (fieldAsLowercase.contains("unit")) {
                     // add two fields...one accepting string values and the unit, also accepting string values :o)
-                    FieldObject newFo = new FieldObject(count,
-                            previousCharFactParam, "", DataTypes.STRING, "", false, false, false);
+
+                    FieldObject newFo = startReference.getFieldByName(previousCharFactParam);
+                    if (newFo == null) {
+                        newFo = new FieldObject(count,
+                                previousCharFactParam, "", DataTypes.STRING, "", false, false, false);
+                    }
+
                     tro.addField(newFo);
 
                     if (tro.getColumnDependencies().get(count) == null) {
@@ -129,7 +142,12 @@ public class SpreadsheetImport {
 
                     count++;
 
-                    newFo = new FieldObject(count, columnHeader, "", DataTypes.ONTOLOGY_TERM, "", false, false, false);
+                    // get the unit for this factor.
+                    newFo = startReference.getNextUnitField(previousCharFactParam);
+
+                    if (newFo == null) {
+                        newFo = new FieldObject(count, columnHeader, "", DataTypes.ONTOLOGY_TERM, "", false, false, false);
+                    }
                     tro.addField(newFo);
 
                     tro.getColumnDependencies().get(parentColPos).add(count);
@@ -140,9 +158,13 @@ public class SpreadsheetImport {
                     // AND ATTACH UNIT TO FIELD VIA THE MAPPING IN THE TABLE CLASS
                 } else {
                     // add a field accepting ontology terms
-                    FieldObject newFo = new FieldObject(count,
-                            previousCharFactParam, "", DataTypes.ONTOLOGY_TERM, "",
-                            false, false, false);
+                    FieldObject newFo = startReference.getFieldByName(previousCharFactParam);
+
+                    if (newFo == null) {
+                        newFo = new FieldObject(count,
+                                previousCharFactParam, "", DataTypes.ONTOLOGY_TERM, "",
+                                false, false, false);
+                    }
                     tro.addField(newFo);
 
                     parentColPos = count;
@@ -167,10 +189,6 @@ public class SpreadsheetImport {
             FieldObject field = startReference.getFieldByName(columnHeader);
 
             if (field != null) {
-                tro.addField(field);
-                count++;
-            } else {
-                // doesn't exist
 
 
                 if ((fieldAsLowercase.contains("factor value") ||
@@ -179,8 +197,19 @@ public class SpreadsheetImport {
 
                     previousCharFactParam = columnHeader;
                     expectedNextUnitLocation = positionInheaders + 1;
+                } else {
+                    tro.addField(field);
                 }
 
+                count++;
+            } else {
+                if ((fieldAsLowercase.contains("factor value") ||
+                        fieldAsLowercase.contains("characteristics") ||
+                        fieldAsLowercase.contains("parameter value")) && !fieldAsLowercase.contains("comment")) {
+
+                    previousCharFactParam = columnHeader;
+                    expectedNextUnitLocation = positionInheaders + 1;
+                }
                 if (fieldAsLowercase.equals("performer") ||
                         fieldAsLowercase.contains("comment") ||
                         fieldAsLowercase.equals("provider")) {
@@ -221,8 +250,12 @@ public class SpreadsheetImport {
 
         if (expectedNextUnitLocation != -1) {
             // add last factor/characteristic to the table
-            FieldObject newFo = new FieldObject(count, previousCharFactParam,
-                    "", DataTypes.ONTOLOGY_TERM, "", false, false, false);
+
+            FieldObject newFo = startReference.getFieldByName(previousCharFactParam);
+            if (newFo == null) {
+                newFo = new FieldObject(count,
+                        previousCharFactParam, "", DataTypes.ONTOLOGY_TERM, "", false, false, false);
+            }
             tro.addField(newFo);
         }
 
@@ -237,16 +270,17 @@ public class SpreadsheetImport {
             int headerCount = invalidHeaders.size();
             for (String s : invalidHeaders) {
                 invalidHeaderNames += s;
-                if (headerCount < invalidHeaders.size() - 1) {
+
+                if (headerCount != invalidHeaders.size() - 1) {
                     invalidHeaderNames += ", ";
                 }
                 headerCount++;
             }
 
-            String colText = invalidHeaders.size() > 1 ? invalidHeaders.size() + "The columns" : "The column ";
-            String linkText = invalidHeaders.size() > 1 ? invalidHeaders.size() + " are " : " is ";
+            String colText = invalidHeaders.size() > 1 ? "The columns " : "The column ";
+            String linkText = invalidHeaders.size() > 1 ? " are " : " is ";
 
-            throw new MalformedInvestigationException(colText + invalidHeaderNames + linkText + " not supported in this assay");
+            throw new MalformedInvestigationException(colText + invalidHeaderNames + linkText + "not supported in this assay");
         }
 
         return tro;
