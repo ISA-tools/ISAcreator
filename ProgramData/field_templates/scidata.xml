@@ -3,139 +3,74 @@
         <measurement term-label="[investigation]" term-accession="" source-abbreviation=""/>
         <technology term-label="" term-accession="" source-abbreviation=""/>
 
-        <field header="Comment [SciData Field 1]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
+        <field header="Comment[Manuscript Licence]" data-type="List" is-file-field="false"
+               is-multiple-value="false" is-required="false" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(to be added by Scientific Data). The Creative Commons licence selected for the DD manuscript in the Scientific Data manuscript tracking system. Use one of the following options:]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>CC BY 3.0,CC BY-NC 3.0,CC BY-NC-SA 3.0</list-values>
+        </field>
+        <field header="Comment[Experimental Metadata Licence]" data-type="String"
+               is-file-field="false" is-multiple-value="false" is-required="true" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(mandatory;default value) All ISA-Tab formatted experimental metadata within a DD will be made available under the CC0 protocol to promote maximum reuse; the only value accepted in this field is CC0.]]></description>
+            <default-value><![CDATA[CC0]]></default-value>
+        </field>
+        <field header="Comment[Data Repository]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="true" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(mandatory) The name of an external data repository to which the primary data files have been submitted.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[Data Record Accession]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="true" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(mandatory) The dataset identifier assigned by the external data repository.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[Data Record URI]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="true" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(mandatory) A URI pointing to a data record in the external data repository.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[Supplementary Information File Name]" data-type="String"
+               is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(to be added by Scientific Data) The name of a figure, table or other supporting file used in any of the above sections: for example, a table containing summary information such as sample numbers, demographics, etc.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[Supplementary Information File Type]" data-type="String"
+               is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(to be added by Scientific Data) Term(s) describing the type of supplementary file(s) appended to the DD manuscript in the Scientific Data manuscript tracking system.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[Supplementary File URI]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="false" is-hidden="false"
+               is-forced-ontology="false" section="STUDY">
+            <description><![CDATA[(to be added by Scientific Data) A URI pointing to the location of the Supplementary Information file on the Scientific Data website.]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
 
-        <field header="Comment [SciData Field 2]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
+        <field header="Comment[Funder]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="false" is-hidden="false"
+               is-forced-ontology="false" section="STUDY CONTACTS">
+            <description><![CDATA[The name of the funding agency(s) that have sponsored the author and the work detailed in the DD]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
-        <field header="Comment [SciData Field 3]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="STUDY">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
+        <field header="Comment[FundRef ID]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="false" is-hidden="false"
+               is-forced-ontology="false" section="STUDY CONTACTS">
+            <description><![CDATA[The unique FundRef identifier for the funding agency(s)]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
-
-        <field header="Comment [SciData Field 4]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="STUDY DESIGN DESCRIPTORS">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 5]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
+        <field header="Comment[Grant Identifier]" data-type="String" is-file-field="false"
+               is-multiple-value="false" is-required="false" is-hidden="false"
+               is-forced-ontology="false" section="STUDY CONTACTS">
+            <description><![CDATA[Unique identifiers provided by the funding agencies.]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
 
-        <field header="Comment [SciData Field 6]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 7]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-
-        <field header="Comment [SciData Field 8]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 9]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-
-        <field header="Comment [SciData Field 10]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 11]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-
-        <field header="Comment [SciData Field 12]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 13]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-
-        <field header="Comment [SciData Field 14]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 15]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-
-        <field header="Comment [SciData Field 16]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 17]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
-        <field header="Comment [SciData Field 18]" data-type="String" is-file-field="false"
-               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false"
-               section="INVESTIGATION">
-            <description>
-                <![CDATA[A field indicating which ISA configuration was last used to open the ISAtab file.]]></description>
-            <default-value><![CDATA[]]></default-value>
-        </field>
     </isatab-configuration>
 </isatab-config-file>

@@ -66,7 +66,7 @@ public class SearchResultPane extends JPanel {
     private ImageIcon connectionError;
 
     public SearchResultPane() {
-        ResourceInjector.get("publication-package.style").inject(this);
+        ResourceInjector.get("publicationlocator-package.style").inject(this);
         setLayout(new BorderLayout());
         setBackground(UIHelper.BG_COLOR);
         resultInfo = new JEditorPane();
