@@ -95,7 +95,7 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
 
     public PublicationLocatorUI(DataEntryForm parent) {
         this.parent = parent;
-        ResourceInjector.get("publication-package.style").inject(this);
+        ResourceInjector.get("publicationlocator-package.style").inject(this);
 
     }
 
