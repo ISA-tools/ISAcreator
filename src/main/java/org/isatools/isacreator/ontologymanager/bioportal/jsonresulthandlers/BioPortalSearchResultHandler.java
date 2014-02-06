@@ -295,6 +295,7 @@ public class BioPortalSearchResultHandler {
         Map<String, OntologyTerm> roots = new HashMap<String, OntologyTerm>();
 
         String queryContents = generalQueryEndpoint(BioPortal4Client.REST_URL + "ontologies/" + ontologyAbbreviation + "/classes/roots?apikey=" + API_KEY);
+        System.out.println(BioPortal4Client.REST_URL + "ontologies/" + ontologyAbbreviation + "/classes/roots?apikey=" + API_KEY);
         StringReader reader = new StringReader(queryContents);
         JsonReader rdr = Json.createReader(reader);
         JsonArray rootArray = rdr.readArray();
