@@ -103,7 +103,7 @@ public class Investigation extends ISASection {
                          String submissionDate, String publicReleaseDate) {
 
         super();
-        setInvestigationId(investigationId);
+        setInvestigationId(investigationId.equals("") ? String.valueOf(System.currentTimeMillis()) : investigationId);
         setInvestigationTitle(investigationTitle.equals("") ? "Investigation" : investigationTitle);
         setInvestigationDescription(investigationDescription);
         setSubmissionDate(submissionDate);
