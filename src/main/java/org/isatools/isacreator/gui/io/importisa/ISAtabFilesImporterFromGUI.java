@@ -57,7 +57,6 @@ import org.isatools.isacreator.model.Study;
 public class ISAtabFilesImporterFromGUI extends ISAtabImporter {
 
     private DataEntryEnvironment dataEntryEnvironment;
-    private ISAcreator isacreator;
 
     /**
      * ImportISAFiles provides a facility for you to import ISATAB files
@@ -66,7 +65,6 @@ public class ISAtabFilesImporterFromGUI extends ISAtabImporter {
      * @param isacreator        - a reference to the Main entry point of the Application
      */
     public ISAtabFilesImporterFromGUI(ISAcreator isacreator){
-        this.isacreator = isacreator;
         this.dataEntryEnvironment = new DataEntryEnvironment();
         isacreator.setCurDataEntryPanel(dataEntryEnvironment);
     }
