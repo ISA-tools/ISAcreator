@@ -65,9 +65,7 @@ public class BioPortalSearchResultHandler {
             if (!result.containsKey(ontologyId)) {
                 result.put(ontologyId, new ArrayList<OntologyTerm>());
             }
-
             OntologyTerm ontologyTerm = createOntologyTerm(resultItem);
-
             result.get(ontologyId).add(ontologyTerm);
 
         }
@@ -124,8 +122,7 @@ public class BioPortalSearchResultHandler {
 
 
             method.addParameter("apikey", API_KEY);
-            method.addParameter("pagesize", "500");
-//            method.addParameter("no_links", "true");
+            method.addParameter("pagesize", "100");
             method.addParameter("no_context", "true");
 
             if (exactMatch){
@@ -138,14 +135,10 @@ public class BioPortalSearchResultHandler {
                 System.err.println("Problem encountered setting host configuration for search");
             }
 
-//            System.out.println(method.getURI().toString());
-//            for(NameValuePair pair : method.getParameters()) {
-//                System.out.println(pair.getName() + "=" + pair.getValue());
-//            }
-
+            long startTime = System.currentTimeMillis();
             int statusCode = client.executeMethod(method);
             if (statusCode != -1) {
-
+                System.out.println("It took " + (System.currentTimeMillis() - startTime) + "ms to do that query...");
                 String contents = method.getResponseBodyAsString();
                 method.releaseConnection();
                 return contents;
@@ -208,7 +201,6 @@ public class BioPortalSearchResultHandler {
             } catch (Exception e) {
                 System.err.println("Problem encountered setting host configuration for ontology search");
             }
-
 
             int statusCode = client.executeMethod(method);
             if (statusCode != -1) {
@@ -301,8 +293,6 @@ public class BioPortalSearchResultHandler {
         JsonArray rootArray = rdr.readArray();
 
         for (JsonObject annotationItem : rootArray.getValuesAs(JsonObject.class)) {
-
-
             OntologySourceRefObject osro = getOntologySourceRefObject(extractOntologyId(annotationItem));
 
             OntologyTerm ontologyTerm = createOntologyTerm(annotationItem);

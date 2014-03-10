@@ -29,7 +29,7 @@ public class AnnotatorSearchClient {
     public static final String BASE_QUERY_URL = "http://data.bioontology.org/annotator";
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms) {
-        return searchForTerms(terms, AcceptedOntologies.getAllowedOntologyAcronyms(new HashSet<Ontology>()), true);
+        return searchForTerms(terms, "", true);
     }
 
     public Map<String, Map<String, AnnotatorResult>> searchForTerms(Set<String> terms, String ontologiesToSearchOn, boolean wholeWordOnly) {
@@ -44,6 +44,7 @@ public class AnnotatorSearchClient {
 
             method.addParameter("ontologies", ontologiesToSearchOn);
             method.addParameter("text", flattenedTerms);
+            method.addParameter("include", "prefLabel");
             method.addParameter("apikey", "fd88ee35-6995-475d-b15a-85f1b9dd7a42");
 
             try {
