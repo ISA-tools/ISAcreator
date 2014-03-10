@@ -1,5 +1,8 @@
 package org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -13,8 +16,6 @@ import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
-import javax.json.*;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class BioPortalSearchResultHandler {
 
 
     public Map<String, List<OntologyTerm>> getSearchResults(String term, String ontologyIds, String subtree) {
-       return getSearchResults(term, ontologyIds, subtree, false);
+        return getSearchResults(term, ontologyIds, subtree, false);
     }
 
     /**
@@ -48,18 +49,16 @@ public class BioPortalSearchResultHandler {
 
         String content = querySearchEndpoint(term, ontologyIds, subtree, exactMatch);
 
-        StringReader reader = new StringReader(content);
+        JSONObject obj = (JSONObject) JSONValue.parse(content);
 
-        JsonReader rdr = Json.createReader(reader);
+        JSONArray results = (JSONArray) obj.get("collection");
 
-        JsonObject obj = rdr.readObject();
-        JsonArray results = obj.getJsonArray("collection");
-
-        if (results==null)
+        if (results == null)
             return result;
 
-        for (JsonObject resultItem : results.getValuesAs(JsonObject.class)) {
+        for (Object result1 : results) {
 
+            JSONObject resultItem = (JSONObject) result1;
             String ontologyId = extractOntologyId(resultItem);
 
             if (!result.containsKey(ontologyId)) {
@@ -73,24 +72,24 @@ public class BioPortalSearchResultHandler {
         return result;
     }
 
-    private String extractOntologyId(JsonObject ontologyItemJsonDictionary) {
-        JsonObject links = ontologyItemJsonDictionary.getJsonObject("links");
-        return links.getJsonString("ontology").toString();
+    private String extractOntologyId(JSONObject ontologyItemJsonDictionary) {
+        JSONObject links = (JSONObject) ontologyItemJsonDictionary.get("links");
+        return links.get("ontology").toString();
     }
 
-    private void extractDefinitionFromOntologyTerm(JsonObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
-        JsonArray definitions = ontologyItemJsonDictionary.getJsonArray("definition");
+    private void extractDefinitionFromOntologyTerm(JSONObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
+        JSONArray definitions = (JSONArray) ontologyItemJsonDictionary.get("definition");
         if (definitions != null && definitions.size() > 0) {
             ontologyTerm.addToComments("definition", definitions.get(0).toString());
         }
     }
 
-    private void extractSynonymsFromOntologyTerm(JsonObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
-        JsonArray synonyms = ontologyItemJsonDictionary.getJsonArray("synonyms");
+    private void extractSynonymsFromOntologyTerm(JSONObject ontologyItemJsonDictionary, OntologyTerm ontologyTerm) {
+        JSONArray synonyms = (JSONArray) ontologyItemJsonDictionary.get("synonyms");
         if (synonyms != null && synonyms.size() > 0) {
             StringBuilder synonymList = new StringBuilder();
             int count = 0;
-            for (JsonValue value : synonyms.getValuesAs(JsonValue.class)) {
+            for (Object value : synonyms) {
                 synonymList.append(value.toString());
                 if (count != synonyms.size() - 1) {
                     synonymList.append(",");
@@ -100,7 +99,6 @@ public class BioPortalSearchResultHandler {
             ontologyTerm.addToComments("synonyms", synonymList.toString());
         }
     }
-
 
 
     private String querySearchEndpoint(String term, String ontologyIds, String subtree, boolean exactMatch) {
@@ -114,9 +112,9 @@ public class BioPortalSearchResultHandler {
             if (StringUtils.trimToNull(subtree) != null) {
                 method.addParameter("subtree", subtree);
 
-                if (ontologyIds!=null)
+                if (ontologyIds != null)
                     method.addParameter("ontology", ontologyIds);
-            } else if(!ontologyIds.equals("all"))  {
+            } else if (!ontologyIds.equals("all")) {
                 method.addParameter("ontologies", ontologyIds);
             }
 
@@ -125,7 +123,7 @@ public class BioPortalSearchResultHandler {
             method.addParameter("pagesize", "100");
             method.addParameter("no_context", "true");
 
-            if (exactMatch){
+            if (exactMatch) {
                 method.addParameter("exact_match", "true");
             }
 
@@ -154,35 +152,32 @@ public class BioPortalSearchResultHandler {
 
         Map<String, Ontology> result = new HashMap<String, Ontology>();
         String content = queryOntologyEndpoint();
+        JSONArray obj = (JSONArray) JSONValue.parse(content);
 
-        StringReader reader = new StringReader(content);
-        JsonReader rdr = Json.createReader(reader);
-        JsonArray array = rdr.readArray();
-
-        for (JsonObject resultItem : array.getValuesAs(JsonObject.class)) {
-            addOntology(result, resultItem);
+        for (Object resultItem : obj) {
+            addOntology(result, (JSONObject) resultItem);
         }
 
         return result;
     }
 
-    private void addOntology(Map<String, Ontology> result, JsonObject resultItem) {
-        JsonObject ontology = resultItem.getJsonObject("ontology");
-        JsonValue summaryOnly = ontology.get("summaryOnly");
-        if (summaryOnly != null) {
-            Ontology newOntology = new Ontology(ontology.getString("@id"), "version", ontology.getString("acronym"), ontology.getString("name"));
+    private void addOntology(Map<String, Ontology> result, JSONObject resultItem) {
+        JSONObject ontology = (JSONObject) resultItem.get("ontology");
+        boolean summaryOnly = Boolean.valueOf(ontology.get("summaryOnly") != null ? ontology.get("summaryOnly").toString() : "false");
+        if (!summaryOnly) {
+            Ontology newOntology = new Ontology(ontology.get("@id").toString(), "version", ontology.get("acronym").toString(), ontology.get("name").toString());
             if (!newOntology.getOntologyAbbreviation().contains("test") &&
                     !newOntology.getOntologyDisplayLabel().contains("test")) {
 
-                String version = resultItem.get("version").toString();
-                JsonNumber submissionId = resultItem.getJsonNumber("submissionId");
-                String homepage = resultItem.get("homepage").toString();
+                String version = resultItem.get("version") != null ? resultItem.get("version").toString() : "";
+                String submissionId = resultItem.get("submissionId") != null ? resultItem.get("submissionId").toString() : "";
+                String homepage = resultItem.get("homepage") != null ? resultItem.get("homepage").toString() : "";
 
                 newOntology.setHomePage(homepage);
                 newOntology.setOntologyVersion(version);
-                newOntology.setSubmissionId(submissionId.toString());
+                newOntology.setSubmissionId(submissionId);
 
-                result.put(resultItem.getString("@id"), newOntology);
+                result.put(resultItem.get("@id").toString(), newOntology);
             }
 
         }
@@ -219,7 +214,7 @@ public class BioPortalSearchResultHandler {
         HostConfiguration configuration = new HostConfiguration();
         configuration.setHost("http://data.bioontology.org");
         String proxyPort = System.getProperty("http.proxyPort");
-        if (proxyPort ==null)
+        if (proxyPort == null)
             return;
         configuration.setProxy(System.getProperty("http.proxyHost"), Integer.valueOf(System.getProperty("http.proxyPort")));
         client.setHostConfiguration(configuration);
@@ -228,20 +223,22 @@ public class BioPortalSearchResultHandler {
     public OntologyTerm getTermMetadata(String termId, String ontologyId) {
 
         String content = queryTermMetadataEndpoint(termId, ontologyId);
-        StringReader reader = new StringReader(content);
-        JsonReader rdr = Json.createReader(reader);
-        JsonObject obj = rdr.readObject();
+        JSONObject obj = (JSONObject) JSONValue.parse(content);
+
 
         // if we have a nice error free page, continue
         if (!obj.containsKey("errors")) {
             OntologySourceRefObject osro = getOntologySourceRefObject(ontologyId);
 
-            OntologyTerm ontologyTerm = new OntologyTerm(obj.getString("prefLabel"), obj.getString("@id"), obj.getString("@id"), osro);
+            OntologyTerm ontologyTerm = new OntologyTerm(
+                    obj.get("prefLabel").toString(),
+                    obj.get("@id").toString(),
+                    obj.get("@id").toString(), osro);
             ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
             extractDefinitionFromOntologyTerm(obj, ontologyTerm);
             extractSynonymsFromOntologyTerm(obj, ontologyTerm);
 
-            System.out.println(ontologyTerm.getOntologyTermName() + " - " + ontologyTerm.getOntologyTermAccession() + " - " + ontologyTerm.getOntologyTermURI() );
+            System.out.println(ontologyTerm.getOntologyTermName() + " - " + ontologyTerm.getOntologyTermAccession() + " - " + ontologyTerm.getOntologyTermURI());
 
             return ontologyTerm;
         } else {
@@ -288,14 +285,15 @@ public class BioPortalSearchResultHandler {
 
         String queryContents = generalQueryEndpoint(BioPortal4Client.REST_URL + "ontologies/" + ontologyAbbreviation + "/classes/roots?apikey=" + API_KEY);
         System.out.println(BioPortal4Client.REST_URL + "ontologies/" + ontologyAbbreviation + "/classes/roots?apikey=" + API_KEY);
-        StringReader reader = new StringReader(queryContents);
-        JsonReader rdr = Json.createReader(reader);
-        JsonArray rootArray = rdr.readArray();
 
-        for (JsonObject annotationItem : rootArray.getValuesAs(JsonObject.class)) {
-            OntologySourceRefObject osro = getOntologySourceRefObject(extractOntologyId(annotationItem));
+        JSONArray ontologyTerms = (JSONArray) JSONValue.parse(queryContents);
 
-            OntologyTerm ontologyTerm = createOntologyTerm(annotationItem);
+
+        for (Object annotationItem : ontologyTerms) {
+            JSONObject annotationObject = (JSONObject) annotationItem;
+            OntologySourceRefObject osro = getOntologySourceRefObject(extractOntologyId(annotationObject));
+
+            OntologyTerm ontologyTerm = createOntologyTerm(annotationObject);
             ontologyTerm.setOntologySourceInformation(osro);
 
             roots.put(ontologyTerm.getOntologyTermAccession(), ontologyTerm);
@@ -304,17 +302,17 @@ public class BioPortalSearchResultHandler {
         return roots;
     }
 
-    private OntologyTerm createOntologyTerm(JsonObject annotationItem) {
+    private OntologyTerm createOntologyTerm(JSONObject annotationItem) {
 
-        OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.getString("prefLabel"), annotationItem.getString("@id"), annotationItem.getString("@id"), null);
+        OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.get("prefLabel").toString(), annotationItem.get("@id").toString(), annotationItem.get("@id").toString(), null);
         ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
         extractDefinitionFromOntologyTerm(annotationItem, ontologyTerm);
         extractSynonymsFromOntologyTerm(annotationItem, ontologyTerm);
         String ontologyId = extractOntologyId(annotationItem);
-        if (ontologyId!=null){
-            String ontologyAbbreviation = ontologyId.substring(ontologyId.lastIndexOf('/')+1);
+        if (ontologyId != null) {
+            String ontologyAbbreviation = ontologyId.substring(ontologyId.lastIndexOf('/') + 1);
             OntologySourceRefObject sourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(ontologyAbbreviation);
-            if (sourceRefObject!=null)
+            if (sourceRefObject != null)
                 ontologyTerm.setOntologySourceInformation(sourceRefObject);
         }
         return ontologyTerm;
@@ -371,25 +369,23 @@ public class BioPortalSearchResultHandler {
 
             String queryContents = generalQueryEndpoint(BioPortal4Client.REST_URL + "ontologies/" + ontologyAbbreviation + "/classes/"
                     + URLEncoder.encode(termAccession, "UTF-8") + "/" + parentsOrChildren + "?apikey=" + API_KEY);
-            StringReader reader = new StringReader(queryContents);
-            JsonReader rdr = Json.createReader(reader);
-
-            System.out.println(queryContents);
-
-            JsonStructure topLevelStructure = rdr.read();
-            JsonArray rootArray;
 
 
-            if (topLevelStructure instanceof JsonObject) {
+            Object obj = JSONValue.parse(queryContents);
+
+            JSONArray rootArray;
+
+            if (obj instanceof JSONObject) {
                 // the children result returns a dictionary, or JsonStructure, so we have to go down one level to get
                 // the collection of results.
-                rootArray = ((JsonObject) topLevelStructure).getJsonArray("collection");
+                rootArray = (JSONArray) ((JSONObject) obj).get("collection");
             } else {
                 // the parents result returns an array directly, so we can just use it immediately.
-                rootArray = (JsonArray) topLevelStructure;
+                rootArray = (JSONArray) obj;
             }
 
-            for (JsonObject annotationItem : rootArray.getValuesAs(JsonObject.class)) {
+            for (Object arrayValue: rootArray) {
+                JSONObject annotationItem = (JSONObject) arrayValue;
                 OntologySourceRefObject osro = getOntologySourceRefObject(extractOntologyId(annotationItem));
 
                 OntologyTerm ontologyTerm = createOntologyTerm(annotationItem);
@@ -399,13 +395,10 @@ public class BioPortalSearchResultHandler {
             }
 
             return parents;
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
         return null;
-
     }
-
-
 }

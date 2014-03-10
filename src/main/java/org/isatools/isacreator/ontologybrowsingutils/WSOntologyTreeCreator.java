@@ -111,14 +111,8 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         try {
             browser.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             for (String ontology : ontologies.keySet()) {
-                System.out.println("Adding " + ontology + " to tree");
-
                 RecommendedOntology recommendedOntology = ontologies.get(ontology);
 
-                System.out.println("initialising ontology visualisation for " + recommendedOntology.getOntology().getOntologyDisplayLabel());
-                System.out.println("Ontology version is: " + recommendedOntology.getOntology().getOntologyVersion());
-                System.out.println("Ontology ID: " + recommendedOntology.getOntology().getOntologyID());
-                System.out.println("Ontology Abbreviation: " + recommendedOntology.getOntology().getOntologyAbbreviation());
                 // if ontology has no branch specified, query the whole ontology.
                 Map<String, OntologyTerm> rootTerms;
 
@@ -127,14 +121,11 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
                 if (recommendedOntology.getBranchToSearchUnder() != null) {
 
                     nodeLabel += " under " + recommendedOntology.getBranchToSearchUnder().getBranchName();
-
                     String branchIdentifier = recommendedOntology.getBranchToSearchUnder().getBranchIdentifier();
 
                     if (StringProcessing.isURL(branchIdentifier)) {
                         branchIdentifier = OntologyUtils.getModifiedBranchIdentifier(branchIdentifier, "#");
                     }
-
-                    System.out.println("Going to search for " + branchIdentifier + " in " + recommendedOntology.getOntology().getOntologyDisplayLabel());
 
                     rootTerms = bioportalClient.getTermChildren(branchIdentifier, recommendedOntology.getOntology().getOntologyAbbreviation());
 

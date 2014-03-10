@@ -32,8 +32,6 @@ public class ISAcreatorApplication  {
 
     private static final Logger log = Logger.getLogger(ISAcreatorApplication.class);
 
-    private static Framework m_framework = null;
-
     /**
      * Enables the bundle to run as a stand-alone application. When this
      * static {@code main()} method is invoked, the application creates
