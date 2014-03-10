@@ -1,5 +1,7 @@
 package org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers;
 
+import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
@@ -31,6 +33,7 @@ public class BioPortalAnnotatorResultHandler {
 
         StringReader reader = new StringReader(queryContents);
 
+        System.out.println(queryContents);
         JsonReader rdr = Json.createReader(reader);
 
         JsonArray obj = rdr.readArray();
@@ -41,7 +44,7 @@ public class BioPortalAnnotatorResultHandler {
 
             if (annotatorResult != null) {
 
-                String originalTerm = originalText.substring(annotatorResult.getStartIndex()-1, annotatorResult.getEndIndex());
+                String originalTerm = originalText.substring(annotatorResult.getStartIndex() - 1, annotatorResult.getEndIndex());
                 if (originalTerms.contains(originalTerm)) {
 
                     if (!result.containsKey(originalTerm)) {
@@ -61,27 +64,24 @@ public class BioPortalAnnotatorResultHandler {
     }
 
     private AnnotatorResult extractAnnotatorResult(JsonObject resultItem) {
-
         JsonObject annotatedClass = resultItem.getJsonObject("annotatedClass");
         JsonObject links = annotatedClass.getJsonObject("links");
 
         String ontologyId = links.getJsonString("ontology").toString();
 
-        OntologyTerm ontologyTerm = searchHandler.getTermMetadata(annotatedClass.getString("@id"), ontologyId);
+        OntologySourceRefObject sourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(ontologyId);
+        OntologyTerm ontologyTerm = new OntologyTerm(annotatedClass.getString("prefLabel"), annotatedClass.getString("@id"), annotatedClass.getString("@id"), sourceRefObject);
 
-        if (ontologyTerm != null) {
+        JsonNumber from = null, to = null;
 
-            JsonNumber from = null, to = null;
+        for (JsonObject annotation : resultItem.getJsonArray("annotations").getValuesAs(JsonObject.class)) {
+            from = annotation.getJsonNumber("from");
+            to = annotation.getJsonNumber("to");
+        }
 
-            for (JsonObject annotation : resultItem.getJsonArray("annotations").getValuesAs(JsonObject.class)) {
-                from = annotation.getJsonNumber("from");
-                to = annotation.getJsonNumber("to");
-            }
-
-            if (from != null && to != null) {
-                return new AnnotatorResult(ontologyTerm, AcceptedOntologies.getAcceptedOntologies().get(ontologyId), 1,
-                        from.intValue(), to.intValue());
-            }
+        if (from != null && to != null) {
+            return new AnnotatorResult(ontologyTerm, AcceptedOntologies.getAcceptedOntologies().get(ontologyId), 1,
+                    from.intValue(), to.intValue());
         }
 
         return null;

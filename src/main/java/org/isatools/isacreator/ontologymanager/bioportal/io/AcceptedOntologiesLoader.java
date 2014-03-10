@@ -2,7 +2,6 @@ package org.isatools.isacreator.ontologymanager.bioportal.io;
 
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.ontologymanager.BioPortal4Client;
-import org.isatools.isacreator.ontologymanager.BioPortalClient;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

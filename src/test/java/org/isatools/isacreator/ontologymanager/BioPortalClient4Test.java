@@ -18,7 +18,7 @@ public class BioPortalClient4Test {
     private BioPortal4Client client = new BioPortal4Client();
     private String testOntologySource = "EFO";
     private String testTermAccession = "http://www.ebi.ac.uk/efo/EFO_0000428";
-    private String testSearchTerm = "dose";
+    private String testSearchTerm = "assay";
     private String ontologyId = "http://data.bioontology.org/ontologies/EFO";
     private String obiOntologyId = "http://data.bioontology.org/ontologies/OBI";
 
@@ -51,9 +51,8 @@ public class BioPortalClient4Test {
         System.out.println("_____Testing getTermsByPartialNameFromSource()____");
 
         long startTime = System.currentTimeMillis();
-        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource("dose", obiOntologyId, false);
-        System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do query 'dose' in OBI.");
-
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, obiOntologyId, false);
+        System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do query '" + testSearchTerm +"' in OBI.");
 
         for (OntologySourceRefObject source : result.keySet()) {
             System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
@@ -62,7 +61,6 @@ public class BioPortalClient4Test {
                 System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
             }
         }
-
     }
 
     @Test
