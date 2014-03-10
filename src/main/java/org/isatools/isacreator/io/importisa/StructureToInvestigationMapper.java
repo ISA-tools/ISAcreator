@@ -39,6 +39,7 @@ package org.isatools.isacreator.io.importisa;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
@@ -162,6 +163,9 @@ public class StructureToInvestigationMapper {
         Map<String, String> record = getRecord(investigationSection, 0);
 
         investigation.addToFields(record);
+        if (StringUtils.trimToNull(investigation.getInvestigationId()) == null) {
+            investigation.setDefaultInvestigationId();
+        }
 
         Map<Integer, Map<String, String>> ontologyFields = IOUtils.getOntologyTerms(sectionFields);
 
