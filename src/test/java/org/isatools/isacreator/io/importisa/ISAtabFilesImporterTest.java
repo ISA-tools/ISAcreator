@@ -3,6 +3,7 @@ package org.isatools.isacreator.io.importisa;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
+import org.isatools.isacreator.io.CommonTestIO;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.junit.After;
@@ -26,7 +27,7 @@ import static junit.framework.Assert.assertTrue;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class ISAtabFilesImporterTest {
+public class ISAtabFilesImporterTest implements CommonTestIO {
 
     private String configDir = null;
     private static Logger log = Logger.getLogger(ISAtabFilesImporterTest.class);
@@ -47,7 +48,7 @@ public class ISAtabFilesImporterTest {
             }
         }
 
-        configDir = baseDir + "/Configurations/isaconfig-default_v2013-02-13/";
+        configDir = baseDir + DEFAULT_CONFIG_DIR;
 
         log.debug("configDir=" + configDir);
         importer = new ISAtabFilesImporter(configDir);

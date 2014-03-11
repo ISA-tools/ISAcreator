@@ -39,7 +39,9 @@ package org.isatools.isacreator.io.importisa;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.isacreator.io.CommonTestIO;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Publication;
 import org.junit.Test;
@@ -51,7 +53,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertTrue;
 
-public class InvestigationImportTest {
+public class InvestigationImportTest implements CommonTestIO {
 
     @Test
     public void loadInvestigationFile() {
@@ -59,6 +61,8 @@ public class InvestigationImportTest {
         String baseDir = System.getProperty("basedir");
         File testInvestigationFile = new File(baseDir + "/target/test-classes/test-data/BII-I-1/i_investigation.txt");
 
+
+        ConfigurationManager.loadConfigurations(baseDir + DEFAULT_CONFIG_DIR);
 
         System.out.println("__TESTING loadInvestigationFile() on " + testInvestigationFile.getName());
 

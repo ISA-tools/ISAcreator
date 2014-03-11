@@ -1,7 +1,7 @@
 package org.isatools.isacreator.io.exportisa;
 
 import org.apache.log4j.Logger;
-import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.io.CommonTestIO;
 import org.isatools.isacreator.io.importisa.ISAtabFilesImporter;
 import org.isatools.isacreator.model.Investigation;
 import org.junit.After;
@@ -19,7 +19,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:alejandra.gonzalez.beltran@gmail.com">Alejandra Gonzalez-Beltran</a>
  */
-public class OutputISAFilesTest {
+public class OutputISAFilesTest implements CommonTestIO {
 
     private String configDir = null;
     private static Logger log = Logger.getLogger(OutputISAFilesTest.class);
@@ -42,9 +42,8 @@ public class OutputISAFilesTest {
             }
         }
 
-        configDir = baseDir + ISAcreator.CONFIG_DIR;
+        configDir = baseDir + DEFAULT_CONFIG_DIR;
 
-        log.debug("configDir=" + configDir);
         importer = new ISAtabFilesImporter(configDir);
         exporter = new OutputISAFiles();
         isatabParentDir = baseDir + "/src/test/resources/test-data/BII-I-1";
