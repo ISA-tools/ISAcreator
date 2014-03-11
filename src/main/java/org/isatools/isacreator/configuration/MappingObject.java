@@ -127,11 +127,15 @@ public class MappingObject implements Serializable {
     }
 
     public String getDispatchTarget() {
-        return dispatchTarget == null ? measurementType.equals("[Sample]") ? "" : DispatchTargets.GENERIC.toString() : dispatchTarget;
+        return dispatchTarget == null ? isSampleOrInvestigation() ? "" : DispatchTargets.GENERIC.toString() : dispatchTarget;
     }
 
     public String getAssayType() {
-        return assayType == null ? measurementType.equals("[Sample]") ? "" : AssayTypes.GENERIC.toString() : assayType;
+        return assayType == null ? isSampleOrInvestigation() ? "" : AssayTypes.GENERIC.toString() : assayType;
+    }
+
+    private boolean isSampleOrInvestigation() {
+        return measurementType.equals("[Sample]") || measurementType.equals("[investigation]");
     }
 
     public void setAssayType(String assayType) {
