@@ -334,6 +334,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 for (String containingFile : filesToZip.get(parentISAFile)) {
                     File f = new File(containingFile);
 
+                    log.info("Going to try and zip " + f.getAbsolutePath());
                     // this will test if the file being mentioned is in a relative location to the directory, just in case!
                     f = testIfRelativeOrAbsolutePath(f, isaFiles[0].getParentFile());
 
@@ -407,7 +408,8 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
     private File testIfRelativeOrAbsolutePath(File file, File isaDirectory) {
         if (!file.exists()) {
-            return new File(isaDirectory.getAbsolutePath() + File.separator + file.getName());
+
+            return new File(isaDirectory.getAbsolutePath() + File.separator + file.getPath());
         }
 
         return file;
