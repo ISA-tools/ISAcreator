@@ -82,32 +82,24 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         this.browser = browser;
         this.tree = tree;
         observers = new ArrayList<TreeObserver>();
-
         bioportalClient = new BioPortal4Client();
     }
 
     public DefaultMutableTreeNode createTree(Map<String, RecommendedOntology> ontologies) throws FileNotFoundException {
         this.ontologies = ontologies;
-
         rootNode = new DefaultMutableTreeNode(ontologies.size() + " recommended ontologies");
         treeModel = new DefaultTreeModel(rootNode);
         treeModel.addTreeModelListener(this);
-
         tree.setModel(treeModel);
         tree.addTreeExpansionListener(this);
         tree.addTreeSelectionListener(this);
-
-
         initiateOntologyVisualization();
         return rootNode;
     }
 
     private void initiateOntologyVisualization() {
-
-
         // instead of visualising just one ontology, we need to visualise all that have been selected to browse on, if they have branches
         // specified...or maybe should allow to browse the whole ontology as well.
-
         try {
             browser.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             for (String ontology : ontologies.keySet()) {
@@ -182,8 +174,6 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         browser.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         Ontology ontology = extractOntologyFromNode(parentTerm);
-
-
         Map<String, OntologyTerm> termChildren = bioportalClient.getTermChildren(termAccession, ontology.getOntologyAbbreviation());
 
         // add the level of non visible nodes

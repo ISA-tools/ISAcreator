@@ -55,7 +55,9 @@ public class OntologyUtils {
     }
 
     public static OntologyTerm convertOntologyBranchToOntologyTerm(OntologyBranch branch, OntologySourceRefObject ontologySource) {
-        OntologyTerm historyObject = new OntologyTerm(branch.getBranchName(),branch.getBranchIdentifier(), null, ontologySource);
-        return historyObject;
+        System.out.println(branch.getBranchIdentifier());
+        System.out.println("Source Name = " + ontologySource.getSourceName());
+        System.out.println("Source Description = " + ontologySource.getSourceDescription());
+        return new OntologyTerm(branch.getBranchName(),branch.getBranchIdentifier(), branch.getBranchIdentifier(), ontologySource);
     }
 }
