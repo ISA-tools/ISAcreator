@@ -217,7 +217,8 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
     private JLayeredPane getAssayByRef(String assayRef) {
         for (ISASection isaSection : ApplicationManager.getIsaSectionToDataEntryForm().keySet()) {
-            if (isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE).equals(assayRef)) {
+            System.out.println(isaSection);
+            if (isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE) != null && isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE).equals(assayRef)) {
                 return ApplicationManager.getUserInterfaceForISASection(isaSection);
             }
         }
