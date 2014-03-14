@@ -561,7 +561,7 @@
         <profile>
             <id>build</id>
             <properties>
-                <isacreator.version>${pom.version}</isacreator.version>
+                <isacreator.version>${project.version}</isacreator.version>
                 <isacreator.alwaysShowInvestigation>false</isacreator.alwaysShowInvestigation>
             </properties>
 
