@@ -36,7 +36,7 @@ public class BioPortalAnnotatorResultHandler {
 
         for (Object annotationItem : obj) {
 
-            AnnotatorResult annotatorResult = extractAnnotatorResult((JSONObject)annotationItem);
+            AnnotatorResult annotatorResult = extractAnnotatorResult((JSONObject) annotationItem);
 
             if (annotatorResult != null) {
 
@@ -60,28 +60,30 @@ public class BioPortalAnnotatorResultHandler {
     }
 
     private AnnotatorResult extractAnnotatorResult(JSONObject resultItem) {
-        JSONObject annotatedClass = (JSONObject)resultItem.get("annotatedClass");
+        JSONObject annotatedClass = (JSONObject) resultItem.get("annotatedClass");
         JSONObject links = (JSONObject) annotatedClass.get("links");
 
         String ontologyId = links.get("ontology").toString();
 
-        OntologySourceRefObject sourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(ontologyId);
-        OntologyTerm ontologyTerm = new OntologyTerm(
-                annotatedClass.get("prefLabel").toString(), annotatedClass.get("@id").toString(), annotatedClass.get("@id").toString(), sourceRefObject);
+        if (AcceptedOntologies.getOntologyAbbreviationFromId(ontologyId) != null) {
+            OntologySourceRefObject sourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(AcceptedOntologies.getOntologyAbbreviationFromId(ontologyId));
+            OntologyTerm ontologyTerm = new OntologyTerm(
+                    annotatedClass.get("prefLabel").toString(), annotatedClass.get("@id").toString(), annotatedClass.get("@id").toString(), sourceRefObject);
 
-        int from = -1, to = -1;
+            int from = -1, to = -1;
 
-        for (Object annotation : (JSONArray)resultItem.get("annotations")) {
-            JSONObject annotationObject = (JSONObject) annotation;
-            from = Integer.valueOf(annotationObject.get("from").toString());
-            to = Integer.valueOf(annotationObject.get("to").toString());
+            for (Object annotation : (JSONArray) resultItem.get("annotations")) {
+                JSONObject annotationObject = (JSONObject) annotation;
+                from = Integer.valueOf(annotationObject.get("from").toString());
+                to = Integer.valueOf(annotationObject.get("to").toString());
+            }
+
+            if (from != -1 && to != -1) {
+                return new AnnotatorResult(ontologyTerm, AcceptedOntologies.getAcceptedOntologies().get(ontologyId), 1,
+                        from, to);
+            }
+
         }
-
-        if (from != -1 && to != -1) {
-            return new AnnotatorResult(ontologyTerm, AcceptedOntologies.getAcceptedOntologies().get(ontologyId), 1,
-                    from, to);
-        }
-
         return null;
     }
 }
