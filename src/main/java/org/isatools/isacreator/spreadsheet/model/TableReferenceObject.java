@@ -340,10 +340,12 @@ public class TableReferenceObject implements Serializable {
                     rowDataModified.set(prevValLoc, s + ":" + prevVal);
                 }
             } else if (headers[i].toLowerCase().trim().contains("term accession number")) {
-                //if (!s.equals("")) {
+                if (!s.equals("")) {
+                    //if the value of 'term accession number' column is not empty, deal with the column
                     String prevVal = rowDataModified.get(prevValLoc);
 
-                    if (prevVal.contains(":")) {
+                    //if prevVal correspond to an ontology term, it will have the short from <ontology abbreviation>:<term label>
+                    if (prevVal.contains(":")){
                         String[] parts = prevVal.split(":");
 
                         if (parts.length > 1) {
@@ -368,7 +370,7 @@ public class TableReferenceObject implements Serializable {
 
                         }
                     }
-                //}
+                }
             } else {
                 rowDataModified.add(s);
                 prevValLoc = rowDataModified.size() - 1;

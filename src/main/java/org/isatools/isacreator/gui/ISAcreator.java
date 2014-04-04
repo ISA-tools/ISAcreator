@@ -103,8 +103,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
     private static Logger log = Logger.getLogger(ISAcreator.class);
 
-    public static final String CONFIG_DIR = "/Configurations/isaconfig-default_v2013-02-13/";
-
     public static String DEFAULT_ISATAB_SAVE_DIRECTORY = "isatab files";
     public static String DEFAULT_CONFIGURATIONS_DIRECTORY = "Configurations";
     public static String DEFAULT_USER_PROFILE_DIRECTORY = "";

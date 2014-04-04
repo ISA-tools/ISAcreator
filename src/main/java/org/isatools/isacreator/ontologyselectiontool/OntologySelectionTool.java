@@ -1102,14 +1102,11 @@ public class OntologySelectionTool extends JFrame implements MouseListener, Onto
                         OntologyTerm ontologyTerm = (OntologyTerm) selectedNode.getUserObject();
 
                         if (event.getClickCount() == 1) {
-
                             addTerm(ontologyTerm);
                         }
 
-
                         boolean sourceIsInPlugins = OntologySearchPluginRegistry.isOntologySourceAbbreviationDefinedInPlugins(ontologyTerm.getOntologySource());
                         viewTermDefinition.setContent(createOntologyBranch(ontologyTerm), ontologySource.getSourceFile(), sourceIsInPlugins ? null : bioportalClient == null ? new BioPortal4Client() : bioportalClient);
-
                     }
                 } else if (tree == browseRecommendedOntologyTree) {
 

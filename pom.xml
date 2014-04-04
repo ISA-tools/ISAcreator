@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.7.5</version>
+    <version>1.7.7</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -306,6 +306,12 @@
         </dependency>
 
         <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>2.0-RC3</version>
+        </dependency>
+
+        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.4</version>
@@ -555,7 +561,7 @@
         <profile>
             <id>build</id>
             <properties>
-                <isacreator.version>${pom.version}</isacreator.version>
+                <isacreator.version>${project.version}</isacreator.version>
                 <isacreator.alwaysShowInvestigation>false</isacreator.alwaysShowInvestigation>
             </properties>
 

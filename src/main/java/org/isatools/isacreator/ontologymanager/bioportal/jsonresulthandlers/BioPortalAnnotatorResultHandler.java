@@ -1,11 +1,14 @@
 package org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.model.AnnotatorResult;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
-import javax.json.*;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,19 +32,15 @@ public class BioPortalAnnotatorResultHandler {
         Map<String, Map<String, AnnotatorResult>> result = new HashMap<String, Map<String, AnnotatorResult>>();
         // for each token, we wan to find the matches and add them to the list
 
-        StringReader reader = new StringReader(queryContents);
+        JSONArray obj = (JSONArray) JSONValue.parse(queryContents);
 
-        JsonReader rdr = Json.createReader(reader);
+        for (Object annotationItem : obj) {
 
-        JsonArray obj = rdr.readArray();
-
-        for (JsonObject annotationItem : obj.getValuesAs(JsonObject.class)) {
-
-            AnnotatorResult annotatorResult = extractAnnotatorResult(annotationItem);
+            AnnotatorResult annotatorResult = extractAnnotatorResult((JSONObject) annotationItem);
 
             if (annotatorResult != null) {
 
-                String originalTerm = originalText.substring(annotatorResult.getStartIndex()-1, annotatorResult.getEndIndex());
+                String originalTerm = originalText.substring(annotatorResult.getStartIndex() - 1, annotatorResult.getEndIndex());
                 if (originalTerms.contains(originalTerm)) {
 
                     if (!result.containsKey(originalTerm)) {
@@ -60,30 +59,31 @@ public class BioPortalAnnotatorResultHandler {
         return result;
     }
 
-    private AnnotatorResult extractAnnotatorResult(JsonObject resultItem) {
+    private AnnotatorResult extractAnnotatorResult(JSONObject resultItem) {
+        JSONObject annotatedClass = (JSONObject) resultItem.get("annotatedClass");
+        JSONObject links = (JSONObject) annotatedClass.get("links");
 
-        JsonObject annotatedClass = resultItem.getJsonObject("annotatedClass");
-        JsonObject links = annotatedClass.getJsonObject("links");
+        String ontologyId = links.get("ontology").toString();
 
-        String ontologyId = links.getJsonString("ontology").toString();
+        if (AcceptedOntologies.getOntologyAbbreviationFromId(ontologyId) != null) {
+            OntologySourceRefObject sourceRefObject = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(AcceptedOntologies.getOntologyAbbreviationFromId(ontologyId));
+            OntologyTerm ontologyTerm = new OntologyTerm(
+                    annotatedClass.get("prefLabel").toString(), annotatedClass.get("@id").toString(), annotatedClass.get("@id").toString(), sourceRefObject);
 
-        OntologyTerm ontologyTerm = searchHandler.getTermMetadata(annotatedClass.getString("@id"), ontologyId);
+            int from = -1, to = -1;
 
-        if (ontologyTerm != null) {
-
-            JsonNumber from = null, to = null;
-
-            for (JsonObject annotation : resultItem.getJsonArray("annotations").getValuesAs(JsonObject.class)) {
-                from = annotation.getJsonNumber("from");
-                to = annotation.getJsonNumber("to");
+            for (Object annotation : (JSONArray) resultItem.get("annotations")) {
+                JSONObject annotationObject = (JSONObject) annotation;
+                from = Integer.valueOf(annotationObject.get("from").toString());
+                to = Integer.valueOf(annotationObject.get("to").toString());
             }
 
-            if (from != null && to != null) {
+            if (from != -1 && to != -1) {
                 return new AnnotatorResult(ontologyTerm, AcceptedOntologies.getAcceptedOntologies().get(ontologyId), 1,
-                        from.intValue(), to.intValue());
+                        from, to);
             }
-        }
 
+        }
         return null;
     }
 }

@@ -103,7 +103,11 @@ public class Investigation extends ISASection {
                          String submissionDate, String publicReleaseDate) {
 
         super();
-        setInvestigationId(investigationId);
+
+        if (investigationId.equals(""))
+            setDefaultInvestigationId();
+        else
+            setInvestigationId(investigationId);
         setInvestigationTitle(investigationTitle.equals("") ? "Investigation" : investigationTitle);
         setInvestigationDescription(investigationDescription);
         setSubmissionDate(submissionDate);
@@ -118,6 +122,10 @@ public class Investigation extends ISASection {
         assays = new HashMap<String, String>();
         contacts = new ArrayList<Contact>();
         publications = new ArrayList<Publication>();
+    }
+
+    public void setDefaultInvestigationId(){
+        setInvestigationId( String.valueOf(System.currentTimeMillis()) );
     }
 
     @Override

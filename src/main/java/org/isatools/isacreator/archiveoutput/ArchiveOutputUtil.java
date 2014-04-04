@@ -194,6 +194,10 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             updateArchiveOutputStatusLabel("<html>increase memory!</html>");
             // force an immediate garbage collect to remove redundant objects immediately!
             System.gc();
+        } catch (Exception e) {
+            e.printStackTrace();
+            updateArchiveOutputStatusLabel("<html>" + e.getMessage() + "</html>");
+            log.error(e.getMessage());
         }
     }
 
@@ -217,7 +221,8 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
     private JLayeredPane getAssayByRef(String assayRef) {
         for (ISASection isaSection : ApplicationManager.getIsaSectionToDataEntryForm().keySet()) {
-            if (isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE).equals(assayRef)) {
+            System.out.println(isaSection);
+            if (isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE) != null && isaSection.getFieldValues().get(Assay.ASSAY_REFERENCE).equals(assayRef)) {
                 return ApplicationManager.getUserInterfaceForISASection(isaSection);
             }
         }
@@ -261,7 +266,9 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
+            updateArchiveOutputStatusLabel("<html>" + e.getMessage() + "</html>");
         }
     }
 
@@ -327,6 +334,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 for (String containingFile : filesToZip.get(parentISAFile)) {
                     File f = new File(containingFile);
 
+                    log.info("Going to try and zip " + f.getAbsolutePath());
                     // this will test if the file being mentioned is in a relative location to the directory, just in case!
                     f = testIfRelativeOrAbsolutePath(f, isaFiles[0].getParentFile());
 
@@ -360,7 +368,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             statistics.setEndTime(System.currentTimeMillis());
 
             if (missingFiles.size() > 0 || missingData.size() > 0) {
-                log.info("Archive creation failed, there are " + missingFiles.size() + " missing files referenced in the submission.");
+                log.error("Archive creation failed, there are " + missingFiles.size() + " missing files referenced in the submission.");
 
                 updateArchiveOutputStatusLabel("<html><strong>Archive output failed<strong>, there are <i>files</i> or <i>data</i> missing.</html>");
 
@@ -370,7 +378,7 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
                 firePropertyChange("archiveOutputFailed", false, true);
                 return false;
             } else {
-                log.error("Archive output successful!");
+                log.info("Archive output successful!");
                 firePropertyChange("archiveOutputCompleted", false, true);
                 return true;
             }
@@ -380,6 +388,11 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
             e.printStackTrace();
             return false;
         } catch (IOException e) {
+            log.error("IO Exception - " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            log.error("Unexpected Exception - " + e.getMessage());
             e.printStackTrace();
             return false;
         } finally {
@@ -395,7 +408,8 @@ public class ArchiveOutputUtil extends JPanel implements Runnable {
 
     private File testIfRelativeOrAbsolutePath(File file, File isaDirectory) {
         if (!file.exists()) {
-            return new File(isaDirectory.getAbsolutePath() + File.separator + file.getName());
+
+            return new File(isaDirectory.getAbsolutePath() + File.separator + file.getPath());
         }
 
         return file;

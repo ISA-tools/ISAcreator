@@ -83,13 +83,4 @@ public class AboutPanel extends JPanel {
         g2d.drawString(ISAcreatorProperties.getProperty("version"), 130, 120);
     }
 
-    public static void main(String[] args) {
-        ISAcreatorGUIProperties.setProperties();
-        JFrame container = new JFrame();
-        container.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        container.setLayout(new BorderLayout());
-        container.add(new AboutPanel());
-        container.pack();
-        container.setVisible(true);
-    }
 }

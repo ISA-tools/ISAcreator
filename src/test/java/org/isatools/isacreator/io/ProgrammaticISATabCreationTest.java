@@ -37,8 +37,7 @@ public class ProgrammaticISATabCreationTest {
             }
         }
 
-        ISAcreator isAcreator = new ISAcreator(Mode.NORMAL_MODE, null, baseDir + ISAcreator.CONFIG_DIR);
-
+        ConfigurationManager.loadConfigurations(baseDir + "/Configurations/isaconfig-default_v2014-01-16/");
         Investigation investigation = new Investigation("gis-investigation", "GIS investigation test");
 
         investigation.addContact(new InvestigationContact("maguire", "eamonn", "J", "eamonnmag@gmail.com", "", "", "", "Oxford University", ""));
