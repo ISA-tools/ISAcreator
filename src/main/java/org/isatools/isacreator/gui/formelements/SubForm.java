@@ -685,6 +685,7 @@ public abstract class SubForm extends JPanel implements ListSelectionListener, F
     public abstract void removeItem(int itemToRemove);
 
     protected void removeColumn(int curColDelete) {
+
         if ((curColDelete == -1) || (curColDelete == 0)) {
             return;
         }
