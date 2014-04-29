@@ -781,9 +781,7 @@ public class StudyDataEntry extends DataEntryForm {
             for (AssaySelection assay : selectedAssays) {
 
                 String assayRef = StudyUtils.generateAssayReference(study, assay.getMeasurement(), assay.getTechnology());
-
                 Assay addedAssay = getDataEntryEnvironment().addAssay(assay.getMeasurement(), assay.getTechnology(), assay.getPlatform(), assayRef);
-
                 AssayInformationPanel informationPanel = new AssayInformationPanel(addedAssay);
                 informationPanel.addPropertyChangeListener("removeAssay", new WeakPropertyChangeListener(removeAssayListener));
                 informationPanel.addPropertyChangeListener("viewAssay", new WeakPropertyChangeListener(viewAssayListener));
