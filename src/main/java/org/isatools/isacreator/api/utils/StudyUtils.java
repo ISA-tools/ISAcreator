@@ -144,6 +144,9 @@ public class StudyUtils {
 
         String candidateRef = cycleCount == 0 ? assayReference + ".txt" : assayReference + "-" + cycleCount + ".txt";
 
+        candidateRef = candidateRef.replaceAll("\\s+","_");
+
+
         if (study.getAssays().containsKey(candidateRef)) {
             // generate the id using a recursive method
             return generateUniqueAssayReference(study, assayReference, cycleCount + 1);

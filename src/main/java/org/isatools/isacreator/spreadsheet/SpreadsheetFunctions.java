@@ -38,6 +38,7 @@
 package org.isatools.isacreator.spreadsheet;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.autofiltercombo.AutoFilterCombo;
 import org.isatools.isacreator.autofiltercombo.AutoFilterComboCellEditor;
 import org.isatools.isacreator.common.UIHelper;
@@ -83,6 +84,8 @@ public class SpreadsheetFunctions {
     private Spreadsheet spreadsheet;
     private ProtocolSelectorCellEditor protocolSelectorCellEditor;
     private SampleSelectorCellEditor sampleSelectorCellEditor;
+
+    private Logger log = Logger.getLogger(SpreadsheetFunctions.class.getName());
 
     public SpreadsheetFunctions(Spreadsheet spreadsheet) {
         this.spreadsheet = spreadsheet;
@@ -592,6 +595,7 @@ public class SpreadsheetFunctions {
     }
 
     protected void removeColumn() {
+        try {
         if (spreadsheet.curColDelete != -1) {
             SpreadsheetModel model = (SpreadsheetModel) spreadsheet.getTable().getModel();
             TableColumn col = spreadsheet.getTable().getColumnModel().getColumn(spreadsheet.curColDelete);
@@ -601,6 +605,9 @@ public class SpreadsheetFunctions {
 
             removeDependentColumns(col);
             removeColumnFromDependencies(col);
+        }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            log.error("Problem encountered when removing a column " + e.getMessage());
         }
     }
 
@@ -653,10 +660,10 @@ public class SpreadsheetFunctions {
         model.setDataVector(data, colIds);
 
         // decrease each column index after deleted column by 1 so that indexes can be kept intact.
-        Enumeration enumer = spreadsheet.getTable().getColumnModel().getColumns();
+        Enumeration spreadsheetColumns = spreadsheet.getTable().getColumnModel().getColumns();
 
-        while (enumer.hasMoreElements()) {
-            TableColumn c = (TableColumn) enumer.nextElement();
+        while (spreadsheetColumns.hasMoreElements()) {
+            TableColumn c = (TableColumn) spreadsheetColumns.nextElement();
 
             if (c.getModelIndex() >= columnModelIndex) {
                 c.setModelIndex(c.getModelIndex() - 1);

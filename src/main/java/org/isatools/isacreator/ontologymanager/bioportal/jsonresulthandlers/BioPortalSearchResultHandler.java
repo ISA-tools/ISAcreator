@@ -273,10 +273,10 @@ public class BioPortalSearchResultHandler {
                 return contents;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Unable to retrieve term metadata");
+        } finally {
+            return null;
         }
-
-        return null;
     }
 
     public Map<String, OntologyTerm> getOntologyRoots(String ontologyAbbreviation) {
