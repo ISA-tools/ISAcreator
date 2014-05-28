@@ -14,7 +14,6 @@ then
     PACKAGE_TYPE="all"
 fi
 
-alias mvn='/Users/eamonnmaguire/dev/maven/bin/mvn'
 #MVNOPTS="--offline"
 get_tag_data () {
     local tag=$1
@@ -39,7 +38,6 @@ then
   echo "Couldn't extract version from pom.xml. Exiting."
 fi
 
-
 rm -rf src/main/resources/Configurations
 
 mkdir src/main/resources/Configurations
@@ -51,10 +49,16 @@ else
     CONFIGURATION=isaconfig-default_v2014-01-16.zip
 fi
 
-wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION" --no-check-certificate
+if hash wget 2>/dev/null; then
+   echo "wget is installed, will download configurations next"
+else
+   echo "wget is not installed, install it and then run package.sh again"
+   exit 1
+fi
+
+wget_output=$(wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION" --no-check-certificate)
 
 cp $CONFIGURATION src/main/resources/Configurations/
-
 
 WD=$(pwd)
 
