@@ -3,7 +3,7 @@
 # More details in the POM. 
 #
 
-# should be used by passing in either 'scidata' or 'all' as a parameter, e.g. ./package.sh scidata
+# should be used by passing in either 'scidata', 'mixs' or 'all' as a parameter, e.g. ./package.sh scidata
 # switching these will result in different actions being performed on packaging.
 
 PACKAGE_TYPE=$1
@@ -47,11 +47,16 @@ mkdir src/main/resources/Configurations
 if [ "$PACKAGE_TYPE" = "scidata"  ]
 then
     CONFIGURATION=isaconfig-Scientific-Data-v1.1.zip
+fi
+
+if [ "$PACKAGE_TYPE" = "mixs"  ]
+then
+    CONFIGURATION=isaconfig-mixs-v4.zip
 else
     CONFIGURATION=isaconfig-default_v2014-01-16.zip
 fi
 
-wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION" --no-check-certificate
+curl -L -O http://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION"
 
 cp $CONFIGURATION src/main/resources/Configurations/
 
@@ -86,9 +91,17 @@ mkdir "isatab files"
 if [ "$PACKAGE_TYPE" = "scidata" ]
 then
     cd "isatab files"
-    wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/SciData-Datasets-1-and-2.zip --no-check-certificate
+    curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/SciData-Datasets-1-and-2.zip
     unzip SciData-Datasets-1-and-2.zip
     rm -f SciData-Datasets-1-and-2.zip
+    cd ../
+fi
+if [ "$PACKAGE_TYPE" = "mixs" ]
+then
+    cd "isatab files"
+    curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/mixs-datasets-v1.zip
+    unzip mixs-datasets-v1.zip
+    rm -f mixs-datasets-v1.zip
     cd ../
 else
     cp -r ../"isatab files"/* "isatab files"
