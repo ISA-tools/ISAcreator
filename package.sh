@@ -7,7 +7,7 @@
 # switching these will result in different actions being performed on packaging.
 
 PACKAGE_TYPE=$1
-echo $PACKAGE_TYPE
+echo "ISAcreator packaging for type " $PACKAGE_TYPE
 
 if [ "$PACKAGE_TYPE" = ""  ]
 then
@@ -36,6 +36,7 @@ VERSION=${VERSIONSPLIT[0]}
 if [ "$VERSION" = "" ]
 then
   echo "Couldn't extract version from pom.xml. Exiting."
+  exit 1
 fi
 
 rm -rf src/main/resources/Configurations
@@ -54,7 +55,8 @@ else
     CONFIGURATION=isaconfig-default_v2014-01-16.zip
 fi
 
-=======
+echo "Configuration file: " $CONFIGURATION
+
 if hash curl 2>/dev/null; then
    echo "curl is installed, will download configurations next"
 else
@@ -79,7 +81,13 @@ cd $WD
 echo "Changing back to target..."
 pwd
 
+##Building ISAcreator
 mvn $MVNOPTS -Dmaven.test.skip=true clean assembly:assembly -Pbuild
+
+if [ "$?" -ne 0 ]; then
+    echo "Maven Build Unsuccessful!"
+    exit 1
+fi
 
 
 mkdir target/Configurations
