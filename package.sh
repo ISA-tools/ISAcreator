@@ -9,6 +9,8 @@
 PACKAGE_TYPE=$1
 echo "ISAcreator packaging for type " $PACKAGE_TYPE
 
+MIXS_DATASETS=mixs-datasets-v2.zip
+
 if [ "$PACKAGE_TYPE" = ""  ]
 then
     PACKAGE_TYPE="all"
@@ -113,9 +115,9 @@ fi
 if [ "$PACKAGE_TYPE" = "mixs" ]
 then
     cd "isatab files"
-    curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/mixs-datasets-v1.zip
-    unzip mixs-datasets-v1.zip
-    rm -f mixs-datasets-v1.zip
+    curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/$MIXS_DATASETS
+    unzip $MIXS_DATASETS
+    rm -f $MIXS_DATASETS
     cd ../
 else
     cp -r ../"isatab files"/* "isatab files"
