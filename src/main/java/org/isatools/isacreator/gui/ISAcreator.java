@@ -50,6 +50,7 @@ import org.isatools.isacreator.gs.GSSaveAction;
 import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.modeselection.Mode;
+import org.isatools.isacreator.gui.submission.ENASubmissionUI;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.managers.ConfigurationManager;
@@ -114,7 +115,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
     private Image isacreatorIcon;
 
     @InjectedResource
-    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, validateIcon, convertIcon,
+    private ImageIcon saveIcon, saveMenuIcon, saveLogoutIcon, saveExitIcon, validateIcon, convertIcon, submitIcon,
             logoutIcon, menuIcon, exitIcon, exportArchiveIcon, addStudyIcon, removeStudyIcon, fullScreenIcon,
             defaultScreenIcon, aboutIcon, helpIcon, supportIcon, feedbackIcon, confirmLogout, confirmMenu, confirmExit;
 
@@ -476,6 +477,24 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         });
 
         fileMenu.add(convertISA);
+
+
+        //submit to ENA
+        JMenuItem submitENA = new JMenuItem("Submit to ENA", submitIcon);
+
+        submitENA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                ENASubmissionUI submitUI = new ENASubmissionUI(ISAcreator.this);
+                submitUI.createGUI();
+                submitUI.setLocationRelativeTo(ISAcreator.this);
+                submitUI.setAlwaysOnTop(true);
+                submitUI.setVisible(true);
+                submitUI.submit();
+            }
+        });
+
+        fileMenu.add(submitENA);
+
 
         menuBar.add(fileMenu);
 
