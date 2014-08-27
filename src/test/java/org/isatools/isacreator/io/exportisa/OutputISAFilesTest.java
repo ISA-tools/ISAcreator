@@ -71,6 +71,7 @@ public class OutputISAFilesTest implements CommonTestIO {
         assert(importer.getMessages().size()==0);
 
         System.out.println("investigation reference"+inv.getReference());
+
         exporter.saveISAFiles(false, inv);
     }
 }

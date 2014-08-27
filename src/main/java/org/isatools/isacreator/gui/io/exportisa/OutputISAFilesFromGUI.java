@@ -72,6 +72,12 @@ public class OutputISAFilesFromGUI extends ISAFileOutput {
     }
 
 
+    /**
+     * Saves the ISA-Tab files
+     *
+     * @param removeEmptyColumns
+     * @param investigation
+     */
     public void saveISAFiles(boolean removeEmptyColumns, Investigation investigation) {
 
         try {

@@ -37,12 +37,12 @@ public class ProgrammaticISATabCreationTest {
             }
         }
 
-        ConfigurationManager.loadConfigurations(baseDir + "/Configurations/isaconfig-default_v2014-01-16/");
+        ConfigurationManager.loadConfigurations(baseDir + "/src/main/resources/Configurations/isaconfig-default_v2014-01-16/");
         Investigation investigation = new Investigation("gis-investigation", "GIS investigation test");
 
         investigation.addContact(new InvestigationContact("maguire", "eamonn", "J", "eamonnmag@gmail.com", "", "", "", "Oxford University", ""));
         investigation.addPublication(new InvestigationPublication("64654", "doi", "E. Maguire", "", ""));
-        investigation.addPublication(new InvestigationPublication("634654", "doi", "P Rocca-Serra", "Stupid paper", ""));
+        investigation.addPublication(new InvestigationPublication("634654", "doi", "P Rocca-Serra", "Some paper", ""));
         investigation.setFileReference("ProgramData/i_investigation.txt");
 
         Study study = new Study("gis-1");
