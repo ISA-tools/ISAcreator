@@ -452,8 +452,11 @@ public class SpreadsheetUtils {
                                     val = val.substring(val.indexOf(":") + 1);
                                 }
 
-                                output.append(source + separator);
-                                output.append(termAccession + separator);
+                                if (source.equals(""))
+                                    source = oo.getOntologySource();
+
+                                output.append("\""+source + "\""+ separator);
+                                output.append("\""+ termAccession + "\"" + separator);
 
                             }
                         } //else
