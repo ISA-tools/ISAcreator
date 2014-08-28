@@ -38,6 +38,7 @@ package org.isatools.isacreator.settings;
 
 import org.isatools.isacreator.utils.PropertyFileIO;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -54,6 +55,16 @@ public class ISAcreatorProperties {
 
     public static void setProperty(String key, String value) {
         properties.put(key, value);
+        saveProperties();
+    }
+
+    public static void setProperties(String propertiesFilename){
+        Properties p = PropertyFileIO.loadSettings(propertiesFilename);
+        Enumeration<String> names = (Enumeration<String>) p.propertyNames();
+        while(names.hasMoreElements()) {
+            String name = names.nextElement();
+            properties.put(name, p.getProperty(name));
+        }
         saveProperties();
     }
 
