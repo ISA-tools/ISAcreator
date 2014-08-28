@@ -27,54 +27,58 @@ import java.io.File;
  */
 public class ENASubmissionUI extends JFrame {
 
-    private ISAcreator isacreatorEnvironment;
-
     @InjectedResource
-    private Image submitIcon, submitIconInactive;
+    private ImageIcon saveISAtab, submitIcon, created_by;
 
-    @InjectedResource
-    private ImageIcon saveISAtab;
-
-    public static final float DESIRED_OPACITY = .93f;
+    public static final float DESIRED_OPACITY = .98f;
 
     private static Logger log = Logger.getLogger(ENASubmissionUI.class.getName());
     private JPanel swappableContainer;
+
     protected static ImageIcon submitENAAnimation = new ImageIcon(ENASubmissionUI.class.getResource("/images/submission/submitting.gif"));
 
-    public ENASubmissionUI(ISAcreator isacreatorEnvironment) {
+    public ENASubmissionUI() {
         ResourceInjector.get("submission-package.style").inject(this);
-        this.isacreatorEnvironment = isacreatorEnvironment;
     }
 
     public void createGUI() {
         setTitle("Submit to ENA");
         setUndecorated(true);
 
-        setLayout(new BorderLayout());
+
         setBackground(UIHelper.BG_COLOR);
 
         if (GraphicsUtils.isWindowTransparencySupported()) {
             AWTUtilities.setWindowOpacity(this, DESIRED_OPACITY);
         }
 
-        HUDTitleBar titlePanel = new HUDTitleBar(submitIcon, submitIconInactive);
+        HUDTitleBar titlePanel = new HUDTitleBar(null, null);
 
         add(titlePanel, BorderLayout.NORTH);
         titlePanel.installListeners();
 
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
 
-        Container submitInfo = UIHelper.padComponentVerticalBox(100, new JLabel(submitENAAnimation));
+        Box container = Box.createVerticalBox();
+
+        container.add(UIHelper.wrapComponentInPanel(new JLabel(submitIcon)));
+        container.add(Box.createVerticalStrut(220));
+
+        JPanel created_by_panel = new JPanel();
+        created_by_panel.setBackground(new Color(236, 240, 241));
+        container.add(UIHelper.wrapComponentInPanel(new JLabel(created_by)));
+
+//        Container submitInfo = UIHelper.padComponentVerticalBox(100, new JLabel(submitENAAnimation));
 
         swappableContainer = new JPanel();
-        swappableContainer.add(submitInfo);
+        swappableContainer.add(container);
         swappableContainer.setBorder(new EmptyBorder(1, 1, 1, 1));
         swappableContainer.setPreferredSize(new Dimension(750, 450));
 
         add(swappableContainer, BorderLayout.CENTER);
 
-        FooterPanel footer = new FooterPanel(this);
-        add(footer, BorderLayout.SOUTH);
+//        FooterPanel footer = new FooterPanel(this);
+//        add(footer, BorderLayout.SOUTH);
 
         pack();
 
