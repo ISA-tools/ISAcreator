@@ -54,7 +54,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.*;
 
 /**
  * AbstractImportFilesMenu
@@ -69,10 +68,10 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
 
     protected JEditorPane problemReport;
     protected JScrollPane problemScroll;
-    protected File[] previousFiles = null;
-    protected ExtendedJList previousFileList;
+    protected java.util.List<File> previousFiles = null;
+    protected ExtendedJList previousFilesExtendedJList;
     //keeping previously open non local files
-    protected java.util.List<File> previousNonLocalFiles = new ArrayList<File>();
+    protected java.util.List<File> previousNonLocalFiles = null;
 
     protected JFileChooser jfc;
 
@@ -100,13 +99,13 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         Box container = Box.createVerticalBox();
         container.setOpaque(false);
 
-        previousFileList = new ExtendedJList();
-        previousFileList.setBorder(null);
-        previousFileList.setOpaque(false);
+        previousFilesExtendedJList = new ExtendedJList();
+        previousFilesExtendedJList.setBorder(null);
+        previousFilesExtendedJList.setOpaque(false);
 
         previousFiles = getPreviousFiles();
 
-        previousFileList.addMouseListener(new MouseAdapter() {
+        previousFilesExtendedJList.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent event) {
                 if (event.getClickCount() >= 2) {
                     getSelectedFileAndLoad();
@@ -117,7 +116,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         JPanel listPane = new JPanel(new BorderLayout());
         listPane.setOpaque(false);
 
-        JScrollPane listScroller = new JScrollPane(previousFileList,
+        JScrollPane listScroller = new JScrollPane(previousFilesExtendedJList,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         listScroller.setBorder(new EmptyBorder(1, 1, 1, 1));
@@ -133,13 +132,13 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         filterFieldPane.setLayout(new BoxLayout(filterFieldPane, BoxLayout.LINE_AXIS));
         filterFieldPane.setOpaque(false);
 
-        UIHelper.renderComponent(previousFileList.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
-        previousFileList.getFilterField().setOpaque(false);
-        previousFileList.getFilterField().setBorder(new EmptyBorder(1, 1, 1, 1));
+        UIHelper.renderComponent(previousFilesExtendedJList.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        previousFilesExtendedJList.getFilterField().setOpaque(false);
+        previousFilesExtendedJList.getFilterField().setBorder(new EmptyBorder(1, 1, 1, 1));
         filterFieldPane.add(UIHelper.wrapComponentInPanel(new JLabel(getLeftFilterImage())));
-        filterFieldPane.add(previousFileList.getFilterField());
+        filterFieldPane.add(previousFilesExtendedJList.getFilterField());
         filterFieldPane.add(UIHelper.wrapComponentInPanel(new JLabel(getRightFilterImage())));
-        filterFieldPane.add(new ClearFieldUtility(previousFileList.getFilterField()));
+        filterFieldPane.add(new ClearFieldUtility(previousFilesExtendedJList.getFilterField()));
 
         listPane.add(filterFieldPane, BorderLayout.SOUTH);
 
@@ -250,7 +249,7 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
         return problemCont;
     }
 
-    public abstract File[] getPreviousFiles();
+    public abstract java.util.List<File> getPreviousFiles();
 
     public abstract void getSelectedFileAndLoad();
 

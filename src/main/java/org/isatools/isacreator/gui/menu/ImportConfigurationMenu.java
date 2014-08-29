@@ -42,9 +42,6 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.api.ImportConfiguration;
-import org.isatools.isacreator.common.UIHelper;
-import org.isatools.isacreator.common.button.ButtonType;
-import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.gs.GSLocalFilesManager;
 import org.isatools.isacreator.gui.ISAcreator;
 import org.isatools.isacreator.gui.modeselection.Mode;
@@ -56,14 +53,11 @@ import uk.ac.ebi.utils.io.DownloadUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -87,6 +81,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
     public ImportConfigurationMenu(ISAcreatorMenu menu) {
         super(menu);
         setPreferredSize(new Dimension(400, 400));
+        previousNonLocalFiles = new ArrayList<File>();
     }
 
     public JPanel createAlternativeExitDisplay() {
@@ -94,18 +89,19 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
     }
 
     public void getSelectedFileAndLoad() {
-        if (previousFileList.getSelectedIndex() != -1) {
+        if (previousFilesExtendedJList.getSelectedIndex() != -1) {
             // select file from list
             for (File candidate : previousFiles) {
                 if (candidate.getName()
-                        .equals(previousFileList.getSelectedValue()
+                        .equals(previousFilesExtendedJList.getSelectedValue()
                                 .toString())) {
 
                     menu.showProgressPanel("attempting to load configuration in " +
                             candidate.getName() + "...");
 
-                    loadFile(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY + File.separator +
-                            candidate.getName() + File.separator);
+                    //loadFile(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY + File.separator +
+                    //        candidate.getName() + File.separator);
+                    loadFile(candidate.getAbsolutePath());
                 }
             }
         }
@@ -134,6 +130,23 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                             repaint();
                         } else {
                             System.out.println("Loaded configuration");
+
+                            try {
+                                if (!dir.contains(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY)) {
+                                    //check it doesn't exit already
+                                    boolean exists = false;
+                                    for (File file : previousNonLocalFiles) {
+                                        if (dir.equals(file.getCanonicalPath())) {
+                                            exists = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!exists)
+                                        previousNonLocalFiles.add(new File(dir));
+                                }
+                            }catch(IOException ioex){
+                                ioex.printStackTrace();
+                            }
 
                             menu.resetViewAfterProgress();
                             menu.hideGlassPane();
@@ -184,9 +197,9 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
         performer.start();
     }
 
-    public File[] getPreviousFiles() {
+    public java.util.List<File> getPreviousFiles() {
 
-        previousFileList.clearItems();
+        previousFilesExtendedJList.clearItems();
 
         File f = new File(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY);
 
@@ -194,9 +207,9 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
             f.mkdir();
         }
 
-        previousFiles = f.listFiles();
+        previousFiles = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
-        if (previousFiles.length == 0) {
+        if (previousFiles.size() == 0) {
 
             String configurationFilesLocation = PropertyFileIO.retrieveDefaultSettings().getProperty("configurationFilesLocation");
             String tmpDirectory = GeneralUtils.createTmpDirectory("Configurations");
@@ -208,7 +221,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                 String unzipped = GeneralUtils.unzip(downloadedFile);
                 System.out.println("Configurations downloaded and unzipped =" + unzipped);
                 f = new File(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY);
-                previousFiles = f.listFiles();
+                previousFiles = Arrays.asList(f.listFiles());
 
 
             } catch (IOException ex) {
@@ -220,9 +233,17 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
 
         for (File prevSubmission : previousFiles) {
             if (prevSubmission.isDirectory()) {
-                previousFileList.addItem(prevSubmission.getName());
+                previousFilesExtendedJList.addItem(prevSubmission.getName());
             }
         }
+
+        for (File prevSubmission : previousNonLocalFiles) {
+            if (prevSubmission.isDirectory()) {
+                previousFilesExtendedJList.addItem(prevSubmission.getName());
+                previousFiles.add(prevSubmission);
+            }
+        }
+
 
         return previousFiles;
     }
@@ -236,7 +257,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
     }
 
     public void setListRenderer() {
-        previousFileList.setCellRenderer(new ImportFilesListCellRenderer(listImage));
+        previousFilesExtendedJList.setCellRenderer(new ImportFilesListCellRenderer(listImage));
     }
 
     @Override

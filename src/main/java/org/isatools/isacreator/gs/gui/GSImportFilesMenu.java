@@ -30,6 +30,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by the ISATeam.
@@ -69,13 +70,13 @@ public class GSImportFilesMenu extends ImportFilesMenu {
         Box container = Box.createVerticalBox();
         container.setOpaque(false);
 
-        previousFileList = new ExtendedJList();
-        previousFileList.setBorder(null);
-        previousFileList.setOpaque(false);
+        previousFilesExtendedJList = new ExtendedJList();
+        previousFilesExtendedJList.setBorder(null);
+        previousFilesExtendedJList.setOpaque(false);
 
         previousFiles = getPreviousFiles();
 
-        previousFileList.addMouseListener(new MouseAdapter() {
+        previousFilesExtendedJList.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent event) {
                 if (event.getClickCount() >= 2) {
                     getSelectedFileAndLoad();
@@ -86,7 +87,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
         JPanel listPane = new JPanel(new BorderLayout());
         listPane.setOpaque(false);
 
-        JScrollPane listScroller = new JScrollPane(previousFileList,
+        JScrollPane listScroller = new JScrollPane(previousFilesExtendedJList,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         listScroller.setBorder(new EmptyBorder(1, 1, 1, 1));
@@ -102,13 +103,13 @@ public class GSImportFilesMenu extends ImportFilesMenu {
         filterFieldPane.setLayout(new BoxLayout(filterFieldPane, BoxLayout.LINE_AXIS));
         filterFieldPane.setOpaque(false);
 
-        UIHelper.renderComponent(previousFileList.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
-        previousFileList.getFilterField().setOpaque(false);
-        previousFileList.getFilterField().setBorder(new EmptyBorder(1, 1, 1, 1));
+        UIHelper.renderComponent(previousFilesExtendedJList.getFilterField(), UIHelper.VER_11_BOLD, UIHelper.DARK_GREEN_COLOR, false);
+        previousFilesExtendedJList.getFilterField().setOpaque(false);
+        previousFilesExtendedJList.getFilterField().setBorder(new EmptyBorder(1, 1, 1, 1));
         filterFieldPane.add(UIHelper.wrapComponentInPanel(new JLabel(getLeftFilterImage())));
-        filterFieldPane.add(previousFileList.getFilterField());
+        filterFieldPane.add(previousFilesExtendedJList.getFilterField());
         filterFieldPane.add(UIHelper.wrapComponentInPanel(new JLabel(getRightFilterImage())));
-        filterFieldPane.add(new ClearFieldUtility(previousFileList.getFilterField()));
+        filterFieldPane.add(new ClearFieldUtility(previousFilesExtendedJList.getFilterField()));
 
         listPane.add(filterFieldPane, BorderLayout.SOUTH);
 
@@ -154,16 +155,16 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     @Override
     public void getSelectedFileAndLoad() {
 
-        if (previousFileList.getSelectedIndex() != -1) {
+        if (previousFilesExtendedJList.getSelectedIndex() != -1) {
             // select file from list
             for (File candidate : previousFiles) {
-                if (candidate.getName().equals(previousFileList.getSelectedValue().toString())) {
+                if (candidate.getName().equals(previousFilesExtendedJList.getSelectedValue().toString())) {
                     getSelectedFileAndLoad(candidate,true);
                 }
             }
 
             for (GSFileMetadata candidate: previousGSFiles){
-                if (candidate.getUrl().equals(previousFileList.getSelectedValue().toString()))
+                if (candidate.getUrl().equals(previousFilesExtendedJList.getSelectedValue().toString()))
                     System.out.println("file candidate = "+candidate);
 
                     loadGenomeSpaceFiles(candidate);
@@ -173,8 +174,8 @@ public class GSImportFilesMenu extends ImportFilesMenu {
     }
 
     @Override
-    public File[] getPreviousFiles() {
-        previousFileList.clearItems();
+    public java.util.List<File> getPreviousFiles() {
+        previousFilesExtendedJList.clearItems();
 
 
         File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY);
@@ -183,18 +184,18 @@ public class GSImportFilesMenu extends ImportFilesMenu {
             f.mkdir();
         }
 
-        previousFiles = f.listFiles();
+        previousFiles = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
         for (File prevSubmission : previousFiles) {
             if (prevSubmission.isDirectory()) {
-                previousFileList.addItem(prevSubmission.getName());
+                previousFilesExtendedJList.addItem(prevSubmission.getName());
             }
         }
 
         if (previousGSFiles!=null){
             for(GSFileMetadata fileMetadata : previousGSFiles){
                 if (fileMetadata.isDirectory()){
-                    previousFileList.addItem(fileMetadata.getUrl());
+                    previousFilesExtendedJList.addItem(fileMetadata.getUrl());
                 }
             }
         }
@@ -204,7 +205,7 @@ public class GSImportFilesMenu extends ImportFilesMenu {
 
     @Override
     public void setListRenderer() {
-        previousFileList.setCellRenderer(new ImportFilesListCellRenderer(listImage, gslistImage));
+        previousFilesExtendedJList.setCellRenderer(new ImportFilesListCellRenderer(listImage, gslistImage));
     }
 
     @Override
