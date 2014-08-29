@@ -221,7 +221,7 @@ public class ImportConfigurationMenu extends AbstractImportFilesMenu {
                 String unzipped = GeneralUtils.unzip(downloadedFile);
                 System.out.println("Configurations downloaded and unzipped =" + unzipped);
                 f = new File(ISAcreator.DEFAULT_CONFIGURATIONS_DIRECTORY);
-                previousFiles = Arrays.asList(f.listFiles());
+                previousFiles = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
 
             } catch (IOException ex) {

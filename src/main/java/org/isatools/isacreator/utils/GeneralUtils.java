@@ -105,7 +105,11 @@ public class GeneralUtils {
 
     public static String createTmpDirectory(String name){
 
-        String localTmpDirectory = System.getProperty("java.io.tmpdir") + File.separator +  name + File.separator + System.currentTimeMillis() + File.separator;
+        String tempdir = System.getProperty("java.io.tmpdir");
+        if ( !(tempdir.endsWith("/") || tempdir.endsWith("\\")) )
+            tempdir = tempdir + File.separator;
+
+        String localTmpDirectory = tempdir +  name + File.separator + System.currentTimeMillis() + File.separator;
         boolean success = new File(localTmpDirectory).mkdirs();
         if (success) {
             System.out.println("Directory: "+ localTmpDirectory + " created");
