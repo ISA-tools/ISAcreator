@@ -31,7 +31,8 @@ import java.io.File;
 public class ENASubmissionUI extends JFrame {
 
     @InjectedResource
-    private ImageIcon saveISAtab, submitIcon, created_by, new_sub, new_sub_over, update_sub, update_sub_over;
+    private ImageIcon saveISAtab, submitIcon, created_by, new_sub, new_sub_over, update_sub, update_sub_over,
+            box_icon, metadata_icon;
 
     public static final float DESIRED_OPACITY = .98f;
 
@@ -49,8 +50,6 @@ public class ENASubmissionUI extends JFrame {
     public void createGUI() {
         setTitle("Submit to ENA");
         setUndecorated(true);
-
-
         setBackground(UIHelper.BG_COLOR);
 
         if (GraphicsUtils.isWindowTransparencySupported()) {
@@ -63,7 +62,6 @@ public class ENASubmissionUI extends JFrame {
         titlePanel.installListeners();
 
         ((JComponent) getContentPane()).setBorder(new EtchedBorder(UIHelper.LIGHT_GREEN_COLOR, UIHelper.LIGHT_GREEN_COLOR));
-
 
         swappableContainer = new JPanel();
         swappableContainer.add(createMenu());
@@ -79,8 +77,7 @@ public class ENASubmissionUI extends JFrame {
     public Container createMenu() {
         Box container = Box.createVerticalBox();
 
-        container.add(UIHelper.wrapComponentInPanel(new JLabel(submitIcon)));
-        container.add(Box.createVerticalStrut(20));
+        addHeaderImageToContainer(container);
 
         newSubmission = new JLabel(new_sub);
 
@@ -101,8 +98,7 @@ public class ENASubmissionUI extends JFrame {
             public void mouseReleased(MouseEvent mouseEvent) {
                 super.mouseReleased(mouseEvent);
                 newSubmission.setIcon(new_sub);
-                System.out.println("Going to create new");
-                submit();
+                swapContainers(createMetadataEntryUI());
             }
         });
 
@@ -124,7 +120,7 @@ public class ENASubmissionUI extends JFrame {
             public void mouseReleased(MouseEvent mouseEvent) {
                 super.mouseReleased(mouseEvent);
                 updateSubmission.setIcon(update_sub);
-                System.out.println("Going to update");
+
                 submit();
             }
         });
@@ -145,8 +141,62 @@ public class ENASubmissionUI extends JFrame {
     }
 
 
+    private Container createMetadataEntryUI() {
+        Box metadataEntryContainer = Box.createVerticalBox();
 
-    public void submit() {
+        addHeaderImageToContainer(metadataEntryContainer);
+
+        Box leftAndRightSections = Box.createHorizontalBox();
+
+        Box userLoginSection = createUserLoginSection();
+        leftAndRightSections.add(userLoginSection);
+
+        Box metadataSection = createMetadataSection();
+        leftAndRightSections.add(metadataSection);
+
+        metadataEntryContainer.add(leftAndRightSections);
+
+        Box buttonContainer = Box.createHorizontalBox();
+        FlatButton backButton = new FlatButton(ButtonType.RED, "Back");
+        FlatButton nextButton = new FlatButton(ButtonType.GREEN, "Next");
+        nextButton.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
+                submit();
+            }
+        });
+
+        buttonContainer.add(backButton);
+        buttonContainer.add(Box.createHorizontalGlue());
+        buttonContainer.add(nextButton);
+
+
+        metadataEntryContainer.add(Box.createVerticalStrut(150));
+        metadataEntryContainer.add(buttonContainer);
+
+        return metadataEntryContainer;
+    }
+
+    private Box createMetadataSection() {
+        Box metadataSection = Box.createVerticalBox();
+        metadataSection.setSize(350, 190);
+        JLabel metadataDetails = new JLabel("Additional Metadata", metadata_icon, JLabel.LEFT);
+        UIHelper.renderComponent(metadataDetails, UIHelper.VER_11_BOLD, UIHelper.EMERALD, false);
+        metadataSection.add(metadataDetails);
+        return metadataSection;
+    }
+
+    private Box createUserLoginSection() {
+        Box userLoginSection = Box.createVerticalBox();
+        JLabel enaBoxDetails = new JLabel("ENA Dropbox Credentials", box_icon, JLabel.LEFT);
+        UIHelper.renderComponent(enaBoxDetails, UIHelper.VER_11_BOLD, UIHelper.EMERALD, false);
+        userLoginSection.add(enaBoxDetails);
+        return userLoginSection;
+    }
+
+
+    private void submit() {
 
         Thread performer = new Thread(new Runnable() {
 
@@ -167,8 +217,9 @@ public class ENASubmissionUI extends JFrame {
 
                     ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
-                    Container submitInfo = UIHelper.padComponentVerticalBox(100, new JLabel(submitENAAnimation));
-                    swapContainers(submitInfo);
+                    Box submitProgressContainer = createSubmitProgressContainer();
+
+                    swapContainers(submitProgressContainer);
                 }
 
 
@@ -177,6 +228,17 @@ public class ENASubmissionUI extends JFrame {
 
         performer.start();
 
+    }
+
+    private Box createSubmitProgressContainer() {
+        Box submitProgressContainer = Box.createVerticalBox();
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submitENAAnimation)));
+        return submitProgressContainer;
+    }
+
+    private void addHeaderImageToContainer(Box submitProgressContainer) {
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submitIcon)));
+        submitProgressContainer.add(Box.createVerticalStrut(20));
     }
 
     private void swapContainers(final Container newContainer) {
