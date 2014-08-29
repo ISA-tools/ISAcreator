@@ -489,7 +489,6 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
                 submitUI.setLocationRelativeTo(ISAcreator.this);
                 submitUI.setAlwaysOnTop(true);
                 submitUI.setVisible(true);
-                submitUI.submit();
             }
         });
 
