@@ -54,6 +54,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.*;
 
 /**
  * AbstractImportFilesMenu
@@ -70,6 +71,8 @@ public abstract class AbstractImportFilesMenu extends MenuUIComponent {
     protected JScrollPane problemScroll;
     protected File[] previousFiles = null;
     protected ExtendedJList previousFileList;
+    //keeping previously open non local files
+    protected java.util.List<File> previousNonLocalFiles = new ArrayList<File>();
 
     protected JFileChooser jfc;
 

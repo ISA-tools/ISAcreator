@@ -179,6 +179,19 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
 
+                        if (!dir.contains(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY)){
+                            //check it doesn't exit already
+                            boolean exists = false;
+                            for(File file: previousNonLocalFiles){
+                                if (dir.equals(file.getCanonicalPath())) {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (!exists)
+                                previousNonLocalFiles.add(new File(dir));
+                        }
+
 
                     } else if (successfulImport) {
 
@@ -270,7 +283,6 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
         previousFileList.clearItems();
 
-
         File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY);
 
         if (!f.exists() || !f.isDirectory()) {
@@ -284,6 +296,15 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                 previousFileList.addItem(prevSubmission.getName());
             }
         }
+
+        for (File prevSubmission : previousNonLocalFiles) {
+            if (prevSubmission.isDirectory()) {
+                previousFileList.addItem(prevSubmission.getName());
+                previousFiles[previousFiles.length-1] = prevSubmission;
+            }
+        }
+
+
 
         return previousFiles;
     }
