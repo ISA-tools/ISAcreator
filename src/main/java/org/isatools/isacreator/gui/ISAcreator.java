@@ -484,7 +484,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         submitENA.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                ENASubmissionUI submitUI = new ENASubmissionUI(ISAcreator.this);
+                ENASubmissionUI submitUI = new ENASubmissionUI();
                 submitUI.createGUI();
                 submitUI.setLocationRelativeTo(ISAcreator.this);
                 submitUI.setAlwaysOnTop(true);
