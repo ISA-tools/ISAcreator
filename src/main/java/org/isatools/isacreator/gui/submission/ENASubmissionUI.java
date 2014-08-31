@@ -31,7 +31,7 @@ public class ENASubmissionUI extends JFrame {
 
     @InjectedResource
     private ImageIcon saveISAtab, submitIcon, created_by, new_sub, new_sub_over, update_sub, update_sub_over,
-            box_icon, metadata_icon;
+            box_icon, metadata_icon, submission_complete, submission_failed;
 
     public static final float DESIRED_OPACITY = .98f;
 
@@ -302,19 +302,24 @@ public class ENASubmissionUI extends JFrame {
                 log.info("Saving current ISAtab file");
                 log.info("ISAtab file saved");
 
+                // TODO: convert
+                ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+
                 SRASubmitter submitter = new SRASubmitter();
 
                 System.out.println(ENARestServer.TEST);
                 System.out.println(username.getText());
                 System.out.println(new String(password.getPassword()));
-                String status= submitter.submit(ENARestServer.PROD, username.getText(), new String(password.getPassword()), "/Users/eamonnmaguire/git/isarepo/ISAvalidator-ISAconverter-BIImanager/import_layer/target/export/sra/BPA-Wheat-Cultivars/");
+                String status = submitter.submit(ENARestServer.PROD, username.getText(), new String(password.getPassword()), "/Users/eamonnmaguire/git/isarepo/ISAvalidator-ISAconverter-BIImanager/import_layer/target/export/sra/BPA-Wheat-Cultivars/");
 
+                if (status == null) {
+                    swapContainers(createSubmitFailed());
+                } else {
+                    swapContainers(createSubmitComplete());
+                }
                 System.out.println(status);
                 System.out.println("Setting config path before validation to " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
-                ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
-
-                swapContainers(metadataPanel);
 
             }
         });
@@ -325,6 +330,48 @@ public class ENASubmissionUI extends JFrame {
         Box submitProgressContainer = Box.createVerticalBox();
         submitProgressContainer.add(Box.createVerticalStrut(40));
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submitENAAnimation)));
+        return submitProgressContainer;
+    }
+
+    private Box createSubmitComplete() {
+        Box submitProgressContainer = Box.createVerticalBox();
+        submitProgressContainer.add(Box.createVerticalStrut(120));
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_complete)));
+
+        FlatButton nextButton = new FlatButton(ButtonType.RED, "Close");
+        nextButton.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
+                setVisible(false);
+                ENASubmissionUI.this.dispose();
+            }
+        });
+
+        submitProgressContainer.add(Box.createVerticalStrut(80));
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(nextButton));
+
+        return submitProgressContainer;
+    }
+
+    private Box createSubmitFailed() {
+        Box submitProgressContainer = Box.createVerticalBox();
+        submitProgressContainer.add(Box.createVerticalStrut(120));
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_failed)));
+
+//        SUBMIT ANOTHER, OR BACK
+        FlatButton nextButton = new FlatButton(ButtonType.RED, "Back to Submission Screen");
+        nextButton.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
+                swapContainers(metadataPanel);
+            }
+        });
+
+        submitProgressContainer.add(Box.createVerticalStrut(80));
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(nextButton));
+
         return submitProgressContainer;
     }
 
