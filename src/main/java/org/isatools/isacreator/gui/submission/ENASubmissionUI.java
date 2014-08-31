@@ -6,10 +6,9 @@ import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
-import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.gui.ISAcreator;
+import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isatab.isaconfigurator.ISAConfigurationSet;
@@ -20,8 +19,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
@@ -41,9 +38,16 @@ public class ENASubmissionUI extends JFrame {
 
     private JLabel newSubmission, updateSubmission;
 
+    private JTextField username, centerName, labName, brokerName;
+    private JPasswordField password;
+
     protected static ImageIcon submitENAAnimation = new ImageIcon(ENASubmissionUI.class.getResource("/images/submission/submitting.gif"));
 
-    public ENASubmissionUI() {
+    public static ENASubmissionUI createENASubmissionUI() {
+        return new ENASubmissionUI();
+    }
+
+    private ENASubmissionUI() {
         ResourceInjector.get("submission-package.style").inject(this);
     }
 
@@ -144,6 +148,7 @@ public class ENASubmissionUI extends JFrame {
     private Container createMetadataEntryUI() {
         Box metadataEntryContainer = Box.createVerticalBox();
 
+
         addHeaderImageToContainer(metadataEntryContainer);
 
         Box leftAndRightSections = Box.createHorizontalBox();
@@ -151,6 +156,7 @@ public class ENASubmissionUI extends JFrame {
         Box userLoginSection = createUserLoginSection();
         leftAndRightSections.add(userLoginSection);
 
+        leftAndRightSections.add(Box.createHorizontalStrut(10));
         Box metadataSection = createMetadataSection();
         leftAndRightSections.add(metadataSection);
 
@@ -158,7 +164,7 @@ public class ENASubmissionUI extends JFrame {
 
         Box buttonContainer = Box.createHorizontalBox();
         FlatButton backButton = new FlatButton(ButtonType.RED, "Back");
-        FlatButton nextButton = new FlatButton(ButtonType.GREEN, "Next");
+        FlatButton nextButton = new FlatButton(ButtonType.EMERALD, "Next");
         nextButton.addMouseListener(new CommonMouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
@@ -172,27 +178,113 @@ public class ENASubmissionUI extends JFrame {
         buttonContainer.add(nextButton);
 
 
-        metadataEntryContainer.add(Box.createVerticalStrut(150));
+        metadataEntryContainer.add(Box.createVerticalStrut(70));
         metadataEntryContainer.add(buttonContainer);
 
         return metadataEntryContainer;
     }
 
+    private Box createUserLoginSection() {
+        Box userLoginSection = Box.createVerticalBox();
+
+        JLabel enaBoxDetails = new JLabel("ENA Dropbox Credentials", box_icon, JLabel.LEFT);
+        enaBoxDetails.setHorizontalAlignment(SwingConstants.LEFT);
+        UIHelper.renderComponent(enaBoxDetails, UIHelper.VER_12_BOLD, UIHelper.EMERALD, false);
+        userLoginSection.add(UIHelper.wrapComponentInPanel(enaBoxDetails));
+
+        userLoginSection.add(createMetadataFieldContainer(username, "Username"));
+        userLoginSection.add(Box.createVerticalStrut(5));
+        userLoginSection.add(createMetadataFieldContainer(password, "Password", 1, 10));
+        userLoginSection.add(Box.createVerticalStrut(55));
+
+        JLabel info = UIHelper.createLabel("<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one...</span></html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
+        userLoginSection.add(UIHelper.wrapComponentInPanel(info));
+
+        return userLoginSection;
+    }
+
     private Box createMetadataSection() {
         Box metadataSection = Box.createVerticalBox();
-        metadataSection.setSize(350, 190);
+
         JLabel metadataDetails = new JLabel("Additional Metadata", metadata_icon, JLabel.LEFT);
-        UIHelper.renderComponent(metadataDetails, UIHelper.VER_11_BOLD, UIHelper.EMERALD, false);
-        metadataSection.add(metadataDetails);
+        UIHelper.renderComponent(metadataDetails, UIHelper.VER_12_BOLD, UIHelper.EMERALD, false);
+        metadataSection.add(UIHelper.wrapComponentInPanel(metadataDetails));
+
+
+        metadataSection.add(createMetadataFieldContainer(centerName, "SRA Centre Name"));
+        metadataSection.add(Box.createVerticalStrut(5));
+        metadataSection.add(createMetadataFieldContainer(brokerName, "Broker Name", 0, 35));
+        metadataSection.add(Box.createVerticalStrut(5));
+        metadataSection.add(createMetadataFieldContainer(labName, "SRA Lab Name", 0, 30));
+        metadataSection.add(Box.createVerticalStrut(20));
+
+        JLabel info = UIHelper.createLabel("<html><span style=\"color:#4FBA6F\">Read more</span> about ENA Submission Requirements...</html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
+        metadataSection.add(UIHelper.wrapComponentInPanel(info));
+
+
         return metadataSection;
     }
 
-    private Box createUserLoginSection() {
-        Box userLoginSection = Box.createVerticalBox();
-        JLabel enaBoxDetails = new JLabel("ENA Dropbox Credentials", box_icon, JLabel.LEFT);
-        UIHelper.renderComponent(enaBoxDetails, UIHelper.VER_11_BOLD, UIHelper.EMERALD, false);
-        userLoginSection.add(enaBoxDetails);
-        return userLoginSection;
+    private Container createMetadataFieldContainer(JTextField field, String fieldName) {
+        return createMetadataFieldContainer(field, fieldName, 0, 10);
+    }
+
+    /**
+     * @param field     - Field to be created and added
+     * @param fieldName - Name to be given to the field
+     * @param type      - 0 for JTextField, 1 for JPasswordField
+     * @return a container with the field and it's label in a grey box.
+     */
+    private Container createMetadataFieldContainer(JTextField field, String fieldName, int type, int padding) {
+
+
+        if (type == 1) {
+            field = new JPasswordField();
+        } else {
+            field = new JTextField(fieldName);
+        }
+
+        field.setSize(new Dimension(200, 25));
+        field.setOpaque(true);
+
+        UIHelper.renderComponent(field, UIHelper.VER_10_PLAIN, UIHelper.EMERALD, UIHelper.VERY_LIGHT_GREY_COLOR);
+
+        field.setBorder(null);
+
+        Box fieldContainer = createFieldDetailWrapper(null, fieldName, padding);
+        fieldContainer.add(field);
+
+        return fieldContainer;
+    }
+
+
+
+    private Box createFieldDetailWrapper(ImageIcon image_icon, String text, int padding) {
+        Box fieldContainer = Box.createHorizontalBox();
+        fieldContainer.setBackground(UIHelper.VERY_LIGHT_GREY_COLOR);
+        fieldContainer.setBorder(BorderFactory.createLineBorder(UIHelper.VERY_LIGHT_GREY_COLOR, 8));
+
+        if (image_icon != null) {
+            JLabel icon = new JLabel(image_icon);
+            icon.setOpaque(true);
+            icon.setBackground(UIHelper.VERY_LIGHT_GREY_COLOR);
+            fieldContainer.add(icon);
+
+        }
+
+        if (text != null) {
+            JLabel label = UIHelper.createLabel(text, UIHelper.VER_10_BOLD, new Color(127, 140, 141));
+            label.setOpaque(true);
+            label.setBackground(UIHelper.VERY_LIGHT_GREY_COLOR);
+            fieldContainer.add(UIHelper.wrapComponentInPanel(label));
+        }
+
+        Component space = Box.createHorizontalStrut(padding);
+        ((JComponent) space).setOpaque(true);
+        space.setBackground(UIHelper.VERY_LIGHT_GREY_COLOR);
+
+        fieldContainer.add(space);
+        return fieldContainer;
     }
 
 
@@ -221,8 +313,6 @@ public class ENASubmissionUI extends JFrame {
 
                     swapContainers(submitProgressContainer);
                 }
-
-
             }
         });
 
@@ -261,6 +351,13 @@ public class ENASubmissionUI extends JFrame {
             }
         });
 
+    }
+
+    public static void main(String[] args) {
+        ISAcreatorGUIProperties.setProperties();
+        ENASubmissionUI ui = createENASubmissionUI();
+        ui.createGUI();
+        ui.setVisible(true);
     }
 
 }
