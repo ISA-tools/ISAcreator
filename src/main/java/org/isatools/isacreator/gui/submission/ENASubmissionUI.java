@@ -11,6 +11,8 @@ import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isatab.export.sra.submission.ENARestServer;
+import org.isatools.isatab.export.sra.submission.SRASubmitter;
 import org.isatools.isatab.isaconfigurator.ISAConfigurationSet;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -35,6 +37,7 @@ public class ENASubmissionUI extends JFrame {
 
     private static Logger log = Logger.getLogger(ENASubmissionUI.class.getName());
     private JPanel swappableContainer;
+    private Container metadataPanel;
 
     private JLabel newSubmission, updateSubmission;
 
@@ -146,10 +149,9 @@ public class ENASubmissionUI extends JFrame {
 
 
     private Container createMetadataEntryUI() {
-        Box metadataEntryContainer = Box.createVerticalBox();
+        metadataPanel = Box.createVerticalBox();
 
-
-        addHeaderImageToContainer(metadataEntryContainer);
+        addHeaderImageToContainer(metadataPanel);
 
         Box leftAndRightSections = Box.createHorizontalBox();
 
@@ -160,7 +162,7 @@ public class ENASubmissionUI extends JFrame {
         Box metadataSection = createMetadataSection();
         leftAndRightSections.add(metadataSection);
 
-        metadataEntryContainer.add(leftAndRightSections);
+        metadataPanel.add(leftAndRightSections);
 
         Box buttonContainer = Box.createHorizontalBox();
         FlatButton backButton = new FlatButton(ButtonType.RED, "Back");
@@ -178,10 +180,10 @@ public class ENASubmissionUI extends JFrame {
         buttonContainer.add(nextButton);
 
 
-        metadataEntryContainer.add(Box.createVerticalStrut(70));
-        metadataEntryContainer.add(buttonContainer);
+        metadataPanel.add(Box.createVerticalStrut(70));
+        metadataPanel.add(buttonContainer);
 
-        return metadataEntryContainer;
+        return metadataPanel;
     }
 
     private Box createUserLoginSection() {
@@ -191,6 +193,10 @@ public class ENASubmissionUI extends JFrame {
         enaBoxDetails.setHorizontalAlignment(SwingConstants.LEFT);
         UIHelper.renderComponent(enaBoxDetails, UIHelper.VER_12_BOLD, UIHelper.EMERALD, false);
         userLoginSection.add(UIHelper.wrapComponentInPanel(enaBoxDetails));
+
+
+        username = new JTextField("Username");
+        password = new JPasswordField("");
 
         userLoginSection.add(createMetadataFieldContainer(username, "Username"));
         userLoginSection.add(Box.createVerticalStrut(5));
@@ -210,17 +216,20 @@ public class ENASubmissionUI extends JFrame {
         UIHelper.renderComponent(metadataDetails, UIHelper.VER_12_BOLD, UIHelper.EMERALD, false);
         metadataSection.add(UIHelper.wrapComponentInPanel(metadataDetails));
 
-
+        centerName = new JTextField("SRA Centre Name");
         metadataSection.add(createMetadataFieldContainer(centerName, "SRA Centre Name"));
         metadataSection.add(Box.createVerticalStrut(5));
+
+        brokerName = new JTextField("Broker Name");
         metadataSection.add(createMetadataFieldContainer(brokerName, "Broker Name", 0, 35));
         metadataSection.add(Box.createVerticalStrut(5));
+
+        labName = new JTextField("SRA Lab Name");
         metadataSection.add(createMetadataFieldContainer(labName, "SRA Lab Name", 0, 30));
         metadataSection.add(Box.createVerticalStrut(20));
 
         JLabel info = UIHelper.createLabel("<html><span style=\"color:#4FBA6F\">Read more</span> about ENA Submission Requirements...</html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
         metadataSection.add(UIHelper.wrapComponentInPanel(info));
-
 
         return metadataSection;
     }
@@ -237,13 +246,6 @@ public class ENASubmissionUI extends JFrame {
      */
     private Container createMetadataFieldContainer(JTextField field, String fieldName, int type, int padding) {
 
-
-        if (type == 1) {
-            field = new JPasswordField();
-        } else {
-            field = new JTextField(fieldName);
-        }
-
         field.setSize(new Dimension(200, 25));
         field.setOpaque(true);
 
@@ -256,8 +258,6 @@ public class ENASubmissionUI extends JFrame {
 
         return fieldContainer;
     }
-
-
 
     private Box createFieldDetailWrapper(ImageIcon image_icon, String text, int padding) {
         Box fieldContainer = Box.createHorizontalBox();
@@ -295,38 +295,40 @@ public class ENASubmissionUI extends JFrame {
             public void run() {
                 log.info("Current ISA-Tab is: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
-                if (!new File(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB)).exists()) {
-                    log.warn("Current ISA Tab file doesn't exist in the file system...");
-                    Container saveISAtabContainer = UIHelper.padComponentVerticalBox(70, new JLabel(saveISAtab));
-                    swapContainers(saveISAtabContainer);
-                } else {
 
-                    log.info("Saving current ISAtab file");
-                    ApplicationManager.getCurrentApplicationInstance().saveISATab();
-                    log.info("ISAtab file saved");
+                Box submitProgressContainer = createSubmitProgressContainer();
+                swapContainers(submitProgressContainer);
 
-                    System.out.println("Setting config path before validation to " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+                log.info("Saving current ISAtab file");
+                log.info("ISAtab file saved");
 
-                    ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+                SRASubmitter submitter = new SRASubmitter();
 
-                    Box submitProgressContainer = createSubmitProgressContainer();
+                System.out.println(ENARestServer.TEST);
+                System.out.println(username.getText());
+                System.out.println(new String(password.getPassword()));
+                String status= submitter.submit(ENARestServer.PROD, username.getText(), new String(password.getPassword()), "/Users/eamonnmaguire/git/isarepo/ISAvalidator-ISAconverter-BIImanager/import_layer/target/export/sra/BPA-Wheat-Cultivars/");
 
-                    swapContainers(submitProgressContainer);
-                }
+                System.out.println(status);
+                System.out.println("Setting config path before validation to " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+
+                ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+
+                swapContainers(metadataPanel);
+
             }
         });
-
         performer.start();
-
     }
 
     private Box createSubmitProgressContainer() {
         Box submitProgressContainer = Box.createVerticalBox();
+        submitProgressContainer.add(Box.createVerticalStrut(40));
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submitENAAnimation)));
         return submitProgressContainer;
     }
 
-    private void addHeaderImageToContainer(Box submitProgressContainer) {
+    private void addHeaderImageToContainer(Container submitProgressContainer) {
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submitIcon)));
         submitProgressContainer.add(Box.createVerticalStrut(20));
     }
