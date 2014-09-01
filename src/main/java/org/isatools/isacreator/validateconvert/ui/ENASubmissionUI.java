@@ -45,17 +45,19 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
     @InjectedResource
     private ImageIcon submitIcon, created_by, new_sub, new_sub_over, update_sub, update_sub_over,
-            box_icon, metadata_icon, submission_complete, submission_failed;
+            box_icon, metadata_icon, submission_complete, submission_failed, dev_server, dev_server_over, prod_server,
+            prod_server_over, test_server, test_server_over;
 
     public static final float DESIRED_OPACITY = .98f;
 
     private static Logger log = Logger.getLogger(ENASubmissionUI.class.getName());
-    private Container metadataPanel, menuPanel;
+    private Container metadataPanel, menuPanel, serverPanel;
 
-    private JLabel newSubmission, updateSubmission;
+
 
     private JTextField username, centerName, labName, brokerName, studyIdentifier;
     private JPasswordField password;
+    private ENARestServer server = ENARestServer.TEST;
 
     private String sraAction;
 
@@ -102,7 +104,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         addHeaderImageToContainer(menuPanel);
 
-        newSubmission = new JLabel(new_sub);
+        final JLabel newSubmission = new JLabel(new_sub);
 
         newSubmission.addMouseListener(new CommonMouseAdapter() {
             @Override
@@ -122,11 +124,11 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                 super.mouseReleased(mouseEvent);
                 newSubmission.setIcon(new_sub);
                 sraAction = "ADD";
-                swapContainers(createMetadataEntryUI());
+                swapContainers(chooseServerUI());
             }
         });
 
-        updateSubmission = new JLabel(update_sub);
+        final JLabel updateSubmission = new JLabel(update_sub);
         updateSubmission.addMouseListener(new CommonMouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -145,7 +147,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                 super.mouseReleased(mouseEvent);
                 updateSubmission.setIcon(update_sub);
                 sraAction = "MODIFY";
-                swapContainers(createMetadataEntryUI());
+                swapContainers(chooseServerUI());
             }
         });
 
@@ -162,6 +164,100 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         menuPanel.add(Box.createVerticalStrut(20));
 
         return menuPanel;
+    }
+
+    private Container chooseServerUI() {
+        serverPanel = Box.createVerticalBox();
+        serverPanel.setPreferredSize(new Dimension(530, 390));
+
+        addHeaderImageToContainer(serverPanel);
+
+        serverPanel.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Please choose a server to upload to: ", UIHelper.VER_14_PLAIN, UIHelper.EMERALD)));
+        serverPanel.add(Box.createVerticalStrut(10));
+
+        final JLabel testServer = new JLabel(test_server);
+        testServer.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
+                testServer.setIcon(test_server_over);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);    //To change body of overridden methods use File | Settings | File Templates.
+                testServer.setIcon(test_server);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                super.mouseReleased(mouseEvent);
+                testServer.setIcon(test_server);
+                server = ENARestServer.TEST;
+                swapContainers(createMetadataEntryUI());
+            }
+        });
+
+
+        final JLabel devServer = new JLabel(dev_server);
+        devServer.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
+                devServer.setIcon(dev_server_over);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);    //To change body of overridden methods use File | Settings | File Templates.
+                devServer.setIcon(dev_server);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                super.mouseReleased(mouseEvent);
+                devServer.setIcon(dev_server);
+                server = ENARestServer.DEV;
+                swapContainers(createMetadataEntryUI());
+            }
+        });
+
+        final JLabel prodServer = new JLabel(prod_server);
+        prodServer.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                super.mouseEntered(mouseEvent);
+                prodServer.setIcon(prod_server_over);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                super.mouseExited(mouseEvent);    //To change body of overridden methods use File | Settings | File Templates.
+                prodServer.setIcon(prod_server);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                super.mouseReleased(mouseEvent);
+                prodServer.setIcon(prod_server);
+                server = ENARestServer.PROD;
+                swapContainers(createMetadataEntryUI());
+            }
+        });
+
+        Box menuContainer = Box.createHorizontalBox();
+        menuContainer.add(testServer);
+        menuContainer.add(Box.createHorizontalStrut(5));
+        menuContainer.add(devServer);
+        menuContainer.add(Box.createHorizontalStrut(5));
+        menuContainer.add(prodServer);
+
+
+        serverPanel.add(menuContainer);
+
+        serverPanel.add(Box.createVerticalStrut(70));
+
+        return serverPanel;
     }
 
 
@@ -203,7 +299,6 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         buttonContainer.add(backButton);
         buttonContainer.add(Box.createHorizontalGlue());
         buttonContainer.add(nextButton);
-
 
         metadataPanel.add(Box.createVerticalStrut(70));
         metadataPanel.add(buttonContainer);
@@ -334,7 +429,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
                 SRASubmitter submitter = new SRASubmitter();
 
-                String status = submitter.submit(ENARestServer.TEST, username.getText(), new String(password.getPassword()), sraFolder);
+                String status = submitter.submit(server, username.getText(), new String(password.getPassword()), sraFolder);
 
                 ENAReceipt receipt = ENAReceiptParser.parseReceipt(status);
 
@@ -385,7 +480,6 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-
 
 
                 final GUIISATABValidator isatabValidator = new GUIISATABValidator();
@@ -440,14 +534,13 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         // create 3 lists with the Sample, Experiment and Runs accessions
 
-        JPanel listPanel = new JPanel(new GridLayout(1,3));
+        JPanel listPanel = new JPanel(new GridLayout(1, 3));
         listPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 20));
         listPanel.setSize(new Dimension(600, 420));
 
         JList experimentList = new JList(receipt.getExperimentAccessions().toArray());
         JList runList = new JList(receipt.getRunAccessions().toArray());
         JList sampleList = new JList(receipt.getSampleAccessions().toArray());
-
 
 
         Box experimentListContainer = Box.createVerticalBox();
@@ -572,7 +665,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         samples.add("ERS546962");
 
         ENAReceipt receipt = new ENAReceipt(experiments, samples, runs, new HashSet<String>());
-        ui.swapContainers(ui.createSubmitComplete(receipt));
+//        ui.swapContainers(ui.createSubmitComplete(receipt));
     }
 
 }
