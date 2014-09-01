@@ -33,7 +33,7 @@ public class CommonValidationConversionUI extends JFrame {
     private ImageIcon validationSuccess = new ImageIcon("/images/validator/validation_successful.png");
     public JPanel swappableContainer;
 
-    public void swapContainers(final Container newContainer) {
+    protected void swapContainers(final Container newContainer) {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -55,7 +55,7 @@ public class CommonValidationConversionUI extends JFrame {
 
     }
 
-    public Map<String, List<ErrorMessage>> getErrorMessages(List<TabLoggingEventWrapper> logEvents) {
+    protected Map<String, List<ErrorMessage>> getErrorMessages(List<TabLoggingEventWrapper> logEvents) {
         Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
 
         for (TabLoggingEventWrapper event : logEvents) {
@@ -73,7 +73,7 @@ public class CommonValidationConversionUI extends JFrame {
         return fileToErrors;
     }
 
-    public void displayValidationErrorsAndWarnings(Map<String, List<ErrorMessage>> fileToErrors) {
+    protected void displayValidationErrorsAndWarnings(Map<String, List<ErrorMessage>> fileToErrors) {
         List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
         for (String fileName : fileToErrors.keySet()) {
 
@@ -101,11 +101,12 @@ public class CommonValidationConversionUI extends JFrame {
         }
     }
 
-    public void convertISAtab(BIIObjectStore store, AllowedConversions conversion,
+    protected GUIInvokerResult convertISAtab(BIIObjectStore store, AllowedConversions conversion,
                               String isatabLocation, String outputLocation) {
 
         GUIISATABConverter converter = new GUIISATABConverter();
         GUIInvokerResult result = converter.convert(store, isatabLocation, outputLocation, conversion);
+
 
         if (result == GUIInvokerResult.SUCCESS) {
 
@@ -134,9 +135,11 @@ public class CommonValidationConversionUI extends JFrame {
 
             ConversionErrorUI errorContainer = new ConversionErrorUI();
             errorContainer.constructErrorPane(messages);
-            errorContainer.setPreferredSize(new Dimension(750, 440));
+            errorContainer.setPreferredSize(new Dimension(650, 440));
 
             swapContainers(errorContainer);
         }
+
+        return result;
     }
 }

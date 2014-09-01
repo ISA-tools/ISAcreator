@@ -9,8 +9,12 @@ import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
-import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
+import org.isatools.isacreator.managers.ApplicationManager;
+import org.isatools.isacreator.model.Investigation;
+import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.validateconvert.ui.ENAReceipt.ENAReceipt;
+import org.isatools.isacreator.validateconvert.ui.ENAReceipt.ENAReceiptParser;
 import org.isatools.isatab.export.sra.submission.ENARestServer;
 import org.isatools.isatab.export.sra.submission.SRASubmitter;
 import org.isatools.isatab.gui_invokers.AllowedConversions;
@@ -25,6 +29,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -40,12 +45,14 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
     public static final float DESIRED_OPACITY = .98f;
 
     private static Logger log = Logger.getLogger(ENASubmissionUI.class.getName());
-    private Container metadataPanel;
+    private Container metadataPanel, menuPanel;
 
     private JLabel newSubmission, updateSubmission;
 
     private JTextField username, centerName, labName, brokerName;
     private JPasswordField password;
+
+    private String sraAction;
 
     protected static ImageIcon submitENAAnimation = new ImageIcon(ENASubmissionUI.class.getResource("/images/submission/submitting.gif"));
     protected static ImageIcon convertISAAnimation = new ImageIcon(ENASubmissionUI.class.getResource("/images/validator/converting.gif"));
@@ -86,9 +93,9 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
     }
 
     public Container createMenu() {
-        Box container = Box.createVerticalBox();
+        menuPanel = Box.createVerticalBox();
 
-        addHeaderImageToContainer(container);
+        addHeaderImageToContainer(menuPanel);
 
         newSubmission = new JLabel(new_sub);
 
@@ -109,6 +116,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             public void mouseReleased(MouseEvent mouseEvent) {
                 super.mouseReleased(mouseEvent);
                 newSubmission.setIcon(new_sub);
+                sraAction = "ADD";
                 swapContainers(createMetadataEntryUI());
             }
         });
@@ -131,8 +139,8 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             public void mouseReleased(MouseEvent mouseEvent) {
                 super.mouseReleased(mouseEvent);
                 updateSubmission.setIcon(update_sub);
-
-                validateConvertAndSubmitFiles();
+                sraAction = "MODIFY";
+                swapContainers(createMetadataEntryUI());
             }
         });
 
@@ -140,15 +148,15 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         menuContainer.add(newSubmission);
         menuContainer.add(updateSubmission);
 
-        container.add(menuContainer);
+        menuPanel.add(menuContainer);
 
         JPanel created_by_panel = new JPanel();
         created_by_panel.setBackground(new Color(236, 240, 241));
-        container.add(UIHelper.wrapComponentInPanel(new JLabel(created_by)));
+        menuPanel.add(UIHelper.wrapComponentInPanel(new JLabel(created_by)));
 
-        container.add(Box.createVerticalStrut(20));
+        menuPanel.add(Box.createVerticalStrut(20));
 
-        return container;
+        return menuPanel;
     }
 
 
@@ -170,6 +178,14 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         Box buttonContainer = Box.createHorizontalBox();
         FlatButton backButton = new FlatButton(ButtonType.RED, "Back");
+        backButton.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
+                swapContainers(menuPanel);
+
+            }
+        });
         FlatButton nextButton = new FlatButton(ButtonType.EMERALD, "Next");
         nextButton.addMouseListener(new CommonMouseAdapter() {
             @Override
@@ -198,8 +214,8 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         UIHelper.renderComponent(enaBoxDetails, UIHelper.VER_12_BOLD, UIHelper.EMERALD, false);
         userLoginSection.add(UIHelper.wrapComponentInPanel(enaBoxDetails));
 
-
-        username = new JTextField("Username");
+        String sra_username = ISAcreatorProperties.getProperty("sra_username");
+        username = new JTextField(sra_username.isEmpty() ? "Username" : sra_username);
         password = new JPasswordField("");
 
         userLoginSection.add(createMetadataFieldContainer(username, "Username"));
@@ -220,15 +236,15 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         UIHelper.renderComponent(metadataDetails, UIHelper.VER_12_BOLD, UIHelper.EMERALD, false);
         metadataSection.add(UIHelper.wrapComponentInPanel(metadataDetails));
 
-        centerName = new JTextField("SRA Centre Name");
+        centerName = new JTextField("OXFORD");
         metadataSection.add(createMetadataFieldContainer(centerName, "SRA Centre Name"));
         metadataSection.add(Box.createVerticalStrut(5));
 
-        brokerName = new JTextField("Broker Name");
+        brokerName = new JTextField("OXFORD");
         metadataSection.add(createMetadataFieldContainer(brokerName, "Broker Name", 0, 35));
         metadataSection.add(Box.createVerticalStrut(5));
 
-        labName = new JTextField("SRA Lab Name");
+        labName = new JTextField("Oxford e-Research Centre");
         metadataSection.add(createMetadataFieldContainer(labName, "SRA Lab Name", 0, 30));
         metadataSection.add(Box.createVerticalStrut(20));
 
@@ -302,21 +318,20 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                 Box submitProgressContainer = createSubmitProgressContainer();
                 swapContainers(submitProgressContainer);
 
-                log.info("Saving current ISAtab file");
-                log.info("ISAtab file saved");
-
                 SRASubmitter submitter = new SRASubmitter();
 
-                System.out.println(ENARestServer.TEST);
-                System.out.println(username.getText());
-                System.out.println(new String(password.getPassword()));
                 String status = submitter.submit(ENARestServer.TEST, username.getText(), new String(password.getPassword()), sraFolder);
 
+                ENAReceipt receipt = ENAReceiptParser.parseReceipt(status);
                 if (status == null) {
-                    swapContainers(createSubmitFailed());
+                    swapContainers(createSubmitFailed(receipt));
                 } else {
-                    // todo: need to parse the receipt here and show any errors to the users.
-                    swapContainers(createSubmitComplete());
+
+                    if (receipt.getErrors().size() > 0) {
+                        swapContainers(createSubmitFailed(receipt));
+                    } else {
+                        swapContainers(createSubmitComplete(receipt));
+                    }
                 }
                 System.out.println(status);
                 System.out.println("Setting config path before validation to " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
@@ -332,6 +347,23 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         log.info("Current ISA-Tab is: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
         ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
+        Investigation investigation = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
+
+        ISAcreatorProperties.setProperty("sra_username", username.getText());
+        final Set<String> studies = new HashSet<String>();
+        for (Study study : investigation.getStudies().values()) {
+            studies.add(study.getStudyId());
+            System.out.println("SRA Action is " + sraAction);
+            study.addComment("Comment[SRA Submission Action]", sraAction);
+            study.addComment("Comment[SRA Broker Name]", brokerName.getText());
+            study.addComment("Comment[SRA Lab Name]", labName.getText());
+            study.addComment("Comment[SRA Center Name]", centerName.getText());
+        }
+
+        log.info("Saving current ISAtab file");
+        ApplicationManager.getCurrentApplicationInstance().saveISATab();
+        log.info("ISAtab file saved");
+
         final GUIISATABValidator isatabValidator = new GUIISATABValidator();
         GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
         final Map<String, List<ErrorMessage>> errorMessages = getErrorMessages(isatabValidator.getLog());
@@ -346,15 +378,22 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
 
+
                     swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
 
-                    String outputLocation = System.getProperty("java.io.tmpdir") + "sra/" + System.currentTimeMillis();
-                    convertISAtab(isatabValidator.getStore(), AllowedConversions.SRA,
+                    String outputLocation = System.getProperty("java.io.tmpdir") + "sra/" + System.currentTimeMillis() + "/";
+                    new File(outputLocation).mkdirs();
+                    GUIInvokerResult result = convertISAtab(isatabValidator.getStore(), AllowedConversions.SRA,
                             ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB),
                             outputLocation);
 
 
-                    submit(outputLocation);
+                    if (result == GUIInvokerResult.SUCCESS || result == GUIInvokerResult.WARNING) {
+                        for (String study : studies) {
+                            submit(outputLocation + "sra/" + study + "/");
+                        }
+                    }
+
                 }
             });
         } else
@@ -377,10 +416,38 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         return submitProgressContainer;
     }
 
-    private Box createSubmitComplete() {
+    private Box createSubmitComplete(ENAReceipt receipt) {
         Box submitProgressContainer = Box.createVerticalBox();
-        submitProgressContainer.add(Box.createVerticalStrut(120));
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_complete)));
+
+        // create 3 lists with the Sample, Experiment and Runs accessions
+
+        Box listPanel = Box.createHorizontalBox();
+
+        JList experimentList = new JList(receipt.getExperimentAccessions().toArray());
+        JList runList = new JList(receipt.getRunAccessions().toArray());
+        JList sampleList = new JList(receipt.getSampleAccessions().toArray());
+
+        Dimension listDimension = new Dimension(200, 300);
+        experimentList.setPreferredSize(listDimension);
+        runList.setPreferredSize(listDimension);
+        sampleList.setPreferredSize(listDimension);
+
+        Box experimentListContainer = Box.createVerticalBox();
+        experimentListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Experiments", UIHelper.VER_11_BOLD, UIHelper.EMERALD)));
+        experimentList.add(experimentList);
+        listPanel.add(experimentListContainer);
+
+        Box runListContainer = Box.createVerticalBox();
+        runListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Runs", UIHelper.VER_11_BOLD, UIHelper.EMERALD)));
+        runListContainer.add(runList);
+        listPanel.add(runListContainer);
+
+        Box sampleListContainer = Box.createVerticalBox();
+        sampleListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Samples", UIHelper.VER_11_BOLD, UIHelper.EMERALD)));
+        sampleListContainer.add(runList);
+
+        listPanel.add(sampleListContainer);
 
         FlatButton nextButton = new FlatButton(ButtonType.RED, "Close");
         nextButton.addMouseListener(new CommonMouseAdapter() {
@@ -398,10 +465,16 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         return submitProgressContainer;
     }
 
-    private Box createSubmitFailed() {
+    private Box createSubmitFailed(ENAReceipt receipt) {
         Box submitProgressContainer = Box.createVerticalBox();
-        submitProgressContainer.add(Box.createVerticalStrut(120));
+
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_failed)));
+
+        ConversionErrorUI errorContainer = new ConversionErrorUI();
+        errorContainer.constructErrorPane(receipt.getErrorsForDisplay("Submission Errors"));
+        errorContainer.setPreferredSize(new Dimension(650, 300));
+
+        submitProgressContainer.add(errorContainer);
 
 //        SUBMIT ANOTHER, OR BACK
         FlatButton nextButton = new FlatButton(ButtonType.RED, "Back to Submission Screen");
@@ -413,7 +486,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             }
         });
 
-        submitProgressContainer.add(Box.createVerticalStrut(80));
+        submitProgressContainer.add(Box.createVerticalStrut(20));
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(nextButton));
 
         return submitProgressContainer;
@@ -424,12 +497,5 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         submitProgressContainer.add(Box.createVerticalStrut(20));
     }
 
-
-    public static void main(String[] args) {
-        ISAcreatorGUIProperties.setProperties();
-        ENASubmissionUI ui = createENASubmissionUI();
-        ui.createGUI();
-        ui.setVisible(true);
-    }
 
 }
