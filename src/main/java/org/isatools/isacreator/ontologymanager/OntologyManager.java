@@ -137,7 +137,7 @@ public class OntologyManager {
             return;
         if (ontologyTerms.containsKey(label))
             return;
-        if (ISAcreatorProperties.getOntologyTermURIProperty() && term.getOntologyTermURI()!=null && !term.getOntologyTermURI().equals("")){
+        if (term.getOntologyTermURI()!=null && !term.getOntologyTermURI().equals("")){
             ontologyTerms.put(label, term);
             addToOntologyTermHistory(label, term);
             //TODO do I need this? --- addToUsedOntologies(term.getOntologySourceInformation());
