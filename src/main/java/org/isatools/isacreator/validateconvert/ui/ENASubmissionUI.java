@@ -1,14 +1,19 @@
 package org.isatools.isacreator.validateconvert.ui;
 
+import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorMessage;
+import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
+import org.isatools.isacreator.effects.SimpleListCellRenderer;
+import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
+import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
@@ -49,7 +54,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
     private JLabel newSubmission, updateSubmission;
 
-    private JTextField username, centerName, labName, brokerName;
+    private JTextField username, centerName, labName, brokerName, studyIdentifier;
     private JPasswordField password;
 
     private String sraAction;
@@ -221,7 +226,10 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         userLoginSection.add(createMetadataFieldContainer(username, "Username"));
         userLoginSection.add(Box.createVerticalStrut(5));
         userLoginSection.add(createMetadataFieldContainer(password, "Password", 1, 10));
-        userLoginSection.add(Box.createVerticalStrut(55));
+
+        userLoginSection.add(sraAction.equals("MODIFY")
+                ? Box.createVerticalStrut(90) :
+                Box.createVerticalStrut(55));
 
         JLabel info = UIHelper.createLabel("<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one...</span></html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
         userLoginSection.add(UIHelper.wrapComponentInPanel(info));
@@ -235,6 +243,12 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         JLabel metadataDetails = new JLabel("Additional Metadata", metadata_icon, JLabel.LEFT);
         UIHelper.renderComponent(metadataDetails, UIHelper.VER_12_BOLD, UIHelper.EMERALD, false);
         metadataSection.add(UIHelper.wrapComponentInPanel(metadataDetails));
+
+        if (sraAction.equals("MODIFY")) {
+            studyIdentifier = new JTextField("e.g. ERAxxxxxx");
+            metadataSection.add(createMetadataFieldContainer(studyIdentifier, "Study Accession"));
+            metadataSection.add(Box.createVerticalStrut(5));
+        }
 
         centerName = new JTextField("OXFORD");
         metadataSection.add(createMetadataFieldContainer(centerName, "SRA Centre Name"));
@@ -323,6 +337,8 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                 String status = submitter.submit(ENARestServer.TEST, username.getText(), new String(password.getPassword()), sraFolder);
 
                 ENAReceipt receipt = ENAReceiptParser.parseReceipt(status);
+
+                System.out.println("STATUS is " + status);
                 if (status == null) {
                     swapContainers(createSubmitFailed(receipt));
                 } else {
@@ -333,10 +349,6 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                         swapContainers(createSubmitComplete(receipt));
                     }
                 }
-                System.out.println(status);
-                System.out.println("Setting config path before validation to " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
-
-
             }
         });
         performer.start();
@@ -349,41 +361,47 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         Investigation investigation = ApplicationManager.getCurrentApplicationInstance().getDataEntryEnvironment().getInvestigation();
 
+        ApplicationManager.getCurrentApplicationInstance().saveISATab();
+
         ISAcreatorProperties.setProperty("sra_username", username.getText());
         final Set<String> studies = new HashSet<String>();
         for (Study study : investigation.getStudies().values()) {
             studies.add(study.getStudyId());
-            System.out.println("SRA Action is " + sraAction);
+
             study.addComment("Comment[SRA Submission Action]", sraAction);
             study.addComment("Comment[SRA Broker Name]", brokerName.getText());
             study.addComment("Comment[SRA Lab Name]", labName.getText());
             study.addComment("Comment[SRA Center Name]", centerName.getText());
+            study.addComment("Comment[Study Accession]", sraAction.equals("MODIFY") ? studyIdentifier.getText() : "");
+
         }
 
-        log.info("Saving current ISAtab file");
+        // We're changing the study comments programmatically, so to avoid saving with values currently in the interface,
+        // we save by forcing the UI to not update. This preserves the comment values we've specified above.
+        ISAcreatorProperties.setProperty("DO_NOT_UPDATE_FROM_GUI", "true");
         ApplicationManager.getCurrentApplicationInstance().saveISATab();
-        log.info("ISAtab file saved");
+        ISAcreatorProperties.setProperty("DO_NOT_UPDATE_FROM_GUI", "false");
 
-        final GUIISATABValidator isatabValidator = new GUIISATABValidator();
-        GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
-        final Map<String, List<ErrorMessage>> errorMessages = getErrorMessages(isatabValidator.getLog());
-
-        boolean strictValidationEnabled = Boolean.valueOf(ISAcreatorProperties.getProperty(ISAcreatorProperties.STRICT_VALIDATION));
-        log.info("Strict validation on? " + strictValidationEnabled);
-
-        boolean shouldShowErrors = strictValidationEnabled && errorMessages.size() > 0;
-
-        if (result == GUIInvokerResult.SUCCESS && !shouldShowErrors) {
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
+        swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
 
 
-                    swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
+
+                final GUIISATABValidator isatabValidator = new GUIISATABValidator();
+                GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+                final Map<String, List<ErrorMessage>> errorMessages = getErrorMessages(isatabValidator.getLog());
+
+                boolean strictValidationEnabled = Boolean.valueOf(ISAcreatorProperties.getProperty(ISAcreatorProperties.STRICT_VALIDATION));
+                log.info("Strict validation on? " + strictValidationEnabled);
+
+                boolean shouldShowErrors = strictValidationEnabled && errorMessages.size() > 0;
+
+                if (result == GUIInvokerResult.SUCCESS && !shouldShowErrors) {
 
                     String outputLocation = System.getProperty("java.io.tmpdir") + "sra/" + System.currentTimeMillis() + "/";
                     new File(outputLocation).mkdirs();
-                    GUIInvokerResult result = convertISAtab(isatabValidator.getStore(), AllowedConversions.SRA,
+                    result = convertISAtab(isatabValidator.getStore(), AllowedConversions.SRA,
                             ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB),
                             outputLocation);
 
@@ -394,19 +412,18 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                         }
                     }
 
-                }
-            });
-        } else
+                } else
 
-        {
-            log.info("Showing errors and warnings...");
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    displayValidationErrorsAndWarnings(errorMessages);
+                {
+                    log.info("Showing errors and warnings...");
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            displayValidationErrorsAndWarnings(errorMessages);
+                        }
+                    });
                 }
-            });
-        }
-
+            }
+        });
     }
 
     private Box createSubmitProgressContainer() {
@@ -416,38 +433,48 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         return submitProgressContainer;
     }
 
-    private Box createSubmitComplete(ENAReceipt receipt) {
-        Box submitProgressContainer = Box.createVerticalBox();
-        submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_complete)));
+    private Container createSubmitComplete(ENAReceipt receipt) {
+        JPanel submitProgressContainer = new JPanel(new BorderLayout());
+        submitProgressContainer.setPreferredSize(new Dimension(600, 420));
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_complete)), BorderLayout.NORTH);
 
         // create 3 lists with the Sample, Experiment and Runs accessions
 
-        Box listPanel = Box.createHorizontalBox();
+        JPanel listPanel = new JPanel(new GridLayout(1,3));
+        listPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 20));
+        listPanel.setSize(new Dimension(600, 420));
 
         JList experimentList = new JList(receipt.getExperimentAccessions().toArray());
         JList runList = new JList(receipt.getRunAccessions().toArray());
         JList sampleList = new JList(receipt.getSampleAccessions().toArray());
 
-        Dimension listDimension = new Dimension(200, 300);
-        experimentList.setPreferredSize(listDimension);
-        runList.setPreferredSize(listDimension);
-        sampleList.setPreferredSize(listDimension);
+
 
         Box experimentListContainer = Box.createVerticalBox();
-        experimentListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Experiments", UIHelper.VER_11_BOLD, UIHelper.EMERALD)));
-        experimentList.add(experimentList);
+        JScrollPane experimentScroller = createScrollerForList(experimentList);
+
+        experimentListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Experiments", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS)));
+        experimentListContainer.add(experimentScroller);
         listPanel.add(experimentListContainer);
 
         Box runListContainer = Box.createVerticalBox();
-        runListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Runs", UIHelper.VER_11_BOLD, UIHelper.EMERALD)));
-        runListContainer.add(runList);
+
+        runListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Runs", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS)));
+        JScrollPane runScroller = createScrollerForList(runList);
+        runListContainer.add(runScroller);
+
         listPanel.add(runListContainer);
 
         Box sampleListContainer = Box.createVerticalBox();
-        sampleListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Samples", UIHelper.VER_11_BOLD, UIHelper.EMERALD)));
-        sampleListContainer.add(runList);
+
+        sampleListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Samples", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS)));
+        JScrollPane sampleScroller = createScrollerForList(sampleList);
+        sampleListContainer.add(sampleScroller);
 
         listPanel.add(sampleListContainer);
+
+
+        submitProgressContainer.add(listPanel);
 
         FlatButton nextButton = new FlatButton(ButtonType.RED, "Close");
         nextButton.addMouseListener(new CommonMouseAdapter() {
@@ -459,10 +486,21 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             }
         });
 
-        submitProgressContainer.add(Box.createVerticalStrut(80));
-        submitProgressContainer.add(UIHelper.wrapComponentInPanel(nextButton));
+
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(nextButton), BorderLayout.SOUTH);
 
         return submitProgressContainer;
+    }
+
+    private JScrollPane createScrollerForList(JList experimentList) {
+        experimentList.setCellRenderer(new SimpleListCellRenderer());
+        JScrollPane experimentScroller = new JScrollPane(experimentList,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        experimentScroller.setBorder(new EmptyBorder(0, 0, 0, 0));
+
+        IAppWidgetFactory.makeIAppScrollPane(experimentScroller);
+        return experimentScroller;
     }
 
     private Box createSubmitFailed(ENAReceipt receipt) {
@@ -497,5 +535,44 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         submitProgressContainer.add(Box.createVerticalStrut(20));
     }
 
+    public static void main(String[] args) {
+        ISAcreatorGUIProperties.setProperties();
+        ENASubmissionUI ui = new ENASubmissionUI();
+        ui.createGUI();
+        ui.setVisible(true);
+
+        Set<String> experiments = new HashSet<String>();
+        experiments.add("ERX546955");
+        experiments.add("ERX546956");
+        experiments.add("ERX546957");
+        experiments.add("ERX546958");
+        experiments.add("ERX546959");
+        experiments.add("ERX546960");
+        experiments.add("ERX546961");
+        experiments.add("ERX546962");
+
+        Set<String> runs = new HashSet<String>();
+        runs.add("ERR546955");
+        runs.add("ERR546956");
+        runs.add("ERR546957");
+        runs.add("ERR546958");
+        runs.add("ERR546959");
+        runs.add("ERR546960");
+        runs.add("ERR546961");
+        runs.add("ERR546962");
+
+        Set<String> samples = new HashSet<String>();
+        samples.add("ERS546955");
+        samples.add("ERS546956");
+        samples.add("ERS546957");
+        samples.add("ERS546958");
+        samples.add("ERS546959");
+        samples.add("ERS546960");
+        samples.add("ERS546961");
+        samples.add("ERS546962");
+
+        ENAReceipt receipt = new ENAReceipt(experiments, samples, runs, new HashSet<String>());
+        ui.swapContainers(ui.createSubmitComplete(receipt));
+    }
 
 }

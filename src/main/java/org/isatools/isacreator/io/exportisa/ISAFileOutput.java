@@ -47,6 +47,7 @@ import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -108,8 +109,12 @@ public abstract class ISAFileOutput {
     protected void printStudy(PrintStream investigationFilePrintStream, Study study) {
 
         DataEntryForm def = ApplicationManager.getUserInterfaceForISASection(study);
-        if (def!=null)
+        boolean doNotUpdateGUIBeforeSave = Boolean.parseBoolean(ISAcreatorProperties.getProperty("DO_NOT_UPDATE_FROM_GUI"));
+        System.out.println("Do Not Update GUI before save? " + doNotUpdateGUIBeforeSave);
+        if (def!=null && !doNotUpdateGUIBeforeSave){
+            System.out.println("UPDATING FROM GUI...");
             def.update();
+        }
 
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study, InvestigationFileSection.STUDY_SECTION));
         investigationFilePrintStream.print(ISASectionExportAdaptor.exportISASectionAsString(study.getStudyDesigns(), InvestigationFileSection.STUDY_DESIGN_SECTION));
