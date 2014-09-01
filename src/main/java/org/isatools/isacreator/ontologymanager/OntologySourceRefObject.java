@@ -58,6 +58,8 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
     public static final String SOURCE_VERSION = "Term Source Version";
     public static final String SOURCE_DESCRIPTION = "Term Source Description";
 
+    private static final String BIOPORTAL_URL = "http://data.bioontology.org/ontologies/";
+
     public OntologySourceRefObject() {
         super();
     }
@@ -87,7 +89,11 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
     public void completeFields(){
         if (getSourceName()==null)
             return;
-        String ontologyId = "http://data.bioontology.org/ontologies/"+getSourceName();
+
+        if (!getSourceName().equals("") && getSourceFile().startsWith(BIOPORTAL_URL) && getSourceFile().endsWith(getSourceName()) && !getSourceVersion().equals("") && !getSourceDescription().equals(""))
+            return;
+
+        String ontologyId = BIOPORTAL_URL + getSourceName();
 
         Ontology associatedOntologySource = AcceptedOntologies.getAcceptedOntologies().get(ontologyId);
 

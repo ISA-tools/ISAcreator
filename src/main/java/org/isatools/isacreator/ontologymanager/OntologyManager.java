@@ -39,6 +39,7 @@ package org.isatools.isacreator.ontologymanager;
 
 import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.configuration.RecommendedOntology;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 
@@ -137,7 +138,7 @@ public class OntologyManager {
             return;
         if (ontologyTerms.containsKey(label))
             return;
-        if (ISAcreatorProperties.getOntologyTermURIProperty() && term.getOntologyTermURI()!=null && !term.getOntologyTermURI().equals("")){
+        if (term.getOntologyTermURI()!=null && !term.getOntologyTermURI().equals("")){
             ontologyTerms.put(label, term);
             addToOntologyTermHistory(label, term);
             //TODO do I need this? --- addToUsedOntologies(term.getOntologySourceInformation());
@@ -187,14 +188,26 @@ public class OntologyManager {
      *
      * @return
      */
-    public static Set<OntologySourceRefObject> getOntologiesUsed(){
+    public static Set<OntologySourceRefObject> getOntologiesUsed() {
         Set<OntologySourceRefObject> set = new HashSet<OntologySourceRefObject>();
-        for(OntologyTerm ot: ontologyTerms.values()){
-            set.add(ot.getOntologySourceInformation());
+        for (OntologyTerm ot : ontologyTerms.values()) {
+            if (ot.getOntologySourceInformation() != null) {
+                set.add(ot.getOntologySourceInformation());
+            } else {
+                String termSource = ot.getOntologySource();
+                OntologySourceRefObject osro;
+                if ((osro = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(termSource)) == null) {
+                    String ontologyURI = AcceptedOntologies.getOntologyIdForAbbreviation(termSource);
+                    Ontology ontology = AcceptedOntologies.getAcceptedOntologies().get(ontologyURI);
+                    if (ontology != null) {
+                        osro = AcceptedOntologies.convertOntologyToOntologySourceRefObject(ontology);
+                    }
+                    set.add(osro);
+                }
+            }
         }
         return set;
     }
-
     /***   end of ontologyTerms methods ****/
 
     /***   ontologySources methods ****/
