@@ -62,8 +62,8 @@ public class Investigation extends ISASection {
     public static final String INVESTIGATION_DESCRIPTION_KEY = "Investigation Description";
     public static final String INVESTIGATION_SUBMISSION_DATE_KEY = "Investigation Submission Date";
     public static final String INVESTIGATION_PUBLIC_RELEASE_KEY = "Investigation Public Release Date";
-    public static final String CONFIGURATION_CREATED_WITH = "Comment [Created With Configuration]";
-    public static final String CONFIGURATION_LAST_OPENED_WITH = "Comment [Last Opened With Configuration]";
+    public static final String CONFIGURATION_CREATED_WITH = "Comment[Created With Configuration]";
+    public static final String CONFIGURATION_LAST_OPENED_WITH = "Comment[Last Opened With Configuration]";
 
     private List<Publication> publications;
     private List<Contact> contacts;
