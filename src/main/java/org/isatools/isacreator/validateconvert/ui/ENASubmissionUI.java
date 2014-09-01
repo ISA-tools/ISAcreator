@@ -1,7 +1,8 @@
-package org.isatools.isacreator.gui.submission;
+package org.isatools.isacreator.validateconvert.ui;
 
 import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
@@ -9,10 +10,12 @@ import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
-import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isatab.export.sra.submission.ENARestServer;
 import org.isatools.isatab.export.sra.submission.SRASubmitter;
+import org.isatools.isatab.gui_invokers.AllowedConversions;
+import org.isatools.isatab.gui_invokers.GUIISATABValidator;
+import org.isatools.isatab.gui_invokers.GUIInvokerResult;
 import org.isatools.isatab.isaconfigurator.ISAConfigurationSet;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
@@ -22,21 +25,21 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.io.File;
+import java.util.*;
+import java.util.List;
 
 /**
  * User intereface for ENA submission.
  */
-public class ENASubmissionUI extends JFrame {
+public class ENASubmissionUI extends CommonValidationConversionUI {
 
     @InjectedResource
-    private ImageIcon saveISAtab, submitIcon, created_by, new_sub, new_sub_over, update_sub, update_sub_over,
+    private ImageIcon submitIcon, created_by, new_sub, new_sub_over, update_sub, update_sub_over,
             box_icon, metadata_icon, submission_complete, submission_failed;
 
     public static final float DESIRED_OPACITY = .98f;
 
     private static Logger log = Logger.getLogger(ENASubmissionUI.class.getName());
-    private JPanel swappableContainer;
     private Container metadataPanel;
 
     private JLabel newSubmission, updateSubmission;
@@ -45,13 +48,14 @@ public class ENASubmissionUI extends JFrame {
     private JPasswordField password;
 
     protected static ImageIcon submitENAAnimation = new ImageIcon(ENASubmissionUI.class.getResource("/images/submission/submitting.gif"));
+    protected static ImageIcon convertISAAnimation = new ImageIcon(ENASubmissionUI.class.getResource("/images/validator/converting.gif"));
 
     public static ENASubmissionUI createENASubmissionUI() {
         return new ENASubmissionUI();
     }
 
     private ENASubmissionUI() {
-        ResourceInjector.get("submission-package.style").inject(this);
+        ResourceInjector.get("submission-package.style").inject(true, this);
     }
 
     public void createGUI() {
@@ -128,7 +132,7 @@ public class ENASubmissionUI extends JFrame {
                 super.mouseReleased(mouseEvent);
                 updateSubmission.setIcon(update_sub);
 
-                submit();
+                validateConvertAndSubmitFiles();
             }
         });
 
@@ -171,7 +175,7 @@ public class ENASubmissionUI extends JFrame {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 super.mousePressed(mouseEvent);
-                submit();
+                validateConvertAndSubmitFiles();
             }
         });
 
@@ -288,13 +292,12 @@ public class ENASubmissionUI extends JFrame {
     }
 
 
-    private void submit() {
+    private void submit(final String sraFolder) {
 
         Thread performer = new Thread(new Runnable() {
 
             public void run() {
                 log.info("Current ISA-Tab is: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
-
 
                 Box submitProgressContainer = createSubmitProgressContainer();
                 swapContainers(submitProgressContainer);
@@ -302,19 +305,17 @@ public class ENASubmissionUI extends JFrame {
                 log.info("Saving current ISAtab file");
                 log.info("ISAtab file saved");
 
-                // TODO: convert
-                ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
-
                 SRASubmitter submitter = new SRASubmitter();
 
                 System.out.println(ENARestServer.TEST);
                 System.out.println(username.getText());
                 System.out.println(new String(password.getPassword()));
-                String status = submitter.submit(ENARestServer.PROD, username.getText(), new String(password.getPassword()), "/Users/eamonnmaguire/git/isarepo/ISAvalidator-ISAconverter-BIImanager/import_layer/target/export/sra/BPA-Wheat-Cultivars/");
+                String status = submitter.submit(ENARestServer.TEST, username.getText(), new String(password.getPassword()), sraFolder);
 
                 if (status == null) {
                     swapContainers(createSubmitFailed());
                 } else {
+                    // todo: need to parse the receipt here and show any errors to the users.
                     swapContainers(createSubmitComplete());
                 }
                 System.out.println(status);
@@ -324,6 +325,49 @@ public class ENASubmissionUI extends JFrame {
             }
         });
         performer.start();
+    }
+
+
+    private void validateConvertAndSubmitFiles() {
+        log.info("Current ISA-Tab is: " + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+        ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
+
+        final GUIISATABValidator isatabValidator = new GUIISATABValidator();
+        GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
+        final Map<String, List<ErrorMessage>> errorMessages = getErrorMessages(isatabValidator.getLog());
+
+        boolean strictValidationEnabled = Boolean.valueOf(ISAcreatorProperties.getProperty(ISAcreatorProperties.STRICT_VALIDATION));
+        log.info("Strict validation on? " + strictValidationEnabled);
+
+        boolean shouldShowErrors = strictValidationEnabled && errorMessages.size() > 0;
+
+        if (result == GUIInvokerResult.SUCCESS && !shouldShowErrors) {
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+
+                    swapContainers(UIHelper.padComponentVerticalBox(100, new JLabel(convertISAAnimation)));
+
+                    String outputLocation = System.getProperty("java.io.tmpdir") + "sra/" + System.currentTimeMillis();
+                    convertISAtab(isatabValidator.getStore(), AllowedConversions.SRA,
+                            ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB),
+                            outputLocation);
+
+
+                    submit(outputLocation);
+                }
+            });
+        } else
+
+        {
+            log.info("Showing errors and warnings...");
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    displayValidationErrorsAndWarnings(errorMessages);
+                }
+            });
+        }
+
     }
 
     private Box createSubmitProgressContainer() {
@@ -380,27 +424,6 @@ public class ENASubmissionUI extends JFrame {
         submitProgressContainer.add(Box.createVerticalStrut(20));
     }
 
-    private void swapContainers(final Container newContainer) {
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                if (newContainer != null) {
-                    swappableContainer.removeAll();
-                    swappableContainer.add(newContainer);
-                    swappableContainer.repaint();
-                    swappableContainer.validate();
-                    swappableContainer.updateUI();
-
-                    newContainer.validate();
-                    newContainer.repaint();
-
-                    validate();
-                    repaint();
-                }
-            }
-        });
-
-    }
 
     public static void main(String[] args) {
         ISAcreatorGUIProperties.setProperties();

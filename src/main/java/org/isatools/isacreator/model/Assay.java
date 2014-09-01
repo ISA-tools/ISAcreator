@@ -169,8 +169,16 @@ public class Assay extends ISASection implements StudySubData {
         return getValue(MEASUREMENT_ENDPOINT_TERM_ACCESSION);
     }
 
+    public void setMeasurementEndpointTermAccession(String accession) {
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_ACCESSION, accession);
+    }
+
     public String getMeasurementEndpointTermSourceRef(){
         return getValue(MEASUREMENT_ENDPOINT_TERM_SOURCE_REF);
+    }
+
+    public void setMeasurementEndpointTermSourceRef(String sourceRef) {
+        fieldValues.put(MEASUREMENT_ENDPOINT_TERM_SOURCE_REF, sourceRef);
     }
 
     public String getTechnologyType() {
@@ -181,8 +189,16 @@ public class Assay extends ISASection implements StudySubData {
         return getValue(TECHNOLOGY_TYPE_TERM_ACCESSION);
     }
 
+    public void setTechnologyTypeTermAccession(String accession) {
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_ACCESSION, accession);
+    }
+
     public String getTechnologyTypeTermSourceRef(){
         return getValue(TECHNOLOGY_TYPE_TERM_SOURCE_REF);
+    }
+
+    public void setTechnologyTypeTermSourceRef(String sourceRef) {
+        fieldValues.put(TECHNOLOGY_TYPE_TERM_SOURCE_REF, sourceRef);
     }
 
     public TableReferenceObject getTableReferenceObject() {

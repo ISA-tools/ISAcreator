@@ -38,11 +38,8 @@ package org.isatools.isacreator.validateconvert.ui;
  */
 
 import com.sun.awt.AWTUtilities;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.isatools.errorreporter.model.*;
-import org.isatools.errorreporter.ui.ErrorReporterView;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.effects.FooterPanel;
 import org.isatools.isacreator.effects.GraphicsUtils;
@@ -53,15 +50,11 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isatab.gui_invokers.AllowedConversions;
-import org.isatools.isatab.gui_invokers.GUIISATABConverter;
 import org.isatools.isatab.gui_invokers.GUIISATABValidator;
 import org.isatools.isatab.gui_invokers.GUIInvokerResult;
 import org.isatools.isatab.isaconfigurator.ISAConfigurationSet;
-import org.isatools.tablib.utils.BIIObjectStore;
-import org.isatools.tablib.utils.logging.TabLoggingEventWrapper;
 import org.jdesktop.fuse.InjectedResource;
 import org.jdesktop.fuse.ResourceInjector;
-import uk.ac.ebi.utils.collections.Pair;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -73,7 +66,7 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
-public class ValidateUI extends JFrame {
+public class ValidateUI extends CommonValidationConversionUI {
 
     @InjectedResource
     private Image validateIcon, validateIconInactive, convertIcon, convertIconInactive;
@@ -90,13 +83,14 @@ public class ValidateUI extends JFrame {
 
     public static final float DESIRED_OPACITY = .93f;
 
-    private JPanel swappableContainer;
+
     private OperatingMode mode;
     private ConvertUI convertUI;
 
     public ValidateUI(ISAcreator isacreatorEnvironment, OperatingMode mode) {
         this.mode = mode;
         ResourceInjector.get("validateconvert-package.style").inject(this);
+
         this.isacreatorEnvironment = isacreatorEnvironment;
     }
 
@@ -156,7 +150,6 @@ public class ValidateUI extends JFrame {
                     ISAConfigurationSet.setConfigPath(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION));
 
                     final GUIISATABValidator isatabValidator = new GUIISATABValidator();
-
                     GUIInvokerResult result = isatabValidator.validate(ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_ISATAB));
 
                     boolean strictValidationEnabled = Boolean.valueOf(ISAcreatorProperties.getProperty(ISAcreatorProperties.STRICT_VALIDATION));
@@ -208,93 +201,7 @@ public class ValidateUI extends JFrame {
         performer.start();
     }
 
-    private void displayValidationErrorsAndWarnings(Map<String, List<ErrorMessage>> fileToErrors) {
-        List<ISAFileErrorReport> errors = new ArrayList<ISAFileErrorReport>();
-        for (String fileName : fileToErrors.keySet()) {
-
-            Pair<Assay, FileType> assayAndType = ValidationUtils.resolveFileTypeFromFileName(fileName,
-                    isacreatorEnvironment.getDataEntryEnvironment().getInvestigation());
-
-            errors.add(new ISAFileErrorReport(fileName,
-                    assayAndType.fst != null ? assayAndType.fst.getTechnologyType() : "",
-                    assayAndType.fst != null ? assayAndType.fst.getMeasurementEndpoint() : "",
-                    assayAndType.snd, fileToErrors.get(fileName)));
-        }
-
-        if (fileToErrors.size() > 0) {
-            ErrorReporterView view = new ErrorReporterView(errors);
-            view.setPreferredSize(new Dimension(750, 440));
-            view.createGUI();
-            view.add(UIHelper.createLabel("<html>Validation performed using <i>"
-                    + ISAcreatorProperties.getProperty(ISAcreatorProperties.CURRENT_CONFIGURATION) + "</i></html>"),
-                    BorderLayout.SOUTH);
-
-            swapContainers(view);
-        } else {
-            Container successfulValidationContainer = UIHelper.padComponentVerticalBox(70, new JLabel(validationSuccess));
-            swapContainers(successfulValidationContainer);
-        }
-    }
-
-    private Map<String, List<ErrorMessage>> getErrorMessages(List<TabLoggingEventWrapper> logEvents) {
-        Map<String, List<ErrorMessage>> fileToErrors = new HashMap<String, List<ErrorMessage>>();
-
-        for (TabLoggingEventWrapper event : logEvents) {
-            String fileName = ErrorUtils.extractFileInformation(event.getLogEvent());
-
-            if (fileName != null) {
-                if (event.getLogEvent().getLevel().toInt() >= Level.WARN_INT) {
-                    if (!fileToErrors.containsKey(fileName)) {
-                        fileToErrors.put(fileName, new ArrayList<ErrorMessage>());
-                    }
-                    fileToErrors.get(fileName).add(new ErrorMessage(event.getLogEvent().getLevel() == Level.WARN ? ErrorLevel.WARNING : ErrorLevel.ERROR, event.getLogEvent().getMessage().toString()));
-                }
-            }
-        }
-        return fileToErrors;
-    }
-
-    private void convertISAtab(BIIObjectStore store, AllowedConversions conversion,
-                               String isatabLocation, String outputLocation) {
-
-        GUIISATABConverter converter = new GUIISATABConverter();
-        GUIInvokerResult result = converter.convert(store, isatabLocation, outputLocation, conversion);
-
-        if (result == GUIInvokerResult.SUCCESS) {
-
-            Box successContainer = Box.createVerticalBox();
-
-            successContainer.add(Box.createVerticalStrut(50));
-            successContainer.add(UIHelper.wrapComponentInPanel(new JLabel(conversionSuccess)));
-
-            successContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("<html>" +
-                    "<b>Conversion was a success.</b>" +
-                    "<p>Files stored in " + outputLocation + "</p>" +
-                    "</html>", UIHelper.VER_11_PLAIN, UIHelper.DARK_GREEN_COLOR)));
-
-            swapContainers(successContainer);
-
-        } else {
-
-            List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
-
-            for (TabLoggingEventWrapper tlew : converter.getLog()) {
-                LoggingEvent le = tlew.getLogEvent();
-                if (le.getLevel() == Level.ERROR) {
-                    messages.add(new ErrorMessage(ErrorLevel.ERROR, le.getMessage().toString()));
-                }
-            }
-
-            ConversionErrorUI errorContainer = new ConversionErrorUI();
-            errorContainer.constructErrorPane(messages);
-            errorContainer.setPreferredSize(new Dimension(750, 440));
-
-            swapContainers(errorContainer);
-        }
-    }
-
-
-    private Collection<ConversionTarget> constructConversionTargets() {
+    public Collection<ConversionTarget> constructConversionTargets() {
         Map<String, ConversionTarget> conversionTargets = new HashMap<String, ConversionTarget>();
 
         Map<String, Study> studies = isacreatorEnvironment.getDataEntryEnvironment().getInvestigation().getStudies();
@@ -338,26 +245,6 @@ public class ValidateUI extends JFrame {
         return conversionTargets.values();
     }
 
-    private void swapContainers(final Container newContainer) {
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                if (newContainer != null) {
-                    swappableContainer.removeAll();
-                    swappableContainer.add(newContainer);
-                    swappableContainer.repaint();
-                    swappableContainer.validate();
-                    swappableContainer.updateUI();
-
-                    newContainer.validate();
-                    newContainer.repaint();
-
-                    validate();
-                    repaint();
-                }
-            }
-        });
-
-    }
 
 }

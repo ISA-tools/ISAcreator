@@ -50,7 +50,7 @@ import org.isatools.isacreator.gs.GSSaveAction;
 import org.isatools.isacreator.gui.io.exportisa.OutputISAFilesFromGUI;
 import org.isatools.isacreator.gui.menu.ISAcreatorMenu;
 import org.isatools.isacreator.gui.modeselection.Mode;
-import org.isatools.isacreator.gui.submission.ENASubmissionUI;
+import org.isatools.isacreator.validateconvert.ui.ENASubmissionUI;
 import org.isatools.isacreator.io.UserProfileManager;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.managers.ConfigurationManager;

@@ -210,6 +210,10 @@ public class OntologyManager {
         }
     }
 
+    public static void addOntologySource(OntologySourceRefObject osro){
+        ontologySources.put(osro.getSourceName(), osro);
+    }
+
     public static String getOntologyDescription(String ontologyAbbreviation) {
         if (ontologySources.containsKey(ontologyAbbreviation)) {
             return ontologySources.get(ontologyAbbreviation).getSourceDescription();
