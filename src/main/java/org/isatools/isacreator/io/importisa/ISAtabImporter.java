@@ -7,6 +7,7 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.errorreporter.model.FileType;
 import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.configuration.MappingObject;
+import org.isatools.isacreator.configuration.Ontology;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
 import org.isatools.isacreator.io.importisa.errorhandling.exceptions.MalformedInvestigationException;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
@@ -15,6 +16,8 @@ import org.isatools.isacreator.model.Assay;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
@@ -23,7 +26,9 @@ import uk.ac.ebi.utils.collections.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created Created by the ISA team
@@ -207,9 +212,9 @@ public abstract class ISAtabImporter {
                     return false;
                 }
 
-                System.out.println("********************\n"+OntologyManager.getURIMappingInfo());
+                System.out.println("********************\n" + OntologyManager.getURIMappingInfo());
                 String mappingInfo = OntologyManager.getURIMappingInfoHTML();
-                if (mappingInfo!=null && !mappingInfo.equals(""))
+                if (mappingInfo != null && !mappingInfo.equals(""))
                     messages.add(new ErrorMessage(ErrorLevel.INFO, mappingInfo));
 
 
@@ -288,6 +293,16 @@ public abstract class ISAtabImporter {
                 TableReferenceObject assayTableReferenceObject = ConfigurationManager.selectTROForUserSelection(
                         assay.getMeasurementEndpoint(), assay.getTechnologyType());
 
+                if (!assay.getMeasurementEndpointTermAccession().startsWith("http")) {
+                    MappingObject mappingObject = assayTableReferenceObject.getTableFields().getMappingObject();
+                    assay.setMeasurementEndpointTermAccession(mappingObject.getMeasurementAccession());
+                    assay.setTechnologyTypeTermAccession(mappingObject.getTechnologyAccession());
+
+                    addMissingOntologyRefsForAssayDefinition(mappingObject.getMeasurementEndpointType(), mappingObject.getMeasurementAccession(), mappingObject.getMeasurementSource());
+                    addMissingOntologyRefsForAssayDefinition(mappingObject.getTechnologyType(), mappingObject.getTechnologyAccession(), mappingObject.getTechnologySource());
+                }
+
+
                 if (assayTableReferenceObject != null) {
                     try {
 
@@ -333,6 +348,25 @@ public abstract class ISAtabImporter {
         }
         assignOntologiesToSession(mapper.getOntologyTermsDefined());
         return !errorsFound;
+    }
+
+    private void addMissingOntologyRefsForAssayDefinition(String term, String termAccession, String termSource) {
+
+        OntologySourceRefObject osro;
+        if ((osro = OntologyManager.getOntologySourceReferenceObjectByAbbreviation(termSource)) == null) {
+            String ontologyURI = AcceptedOntologies.getOntologyIdForAbbreviation(termSource);
+
+            Ontology ontology = AcceptedOntologies.getAcceptedOntologies().get(ontologyURI);
+            if (ontology != null) {
+                osro = AcceptedOntologies.convertOntologyToOntologySourceRefObject(ontology);
+                OntologyManager.addOntologySource(osro);
+            }
+        }
+
+        if (osro != null) {
+            OntologyManager.addToOntologyTerms(new OntologyTerm(term, termAccession, termAccession, osro));
+        }
+
     }
 
     protected FileType inferISAFileType(Assay assay) {
