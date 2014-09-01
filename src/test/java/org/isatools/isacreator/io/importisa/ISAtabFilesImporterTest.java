@@ -86,12 +86,39 @@ public class ISAtabFilesImporterTest implements CommonTestIO {
         //System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
         System.out.println("ontology selection history size=" + OntologyManager.getOntologyTermsSize());
 
+
+        //the assay measurement
         OntologyTerm ontologyTerm = OntologyManager.getOntologyTerm("OBI:metabolite profiling");
 
         System.out.println("ontology term=" + ontologyTerm);
         System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
 
         assert(!ontologyTerm.getOntologyTermURI().equals(""));
+
+        //the study descriptor
+        ontologyTerm = OntologyManager.getOntologyTerm("OBI:intervention design");
+
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+
+        //an annotation from the study sample table
+        ontologyTerm = OntologyManager.getOntologyTerm("NCBITAXON:Saccharomyces cerevisiae");
+
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+
+        ontologyTerm = OntologyManager.getOntologyTerm("CL:intracellular");
+
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+
+        System.out.println(inv.getStudies().size());
 
         assertTrue("Oh no, I didnt' get the expected number of studies :(", inv.getStudies().size() == 2);
 
