@@ -202,9 +202,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             isacreatorMenu = new ISAcreatorMenu(username, password, configDir, isatabDir, authentication, authMenuClassName, panelToShow, loggedIn, errors);
         }
-        setCurrentPage(isacreatorMenu);
-        pack();
-        setVisible(true);
+        showInterface();
     }
 
 
@@ -237,8 +235,13 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
             isacreatorMenu = new ISAcreatorMenu(username, null, configDir, isatabDir, authentication, authMenuClassName, panelToShow, loggedIn);
         }
+        showInterface();
+    }
+
+    private void showInterface() {
         setCurrentPage(isacreatorMenu);
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -251,9 +254,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         } else {
             isacreatorMenu = new ISAcreatorMenu(ISAcreatorMenu.SHOW_LOGIN);
         }
-        setCurrentPage(isacreatorMenu);
-        pack();
-        setVisible(true);
+        showInterface();
 
     }
 
@@ -484,7 +485,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
 
         submitENA.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                ENASubmissionUI submitUI = new ENASubmissionUI();
+                ENASubmissionUI submitUI = ENASubmissionUI.createENASubmissionUI();
                 submitUI.createGUI();
                 submitUI.setLocationRelativeTo(ISAcreator.this);
                 submitUI.setAlwaysOnTop(true);
@@ -1246,12 +1247,5 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         return pluginMenu;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ISAcreator main = new ISAcreator(Mode.NORMAL_MODE, null);
-                main.createGUI();
-            }
-        });
-    }
+
 }

@@ -97,7 +97,7 @@ public class UIHelper {
     public static final RoundedBorder GREY_ROUNDED_BORDER = new RoundedBorder(UIHelper.GREY_COLOR, 2);
     public static final RoundedBorder DARK_GREEN_ROUNDED_BORDER = new RoundedBorder(UIHelper.DARK_GREEN_COLOR, 2);
 
-    public static final Color VERY_LIGHT_GREY_COLOR = new Color(250, 252, 250);
+    public static final Color VERY_LIGHT_GREY_COLOR = new Color(236, 240, 241);
 
     //
 
