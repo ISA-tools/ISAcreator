@@ -497,7 +497,7 @@ public class Study extends ISASection {
     }
 
     public void addToAssays(List<Assay> assays) {
-        Map<String, Assay> modifiedAssayStructure = new HashMap<String, Assay>();
+        ListOrderedMap<String, Assay> modifiedAssayStructure = new ListOrderedMap<String, Assay>();
 
         for (Assay assay : assays) {
             modifiedAssayStructure.put(assay.getAssayReference(), assay);

@@ -452,7 +452,7 @@ public class SpreadsheetUtils {
                                     val = val.substring(val.indexOf(":") + 1);
                                 }
 
-                                if (source.equals(""))
+                                if (oo!=null && source.equals(""))
                                     source = oo.getOntologySource();
 
                                 output.append("\""+source + "\""+ separator);
