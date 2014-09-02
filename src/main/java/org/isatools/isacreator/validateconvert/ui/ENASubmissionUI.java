@@ -32,9 +32,13 @@ import org.jdesktop.fuse.ResourceInjector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
@@ -326,8 +330,43 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                 ? Box.createVerticalStrut(90) :
                 Box.createVerticalStrut(55));
 
-        JLabel info = UIHelper.createLabel("<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one...</span></html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
-        userLoginSection.add(UIHelper.wrapComponentInPanel(info));
+        JEditorPane registerInfo = new JEditorPane();
+        UIHelper.renderComponent(registerInfo, UIHelper.VER_9_PLAIN, new Color(127, 140, 141), false);
+        registerInfo.setContentType("text/html");
+        registerInfo.setEditable(false);
+        registerInfo.setEditorKit(new HTMLEditorKit());
+        String label = "<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one in <a href=\"https://www.ebi.ac.uk/metagenomics/register\">EBI metegenomics</a> or <a href=\"https://www.ebi.ac.uk/ena/submit/sra/#registration\">EBI ENA</a></span></html>";
+        registerInfo.setText(label);
+        registerInfo.setVisible(true);
+
+        registerInfo.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        } catch (URISyntaxException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+        JScrollPane registerScroll = new JScrollPane(registerInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        registerScroll.setPreferredSize(new Dimension(350, 90));
+        registerScroll.setBorder(null);
+        registerScroll.setOpaque(false);
+        registerScroll.getViewport().setOpaque(false);
+        IAppWidgetFactory.makeIAppScrollPane(registerScroll);
+
+        //JLabel info = UIHelper.createLabel("<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one...</span></html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
+        //userLoginSection.add(UIHelper.wrapComponentInPanel(info));
+
+        //userLoginSection.add(UIHelper.wrapComponentInPanel(registerInfo));
+        userLoginSection.add(registerScroll);
 
         return userLoginSection;
     }
@@ -357,8 +396,34 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         metadataSection.add(createMetadataFieldContainer(labName, "SRA Lab Name", 0, 30));
         metadataSection.add(Box.createVerticalStrut(20));
 
-        JLabel info = UIHelper.createLabel("<html><span style=\"color:#4FBA6F\">Read more</span> about ENA Submission Requirements...</html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
-        metadataSection.add(UIHelper.wrapComponentInPanel(info));
+        JEditorPane submissionInfo = new JEditorPane();
+        UIHelper.renderComponent(submissionInfo, UIHelper.VER_9_PLAIN, new Color(127, 140, 141), false);
+        submissionInfo.setContentType("text/html");
+        submissionInfo.setEditable(false);
+        submissionInfo.setEditorKit(new HTMLEditorKit());
+        String label = "<html><span style=\"color:#4FBA6F\"><a href=\"http://www.ebi.ac.uk/ena/about/sra_rest_submissions\">Read more</a></span> about ENA Submission Requirements...</html>";
+        submissionInfo.setText(label);
+        submissionInfo.setVisible(true);
+
+        submissionInfo.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        } catch (URISyntaxException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+        //JLabel info = UIHelper.createLabel("<html><span style=\"color:#4FBA6F\">Read more</span> about ENA Submission Requirements...</html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
+        //metadataSection.add(UIHelper.wrapComponentInPanel(info));
+        metadataSection.add(submissionInfo);
 
         return metadataSection;
     }
