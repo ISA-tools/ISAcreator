@@ -58,7 +58,6 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
     private Container metadataPanel, menuPanel, serverPanel;
 
 
-
     private JTextField username, centerName, labName, brokerName, studyIdentifier;
     private JPasswordField password;
     private ENARestServer server = ENARestServer.TEST;
@@ -304,7 +303,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         buttonContainer.add(Box.createHorizontalGlue());
         buttonContainer.add(nextButton);
 
-        metadataPanel.add(Box.createVerticalStrut(70));
+        metadataPanel.add(Box.createVerticalStrut(sraAction.equals("MODIFY") ? 20 : 30));
         metadataPanel.add(buttonContainer);
 
         return metadataPanel;
@@ -327,15 +326,16 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         userLoginSection.add(createMetadataFieldContainer(password, "Password", 1, 10));
 
         userLoginSection.add(sraAction.equals("MODIFY")
-                ? Box.createVerticalStrut(90) :
-                Box.createVerticalStrut(55));
+                ? Box.createVerticalStrut(75) :
+                Box.createVerticalStrut(45));
 
         JEditorPane registerInfo = new JEditorPane();
-        UIHelper.renderComponent(registerInfo, UIHelper.VER_9_PLAIN, new Color(127, 140, 141), false);
+        registerInfo.setPreferredSize(new Dimension(230, 50));
+        UIHelper.renderComponent(registerInfo, UIHelper.VER_9_PLAIN, UIHelper.GREY_COLOR, false);
         registerInfo.setContentType("text/html");
         registerInfo.setEditable(false);
         registerInfo.setEditorKit(new HTMLEditorKit());
-        String label = "<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one in <a href=\"https://www.ebi.ac.uk/metagenomics/register\">EBI metegenomics</a> or <a href=\"https://www.ebi.ac.uk/ena/submit/sra/#registration\">EBI ENA</a></span></html>";
+        String label = "<html><p style=\"color: #888888; font-family: 'Verdana'; font-size: 9px\">Don’t have an account? <span style=\"color:#4FBA6F\">Create one in <a href=\"https://www.ebi.ac.uk/metagenomics/register\">EBI metagenomics</a> or <a href=\"https://www.ebi.ac.uk/ena/submit/sra/#registration\">EBI ENA</a></span></p></html>";
         registerInfo.setText(label);
         registerInfo.setVisible(true);
 
@@ -355,18 +355,13 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             }
         });
 
-        JScrollPane registerScroll = new JScrollPane(registerInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        registerScroll.setPreferredSize(new Dimension(350, 90));
-        registerScroll.setBorder(null);
-        registerScroll.setOpaque(false);
-        registerScroll.getViewport().setOpaque(false);
-        IAppWidgetFactory.makeIAppScrollPane(registerScroll);
 
         //JLabel info = UIHelper.createLabel("<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one...</span></html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
         //userLoginSection.add(UIHelper.wrapComponentInPanel(info));
 
         //userLoginSection.add(UIHelper.wrapComponentInPanel(registerInfo));
-        userLoginSection.add(registerScroll);
+        userLoginSection.add(Box.createVerticalStrut(30));
+        userLoginSection.add(registerInfo);
 
         return userLoginSection;
     }
@@ -394,14 +389,16 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         labName = new JTextField("Oxford e-Research Centre");
         metadataSection.add(createMetadataFieldContainer(labName, "SRA Lab Name", 0, 30));
-        metadataSection.add(Box.createVerticalStrut(20));
+        metadataSection.add(Box.createVerticalStrut(50));
+//        metadataSection.add(Box.createVerticalGlue());
 
         JEditorPane submissionInfo = new JEditorPane();
+        submissionInfo.setPreferredSize(new Dimension(350, 40));
         UIHelper.renderComponent(submissionInfo, UIHelper.VER_9_PLAIN, new Color(127, 140, 141), false);
         submissionInfo.setContentType("text/html");
         submissionInfo.setEditable(false);
         submissionInfo.setEditorKit(new HTMLEditorKit());
-        String label = "<html><span style=\"color:#4FBA6F\"><a href=\"http://www.ebi.ac.uk/ena/about/sra_rest_submissions\">Read more</a></span> about ENA Submission Requirements...</html>";
+        String label = "<html><p style=\"color: #888888; font-family: 'Verdana'; font-size: 9px\"><span style=\"color:#4FBA6F; \"><a href=\"http://www.ebi.ac.uk/ena/about/sra_rest_submissions\">Read more</a></span> about ENA Submission Requirements...</p></html>";
         submissionInfo.setText(label);
         submissionInfo.setVisible(true);
 
@@ -420,6 +417,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                 }
             }
         });
+
 
         //JLabel info = UIHelper.createLabel("<html><span style=\"color:#4FBA6F\">Read more</span> about ENA Submission Requirements...</html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
         //metadataSection.add(UIHelper.wrapComponentInPanel(info));
@@ -455,6 +453,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
     private Box createFieldDetailWrapper(ImageIcon image_icon, String text, int padding) {
         Box fieldContainer = Box.createHorizontalBox();
+        fieldContainer.setOpaque(true);
         fieldContainer.setBackground(UIHelper.VERY_LIGHT_GREY_COLOR);
         fieldContainer.setBorder(BorderFactory.createLineBorder(UIHelper.VERY_LIGHT_GREY_COLOR, 8));
 
