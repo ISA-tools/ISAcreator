@@ -64,7 +64,7 @@ public class ErrorUI extends Container {
 
         JLabel info = UIHelper.createLabel(action+ " failed with "
                 + errorMessages.size()
-                + (errorMessages.size() > 1 ? " errors" : " error")
+                + (errorMessages.size() > 1 ? " messages" : " message")
                 + ". Here is why:", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR);
 
         info.setHorizontalAlignment(SwingConstants.LEFT);

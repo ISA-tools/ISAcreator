@@ -14,17 +14,19 @@ import java.util.*;
 
 public class ENAReceipt {
 
-    private Set<String> experimentAccessions, sampleAccession, runAccessions, studyAccessions, errors;
+    private Set<String> experimentAccessions, sampleAccession, runAccessions, studyAccessions, infoMessages, errors;
 
     public ENAReceipt(Set<String> experimentAccessions,
                       Set<String> sampleAccession,
                       Set<String> runAccessions,
                       Set<String> studyAccessions,
+                      Set<String> infoMessages,
                       Set<String> errors) {
         this.experimentAccessions = experimentAccessions;
         this.sampleAccession = sampleAccession;
         this.runAccessions = runAccessions;
         this.studyAccessions = studyAccessions;
+        this.infoMessages = infoMessages;
         this.errors = errors;
     }
 
@@ -44,18 +46,26 @@ public class ENAReceipt {
         return studyAccessions;
     }
 
+    public Set<String> getInfoMessages() {
+        return infoMessages;
+    }
+
     public Set<String> getErrors() {
         return errors;
     }
 
-    public List<ErrorMessage> getErrorsForDisplay(String studyId) {
-        List<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+    public List<ErrorMessage> getMessagesForDisplay(String studyId) {
+        List<ErrorMessage> messages = new ArrayList<ErrorMessage>();
 
-        for(String error : getErrors()) {
-           errors.add(new ErrorMessage(ErrorLevel.ERROR, error));
+        for(String info: getInfoMessages()){
+            messages.add(new ErrorMessage(ErrorLevel.INFO, info));
         }
 
-        return errors;
+        for(String error : getErrors()) {
+           messages.add(new ErrorMessage(ErrorLevel.ERROR, error));
+        }
+
+        return messages;
 
     }
 }

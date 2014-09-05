@@ -24,9 +24,9 @@ public class ENAReceiptParser {
             Set<String> sampleAccessions = parseReceiptSection(reader, "SAMPLE");
             Set<String> runAccessions = parseReceiptSection(reader, "RUN");
             Set<String> studyAccessions = parseReceiptSection(reader, "STUDY");
+            Set<String> infoMessages = parseReceiptInfoMessages(reader);
             Set<String> errors = parseReceiptErrors(reader);
-
-            return new ENAReceipt(experimentAccessions, sampleAccessions, runAccessions, studyAccessions, errors);
+            return new ENAReceipt(experimentAccessions, sampleAccessions, runAccessions, studyAccessions, infoMessages, errors);
         } catch (IOException e) {
             log.error(e);
             e.printStackTrace();
@@ -48,8 +48,23 @@ public class ENAReceiptParser {
         }
         return accessions;
     }
+    public static Set<String> parseReceiptInfoMessages(XPathReader reader) {
+
+        Set<String> infoSet = new HashSet<String>();
+        NodeList infoMessages = (NodeList) reader.read("/RECEIPT/MESSAGES/INFO", XPathConstants.NODESET);
 
 
+        if (infoMessages.getLength() > 0) {
+            for (int experimentIndex = 0; experimentIndex <= infoMessages.getLength(); experimentIndex++) {
+                String info = (String) reader.read("/RECEIPT/MESSAGES/INFO[" + experimentIndex + "]", XPathConstants.STRING);
+                if (!info.isEmpty()) {
+                    infoSet.add(info);
+                }
+            }
+        }
+        return infoSet;
+
+    }
     public static Set<String> parseReceiptErrors(XPathReader reader) {
 
         Set<String> errors = new HashSet<String>();

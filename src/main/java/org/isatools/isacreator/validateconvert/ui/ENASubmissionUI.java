@@ -652,43 +652,47 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         submitProgressContainer.setPreferredSize(new Dimension(600, 420));
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_complete)), BorderLayout.NORTH);
 
-
-        JLabel info = UIHelper.createLabel("Successful submission ", UIHelper.VER_11_BOLD, UIHelper.LIGHT_GREEN_COLOR);
-        submitProgressContainer.add(info);
-
-        // create 3 lists with the Sample, Experiment and Runs accessions
+        // create 4 lists with the Study, Sample, Experiment and Runs accessions
         JPanel listPanel = new JPanel(new GridLayout(1, 3));
         listPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 20));
         listPanel.setSize(new Dimension(600, 420));
 
+        JList studyList = new JList(receipt.getStudyAccessions().toArray());
         JList experimentList = new JList(receipt.getExperimentAccessions().toArray());
         JList runList = new JList(receipt.getRunAccessions().toArray());
         JList sampleList = new JList(receipt.getSampleAccessions().toArray());
 
+        Box studyListContainer = Box.createVerticalBox();
+        JScrollPane studyScroller = createScrollerForList(studyList);
+        JLabel studies = UIHelper.createLabel("Studies", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS);
+        studies.setToolTipText("ENA accession numbers for the submitted studies");
+        studyListContainer.add(UIHelper.wrapComponentInPanel(studies));
+        studyListContainer.add(studyScroller);
+        listPanel.add(studyListContainer);
 
         Box experimentListContainer = Box.createVerticalBox();
-        JScrollPane experimentScroller = createScrollerForList(experimentList);
-
-        experimentListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Experiments", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS)));
-        experimentListContainer.add(experimentScroller);
+        JScrollPane experimentController = createScrollerForList(experimentList);
+        JLabel experiments = UIHelper.createLabel("Experiments", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS);
+        experiments.setToolTipText("ENA accession numbers for the submitted experiments");
+        experimentListContainer.add(UIHelper.wrapComponentInPanel());
+        experimentListContainer.add(experimentController);
         listPanel.add(experimentListContainer);
 
         Box runListContainer = Box.createVerticalBox();
-
-        runListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Runs", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS)));
+        JLabel runs = UIHelper.createLabel("Runs", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS);
+        runs.setToolTipText("ENA accession numbers for the submitted runs");
+        runListContainer.add(UIHelper.wrapComponentInPanel(runs));
         JScrollPane runScroller = createScrollerForList(runList);
         runListContainer.add(runScroller);
-
         listPanel.add(runListContainer);
 
         Box sampleListContainer = Box.createVerticalBox();
-
-        sampleListContainer.add(UIHelper.wrapComponentInPanel(UIHelper.createLabel("Samples", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS)));
+        JLabel samples = UIHelper.createLabel("Samples", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS);
+        samples.setToolTipText("ENA accession numbers for the submitted samples");
+        sampleListContainer.add(UIHelper.wrapComponentInPanel(samples));
         JScrollPane sampleScroller = createScrollerForList(sampleList);
         sampleListContainer.add(sampleScroller);
-
         listPanel.add(sampleListContainer);
-
 
         submitProgressContainer.add(listPanel);
 
@@ -701,7 +705,6 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
                 ENASubmissionUI.this.dispose();
             }
         });
-
 
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(nextButton), BorderLayout.SOUTH);
 
@@ -761,7 +764,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_failed)));
 
         ErrorUI errorContainer = new ErrorUI();
-        errorContainer.constructErrorPane(receipt.getErrorsForDisplay("Submission Errors"), "Submission");
+        errorContainer.constructErrorPane(receipt.getMessagesForDisplay("Submission Errors"), "Submission");
         errorContainer.setPreferredSize(new Dimension(650, 300));
 
         submitProgressContainer.add(errorContainer);
@@ -827,8 +830,8 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         studies.add("ERP006700");
 
 
-        ENAReceipt receipt = new ENAReceipt(experiments, samples, runs, studies, new HashSet<String>());
-//        ui.swapContainers(ui.createSubmitComplete(receipt));
+        ENAReceipt receipt = new ENAReceipt(experiments, samples, runs, studies, new HashSet<String>(), new HashSet<String>());
+        ui.swapContainers(ui.createSubmitComplete(receipt));
     }
 
 }
