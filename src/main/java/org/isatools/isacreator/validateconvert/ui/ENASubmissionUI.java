@@ -3,6 +3,7 @@ package org.isatools.isacreator.validateconvert.ui;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Logger;
+import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
 import org.isatools.isacreator.common.CommonMouseAdapter;
@@ -20,6 +21,7 @@ import org.isatools.isacreator.model.Study;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.validateconvert.ui.ENAReceipt.ENAReceipt;
 import org.isatools.isacreator.validateconvert.ui.ENAReceipt.ENAReceiptParser;
+import org.isatools.isatab.export.sra.submission.ENAResponse;
 import org.isatools.isatab.export.sra.submission.ENARestServer;
 import org.isatools.isatab.export.sra.submission.SRASubmitter;
 import org.isatools.isatab.gui_invokers.AllowedConversions;
@@ -331,10 +333,10 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         JEditorPane registerInfo = new JEditorPane();
         registerInfo.setPreferredSize(new Dimension(230, 50));
-        UIHelper.renderComponent(registerInfo, UIHelper.VER_9_PLAIN, UIHelper.GREY_COLOR, false);
+        //UIHelper.renderComponent(registerInfo, UIHelper.VER_9_PLAIN, UIHelper.GREY_COLOR, false);
         registerInfo.setContentType("text/html");
         registerInfo.setEditable(false);
-        registerInfo.setEditorKit(new HTMLEditorKit());
+        //registerInfo.setEditorKit(new HTMLEditorKit());
         String label = "<html><p style=\"color: #888888; font-family: 'Verdana'; font-size: 9px\">Don’t have an account? <span style=\"color:#4FBA6F\">Create one in <a href=\"https://www.ebi.ac.uk/metagenomics/register\">EBI metagenomics</a> or <a href=\"https://www.ebi.ac.uk/ena/submit/sra/#registration\">EBI ENA</a></span></p></html>";
         registerInfo.setText(label);
         registerInfo.setVisible(true);
@@ -356,10 +358,6 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         });
 
 
-        //JLabel info = UIHelper.createLabel("<html>Don’t have an account? <span style=\"color:#4FBA6F\">Create one...</span></html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
-        //userLoginSection.add(UIHelper.wrapComponentInPanel(info));
-
-        //userLoginSection.add(UIHelper.wrapComponentInPanel(registerInfo));
         userLoginSection.add(Box.createVerticalStrut(30));
         userLoginSection.add(registerInfo);
 
@@ -394,7 +392,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         JEditorPane submissionInfo = new JEditorPane();
         submissionInfo.setPreferredSize(new Dimension(350, 40));
-        UIHelper.renderComponent(submissionInfo, UIHelper.VER_9_PLAIN, new Color(127, 140, 141), false);
+        //UIHelper.renderComponent(submissionInfo, UIHelper.VER_9_PLAIN, new Color(127, 140, 141), false);
         submissionInfo.setContentType("text/html");
         submissionInfo.setEditable(false);
         submissionInfo.setEditorKit(new HTMLEditorKit());
@@ -418,9 +416,6 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             }
         });
 
-
-        //JLabel info = UIHelper.createLabel("<html><span style=\"color:#4FBA6F\">Read more</span> about ENA Submission Requirements...</html>", UIHelper.VER_9_PLAIN, new Color(127, 140, 141));
-        //metadataSection.add(UIHelper.wrapComponentInPanel(info));
         metadataSection.add(submissionInfo);
 
         return metadataSection;
@@ -493,19 +488,33 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
                 SRASubmitter submitter = new SRASubmitter();
 
-                String status = submitter.submit(server, username.getText(), new String(password.getPassword()), sraFolder);
+                ENAResponse response = submitter.submit(server, username.getText(), new String(password.getPassword()), sraFolder);
 
-                ENAReceipt receipt = ENAReceiptParser.parseReceipt(status);
+                if (response!=null){
 
-                System.out.println("STATUS is " + status);
-                if (status == null) {
-                    swapContainers(createSubmitFailed(receipt));
-                } else {
+                    int status = response.getStatus_code();
+                    String message = response.getReceipt();
 
-                    if (receipt.getErrors().size() > 0) {
+                    System.out.println("STATUS is " + status);
+                    System.out.println("RECEIPT/MESSAGE is " + message);
+                    ENAReceipt receipt = null;
+
+                    if (status == 406) {
+                        swapContainers(createSubmitFailed(message));
+
+                    } else if (status != 200) {
+
+                        receipt = ENAReceiptParser.parseReceipt(message);
                         swapContainers(createSubmitFailed(receipt));
+
                     } else {
-                        swapContainers(createSubmitComplete(receipt));
+
+                        receipt = ENAReceiptParser.parseReceipt(message);
+                        if (receipt.getErrors().size() > 0) {
+                            swapContainers(createSubmitFailed(receipt));
+                        } else {
+                            swapContainers(createSubmitComplete(receipt));
+                        }
                     }
                 }
             }
@@ -658,6 +667,36 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         IAppWidgetFactory.makeIAppScrollPane(experimentScroller);
         return experimentScroller;
+    }
+
+    private Box createSubmitFailed(String message) {
+        Box submitProgressContainer = Box.createVerticalBox();
+
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_failed)));
+
+        ConversionErrorUI errorContainer = new ConversionErrorUI();
+
+        List<ErrorMessage> errorMessages = new ArrayList();
+        errorMessages.add(new ErrorMessage(ErrorLevel.ERROR, message));
+        errorContainer.constructErrorPane(errorMessages);
+        errorContainer.setPreferredSize(new Dimension(650, 300));
+
+        submitProgressContainer.add(errorContainer);
+
+//        SUBMIT ANOTHER, OR BACK
+        FlatButton nextButton = new FlatButton(ButtonType.RED, "Back to Submission Screen");
+        nextButton.addMouseListener(new CommonMouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                super.mousePressed(mouseEvent);
+                swapContainers(metadataPanel);
+            }
+        });
+
+        submitProgressContainer.add(Box.createVerticalStrut(20));
+        submitProgressContainer.add(UIHelper.wrapComponentInPanel(nextButton));
+
+        return submitProgressContainer;
     }
 
     private Box createSubmitFailed(ENAReceipt receipt) {
