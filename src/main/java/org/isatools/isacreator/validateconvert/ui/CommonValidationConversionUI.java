@@ -133,8 +133,8 @@ public class CommonValidationConversionUI extends JFrame {
                 }
             }
 
-            ConversionErrorUI errorContainer = new ConversionErrorUI();
-            errorContainer.constructErrorPane(messages);
+            ErrorUI errorContainer = new ErrorUI();
+            errorContainer.constructErrorPane(messages, "Conversion");
             errorContainer.setPreferredSize(new Dimension(650, 440));
 
             swapContainers(errorContainer);

@@ -23,9 +23,10 @@ public class ENAReceiptParser {
             Set<String> experimentAccessions = parseReceiptSection(reader, "EXPERIMENT");
             Set<String> sampleAccessions = parseReceiptSection(reader, "SAMPLE");
             Set<String> runAccessions = parseReceiptSection(reader, "RUN");
+            Set<String> studyAccessions = parseReceiptSection(reader, "STUDY");
             Set<String> errors = parseReceiptErrors(reader);
 
-            return new ENAReceipt(experimentAccessions, sampleAccessions, runAccessions, errors);
+            return new ENAReceipt(experimentAccessions, sampleAccessions, runAccessions, studyAccessions, errors);
         } catch (IOException e) {
             log.error(e);
             e.printStackTrace();

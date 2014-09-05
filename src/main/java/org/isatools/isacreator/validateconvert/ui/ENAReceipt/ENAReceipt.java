@@ -14,12 +14,17 @@ import java.util.*;
 
 public class ENAReceipt {
 
-    private Set<String> experimentAccessions, sampleAccession, runAccessions, errors;
+    private Set<String> experimentAccessions, sampleAccession, runAccessions, studyAccessions, errors;
 
-    public ENAReceipt(Set<String> experimentAccessions, Set<String> sampleAccession, Set<String> runAccessions, Set<String> errors) {
+    public ENAReceipt(Set<String> experimentAccessions,
+                      Set<String> sampleAccession,
+                      Set<String> runAccessions,
+                      Set<String> studyAccessions,
+                      Set<String> errors) {
         this.experimentAccessions = experimentAccessions;
         this.sampleAccession = sampleAccession;
         this.runAccessions = runAccessions;
+        this.studyAccessions = studyAccessions;
         this.errors = errors;
     }
 
@@ -33,6 +38,10 @@ public class ENAReceipt {
 
     public Set<String> getRunAccessions() {
         return runAccessions;
+    }
+
+    public Set<String> getStudyAccessions() {
+        return studyAccessions;
     }
 
     public Set<String> getErrors() {

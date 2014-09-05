@@ -5,7 +5,6 @@ import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
-import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
@@ -13,7 +12,6 @@ import org.isatools.isacreator.common.button.FlatButton;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.effects.HUDTitleBar;
 import org.isatools.isacreator.effects.SimpleListCellRenderer;
-import org.isatools.isacreator.effects.SingleSelectionListCellRenderer;
 import org.isatools.isacreator.launch.ISAcreatorGUIProperties;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.model.Investigation;
@@ -38,6 +36,8 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.net.URISyntaxException;
@@ -62,6 +62,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
     private JTextField username, centerName, labName, brokerName, studyIdentifier;
     private JPasswordField password;
+    private JLabel status;
     private ENARestServer server = ENARestServer.TEST;
 
     private String sraAction;
@@ -171,6 +172,10 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         return menuPanel;
     }
 
+    /**
+     * Screen to choose the ENA server (test, dev, prod)
+     * @return
+     */
     private Container chooseServerUI() {
         serverPanel = Box.createVerticalBox();
         serverPanel.setPreferredSize(new Dimension(530, 390));
@@ -297,7 +302,13 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 super.mousePressed(mouseEvent);
-                validateConvertAndSubmitFiles();
+                if (username.getText().equals("") || username.equals("Username") || password.getPassword().length==0){
+
+                    status.setText("<html><font size=\"2\">Please complete username and password! </font></html>");
+
+                } else {
+                    validateConvertAndSubmitFiles();
+                }
             }
         });
 
@@ -311,6 +322,14 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         return metadataPanel;
     }
 
+    private void clearStatus(){
+        status.setText("");
+    }
+
+    /**
+     * Creates a Box for the user login
+     * @return Box
+     */
     private Box createUserLoginSection() {
         Box userLoginSection = Box.createVerticalBox();
 
@@ -321,11 +340,39 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         String sra_username = ISAcreatorProperties.getProperty("sra_username");
         username = new JTextField(sra_username.isEmpty() ? "Username" : sra_username);
+
+        username.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent focusEvent) {
+                clearStatus();
+            }
+
+            public void focusLost(FocusEvent focusEvent) {
+                clearStatus();
+            }
+        });
+
         password = new JPasswordField("");
+
+        password.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent focusEvent) {
+                clearStatus();
+            }
+
+            public void focusLost(FocusEvent focusEvent) {
+                clearStatus();
+            }
+        });
+        status = new JLabel();
+        status.setText("");
+        status.setForeground(UIHelper.RED_COLOR);
+        status.setSize(new Dimension(200, 25));
+        status.setOpaque(true);
 
         userLoginSection.add(createMetadataFieldContainer(username, "Username"));
         userLoginSection.add(Box.createVerticalStrut(5));
         userLoginSection.add(createMetadataFieldContainer(password, "Password", 1, 10));
+        userLoginSection.add(Box.createVerticalStrut(5));
+        userLoginSection.add(UIHelper.wrapComponentInPanel(status));
 
         userLoginSection.add(sraAction.equals("MODIFY")
                 ? Box.createVerticalStrut(75) :
@@ -333,10 +380,8 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         JEditorPane registerInfo = new JEditorPane();
         registerInfo.setPreferredSize(new Dimension(230, 50));
-        //UIHelper.renderComponent(registerInfo, UIHelper.VER_9_PLAIN, UIHelper.GREY_COLOR, false);
         registerInfo.setContentType("text/html");
         registerInfo.setEditable(false);
-        //registerInfo.setEditorKit(new HTMLEditorKit());
         String label = "<html><p style=\"color: #888888; font-family: 'Verdana'; font-size: 9px\">Don’t have an account? <span style=\"color:#4FBA6F\">Create one in <a href=\"https://www.ebi.ac.uk/metagenomics/register\">EBI metagenomics</a> or <a href=\"https://www.ebi.ac.uk/ena/submit/sra/#registration\">EBI ENA</a></span></p></html>";
         registerInfo.setText(label);
         registerInfo.setVisible(true);
@@ -426,6 +471,8 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
     }
 
     /**
+     * Creates a Container for a metadata field
+     *
      * @param field     - Field to be created and added
      * @param fieldName - Name to be given to the field
      * @param type      - 0 for JTextField, 1 for JPasswordField
@@ -605,8 +652,11 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         submitProgressContainer.setPreferredSize(new Dimension(600, 420));
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_complete)), BorderLayout.NORTH);
 
-        // create 3 lists with the Sample, Experiment and Runs accessions
 
+        JLabel info = UIHelper.createLabel("Successful submission ", UIHelper.VER_11_BOLD, UIHelper.LIGHT_GREEN_COLOR);
+        submitProgressContainer.add(info);
+
+        // create 3 lists with the Sample, Experiment and Runs accessions
         JPanel listPanel = new JPanel(new GridLayout(1, 3));
         listPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 20));
         listPanel.setSize(new Dimension(600, 420));
@@ -674,11 +724,11 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
 
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_failed)));
 
-        ConversionErrorUI errorContainer = new ConversionErrorUI();
+        ErrorUI errorContainer = new ErrorUI();
 
         List<ErrorMessage> errorMessages = new ArrayList();
         errorMessages.add(new ErrorMessage(ErrorLevel.ERROR, message));
-        errorContainer.constructErrorPane(errorMessages);
+        errorContainer.constructErrorPane(errorMessages, "Submission");
         errorContainer.setPreferredSize(new Dimension(650, 300));
 
         submitProgressContainer.add(errorContainer);
@@ -699,13 +749,19 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         return submitProgressContainer;
     }
 
+    /**
+     * Creates a box when submission failed
+     *
+     * @param receipt
+     * @return
+     */
     private Box createSubmitFailed(ENAReceipt receipt) {
         Box submitProgressContainer = Box.createVerticalBox();
 
         submitProgressContainer.add(UIHelper.wrapComponentInPanel(new JLabel(submission_failed)));
 
-        ConversionErrorUI errorContainer = new ConversionErrorUI();
-        errorContainer.constructErrorPane(receipt.getErrorsForDisplay("Submission Errors"));
+        ErrorUI errorContainer = new ErrorUI();
+        errorContainer.constructErrorPane(receipt.getErrorsForDisplay("Submission Errors"), "Submission");
         errorContainer.setPreferredSize(new Dimension(650, 300));
 
         submitProgressContainer.add(errorContainer);
@@ -767,7 +823,11 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         samples.add("ERS546961");
         samples.add("ERS546962");
 
-        ENAReceipt receipt = new ENAReceipt(experiments, samples, runs, new HashSet<String>());
+        Set<String> studies = new HashSet<String>();
+        studies.add("ERP006700");
+
+
+        ENAReceipt receipt = new ENAReceipt(experiments, samples, runs, studies, new HashSet<String>());
 //        ui.swapContainers(ui.createSubmitComplete(receipt));
     }
 
