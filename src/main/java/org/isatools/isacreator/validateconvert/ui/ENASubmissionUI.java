@@ -674,7 +674,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         JScrollPane experimentController = createScrollerForList(experimentList);
         JLabel experiments = UIHelper.createLabel("Experiments", UIHelper.VER_11_BOLD, UIHelper.NEPHRITIS);
         experiments.setToolTipText("ENA accession numbers for the submitted experiments");
-        experimentListContainer.add(UIHelper.wrapComponentInPanel());
+        experimentListContainer.add(UIHelper.wrapComponentInPanel(experiments));
         experimentListContainer.add(experimentController);
         listPanel.add(experimentListContainer);
 
