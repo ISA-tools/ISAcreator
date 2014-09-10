@@ -53,18 +53,18 @@ import java.util.List;
  *         Date: 09/09/2011
  *         Time: 09:56
  */
-public class ConversionErrorUI extends Container {
+public class ErrorUI extends Container {
 
 
-    public ConversionErrorUI() {
+    public ErrorUI() {
         setLayout(new BorderLayout());
     }
 
-    public void constructErrorPane(List<ErrorMessage> errorMessages) {
+    public void constructErrorPane(List<ErrorMessage> errorMessages, String action) {
 
-        JLabel info = UIHelper.createLabel("Conversion failed with "
+        JLabel info = UIHelper.createLabel(action+ " failed with "
                 + errorMessages.size()
-                + (errorMessages.size() > 1 ? " errors" : " error")
+                + (errorMessages.size() > 1 ? " messages" : " message")
                 + ". Here is why:", UIHelper.VER_11_BOLD, UIHelper.RED_COLOR);
 
         info.setHorizontalAlignment(SwingConstants.LEFT);

@@ -59,6 +59,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -81,6 +82,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
     public ImportFilesMenu(ISAcreatorMenu menu) {
         super(menu, false);
+        previousNonLocalFiles = new ArrayList<File>();
     }
 
     public JPanel createAlternativeExitDisplay() {
@@ -105,11 +107,11 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
     public void getSelectedFileAndLoad() {
 
-        if (previousFileList.getSelectedIndex() != -1) {
+        if (previousFilesExtendedJList.getSelectedIndex() != -1) {
             // select file from list
             for (File candidate : previousFiles) {
                 if (candidate.getName()
-                        .equals(previousFileList.getSelectedValue()
+                        .equals(previousFilesExtendedJList.getSelectedValue()
                                 .toString())) {
                     getSelectedFileAndLoad(candidate, true);
                 }
@@ -178,6 +180,19 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
                         ApplicationManager.setModified(false);
 
                         ISAcreatorProperties.setProperty(ISAcreatorProperties.CURRENT_ISATAB, new File(dir).getAbsolutePath());
+
+                        if (!dir.contains(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY)){
+                            //check it doesn't exit already
+                            boolean exists = false;
+                            for(File file: previousNonLocalFiles){
+                                if (dir.equals(file.getCanonicalPath())) {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (!exists)
+                                previousNonLocalFiles.add(new File(dir));
+                        }
 
 
                     } else if (successfulImport) {
@@ -266,10 +281,9 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
         performer.start();
     }
 
-    public File[] getPreviousFiles() {
+    public List<File> getPreviousFiles() {
 
-        previousFileList.clearItems();
-
+        previousFilesExtendedJList.clearItems();
 
         File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY);
 
@@ -277,11 +291,18 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
             f.mkdir();
         }
 
-        previousFiles = f.listFiles();
+        previousFiles = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
         for (File prevSubmission : previousFiles) {
             if (prevSubmission.isDirectory()) {
-                previousFileList.addItem(prevSubmission.getName());
+                previousFilesExtendedJList.addItem(prevSubmission.getName());
+            }
+        }
+
+        for (File prevSubmission : previousNonLocalFiles) {
+            if (prevSubmission.isDirectory()) {
+                previousFilesExtendedJList.addItem(prevSubmission.getName());
+                previousFiles.add(prevSubmission);
             }
         }
 
@@ -303,7 +324,7 @@ public class ImportFilesMenu extends AbstractImportFilesMenu {
 
 
     public void setListRenderer() {
-        previousFileList.setCellRenderer(new ImportFilesListCellRenderer(listImage));
+        previousFilesExtendedJList.setCellRenderer(new ImportFilesListCellRenderer(listImage));
     }
 
     @Override

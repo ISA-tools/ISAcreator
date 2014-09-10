@@ -37,6 +37,7 @@
 
 package org.isatools.isacreator.model;
 
+import org.apache.commons.collections15.map.ListOrderedMap;
 import org.isatools.isacreator.managers.ApplicationManager;
 import org.isatools.isacreator.gui.AssaySpreadsheet;
 import org.isatools.isacreator.gui.reference.DataEntryReferenceObject;
@@ -116,7 +117,7 @@ public class Study extends ISASection {
     }
 
     private void initialise() {
-        assays = new HashMap<String, Assay>();
+        assays = new ListOrderedMap<String, Assay>();
         factors = new ArrayList<Factor>();
         protocols = new ArrayList<Protocol>();
         contacts = new ArrayList<Contact>();
@@ -496,7 +497,7 @@ public class Study extends ISASection {
     }
 
     public void addToAssays(List<Assay> assays) {
-        Map<String, Assay> modifiedAssayStructure = new HashMap<String, Assay>();
+        ListOrderedMap<String, Assay> modifiedAssayStructure = new ListOrderedMap<String, Assay>();
 
         for (Assay assay : assays) {
             modifiedAssayStructure.put(assay.getAssayReference(), assay);

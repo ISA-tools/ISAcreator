@@ -6,6 +6,10 @@ import org.isatools.errorreporter.model.ISAFileErrorReport;
 import org.isatools.isacreator.io.CommonTestIO;
 import org.isatools.isacreator.model.Investigation;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.utils.PropertyFileIO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +52,7 @@ public class ISAtabFilesImporterTest implements CommonTestIO {
             }
         }
 
+        ISAcreatorProperties.setProperties(PropertyFileIO.DEFAULT_CONFIGS_SETTINGS_PROPERTIES);
         configDir = baseDir + DEFAULT_CONFIG_DIR;
 
         log.debug("configDir=" + configDir);
@@ -81,8 +86,52 @@ public class ISAtabFilesImporterTest implements CommonTestIO {
         System.out.println("ontology description=" + OntologyManager.getOntologyDescription("OBI"));
         //System.out.println("ontology selection history=" + OntologyManager.getOntologySelectionHistory());
         System.out.println("ontology selection history size=" + OntologyManager.getOntologyTermsSize());
-        System.out.println("ontology term=" + OntologyManager.getOntologyTerm("OBI:metabolite profiling"));
 
+
+        //the assay measurement
+        OntologyTerm ontologyTerm = OntologyManager.getOntologyTerm("OBI:metabolite profiling");
+        OntologySourceRefObject ontologySourceRefObject = ontologyTerm.getOntologySourceInformation();
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+        System.out.println(ontologySourceRefObject);
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+        assert(ontologySourceRefObject!=null);
+
+        //the study descriptor
+        ontologyTerm = OntologyManager.getOntologyTerm("OBI:intervention design");
+        ontologySourceRefObject = ontologyTerm.getOntologySourceInformation();
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+        System.out.println(ontologySourceRefObject);
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+        assert(ontologySourceRefObject!=null);
+
+        //an annotation from the study sample table
+        ontologyTerm = OntologyManager.getOntologyTerm("NCBITAXON:Saccharomyces cerevisiae");
+        ontologySourceRefObject = ontologyTerm.getOntologySourceInformation();
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+        System.out.println(ontologyTerm.getOntologySourceInformation());
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+        assert(ontologySourceRefObject!=null);
+
+        ontologyTerm = OntologyManager.getOntologyTerm("CL:intracellular");
+        ontologySourceRefObject = ontologyTerm.getOntologySourceInformation();
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+        System.out.println(ontologySourceRefObject);
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+        assert(ontologySourceRefObject!=null);
+
+        ontologyTerm = OntologyManager.getOntologyTerm("CL:extracellular region part");
+        ontologySourceRefObject = ontologyTerm.getOntologySourceInformation();
+        System.out.println("ontology term=" + ontologyTerm);
+        System.out.println("term URI = "+ontologyTerm.getOntologyTermURI());
+        System.out.println(ontologySourceRefObject);
+        assert(!ontologyTerm.getOntologyTermURI().equals(""));
+        assert(ontologySourceRefObject!=null);
+
+        System.out.println(inv.getStudies().size());
         assertTrue("Oh no, I didnt' get the expected number of studies :(", inv.getStudies().size() == 2);
 
     }

@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.isatools.isacreator.io.CommonTestIO;
 import org.isatools.isacreator.io.importisa.ISAtabFilesImporter;
 import org.isatools.isacreator.model.Investigation;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
+import org.isatools.isacreator.utils.PropertyFileIO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +34,7 @@ public class OutputISAFilesTest implements CommonTestIO {
     @Before
     public void setUp() {
         String baseDir = System.getProperty("basedir");
-
+        ISAcreatorProperties.setProperties(PropertyFileIO.DEFAULT_CONFIGS_SETTINGS_PROPERTIES);
         if ( baseDir == null )
         {
             try{
@@ -71,6 +73,7 @@ public class OutputISAFilesTest implements CommonTestIO {
         assert(importer.getMessages().size()==0);
 
         System.out.println("investigation reference"+inv.getReference());
+
         exporter.saveISAFiles(false, inv);
     }
 }

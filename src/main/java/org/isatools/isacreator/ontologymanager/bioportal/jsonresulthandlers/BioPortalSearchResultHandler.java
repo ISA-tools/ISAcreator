@@ -273,9 +273,8 @@ public class BioPortalSearchResultHandler {
                 return contents;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Unable to retrieve term metadata");
         }
-
         return null;
     }
 

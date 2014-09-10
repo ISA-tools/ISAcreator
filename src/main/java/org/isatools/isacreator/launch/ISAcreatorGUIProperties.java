@@ -111,6 +111,9 @@ public class ISAcreatorGUIProperties {
         ResourceInjector.get("orcidlookup-package.style").load(
                 ISAcreatorApplication.class.getResource("/dependency-injections/orcidlookup-package.properties"));
 
+        ResourceInjector.get("submission-package.style").load(
+                ISAcreatorApplication.class.getResource("/dependency-injections/submission-package.properties"));
+
     }
 
 }

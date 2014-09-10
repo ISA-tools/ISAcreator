@@ -3,18 +3,19 @@
 # More details in the POM. 
 #
 
-# should be used by passing in either 'scidata' or 'all' as a parameter, e.g. ./package.sh scidata
+# should be used by passing in either 'scidata', 'mixs' or 'all' as a parameter, e.g. ./package.sh scidata
 # switching these will result in different actions being performed on packaging.
 
 PACKAGE_TYPE=$1
-echo $PACKAGE_TYPE
+echo "ISAcreator packaging for type " $PACKAGE_TYPE
+
+MIXS_DATASETS=mixs-datasets-v2.zip
 
 if [ "$PACKAGE_TYPE" = ""  ]
 then
     PACKAGE_TYPE="all"
 fi
 
-alias mvn='/Users/eamonnmaguire/dev/maven/bin/mvn'
 #MVNOPTS="--offline"
 get_tag_data () {
     local tag=$1
@@ -37,8 +38,8 @@ VERSION=${VERSIONSPLIT[0]}
 if [ "$VERSION" = "" ]
 then
   echo "Couldn't extract version from pom.xml. Exiting."
+  exit 1
 fi
-
 
 rm -rf src/main/resources/Configurations
 
@@ -47,14 +48,28 @@ mkdir src/main/resources/Configurations
 if [ "$PACKAGE_TYPE" = "scidata"  ]
 then
     CONFIGURATION=isaconfig-Scientific-Data-v1.1.zip
+fi
+
+if [ "$PACKAGE_TYPE" = "mixs"  ]
+then
+    CONFIGURATION=isaconfig-mixs-v4.zip
 else
     CONFIGURATION=isaconfig-default_v2014-01-16.zip
 fi
 
-wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION" --no-check-certificate
+echo "Configuration file: " $CONFIGURATION
+
+if hash curl 2>/dev/null; then
+   echo "curl is installed, will download configurations next"
+else
+   echo "curl is not installed, install it and then run package.sh again"
+   exit 1
+fi
+
+curl -L -O http://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION"
+
 
 cp $CONFIGURATION src/main/resources/Configurations/
-
 
 WD=$(pwd)
 
@@ -68,7 +83,13 @@ cd $WD
 echo "Changing back to target..."
 pwd
 
+##Building ISAcreator
 mvn $MVNOPTS -Dmaven.test.skip=true clean assembly:assembly -Pbuild
+
+if [ "$?" -ne 0 ]; then
+    echo "Maven Build Unsuccessful!"
+    exit 1
+fi
 
 
 mkdir target/Configurations
@@ -86,9 +107,17 @@ mkdir "isatab files"
 if [ "$PACKAGE_TYPE" = "scidata" ]
 then
     cd "isatab files"
-    wget https://bitbucket.org/eamonnmag/isatools-downloads/downloads/SciData-Datasets-1-and-2.zip --no-check-certificate
+    curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/SciData-Datasets-1-and-2.zip
     unzip SciData-Datasets-1-and-2.zip
     rm -f SciData-Datasets-1-and-2.zip
+    cd ../
+fi
+if [ "$PACKAGE_TYPE" = "mixs" ]
+then
+    cd "isatab files"
+    curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/$MIXS_DATASETS
+    unzip $MIXS_DATASETS
+    rm -f $MIXS_DATASETS
     cd ../
 else
     cp -r ../"isatab files"/* "isatab files"

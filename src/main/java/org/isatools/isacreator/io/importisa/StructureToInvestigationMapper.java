@@ -125,9 +125,9 @@ public class StructureToInvestigationMapper {
 
             } else if (investigationSection == InvestigationFileSection.ONTOLOGY_SECTION) {
 
-                Pair<Set<String>, List<OntologySourceRefObject>> processedFactorsSection = processOntologySourceReferences(investigationSections.get(investigationSection));
-                sectionFields.put(investigationSection, processedFactorsSection.fst);
-                ontologySources = new HashSet<OntologySourceRefObject>(processedFactorsSection.snd);
+                Pair<Set<String>, List<OntologySourceRefObject>> processedOntologySection = processOntologySourceReferences(investigationSections.get(investigationSection));
+                sectionFields.put(investigationSection, processedOntologySection.fst);
+                ontologySources = new HashSet<OntologySourceRefObject>(processedOntologySection.snd);
 
             } else if (investigationSection == InvestigationFileSection.INVESTIGATION_PUBLICATIONS_SECTION) {
 
@@ -670,7 +670,7 @@ public class StructureToInvestigationMapper {
     }
 
     /**
-     * Checks for duplicate assay names across all studies.
+     * Checks for duplicate study or assay names across all studies.
      *
      * @param investigation
      * @return

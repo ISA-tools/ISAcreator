@@ -1,8 +1,8 @@
 ONTOLOGY SOURCE REFERENCE
-Term Source Name	
-Term Source File	
-Term Source Version	
-Term Source Description	
+Term Source Name	"CHEBI"	"CL"	"OBI"	"NCBITAXON"	"OBI_BCGO"	"PATO"	"UO"	
+Term Source File	"http://data.bioontology.org/ontologies/CHEBI"	"http://data.bioontology.org/ontologies/CL"	"http://data.bioontology.org/ontologies/OBI"	"http://data.bioontology.org/ontologies/NCBITAXON"	"http://data.bioontology.org/ontologies/OBI_BCGO"	"http://data.bioontology.org/ontologies/PATO"	"http://data.bioontology.org/ontologies/UO"	
+Term Source Version	"78"	"43"	"21"	"2"	"8"	"160"	"42"	
+Term Source Description	"Chemical Entities of Biological Interest Ontology"	"Cell Ontology"	"Ontology for Biomedical Investigations"	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Beta Cell Genomics Ontology"	"Phenotypic Quality Ontology"	"Units of Measurement Ontology"	
 INVESTIGATION
 Investigation Identifier	"BII-I-1"
 Investigation Title	"Growth control of the eukaryote cell: a systems biology study in yeast"
@@ -72,14 +72,14 @@ Study Factor Type	"chemical entity"	"rate"
 Study Factor Type Term Accession Number	"http://purl.obolibrary.org/obo/CHEBI_24431"	"http://purl.obolibrary.org/obo/PATO_0000161"
 Study Factor Type Term Source REF	"CHEBI"	"PATO"
 STUDY ASSAYS
-Study Assay File Name	"a_metabolome.txt"	"a_proteome.txt"	"a_transcriptome.txt"
-Study Assay Measurement Type	"metabolite profiling"	"protein expression profiling"	"transcription profiling"
-Study Assay Measurement Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0000366"	"http://purl.obolibrary.org/obo/OBI_0000615"	"http://purl.obolibrary.org/obo/OBI_0000424"
+Study Assay File Name	"a_proteome.txt"	"a_metabolome.txt"	"a_transcriptome.txt"
+Study Assay Measurement Type	"protein expression profiling"	"metabolite profiling"	"transcription profiling"
+Study Assay Measurement Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0000615"	"http://purl.obolibrary.org/obo/OBI_0000366"	"http://purl.obolibrary.org/obo/OBI_0000424"
 Study Assay Measurement Type Term Source REF	"OBI"	"OBI"	"OBI"
 Study Assay Technology Type	"mass spectrometry"	"mass spectrometry"	"DNA microarray"
 Study Assay Technology Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0000470"	"http://purl.obolibrary.org/obo/OBI_0000470"	"http://purl.obolibrary.org/obo/OBI_0400148"
 Study Assay Technology Type Term Source REF	"OBI"	"OBI"	"OBI"
-Study Assay Technology Platform	"LC-MS/MS"	"iTRAQ"	"Affymetrix"
+Study Assay Technology Platform	"iTRAQ"	"LC-MS/MS"	"Affymetrix"
 STUDY PROTOCOLS
 Study Protocol Name	"growth protocol"	"mRNA extraction"	"protein extraction"	"biotin labeling"	"ITRAQ labeling"	"EukGE-WS4"	"metabolite extraction"
 Study Protocol Type	"growth"	"RNA extraction"	"extraction"	"addition of molecular label"	"addition of molecular label"	"nucleic acid hybridization"	"extraction"

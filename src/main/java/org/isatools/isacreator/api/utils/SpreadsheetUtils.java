@@ -40,12 +40,18 @@ package org.isatools.isacreator.api.utils;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
+import org.isatools.isacreator.configuration.FieldObject;
+import org.isatools.isacreator.configuration.TableConfiguration;
+import org.isatools.isacreator.managers.ConfigurationManager;
 import org.isatools.isacreator.model.Assay;
+import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologyselectiontool.OntologyCellEditor;
 import org.isatools.isacreator.sampleselection.SampleInformation;
+import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.Spreadsheet;
 import org.isatools.isacreator.spreadsheet.Utils;
+import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -399,13 +405,65 @@ public class SpreadsheetUtils {
 
     public static StringBuilder outputAssayAsString(Assay assay) {
         StringBuilder output = new StringBuilder();
+        TableReferenceObject tableReferenceObject = assay.getTableReferenceObject();
         Object[][] content = assay.getTableReferenceObject().getDataAsArray();
+
+        String separator = "\t";
+        String newline = "\n";
+
+        int row_number = 0;
 
         for (Object[] row : content) {
             for (int columnIndex = 0; columnIndex < row.length; columnIndex++) {
-                output.append(row[columnIndex].toString());
-                output.append(columnIndex != row.length - 1 ? "\t" : "\n");
+
+                output.append("\""+row[columnIndex].toString()+"\"");
+                output.append(columnIndex != row.length - 1 ? separator : newline);
+
+                if (columnIndex < content[0].length) {
+                    FieldObject field = tableReferenceObject.getFieldByName(content[0][columnIndex].toString());
+
+                    if (field != null) {
+                        if (row_number == 0) {
+
+                            if (field.getDatatype().equals(DataTypes.ONTOLOGY_TERM)) {
+                                output.append("\"Term Source REF\"" + separator);
+                                output.append("\"Term Accession Number\"" + separator);
+                            }
+
+                        } else {
+                            //add the ontology values
+
+                            if (field.getDatatype().equals(DataTypes.ONTOLOGY_TERM)) {
+
+                                String val = (String) row[columnIndex];
+                                OntologyTerm oo = OntologyManager.getOntologyTerm(val);
+                                String source = "", termAccession = "";
+
+
+                                if (oo != null) {
+                                    if (ISAcreatorProperties.getProperty("ontologyTermURI").equals("true"))
+                                        termAccession = oo.getOntologyTermURI();
+                                    else
+                                        termAccession = oo.getOntologyTermAccession();
+                                }
+
+                                if (val.contains(":")) {
+                                    source = val.substring(0, val.indexOf(":"));
+                                    val = val.substring(val.indexOf(":") + 1);
+                                }
+
+                                if (oo!=null && source.equals(""))
+                                    source = oo.getOntologySource();
+
+                                output.append("\""+source + "\""+ separator);
+                                output.append("\""+ termAccession + "\"" + separator);
+
+                            }
+                        } //else
+                    } //field not null
+                }
             }
+            row_number++;
         }
 
         return output;

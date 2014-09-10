@@ -40,6 +40,7 @@ package org.isatools.isacreator.ontologymanager.bioportal.io;
 
 import org.apache.commons.lang.StringUtils;
 import org.isatools.isacreator.configuration.Ontology;
+import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 
 import java.util.*;
 
@@ -54,10 +55,15 @@ public class AcceptedOntologies {
     private static Map<String, Ontology> acceptedOntologies;
 
     // This is used to cache lookups on ontology sources, e.g. EFO to their equivalent ID in BioPortal
-    private static Map<String,String> ontologySourceToIDCache;
+    private static Map<String, String> ontologySourceToIDCache;
 
     static {
         updateAcceptedOntologies();
+
+        System.out.println("LOADED ONTOLOGIES...");
+        for(String ontology_id : acceptedOntologies.keySet()) {
+            System.out.println(ontology_id);
+        }
     }
 
     public static void updateAcceptedOntologies() {
@@ -72,7 +78,7 @@ public class AcceptedOntologies {
      * @return when 1123 is supplied, OBI will be returned
      */
     public static String getOntologyAbbreviationFromId(String ontologyId) {
-        if(acceptedOntologies.containsKey(ontologyId))
+        if (acceptedOntologies.containsKey(ontologyId))
             return acceptedOntologies.get(ontologyId).getOntologyAbbreviation();
         return null;
     }
@@ -95,9 +101,9 @@ public class AcceptedOntologies {
     }
 
     public static String getOntologyIdForAbbreviation(String abbreviation) {
-        if(ontologySourceToIDCache.containsKey(abbreviation)) return ontologySourceToIDCache.get(abbreviation);
-        for(Ontology ontology :  acceptedOntologies.values()) {
-            if(ontology.getOntologyAbbreviation().equals(abbreviation)) {
+        if (ontologySourceToIDCache.containsKey(abbreviation)) return ontologySourceToIDCache.get(abbreviation);
+        for (Ontology ontology : acceptedOntologies.values()) {
+            if (ontology.getOntologyAbbreviation().equals(abbreviation)) {
                 ontologySourceToIDCache.put(abbreviation, ontology.getOntologyID());
                 return ontology.getOntologyID();
             }
@@ -124,7 +130,9 @@ public class AcceptedOntologies {
         return allowedOntologies.toString();
     }
 
-
+    public static OntologySourceRefObject convertOntologyToOntologySourceRefObject(Ontology ontology) {
+        return new OntologySourceRefObject(ontology.getOntologyAbbreviation(), ontology.getOntologyID(), ontology.getOntologyVersion(), ontology.getOntologyDisplayLabel());
+    }
 
     public static Map<String, Ontology> getAcceptedOntologies() {
         return acceptedOntologies;
