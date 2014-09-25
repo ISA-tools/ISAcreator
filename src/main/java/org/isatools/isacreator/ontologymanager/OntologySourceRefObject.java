@@ -90,7 +90,9 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
         if (getSourceName()==null)
             return;
 
-        if (!getSourceName().equals("") && getSourceFile().startsWith(BIOPORTAL_URL) && getSourceFile().endsWith(getSourceName()) && !getSourceVersion().equals("") && !getSourceDescription().equals(""))
+        if (getSourceName()!=null && !getSourceName().equals("")
+                && getSourceFile()!=null && getSourceFile().startsWith(BIOPORTAL_URL) && getSourceFile().endsWith(getSourceName())
+                && getSourceVersion()!=null && !getSourceVersion().equals("") && !getSourceDescription().equals(""))
             return;
 
         String ontologyId = BIOPORTAL_URL + getSourceName();
