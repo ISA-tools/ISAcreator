@@ -48,8 +48,10 @@ public class OrcidSearchResultHandler {
         int i = 0;
         for (OrcidSearchResultDocument.OrcidSearchResult result : results) {
             OrcidProfileDocument.OrcidProfile profile = result.getOrcidProfile();
-            authors[i] = getOrcidAuthor(profile);
-            i++;
+            if (profile != null) {
+                authors[i] = getOrcidAuthor(profile);
+                i++;
+            }
         }
         return authors;
     }
@@ -78,25 +80,15 @@ public class OrcidSearchResultHandler {
 
     private OrcidAuthor getOrcidAuthor(OrcidProfileDocument.OrcidProfile profile) {
         OrcidAuthor orcidAuthor = new OrcidAuthor();
-        orcidAuthor.setOrcid(removeFragments(profile.getOrcid().toString()));
+
+        orcidAuthor.setOrcid(profile.getOrcidIdentifier().getPath());
 
         OrcidBioDocument.OrcidBio orcidBio = profile.getOrcidBio();
         PersonalDetailsDocument.PersonalDetails personalDetails = orcidBio.getPersonalDetails();
-        AffiliationsDocument.Affiliations affiliations = orcidBio.getAffiliations();
 
-
-        GivenNamesDocument.GivenNames givenNames = personalDetails.getGivenNames();
-
-        orcidAuthor.setGivenNames(removeFragments(givenNames.xmlText()));
+        orcidAuthor.setGivenNames(personalDetails.getGivenNames());
         if (personalDetails.getFamilyName() != null) {
-            orcidAuthor.setFamilyName(removeFragments(personalDetails.getFamilyName().xmlText()));
-        }
-
-
-        if (affiliations != null) {
-            AffiliationDocument.Affiliation[] affiliationArray = affiliations.getAffiliationArray();
-            if (affiliationArray.length > 0)
-                orcidAuthor.setCurrentPrimaryInstitution(removeFragments(affiliationArray[0].getAffiliationName().xmlText()));
+            orcidAuthor.setFamilyName(personalDetails.getFamilyName());
         }
 
 
@@ -110,8 +102,4 @@ public class OrcidSearchResultHandler {
         return orcidAuthor;
     }
 
-    private String removeFragments(String text) {
-        return text.substring(14, text.length() - 15);
-
-    }
 }

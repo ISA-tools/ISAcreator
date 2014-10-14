@@ -58,12 +58,12 @@ public class AcceptedOntologies {
     private static Map<String, String> ontologySourceToIDCache;
 
     static {
-        updateAcceptedOntologies();
-
-        System.out.println("LOADED ONTOLOGIES...");
-        for(String ontology_id : acceptedOntologies.keySet()) {
-            System.out.println(ontology_id);
+        try {
+            updateAcceptedOntologies();
+        } catch (Exception e) {
+            System.err.println("Unable to get ontologies. Please check the internet connection.\n" + e.getMessage());
         }
+
     }
 
     public static void updateAcceptedOntologies() {
