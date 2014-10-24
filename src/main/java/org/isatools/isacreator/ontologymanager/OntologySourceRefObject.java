@@ -64,7 +64,7 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
         super();
     }
 
-    public OntologySourceRefObject(String sourceName){
+    public OntologySourceRefObject(String sourceName) {
         super();
         fieldValues.put(SOURCE_NAME, sourceName);
         completeFields();
@@ -86,8 +86,8 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
         completeFields();
     }
 
-    public void completeFields(){
-        if (getSourceName()==null)
+    public void completeFields() {
+        if (getSourceName() == null)
             return;
 
         if (!getSourceName().equals("") && getSourceFile().startsWith(BIOPORTAL_URL) && getSourceFile().endsWith(getSourceName()) && !getSourceVersion().equals("") && !getSourceDescription().equals(""))
@@ -97,28 +97,28 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
 
         Ontology associatedOntologySource = AcceptedOntologies.getAcceptedOntologies().get(ontologyId);
 
-        if (associatedOntologySource==null)
+        if (associatedOntologySource == null)
             return;
 
         setSourceFile(associatedOntologySource.getOntologyID());
-        setSourceVersion( associatedOntologySource.getOntologyVersion());
+        setSourceVersion(associatedOntologySource.getOntologyVersion());
         setSourceDescription(associatedOntologySource.getOntologyDisplayLabel());
     }
 
     public String getSourceDescription() {
-        return fieldValues.get(SOURCE_DESCRIPTION);
+        return fieldValues.get(SOURCE_DESCRIPTION) == null ? "" : fieldValues.get(SOURCE_DESCRIPTION);
     }
 
     public String getSourceFile() {
-        return fieldValues.get(SOURCE_FILE);
+        return fieldValues.get(SOURCE_FILE) == null ? "" : fieldValues.get(SOURCE_FILE);
     }
 
     public String getSourceName() {
-        return fieldValues.get(SOURCE_NAME);
+        return fieldValues.get(SOURCE_NAME) == null ? "" : fieldValues.get(SOURCE_NAME);
     }
 
     public String getSourceVersion() {
-        return fieldValues.get(SOURCE_VERSION);
+        return fieldValues.get(SOURCE_VERSION) == null ? "" : fieldValues.get(SOURCE_VERSION);
     }
 
     public void setSourceName(String sourceName) {
@@ -149,7 +149,7 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
         }
     }
 
-    public boolean equals(Object object){
+    public boolean equals(Object object) {
         if (object == null)
             return false;
         if (object == this)
@@ -159,34 +159,34 @@ public class OntologySourceRefObject extends ISASection implements Serializable,
 
         OntologySourceRefObject sourceRefObject = (OntologySourceRefObject) object;
         boolean result = true;
-        if (getSourceName()!=null && sourceRefObject.getSourceName()!=null)
+        if (getSourceName() != null && sourceRefObject.getSourceName() != null)
             result = result && (getSourceName().equals(sourceRefObject.getSourceName()));
 
-        if (getSourceDescription()!=null && sourceRefObject.getSourceDescription()!=null)
+        if (getSourceDescription() != null && sourceRefObject.getSourceDescription() != null)
             result = result && getSourceDescription().equals(sourceRefObject.getSourceDescription());
 
-        if (getSourceFile()!=null && sourceRefObject.getSourceFile()!=null)
-            result = result &&  getSourceFile().equals(sourceRefObject.getSourceFile());
+        if (getSourceFile() != null && sourceRefObject.getSourceFile() != null)
+            result = result && getSourceFile().equals(sourceRefObject.getSourceFile());
 
-         if (getSourceVersion()!=null && sourceRefObject.getSourceFile()!=null)
-             result = result && getSourceVersion().equals(sourceRefObject.getSourceVersion());
+        if (getSourceVersion() != null && sourceRefObject.getSourceFile() != null)
+            result = result && getSourceVersion().equals(sourceRefObject.getSourceVersion());
 
         return result;
     }
 
-    public int hashCode(){
+    public int hashCode() {
         int result = 0;
 
-        if (getSourceName()!=null)
+        if (getSourceName() != null)
             result += getSourceName().hashCode();
 
-        if (getSourceDescription()!=null)
+        if (getSourceDescription() != null)
             result += getSourceDescription().hashCode();
 
-        if (getSourceFile()!=null)
+        if (getSourceFile() != null)
             result += getSourceFile().hashCode();
 
-        if (getSourceVersion()!=null)
+        if (getSourceVersion() != null)
             result += getSourceVersion().hashCode();
 
         return result;
