@@ -127,7 +127,6 @@ Comment[Supplementary Information File Name]	""
 Comment[Supplementary Information File Type]	""
 Comment[Supplementary Information File URI]	""
 Comment[Subject Keywords]	""
-Comment[Supplementary File URI]	""
 Comment[Study Grant Number]	""
 Comment[Study Funding Agency]	""
 STUDY DESIGN DESCRIPTORS
