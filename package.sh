@@ -47,14 +47,14 @@ mkdir src/main/resources/Configurations
 
 if [ "$PACKAGE_TYPE" = "scidata"  ]
 then
-    CONFIGURATION=isaconfig-Scientific-Data-v1.1.zip
-fi
-
-if [ "$PACKAGE_TYPE" = "mixs"  ]
-then
-    CONFIGURATION=isaconfig-mixs-v4.zip
+    CONFIGURATION=isaconfig-Scientific-Data-v1.2.zip
 else
-    CONFIGURATION=isaconfig-default_v2014-01-16.zip
+     if [ "$PACKAGE_TYPE" = "mixs"  ]
+     then
+        CONFIGURATION=isaconfig-mixs-v4.zip
+    else
+        CONFIGURATION=isaconfig-default_v2014-01-16.zip
+    fi
 fi
 
 echo "Configuration file: " $CONFIGURATION
@@ -140,4 +140,3 @@ mv ISAcreator.app ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 cp -r Configurations ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 cp -r ../ProgramData ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 cp -r "isatab files" ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
-
