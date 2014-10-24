@@ -46,7 +46,7 @@
             <description><![CDATA[(to be added by Scientific Data) Term(s) describing the type of supplementary file(s) appended to the DD manuscript in the Scientific Data manuscript tracking system.]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
-        <field header="Comment[Supplementary File URI]" data-type="String" is-file-field="false"
+        <field header="Comment[Supplementary Information File URI]" data-type="String" is-file-field="false"
                is-multiple-value="false" is-required="false" is-hidden="false"
                is-forced-ontology="false" section="STUDY">
             <description><![CDATA[(to be added by Scientific Data) A URI pointing to the location of the Supplementary Information file on the Scientific Data website.]]></description>
