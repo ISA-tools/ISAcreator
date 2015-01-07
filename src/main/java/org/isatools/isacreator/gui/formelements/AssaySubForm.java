@@ -57,7 +57,7 @@ import java.util.Map;
  *
  * @author Eamonn Maguire
  */
-public class AssaySubForm extends SubForm implements Serializable {
+public class AssaySubForm extends HistoricalSelectionEnabledSubForm implements Serializable {
 
     public AssaySubForm(String title, FieldTypes fieldType,
                         List<SubFormField> fields, int initialNoFields, int width,
@@ -70,88 +70,6 @@ public class AssaySubForm extends SubForm implements Serializable {
                         int height, DataEntryEnvironment dep) {
         super(title, fieldType, fields, initialNoFields, width, height, dep);
 
-    }
-
-    /**
-     * Add a column to the subform
-     *
-     * @return Boolean - true if added, false otherwise
-     */
-    public boolean doAddColumn(DefaultTableModel model, TableColumn col) {
-
-        if (fieldType == FieldTypes.ASSAY && (dataEntryForm != null)) {
-            // if adding the assay was successful, then stop the column from being edited
-            int colToCheck = defaultTableModel.getColumnCount() - 1;
-
-            Map<String, String> record = getRecord(colToCheck);
-
-            Assay tmpAssay = new Assay();
-            tmpAssay.addToFields(record);
-
-            if (defaultTableModel.getValueAt(1, colToCheck) == null ||
-                    defaultTableModel.getValueAt(1, colToCheck).toString().equals(AutoFilterComboCellEditor.BLANK_VALUE)) {
-                defaultTableModel.setValueAt("", 1, colToCheck);
-            }
-
-            if (!tmpAssay.getMeasurementEndpoint().equals("") &&
-                    !tmpAssay.getAssayReference().equals("")) {
-
-                String assayName = tmpAssay.getAssayReference();
-
-                if (!assayName.startsWith("a_")) {
-                    assayName = "a_" + assayName;
-                }
-
-                String extension = assayName.substring(assayName.lastIndexOf(
-                        ".") + 1);
-
-                if (!extension.equals("txt")) {
-                    assayName += ".txt";
-                }
-
-                assayName = assayName.replaceAll("\\s+","_");
-                tmpAssay.setAssayReference(assayName);
-
-                if (dataEntryForm.getDataEntryEnvironment()
-                        .addAssay(tmpAssay.getMeasurementEndpoint(),
-                                tmpAssay.getTechnologyType(),
-                                tmpAssay.getAssayPlatform(),
-                                tmpAssay.getAssayReference()) != null) {
-                    // set previous column to be uneditable
-                    uneditableRecords.add(defaultTableModel.getColumnCount() - 1);
-                    scrollTable.addColumn(col);
-                    model.addColumn(fieldType);
-                    model.fireTableStructureChanged();
-
-                    reformPreviousContent();
-
-                    return true;
-                }
-
-            } else {
-
-                JOptionPane optionPane = new JOptionPane(
-                        "Problem occurred when attempting to add an Assay... " +
-                                "\n All fields for the assay definition are not complete!",
-                        JOptionPane.ERROR_MESSAGE);
-                UIHelper.applyOptionPaneBackground(optionPane, UIHelper.BG_COLOR);
-                optionPane.addPropertyChangeListener(new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent event) {
-                        if (event.getPropertyName()
-                                .equals(JOptionPane.VALUE_PROPERTY)) {
-                            dataEntryForm.getDataEntryEnvironment().getParentFrame().hideSheet();
-                        }
-                    }
-                });
-                dataEntryForm.getDataEntryEnvironment().getParentFrame()
-                        .showJDialogAsSheet(optionPane.createDialog(this,
-                                "All fields not completed"));
-            }
-
-
-        }
-
-        return false;
     }
 
     public void reformPreviousContent() {
