@@ -37,7 +37,6 @@
 
 package org.isatools.isacreator.publicationlocator;
 
-import org.isatools.isacreator.archiveoutput.ArchiveOutputWindow;
 import org.isatools.isacreator.common.UIHelper;
 import org.isatools.isacreator.common.button.ButtonType;
 import org.isatools.isacreator.common.button.FlatButton;
@@ -89,6 +88,7 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
     private SearchResultPane resultPane = new SearchResultPane();
 
     private JLabel pubmedButton, doiButton, resultButton;
+    private JButton export = null;
 
     private int selectedSection = PUBMED_SEARCH;
     private DataEntryForm parent;
@@ -136,7 +136,8 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
         });
 
 
-        JButton export = new FlatButton(ButtonType.GREEN, "Select Publication");
+        export = new FlatButton(ButtonType.GREEN, "Select Publication");
+        export.setEnabled(false);
         export.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 firePropertyChange("selectedPublication", "OLD_VALUE",
@@ -344,6 +345,7 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
                             selectedSection = RESULT;
                             swapContainers(resultPane);
                             resultButton.setIcon(resultOver);
+                            export.setEnabled(true);
                             break;
                         }
                     }

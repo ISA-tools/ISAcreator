@@ -54,7 +54,7 @@ import java.util.Map;
 public class CiteExploreClient {
 
 
-    @WebServiceRef(wsdlLocation = "http://www.ebi.ac.uk/webservices/citexplore/v1.0/service?wsdl")
+    @WebServiceRef(wsdlLocation = "http://www.ebi.ac.uk/europepmc/webservices/soap?wsdl")
     private WSCitationImplService service;
 
     public CiteExploreClient() {
@@ -95,7 +95,7 @@ public class CiteExploreClient {
     public List<CiteExploreResult> performQuery(SearchOption searchOption, String fullQueryString) throws QueryException_Exception, NoPublicationFoundException {
         WSCitationImpl port = service.getWSCitationImplPort();
 
-        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString, "metadata", "core", 0, false, "isatools@googlgroups.com");
+        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString, "core", 0, false, "isatools@googlgroups.com");
         ResultList resultList = responseWrapper.getResultList();
         if (resultList.getResult().size() > 0) {
             return createResultList(resultList);
@@ -110,6 +110,9 @@ public class CiteExploreClient {
         List<Result> resultBeans = searchResults.getResult();
 
         for (Result result : resultBeans) {
+            if (result.getTitle()==null)
+                continue;
+
             CiteExploreResult citexploreRecord = new CiteExploreResult(result.getId(), result.getDOI(), result.getAuthorString(),
                     result.getTitle().replaceAll("\\[|\\]", ""), result.getAbstractText(), result.getAffiliation());
 
