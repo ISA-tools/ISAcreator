@@ -75,7 +75,7 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
     }
 
     private ENASubmissionUI() {
-        ResourceInjector.get("submission-package.style").inject(true, this);
+        ResourceInjector.get("submission-package.style").inject(true, new Object[]{this});
     }
 
     public void createGUI() {
