@@ -7,8 +7,6 @@ import org.isatools.isacreator.ontologymanager.bioportal.io.AcceptedOntologies;
 import org.isatools.isacreator.ontologymanager.bioportal.jsonresulthandlers.BioPortalSearchResultHandler;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -151,10 +149,11 @@ public class BioPortal4Client implements OntologyService {
     }
 
     private String correctTermForHTTPTransport(String term) {
-        try {
-            return URLEncoder.encode(term, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return term;
-        }
+        return term;
+//        try {
+//            return URLEncoder.encode(term, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            return term;
+//        }
     }
 }

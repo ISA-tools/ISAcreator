@@ -22,6 +22,8 @@ public class BioPortalClient4Test {
     private String ontologyId = "http://data.bioontology.org/ontologies/EFO";
     private String obiOntologyId = "http://data.bioontology.org/ontologies/OBI";
 
+    private String testSearchTerm2 = "homo sapiens";
+
 
     @Test
     public void exactSearchTest(){
@@ -36,6 +38,7 @@ public class BioPortalClient4Test {
         System.out.println("term URI ="+term.getOntologyTermURI());
 
     }
+
 
     @Test
     public void getTermTest(){
@@ -65,6 +68,9 @@ public class BioPortalClient4Test {
 
     @Test
     public void getTermsByPartialNameFromSource2Test() {
+
+        System.out.println("_____Testing getTermsByPartialNameFromSource2Test(" + testSearchTerm +")____");
+
         long startTime = System.currentTimeMillis();
         Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm, "all", false);
         System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do that query.");
@@ -82,10 +88,33 @@ public class BioPortalClient4Test {
 
     @Test
     public void getTermsByPartialNameFromSource3Test() {
+
+        System.out.println("_____Testing getTermsByPartialNameFromSource3Test(" + "cy5" +")____");
         long startTime = System.currentTimeMillis();
 
         Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource("cy5", "all", false);
         System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do that query.");
+
+        for (OntologySourceRefObject source : result.keySet()) {
+            System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
+
+            for (OntologyTerm term : result.get(source)) {
+                System.out.println("\t" + term.getOntologyTermName() + " (" + term.getOntologyTermAccession() + ")");
+            }
+        }
+
+    }
+
+
+    @Test
+    public void getTermsByPartialNameFromSource4Test() {
+
+        System.out.println("_____Testing getTermsByPartialNameFromSource4Test(" + testSearchTerm2 +")____");
+
+        long startTime = System.currentTimeMillis();
+        Map<OntologySourceRefObject, List<OntologyTerm>> result = client.getTermsByPartialNameFromSource(testSearchTerm2, "all", false);
+        System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to do that query.");
+
 
         for (OntologySourceRefObject source : result.keySet()) {
             System.out.println(source.getSourceName() + " (" + source.getSourceVersion() + ")");
