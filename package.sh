@@ -53,7 +53,7 @@ else
      then
         CONFIGURATION=isaconfig-mixs-v4.zip
     else
-        CONFIGURATION=isaconfig-default_v2014-01-16.zip
+        CONFIGURATION=isaconfig-default_v2015-07-02.zip
     fi
 fi
 

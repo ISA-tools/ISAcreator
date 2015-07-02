@@ -1,9 +1,6 @@
 package org.isatools.isacreator.io;
 
 import org.isatools.isacreator.configuration.MappingObject;
-import org.isatools.isacreator.managers.ApplicationManager;
-import org.isatools.isacreator.gui.ISAcreator;
-import org.isatools.isacreator.gui.modeselection.Mode;
 import org.isatools.isacreator.io.exportisa.ISAFileOutput;
 import org.isatools.isacreator.io.exportisa.OutputISAFiles;
 import org.isatools.isacreator.managers.ConfigurationManager;
@@ -12,7 +9,6 @@ import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
 import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
-import org.isatools.isacreator.settings.SettingsUtil;
 import org.isatools.isacreator.spreadsheet.model.TableReferenceObject;
 import org.isatools.isacreator.utils.PropertyFileIO;
 import org.junit.Test;
@@ -28,7 +24,7 @@ import java.io.IOException;
  *         Date: 30/06/2012
  *         Time: 12:04
  */
-public class ProgrammaticISATabCreationTest {
+public class ProgrammaticISATabCreationTest implements CommonTestIO {
 
     @Test
     public void createISATabProgrammatically1Test() {
@@ -44,7 +40,7 @@ public class ProgrammaticISATabCreationTest {
             }
         }
 
-        ConfigurationManager.loadConfigurations(baseDir + "/src/main/resources/Configurations/isaconfig-default_v2014-01-16/");
+        ConfigurationManager.loadConfigurations(baseDir + DEFAULT_CONFIG_DIR);
         Investigation investigation = new Investigation("gis-investigation", "GIS investigation test");
 
         investigation.addContact(new InvestigationContact("maguire", "eamonn", "J", "eamonnmag@gmail.com", "", "", "", "Oxford University", ""));
@@ -85,7 +81,7 @@ public class ProgrammaticISATabCreationTest {
         }
 
         ISAcreatorProperties.setProperties(PropertyFileIO.DEFAULT_CONFIGS_SETTINGS_PROPERTIES);
-        ConfigurationManager.loadConfigurations(baseDir + "/src/main/resources/Configurations/isaconfig-default_v2014-01-16/");
+        ConfigurationManager.loadConfigurations(baseDir + DEFAULT_CONFIG_DIR);
         Investigation investigation = new Investigation("gis-investigation", "GIS investigation test");
 
         investigation.addContact(new InvestigationContact("maguire", "eamonn", "J", "eamonnmag@gmail.com", "", "", "", "Oxford University", ""));

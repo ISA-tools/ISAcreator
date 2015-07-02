@@ -9,5 +9,5 @@ package org.isatools.isacreator.io;
  */
 public interface CommonTestIO {
 
-    public static final String DEFAULT_CONFIG_DIR = "/src/main/resources/Configurations/isaconfig-default_v2014-01-16/";
+    public static final String DEFAULT_CONFIG_DIR = "/src/main/resources/Configurations/isaconfig-default_v2015-07-02/";
 }
