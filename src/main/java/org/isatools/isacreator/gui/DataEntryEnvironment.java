@@ -74,11 +74,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
@@ -434,6 +433,17 @@ public class DataEntryEnvironment extends AbstractDataEntryEnvironment implement
         overviewTree.setShowsRootHandles(false);
         overviewTree.setCellRenderer(new ISAOverviewTreeRenderer());
         overviewTree.addTreeSelectionListener(this);
+        overviewTree.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int x = (int) e.getPoint().getX();
+                int y = (int) e.getPoint().getY();
+                TreePath path = overviewTree.getPathForLocation(x, y);
+                if (path != null) {
+                    overviewTree.setToolTipText(path.getLastPathComponent().toString());
+                }
+            }
+        });
 
         BasicTreeUI ui = new BasicTreeUI() {
             public Icon getCollapsedIcon() {
