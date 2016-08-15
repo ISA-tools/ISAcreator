@@ -303,7 +303,10 @@ public class BioPortalSearchResultHandler {
 
     private OntologyTerm createOntologyTerm(JSONObject annotationItem) {
 
-        OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.get("prefLabel").toString(), annotationItem.get("@id").toString(), annotationItem.get("@id").toString(), null);
+        OntologyTerm ontologyTerm = new OntologyTerm(annotationItem.get("prefLabel") !=null? annotationItem.get("prefLabel").toString(): "",
+                                                    annotationItem.get("@id") != null ? annotationItem.get("@id").toString(): "",
+                                                    annotationItem.get("@id") !=null ? annotationItem.get("@id").toString(): "",
+                                                    null);
         ontologyTerm.addToComments("Service Provider", OntologyManager.BIO_PORTAL);
         extractDefinitionFromOntologyTerm(annotationItem, ontologyTerm);
         extractSynonymsFromOntologyTerm(annotationItem, ontologyTerm);
