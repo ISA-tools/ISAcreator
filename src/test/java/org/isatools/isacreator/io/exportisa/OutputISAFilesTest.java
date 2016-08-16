@@ -45,9 +45,7 @@ public class OutputISAFilesTest implements CommonTestIO {
 
         ISAcreatorProperties.setProperties(PropertyFileIO.DEFAULT_CONFIGS_SETTINGS_PROPERTIES);
 
-
         configDir = baseDir + DEFAULT_CONFIG_DIR;
-
         importer = new ISAtabFilesImporter(configDir);
         exporter = new OutputISAFiles();
         isatabParentDir = baseDir + "/src/test/resources/test-data/BII-I-1";
