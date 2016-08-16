@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.7.8</version>
+    <version>1.7.9</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -78,7 +78,6 @@
                     <executable>apt</executable>
                     <fork>true</fork>
                     <debug>true</debug>
-
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
                 </configuration>
@@ -173,9 +172,9 @@
                 </executions>
                 <inherited>true</inherited>
                 <configuration>
-                    <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                    <schemaDirectory>${project.basedir}/src/main/resources/xsd</schemaDirectory>
                     <sourceGenerationDirectory>
-                        target/generated/xmlbeans
+                        ${project.basedir}/target/generated/xmlbeans
                     </sourceGenerationDirectory>
                 </configuration>
             </plugin>
@@ -266,7 +265,7 @@
         <resources>
             <!-- defines the files to be filtered -->
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*.properties</include>
@@ -274,7 +273,7 @@
             </resource>
             <!--   defines the files to copy unaltered  -->
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
                     <exclude>**/*.properties</exclude>
