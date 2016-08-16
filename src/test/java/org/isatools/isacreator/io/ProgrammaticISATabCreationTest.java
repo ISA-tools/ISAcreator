@@ -29,8 +29,7 @@ public class ProgrammaticISATabCreationTest implements CommonTestIO {
     @Test
     public void createISATabProgrammatically1Test() {
 
-    	String baseDir = System.getProperty("basedir");
-
+    	String baseDir = System.getProperty("project.basedir");
         if ( baseDir == null )
         {
             try{
@@ -70,7 +69,6 @@ public class ProgrammaticISATabCreationTest implements CommonTestIO {
     public void createISATabProgrammatically2Test() {
 
         String baseDir = System.getProperty("basedir");
-
         if ( baseDir == null )
         {
             try{

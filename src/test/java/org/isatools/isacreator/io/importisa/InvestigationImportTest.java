@@ -58,9 +58,17 @@ public class InvestigationImportTest implements CommonTestIO {
     @Test
     public void loadInvestigationFile() {
 
-        String baseDir = System.getProperty("basedir");
-        File testInvestigationFile = new File(baseDir + "/target/test-classes/test-data/BII-I-1/i_investigation.txt");
+        String baseDir = System.getProperty("project.basedir");
+        if ( baseDir == null )
+        {
+            try{
+                baseDir = new File( "." ).getCanonicalPath();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
 
+        File testInvestigationFile = new File(baseDir + "/target/test-classes/test-data/BII-I-1/i_investigation.txt");
 
         ConfigurationManager.loadConfigurations(baseDir + DEFAULT_CONFIG_DIR);
 

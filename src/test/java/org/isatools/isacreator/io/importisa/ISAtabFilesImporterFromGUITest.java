@@ -9,6 +9,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Created by ISA team
  *
@@ -26,7 +29,15 @@ public class ISAtabFilesImporterFromGUITest implements CommonTestIO {
     @Before
     public void setUp() {
         ISAcreatorGUIProperties.setProperties();
-        baseDir = System.getProperty("basedir");
+        baseDir = System.getProperty("project.basedir");
+        if ( baseDir == null )
+        {
+            try{
+                baseDir = new File( "." ).getCanonicalPath();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
 
         String configDir = baseDir + DEFAULT_CONFIG_DIR;
 

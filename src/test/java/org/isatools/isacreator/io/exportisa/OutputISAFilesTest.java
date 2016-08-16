@@ -33,8 +33,7 @@ public class OutputISAFilesTest implements CommonTestIO {
 
     @Before
     public void setUp() {
-        String baseDir = System.getProperty("basedir");
-        ISAcreatorProperties.setProperties(PropertyFileIO.DEFAULT_CONFIGS_SETTINGS_PROPERTIES);
+        String baseDir = System.getProperty("project.basedir");
         if ( baseDir == null )
         {
             try{
@@ -43,6 +42,9 @@ public class OutputISAFilesTest implements CommonTestIO {
                 e.printStackTrace();
             }
         }
+
+        ISAcreatorProperties.setProperties(PropertyFileIO.DEFAULT_CONFIGS_SETTINGS_PROPERTIES);
+
 
         configDir = baseDir + DEFAULT_CONFIG_DIR;
 
