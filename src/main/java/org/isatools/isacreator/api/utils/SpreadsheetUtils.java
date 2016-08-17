@@ -414,16 +414,22 @@ public class SpreadsheetUtils {
         for (Object[] row : content) {
             for (int columnIndex = 0; columnIndex < row.length; columnIndex++) {
 
-                if (row[columnIndex].toString().contains(":")){
-                    int colonindex = row[columnIndex].toString().indexOf(":")+1;
-                    output.append("\"" + row[columnIndex].toString().substring(colonindex) + "\"");
-                }else {
-                    output.append("\"" + row[columnIndex].toString() + "\"");
-                }
-                output.append(columnIndex != row.length - 1 ? separator : "");
-
                 if (columnIndex < content[0].length) {
                     FieldObject field = tableReferenceObject.getFieldByName(content[0][columnIndex].toString());
+
+                    if (row[columnIndex].toString().contains(":")){
+                        int colonindex = row[columnIndex].toString().indexOf(":")+1;
+                        //get substring, only if it is an ontology term
+                        if (field!=null & field.getDatatype().equals(DataTypes.ONTOLOGY_TERM))
+                            output.append("\"" + row[columnIndex].toString().substring(colonindex) + "\"");
+                        else{
+                            output.append("\"" + row[columnIndex].toString() + "\"");
+                        }
+                    }else {
+                        output.append("\"" + row[columnIndex].toString() + "\"");
+                    }
+                    output.append(columnIndex != row.length - 1 ? separator : "");
+
 
                     if (field != null) {
                         if (row_number == 0) {
@@ -469,7 +475,7 @@ public class SpreadsheetUtils {
                             }
                         } //else
                     } //field not null
-                }
+                }//columnIndex is greater than or equal that content[0].length
             }
             row_number++;
         }

@@ -36,6 +36,7 @@ Investigation Person Roles	"corresponding author"	"author"	"author"
 Investigation Person Roles Term Accession Number	""	""	""
 Investigation Person Roles Term Source REF	""	""	""
 Comment[Investigation Person ORCID]	""	""	""
+Comment[Investigation Person REF]	""	""	""
 STUDY
 Study Identifier	"BII-S-1"
 Study File Name	"s_BII-S-1.txt"
