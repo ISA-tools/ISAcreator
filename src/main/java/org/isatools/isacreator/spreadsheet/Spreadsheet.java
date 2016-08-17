@@ -246,8 +246,7 @@ public class Spreadsheet extends JComponent implements
 
         createSpreadsheetModel();
         populateSpreadsheetWithContent();
-        addOntologyTermsToUserHistory();
-
+        //addOntologyTermsToUserHistory();
 
         // assign copy/paste listener
         new CopyPasteAdaptor(this);
@@ -268,10 +267,10 @@ public class Spreadsheet extends JComponent implements
         addUndoableEditListener(undoManager);
     }
 
-    private void addOntologyTermsToUserHistory() {
-        Map<String, OntologyTerm> referencedOntologyTerms = tableReferenceObject.getReferencedOntologyTerms();
-        OntologyManager.addToOntologyTerms(referencedOntologyTerms);
-    }
+//    private void addOntologyTermsToUserHistory() {
+//        Map<String, OntologyTerm> referencedOntologyTerms = tableReferenceObject.getReferencedOntologyTerms();
+//        OntologyManager.addToOntologyTerms(referencedOntologyTerms);
+//    }
 
     private void populateSpreadsheetWithContent() {
         if (!tableReferenceObject.getReferenceData().getData().isEmpty()) {

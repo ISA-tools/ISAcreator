@@ -26,9 +26,7 @@ import uk.ac.ebi.utils.collections.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created Created by the ISA team
@@ -261,7 +259,6 @@ public abstract class ISAtabImporter {
 
                     if (builtReference != null) {
                         study.setStudySamples(new Assay(study.getStudySampleFileIdentifier(), builtReference));
-                        OntologyManager.addToOntologyTerms(builtReference.getReferencedOntologyTerms());
                     }
                 } catch (MalformedInvestigationException mie) {
                     mie.printStackTrace();
@@ -310,7 +307,6 @@ public abstract class ISAtabImporter {
                                 assay.getAssayReference(), assayTableReferenceObject);
                         if (builtReference != null) {
                             assay.setTableReferenceObject(builtReference);
-                            OntologyManager.addToOntologyTerms(builtReference.getReferencedOntologyTerms());
                         }
                     } catch (IOException e) {
                         messages.add(new ErrorMessage(ErrorLevel.ERROR, e.getMessage()));

@@ -80,7 +80,6 @@ public class TableReferenceObject implements Serializable {
     private Map<Integer, FieldObject> preprocessedTableFields;
     private Vector<String> preDefinedHeaders;
 
-    private Map<String, OntologyTerm> referencedOntologyTerms;
     private Map<String, FieldObject> missingFields;
 
     public TableReferenceObject(TableConfiguration tableConfig) {
@@ -88,7 +87,6 @@ public class TableReferenceObject implements Serializable {
         this.tableName = tableConfig.getTableName();
 
         missingFields = new HashMap<String, FieldObject>();
-        referencedOntologyTerms = new HashMap<String, OntologyTerm>();
 
         referenceData = new ReferenceData();
 
@@ -268,7 +266,6 @@ public class TableReferenceObject implements Serializable {
 
     public TableReferenceObject(String tableName) {
         this.tableName = tableName;
-        referencedOntologyTerms = new HashMap<String, OntologyTerm>();
     }
 
     public boolean acceptsFileLocations(String colName) {
@@ -327,9 +324,10 @@ public class TableReferenceObject implements Serializable {
 
                 String prevVal = ontologyTerm.getShortForm(); //the uniqueID is source + ":" + term
 
-                if (!prevVal.equals("") && !referencedOntologyTerms.containsKey(prevVal)) {
-                    referencedOntologyTerms.put(prevVal, ontologyTerm);
+                if (!prevVal.equals("") && !OntologyManager.containsOntologyTerm(prevVal)) {
+                    OntologyManager.addToOntologyTerms(prevVal, ontologyTerm);
                 }
+
 
             }
 
@@ -354,16 +352,15 @@ public class TableReferenceObject implements Serializable {
                             String accession = s.trim();
 
                             OntologyTerm ot = null;
-                            if (!referencedOntologyTerms.containsKey(prevVal)) {
+                            if (!OntologyManager.containsOntologyTerm(prevVal)) {
                                 if (accession!=null && accession.contains("http://"))
                                     ot = new OntologyTerm(term, accession, accession, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
                                 else
                                     ot = new OntologyTerm(term, accession, null, OntologyManager.getOntologySourceReferenceObjectByAbbreviation(source));
-                                referencedOntologyTerms.put(prevVal, ot);
+                                OntologyManager.addToOntologyTerms(prevVal, ot);
 
                             } else {
-                                ot = referencedOntologyTerms.get(prevVal);
-
+                                ot = OntologyManager.getOntologyTerm(prevVal);
                             }
                             if (!(ISAcreatorProperties.getOntologyTermURIProperty() && ot.getOntologyTermURI()!=null && !ot.getOntologyTermURI().equals("")))
                                 rowDataModified.set(prevValLoc, term);
@@ -449,10 +446,6 @@ public class TableReferenceObject implements Serializable {
             return field.getDefaultVal() == null ? "" : field.getDefaultVal();
         }
         return "";
-    }
-
-    public Map<String, OntologyTerm> getReferencedOntologyTerms() {
-        return referencedOntologyTerms;
     }
 
     public FieldObject getFieldByName(String name) {

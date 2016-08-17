@@ -414,7 +414,12 @@ public class SpreadsheetUtils {
         for (Object[] row : content) {
             for (int columnIndex = 0; columnIndex < row.length; columnIndex++) {
 
-                output.append("\""+row[columnIndex].toString()+"\"");
+                if (row[columnIndex].toString().contains(":")){
+                    int colonindex = row[columnIndex].toString().indexOf(":")+1;
+                    output.append("\"" + row[columnIndex].toString().substring(colonindex) + "\"");
+                }else {
+                    output.append("\"" + row[columnIndex].toString() + "\"");
+                }
                 output.append(columnIndex != row.length - 1 ? separator : "");
 
                 if (columnIndex < content[0].length) {
@@ -424,6 +429,8 @@ public class SpreadsheetUtils {
                         if (row_number == 0) {
                             //add columns for an Ontology Term type
                             if (field.getDatatype().equals(DataTypes.ONTOLOGY_TERM)) {
+                                if (columnIndex == row.length-1)
+                                    output.append(separator);
                                 output.append("\"Term Source REF\"" + separator);
                                 output.append("\"Term Accession Number\"");
                                 output.append(columnIndex != row.length - 1 ? separator : newline);
@@ -453,6 +460,8 @@ public class SpreadsheetUtils {
                                 if (oo!=null && source.equals(""))
                                     source = oo.getOntologySource();
 
+                                if (columnIndex == row.length-1)
+                                    output.append(separator);
                                 output.append("\""+source + "\""+ separator);
                                 output.append("\""+ termAccession+ "\"" );
                                 output.append(columnIndex != row.length - 1 ? separator : newline);

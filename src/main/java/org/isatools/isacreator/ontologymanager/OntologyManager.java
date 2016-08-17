@@ -92,6 +92,15 @@ public class OntologyManager {
     }
 
     /**
+     * Given a key (source:accession), check if the manager contains the corresponding ontology term.
+     * @param key
+     * @return
+     */
+    public static boolean containsOntologyTerm(String key){
+        return ontologyTerms.containsKey(key);
+    }
+
+    /**
      *
      * @param label
      * @param term
