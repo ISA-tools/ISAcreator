@@ -22,7 +22,7 @@ To run ISAcreator locally:
 
 1. Clone the code to your machine. You may clone from the primary repository at ISA-tools/ISAcreator, or from your own fork.
 2. Compile the code (`./compile.sh`). This script runs the maven command (`mvn assembly:assembly -Dmaven.test.skip=true -Pbuild`) after downloading the required configuration (without which the tests will fail) and example ISAtab files. The build profile automatically sets some system variables, such as version, from information held within the pom.
-3. Run the code (`java -cp target/ISAcreator-<version number>-jar-with-dependencies.jar org.isatools.isacreator.launch.ISAcreatorApplication`)
+3. Run the code (`java -cp target/ISAcreator-<version number>.jar org.isatools.isacreator.launch.ISAcreatorApplication`)
 
 ### Contributing
 
