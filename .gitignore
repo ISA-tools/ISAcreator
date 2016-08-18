@@ -71,3 +71,9 @@ META-INF/
 Icon?
 ehthumbs.db
 Thumbs.db
+
+#ISAcreator execution specific files#
+######################
+Configurations/
+isatab files/
+src/main/resources/Configurations/
