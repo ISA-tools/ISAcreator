@@ -1,7 +1,14 @@
 #### ISAcreator is a Java desktop application which allows for creation and editing of ISATab files.
 
 <p align="center">
-Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. See below for contact details and other inforamtion. 
+<i>
+Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. See below for contact details and other information. 
+</p
+</i>
+<p align="center">
+<i>
+Some of the functionality in this tool is being developed under the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API for management of ISA metadata for experimental descriptions.
+</i>
 </p>
 
 <p align="center">
