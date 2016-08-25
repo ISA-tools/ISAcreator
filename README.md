@@ -2,7 +2,7 @@
 
 <p align="center">
 <i>
-Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. See below for contact details and other information. 
+Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. This is due to lack of funds related to developing this tool further. For more information, see below for contact and documentation details. 
 </p
 </i>
 <p align="center">
