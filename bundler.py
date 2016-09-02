@@ -38,7 +38,7 @@ f.write('<dict>'\
         '<key>Java</key>'\
         '<dict>'\
         '<key>VMOptions</key>'\
-        '<string>-Xms256mm -Xmx1024mm</string>'\
+        '<string>-Xms256m -Xmx1024m</string>'\
         '<key>MainClass</key>'\
         '<string>org.isatools.isacreator.launch.ISAcreatorApplication</string>'\
         '<key>JVMVersion</key>'\
