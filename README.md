@@ -1,5 +1,18 @@
 #### ISAcreator is a Java desktop application which allows for creation and editing of ISATab files.
 
+<hr>
+<p align="center">
+<i>
+Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. This is due to lack of funds related to developing this tool further at the moment. For more information, see below for contact and documentation details. 
+</p
+</i>
+<p align="center">
+<i>
+Some of the functionality in this tool is being developed under the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API for programmatic management of ISA metadata for experimental descriptions.
+</i>
+</p>
+<hr>
+
 <p align="center">
 <img src="http://isatools.files.wordpress.com/2011/09/isacreator1.png" align="center" alt="ISAcreator"/>
 </p>
@@ -8,6 +21,7 @@
 - Tools' overview in this short paper: <http://bioinformatics.oxfordjournals.org/content/26/18/2354.full.pdf+html>
 - Issue tracking and bug reporting: <https://github.com/ISA-tools/ISAcreator/issues>
 - Mainline source code: <https://github.com/ISA-tools/ISAcreator>
+- Releases: <https://github.com/ISA-tools/ISAcreator/releases>
 - Twitter: [@isatools](http://twitter.com/isatools)
 - IRC: [irc://irc.freenode.net/#isatab](irc://irc.freenode.net/#isatab)
 - [Development blog](http://isatools.wordpress.com) 
@@ -21,8 +35,8 @@
 To run ISAcreator locally:
 
 1. Clone the code to your machine. You may clone from the primary repository at ISA-tools/ISAcreator, or from your own fork.
-2. Compile the code (`mvn assembly:assembly -Dmaven.test.skip=true -Pbuild`) - the build profile automatically sets some system variables like version etc. from information held within the pom.
-3. Run the code (`java -cp target/ISAcreator-<version number>-jar-with-dependencies.jar org.isatools.isacreator.launch.ISAcreatorApplication`)
+2. Compile the code (`./compile.sh`). This script runs the maven command (`mvn assembly:assembly -Dmaven.test.skip=true -Pbuild`) after downloading the required configuration (without which the tests will fail) and example ISAtab files. The build profile automatically sets some system variables, such as version, from information held within the pom.
+3. Run the code (`java -cp target/ISAcreator-<version number>.jar org.isatools.isacreator.launch.ISAcreatorApplication`)
 
 ### Contributing
 
