@@ -3,12 +3,12 @@
 <hr>
 <p align="center">
 <i>
-Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. This is due to lack of funds related to developing this tool further at the moment. For more information, see below for contact and documentation details. 
+Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. 
 </p
 </i>
 <p align="center">
 <i>
-Some of the functionality in this tool is being developed under the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API for programmatic management of ISA metadata for experimental descriptions.
+Given user requests and the natural evolution of the ISAtools, some of the ISAcreator functionality has been embeded under the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API for programmatic management of ISA metadata for experimental descriptions, which we are actively developing.
 </i>
 </p>
 <hr>
