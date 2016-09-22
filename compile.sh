@@ -43,6 +43,13 @@ fi
 
 curl -L -O http://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIG_FILES"
 
+mkdir Configurations
+cp $CONFIG_FILES ./Configurations
+cd Configurations
+unzip $CONFIG_FILES
+rm -f $CONFIG_FILES
+cd ..
+
 mv $CONFIG_FILES src/main/resources/Configurations/
 
 WD=$(pwd)
@@ -76,7 +83,7 @@ then
     rm -f $MIXS_DATASETS
     cd ../
 else
-    cp -r src/test/resources/test-data/* "isatab files"/
+    cp -r src/test/resources/test-data/ "isatab files"/
 fi
 
 

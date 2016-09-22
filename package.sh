@@ -68,19 +68,28 @@ fi
 
 curl -L -O http://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION"
 
+mkdir Configurations
+cp $CONFIGURATION
+cd Configurations
+unzip $CONFIGURATION
+rm -f $CONFIGURATION
+cd ..
+
+#back to project folder
 
 cp $CONFIGURATION src/main/resources/Configurations/
 
+#project folder
 WD=$(pwd)
 
 pwd
 cd src/main/resources/Configurations/
 unzip $CONFIGURATION
-
 rm -f $CONFIGURATION
 pwd
+
 cd $WD
-echo "Changing back to target..."
+echo "Changing back to project folder..."
 pwd
 
 ##Building ISAcreator
@@ -91,7 +100,6 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
-
 mkdir target/Configurations
 cp $CONFIGURATION target/Configurations/
 rm -f $CONFIGURATION
@@ -100,9 +108,11 @@ cd target/Configurations/
 unzip $CONFIGURATION
 rm -f $CONFIGURATION
 
-# Now package up the tools
-cd ../
+cd ..
 
+#in target folder
+
+# Now package up the tools
 mkdir "isatab files"
 if [ "$PACKAGE_TYPE" = "scidata" ]
 then
@@ -120,7 +130,7 @@ then
     rm -f $MIXS_DATASETS
     cd ../
 else
-    cp -r ../"isatab files"/* "isatab files"
+     cp -r ../src/test/resources/test-data/ ./"isatab files"
 fi
 
 pwd
@@ -137,6 +147,6 @@ echo "Packaging completed successfully!"
 mkdir ISAcreator-$VERSION-dmg-folder/
 mkdir ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 mv ISAcreator.app ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
-cp -r Configurations ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
+cp -r ../src/main/resources/Configurations ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 cp -r ../ProgramData ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 cp -r "isatab files" ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
