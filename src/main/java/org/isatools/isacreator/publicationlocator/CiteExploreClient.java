@@ -95,7 +95,13 @@ public class CiteExploreClient {
     public List<CiteExploreResult> performQuery(SearchOption searchOption, String fullQueryString) throws QueryException_Exception, NoPublicationFoundException {
         WSCitationImpl port = service.getWSCitationImplPort();
 
-        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString, "core", 0, "", false, "isatools@googlgroups.com");
+        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString,
+                "core",
+                "0",
+                "0",
+                "",
+                new Boolean(false),
+                "isatools@googlgroups.com");
         ResultList resultList = responseWrapper.getResultList();
         if (resultList.getResult().size() > 0) {
             return createResultList(resultList);
