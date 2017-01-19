@@ -97,11 +97,7 @@ public class AssaySelectionUI extends JPanel implements AssaySelectionInterface 
 
     public void createGUI() {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(750, 510));
-
-        // need to create a gui with two panels on the left hand side for selection of the
-        // measurement and technology and one panel on the right hand side showing which ontologies
-        // have been selected!
+        setSize(new Dimension(400, 500));
         add(createAssaySelectionUtil(), BorderLayout.CENTER);
         add(createSelectedAssaysDisplay(), BorderLayout.SOUTH);
     }
