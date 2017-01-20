@@ -670,7 +670,7 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         contact.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI("http://isa-tools.org/support.html"));
+                    Desktop.getDesktop().browse(new URI("http://isa-tools.org/team/"));
                 } catch (IOException e1) {
                     log.error("IOException - " + e1.getMessage());
                 } catch (URISyntaxException e1) {
