@@ -168,4 +168,7 @@ public class FTPBrowser extends FileBrowser {
     public boolean isConnected() {
         return ftpClient.isConnected();
     }
+
+    public void addRoots(FileBrowserTreeNode root) {}
+
 }

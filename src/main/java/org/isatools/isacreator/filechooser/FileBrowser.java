@@ -91,6 +91,7 @@ public abstract class FileBrowser {
         FileBrowserTreeNode top = new FileBrowserTreeNode(dir, true, FileBrowserTreeNode.DIRECTORY);
         fileMap.clear();
         dirFiles.clear();
+        addRoots((FileBrowserTreeNode) top.getRoot());
         getFilesInDirectory(top);
         addFileGroupsToTree(top);
 
@@ -101,6 +102,7 @@ public abstract class FileBrowser {
         return currentFileSystem;
     }
 
+    public abstract void addRoots(FileBrowserTreeNode top);
 
     public String getExtension(String name) {
         return name.substring(name.lastIndexOf(".") + 1).trim().toUpperCase();

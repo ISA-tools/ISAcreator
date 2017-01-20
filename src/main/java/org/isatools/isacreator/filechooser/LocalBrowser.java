@@ -85,6 +85,13 @@ public class LocalBrowser extends FileBrowser {
         }
     }
 
+    public void addRoots(FileBrowserTreeNode top) {
+        for (File root : File.listRoots()) {
+            dirFiles.put("Shortcut to " + root.getAbsolutePath(), root);
+            top.add(new FileBrowserTreeNode("Shortcut to " + root.getAbsolutePath(), false, FileBrowserTreeNode.DIRECTORY));
+        }
+    }
+
     public FileBrowserTreeNode getHomeDirectory() throws IOException {
         currentDirectory = HOME;
 
