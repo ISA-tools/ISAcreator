@@ -254,8 +254,12 @@ public class OrcidLookupUI extends JFrame implements WindowListener, MouseListen
                         for(OrcidAuthor contact: result){
                             Set<OrcidAuthor> set = new HashSet<OrcidAuthor>();
                             for(OrcidAuthor contact1: result){
-                                if (contact.getFamilyName().equals(contact1.getFamilyName()))
-                                    set.add(contact1);
+                                try {
+                                    if (contact.getFamilyName().equals(contact1.getFamilyName()))
+                                        set.add(contact1);
+                                } catch (NullPointerException nx) {
+                                    // ignore
+                                }
                             }
                             map.put(contact.getFamilyName(), set);
                         }
