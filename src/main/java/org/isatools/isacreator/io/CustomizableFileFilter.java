@@ -56,7 +56,7 @@ public class CustomizableFileFilter extends FileFilter {
 
     public boolean accept(File file) {
         String ext = getExtension(file);
-        return file != null && (ext.equalsIgnoreCase(extension));
+        return file != null && (ext.equalsIgnoreCase(extension)) || file.isDirectory();
 
     }
 
