@@ -39,15 +39,13 @@ public class ProgrammaticISATabCreationTest implements CommonTestIO {
                 System.out.println("using = " + baseDir);
                 File[] filesList = base.listFiles();
                 for (File file : filesList) {
-                    if (file.isFile()) {
-                        System.out.println(file.getName());
-                    }
+                    System.out.println(file.getName());
                 }
             }catch(IOException e){
                 e.printStackTrace();
             }
         }
-
+        System.out.println("Trying to laod configs from: " + baseDir + DEFAULT_CONFIG_DIR);
         ConfigurationManager.loadConfigurations(baseDir + DEFAULT_CONFIG_DIR);
         Investigation investigation = new Investigation("gis-investigation", "GIS investigation test");
 
