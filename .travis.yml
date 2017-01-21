@@ -8,4 +8,4 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
   - ls -la /home/travis/build/ISA-tools/ISAcreator/src/main/resources/Configurations/isaconfig-default_v2015-07-02
-script: echo
+script:

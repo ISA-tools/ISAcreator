@@ -54,9 +54,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
 
 /**
  * This class uses the JaxB classes to load XML output from ISAcreator Config into TableConfiguration objects which
@@ -173,20 +170,16 @@ public class ConfigXMLParser {
     }
 
     private List<IsaTabConfigFileType> getTableDefinitions() throws XmlException, IOException {
-        System.out.println("configDir = " + configDir);
-        File dir = new File(configDir);
-        System.out.println("dir =" + dir.toString());
-        System.out.println("listdir =" + dir.listFiles());
-        System.out.println("canonicalpath =" + dir.getCanonicalPath());
-        System.out.println("isdir =" + dir.isDirectory());
-        System.out.println("isfile = " + dir.isFile());
-        System.out.println("exists = " + dir.exists());
-        System.out.println("exists = " + dir.getAbsoluteFile().exists());
-        Path path = Paths.get(configDir);
-        System.out.println("files exists? = " + Files.exists(path));
 
-        if (!dir.exists())
-            return null;
+        File dir = new File(configDir);
+
+        if (!dir.isDirectory()) {
+            log.error("The specified directory " + configDir + " is not a directory!");
+            problemLog += "<p>There is a problem with the directory " + configDir + " as it is not a directory.</p>";
+            problemsEncountered = true;
+            throw new IOException("The specified directory " + configDir + " is not a directory!");
+        }
+
         File[] configFiles = dir.listFiles();
 
         if (configFiles == null) {
