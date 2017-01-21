@@ -1,6 +1,6 @@
 language: java
+jdk:
+  - oraclejdk7
 before_install:
-  - javac -version
-  - mvn -v
   - cp travis/settings.xml ~/.m2/settings.xml
 script: mvn clean verify
