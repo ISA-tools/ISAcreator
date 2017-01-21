@@ -1,4 +1,4 @@
 language: java
 before_install:
-  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://repository-master.mulesoft.org/nexus/content/groups/public/|g' ~/.m2/settings.xml
+  - cp travis/settings.xml ~/.m2/settings.xml
 script: mvn clean verify
