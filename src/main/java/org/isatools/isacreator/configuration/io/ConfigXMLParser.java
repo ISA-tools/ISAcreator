@@ -92,8 +92,6 @@ public class ConfigXMLParser {
 
             definitions = getTableDefinitions();
 
-            System.out.println("definitions = " + definitions);
-
             // do check for presence of the Investigation file, if it is not there,
             // this method will load in a default file as well
             checkInvestigationFileDefinitionFound(definitions);
@@ -174,6 +172,9 @@ public class ConfigXMLParser {
     private List<IsaTabConfigFileType> getTableDefinitions() throws XmlException, IOException {
         System.out.println("configDir = " + configDir);
         File dir = new File(configDir);
+        System.out.println("isdir =" + dir.isDirectory());
+        System.out.println("isfile = " + dir.isFile());
+        System.out.println("exists = " + dir.exists());
         if (!dir.exists())
             return null;
         File[] configFiles = dir.listFiles();
