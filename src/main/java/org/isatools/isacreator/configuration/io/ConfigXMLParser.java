@@ -54,6 +54,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 /**
  * This class uses the JaxB classes to load XML output from ISAcreator Config into TableConfiguration objects which
@@ -179,6 +182,9 @@ public class ConfigXMLParser {
         System.out.println("isfile = " + dir.isFile());
         System.out.println("exists = " + dir.exists());
         System.out.println("exists = " + dir.getAbsoluteFile().exists());
+        Path path = Paths.get(configDir);
+        System.out.println("files exists? = " + Files.exists(path));
+
         if (!dir.exists())
             return null;
         File[] configFiles = dir.listFiles();
