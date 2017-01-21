@@ -178,6 +178,7 @@ public class ConfigXMLParser {
         System.out.println("isdir =" + dir.isDirectory());
         System.out.println("isfile = " + dir.isFile());
         System.out.println("exists = " + dir.exists());
+        System.out.println("exists = " + dir.getAbsoluteFile().exists());
         if (!dir.exists())
             return null;
         File[] configFiles = dir.listFiles();
