@@ -92,6 +92,8 @@ public class ConfigXMLParser {
 
             definitions = getTableDefinitions();
 
+            System.out.println("definitions = " + definitions);
+
             // do check for presence of the Investigation file, if it is not there,
             // this method will load in a default file as well
             checkInvestigationFileDefinitionFound(definitions);
@@ -132,6 +134,9 @@ public class ConfigXMLParser {
         boolean found = false;
 
         for (IsaTabConfigFileType isaConfigFile : definitions) {
+
+            System.out.println("definitions = " + isaConfigFile.toString());
+
             for (IsaTabConfigurationType doc : isaConfigFile.getIsatabConfigurationArray()) {
 
                 OntologyEntryType measurementInfo = doc.getMeasurement();
@@ -167,6 +172,7 @@ public class ConfigXMLParser {
     }
 
     private List<IsaTabConfigFileType> getTableDefinitions() throws XmlException, IOException {
+        System.out.println("configDir = " + configDir);
         File dir = new File(configDir);
         if (!dir.exists())
             return null;
