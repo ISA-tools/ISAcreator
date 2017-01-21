@@ -1,4 +1,4 @@
 language: java
 before_install:
-  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
+  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://repository-master.mulesoft.org/nexus/content/groups/public/|g' ~/.m2/settings.xml
 script: mvn clean verify
