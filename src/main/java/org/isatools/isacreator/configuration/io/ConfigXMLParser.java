@@ -172,6 +172,9 @@ public class ConfigXMLParser {
     private List<IsaTabConfigFileType> getTableDefinitions() throws XmlException, IOException {
         System.out.println("configDir = " + configDir);
         File dir = new File(configDir);
+        System.out.println("dir =" + dir.toString());
+        System.out.println("listdir =" + dir.listFiles());
+        System.out.println("canonicalpath =" + dir.getCanonicalPath());
         System.out.println("isdir =" + dir.isDirectory());
         System.out.println("isfile = " + dir.isFile());
         System.out.println("exists = " + dir.exists());
