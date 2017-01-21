@@ -28,7 +28,7 @@ Given user requests and the natural evolution of the ISAtools, some of the ISAcr
 
 ## Development
 
-<a href="http://www.jetbrains.com/idea/" style="width:88px; height:31px;"><span style="margin: 0;padding: 0;position: absolute;top: -1px;left: 4px;font-size: 10px;cursor:pointer;"></span><img src="http://www.jetbrains.com/img/logos/recommend_idea1.gif" alt="The best Java IDE" border="0"/></a>
+[![Build Status](https://travis-ci.org/ISA-tools/ISAcreator.svg?branch=master)](https://travis-ci.org/ISA-tools/ISAcreator)  
 
 ### Running ISAcreator
 
