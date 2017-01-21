@@ -28,7 +28,7 @@ Given user requests and the natural evolution of the ISAtools, some of the ISAcr
 
 ## Development
 
-[![Build Status](https://travis-ci.org/ISA-tools/ISAcreator.svg?branch=master)](https://travis-ci.org/ISA-tools/ISAcreator)  
+[![Build Status](https://travis-ci.org/ISA-tools/ISAcreator.svg?branch=master)](https://travis-ci.org/ISA-tools/ISAcreator)  [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/ISAcreator/badge.svg?branch=development)](https://coveralls.io/github/ISA-tools/ISAcreator?branch=development)
 
 ### Running ISAcreator
 
