@@ -72,4 +72,4 @@ For a list of contributors, please see <http://github.com/ISA-tools/ISAcreator/c
 
 ## License
 
-CPAL License, available at <http://isatab.sourceforge.net/licenses/ISAcreator-license.html>
+CPAL License, available at <https://raw.githubusercontent.com/ISA-tools/ISAcreator/master/LICENSE.txt>
