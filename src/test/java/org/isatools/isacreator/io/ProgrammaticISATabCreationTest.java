@@ -30,10 +30,12 @@ public class ProgrammaticISATabCreationTest implements CommonTestIO {
     public void createISATabProgrammatically1Test() {
 
     	String baseDir = System.getProperty("project.basedir");
+    	System.out.println("project.basedir = " + baseDir);
         if ( baseDir == null )
         {
             try{
                 baseDir = new File( "." ).getCanonicalPath();
+                System.out.println("using = " + baseDir);
             }catch(IOException e){
                 e.printStackTrace();
             }
