@@ -1,4 +1,7 @@
 language: java
 before_install:
+  - cat ~/.m2/settings.xml
+  - mvn -v
   - cp travis/settings.xml ~/.m2/settings.xml
+  - mvn -v
 script: mvn clean verify
