@@ -34,8 +34,15 @@ public class ProgrammaticISATabCreationTest implements CommonTestIO {
         if ( baseDir == null )
         {
             try{
-                baseDir = new File( "." ).getCanonicalPath();
+                File base =  new File( "." );
+                baseDir = base.getCanonicalPath();
                 System.out.println("using = " + baseDir);
+                File[] filesList = base.listFiles();
+                for (File file : filesList) {
+                    if (file.isFile()) {
+                        System.out.println(file.getName());
+                    }
+                }
             }catch(IOException e){
                 e.printStackTrace();
             }
