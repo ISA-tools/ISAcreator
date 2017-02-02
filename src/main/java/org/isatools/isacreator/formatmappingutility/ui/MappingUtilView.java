@@ -79,10 +79,10 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Eamonn Maguire
@@ -364,8 +364,9 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         }
 
                         if (fileToMapFSP.notEmpty()) {
-                            if (fileToMapFSP.getSelectedFilePath().contains("&")) {
-                                statusLab.setText("<html>filename of file to map must not contain special characters such as &, please select a different file or rename it...</html>");
+                            String[] invalid_chars = new String[]{"&", ":", "?", "*", "|", ":"};
+                            if (StringUtils.indexOfAny(fileToMapFSP.getSelectedFilePath(), invalid_chars) > -1) {
+                                statusLab.setText("<html>filenames must not contain special characters such as " + StringUtils.substringBetween(Arrays.toString(invalid_chars), "[", "]") + ", please select a different file or rename it...</html>");
                                 setCurrentPage(lastPage);
                                 return;
                             } else{
