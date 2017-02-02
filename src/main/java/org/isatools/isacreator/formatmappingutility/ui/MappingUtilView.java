@@ -364,13 +364,19 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
                         }
 
                         if (fileToMapFSP.notEmpty()) {
-                            previousPage.push(new HistoryComponent(finalLayout, listeners));
-                            statusLab.setText("");
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    setCurrentPage(createAssayUsedPanel(fileToMapFSP.getSelectedFilePath()));
-                                }
-                            });
+                            if (fileToMapFSP.getSelectedFilePath().contains("&")) {
+                                statusLab.setText("<html>filename of file to map must not contain special characters such as &, please select a different file or rename it...</html>");
+                                setCurrentPage(lastPage);
+                                return;
+                            } else{
+                                previousPage.push(new HistoryComponent(finalLayout, listeners));
+                                statusLab.setText("");
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        setCurrentPage(createAssayUsedPanel(fileToMapFSP.getSelectedFilePath()));
+                                    }
+                                });
+                            }
                         } else {
                             statusLab.setText("<html>please <strong>select</strong> a file to map!</html>");
                             setCurrentPage(lastPage);
