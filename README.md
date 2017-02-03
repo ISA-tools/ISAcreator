@@ -3,12 +3,13 @@
 <hr>
 <p align="center">
 <i>
-Please note that the <a href="http://isa-tools.org/team">ISAtools team</a> aims to fix bugs found in this tool when time permits, but no additional functionality is expected to be added in the near future. 
-</p
+ISAcreator is the <a href="http://isa-tools.org/team">ISAtools</a> Java-based desktop editor for producing ISA-Tab files. 
 </i>
+</p>
+
 <p align="center">
 <i>
-Given user requests and the natural evolution of the ISAtools, some of the ISAcreator functionality has been embeded under the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API for programmatic management of ISA metadata for experimental descriptions, which we are actively developing.
+For programmatic management of ISA metadata for experimental descriptions (ISA-Tab and ISA-json representations), please check the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API to manage ISA metadata.
 </i>
 </p>
 <hr>
