@@ -9,7 +9,7 @@ ISAcreator is the <a href="http://isa-tools.org/team">ISAtools</a> Java-based de
 
 <p align="center">
 <i>
-For programmatic management of ISA metadata for experimental descriptions (ISA-Tab and ISA-json representations), please check the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API to manage ISA metadata.
+For programmatic management of ISA metadata for experimental descriptions (ISA-Tab and ISA-json representations), please check the <a href="https://github.com/ISA-tools/isa-api">ISA-API</a>, which is a Python-based API to parse, create, convert ISA metadata among other functionality.
 </i>
 </p>
 <hr>
