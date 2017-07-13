@@ -365,7 +365,7 @@ public class MappingUtilView extends AbstractDataEntryEnvironment {
 
                         if (fileToMapFSP.notEmpty()) {
                             String[] invalid_chars = new String[]{"&", ":", "?", "*", "|", ":"};
-                            if (StringUtils.indexOfAny(fileToMapFSP.getSelectedFilePath(), invalid_chars) > -1) {
+                            if (StringUtils.indexOfAny(fileToMapFSP.getName(), invalid_chars) > -1) {
                                 statusLab.setText("<html>filenames must not contain special characters such as " + StringUtils.substringBetween(Arrays.toString(invalid_chars), "[", "]") + ", please select a different file or rename it...</html>");
                                 setCurrentPage(lastPage);
                                 return;
