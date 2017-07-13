@@ -4,7 +4,7 @@
     <groupId>org.isatools</groupId>
     <artifactId>ISAcreator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.7.9</version>
+    <version>1.7.10</version>
     <name>ISAcreator</name>
     <url>http://www.isa-tools.org</url>
 
@@ -72,13 +72,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.0</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                    <executable>apt</executable>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <!--<executable>apt</executable>-->
                     <fork>true</fork>
                     <debug>true</debug>
+
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
                 </configuration>

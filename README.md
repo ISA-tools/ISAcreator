@@ -60,6 +60,17 @@ Ensure you have maven 2.2.1 installed and enabled as well as git. If you have tr
 
 A simple `git pull git@github.com:ISA-tools/ISAcreator.git`
 
+### Building using Vagrant
+
+Instead of using your native OS environment, we have provided a Vagrant configuration in which you can build ISAcreator inside an Ubuntu VM. For instructions on installing and using Vagrant, see https://www.vagrantup.com/docs/installation/
+
+Once you have Vagrant installed, just open a terminal window to the root of the ISAcreator project, and type `vagrant up`. After a log of log messages, eventually it should finish with a success message.
+
+Then do `vagrant ssh` to log into the Ubuntu VM. From here do `cd /vagrant/` which maps to your project root. 
+
+Then run `./Vagrant-bootstrap.sh` to install Java and Maven build tools. If all went well, your build environment should be ready to use `./compile.sh` and `./package.sh`.
+
+Note: this builds using OpenJDK Java 1.7 and Maven 3.
 
 #### Contributor License Agreement
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Use this file to build all the packages about ISA-Tools
 # More details in the POM. 
 #
