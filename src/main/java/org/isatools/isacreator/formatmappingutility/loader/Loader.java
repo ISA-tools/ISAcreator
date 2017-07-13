@@ -102,6 +102,9 @@ public class Loader {
             } else if (extension.equals(FileLoader.XLS_EXT)) {
                 recordType = "Excel (XLS) sheets";
                 return new ExcelFileLoader();
+            } else if (extension.equals(FileLoader.XLSX_EXT)) {
+                recordType = "Excel (XLSX) sheets";
+                throw new NoAvailableLoaderException(".xslx (MS Excel 2010 format) file is not supported for your file " + f.getName());
             } else if (extension.equals(FileLoader.TXT_EXT)) {
                 recordType = "TAB Delimited (TEXT) files";
                 return new CSVFileLoader(FileLoader.TAB_DELIM);

@@ -42,6 +42,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.log4j.Logger;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 
 import java.io.File;
@@ -60,6 +61,7 @@ import java.util.Map;
 public class ExcelFileLoader implements FileLoader {
 
     private Map<String, Sheet> sheetReaders = new HashMap<String, Sheet>();
+    private static final Logger log = Logger.getLogger(CSVFileLoader.class.getName());
 
     public Map<String, String[]> getColumnNames(File f) {
         return processFile(f);
@@ -101,7 +103,7 @@ public class ExcelFileLoader implements FileLoader {
             }
 
         } catch (BiffException e) {
-            e.printStackTrace();
+            log.error("problem with incoming file. We were unable to process it for this reason: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }

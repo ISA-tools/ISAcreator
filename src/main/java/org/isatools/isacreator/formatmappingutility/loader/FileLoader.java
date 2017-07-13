@@ -48,6 +48,7 @@ public interface FileLoader {
     public static final String CSV_EXT = "csv";
     public static final String TXT_EXT = "txt";
     public static final String XLS_EXT = "xls";
+    public static final String XLSX_EXT = "xlsx";
     public static final Character COMMA_DELIM = ',';
     public static final Character TAB_DELIM = '\t';
     public static final int CSV_READER_TXT = 0;
