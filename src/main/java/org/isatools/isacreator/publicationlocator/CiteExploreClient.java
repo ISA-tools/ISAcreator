@@ -100,7 +100,7 @@ public class CiteExploreClient {
                 "0",
                 "0",
                 "",
-                new Boolean(false),
+                "false",
                 "isatools@googlgroups.com");
         ResultList resultList = responseWrapper.getResultList();
         if (resultList.getResult().size() > 0) {
