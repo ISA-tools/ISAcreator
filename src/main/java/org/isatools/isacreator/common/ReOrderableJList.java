@@ -72,10 +72,10 @@ public class ReOrderableJList extends JList
 
             Transferable trans;
 
-            if (getSelectedValues().length > 1) {
+            if (getSelectedValuesList().size() > 1) {
                 List<Object> target = new ArrayList<Object>();
 
-                target.addAll(Arrays.asList(getSelectedValues()));
+                target.addAll(getSelectedValuesList());
                 trans = new RJLTransferable(target);
 
 

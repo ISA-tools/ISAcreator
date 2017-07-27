@@ -457,8 +457,8 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
             public void mousePressed(MouseEvent event) {
                 deleteItem.setIcon(deleteIcon);
 
-                if (selectedFiles.getSelectedValues() != null) {
-                    for (Object o : selectedFiles.getSelectedValues()) {
+                if (selectedFiles.getSelectedValuesList() != null) {
+                    for (Object o : selectedFiles.getSelectedValuesList()) {
                         listModel.removeElement(o);
                     }
                 }
@@ -540,7 +540,7 @@ public class FileChooserUI extends AnimatableJFrame implements WindowListener {
         JButton ok = new FlatButton(ButtonType.GREEN, "Select Files");
         ok.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                firePropertyChange("selectedFiles", "", selectedFiles.getSelectedValues());
+                firePropertyChange("selectedFiles", "", selectedFiles.getSelectedValuesList());
                 setVisible(false);
                 listModel.removeAllElements();
             }
