@@ -38,6 +38,7 @@
 package org.isatools.isacreator.formatmappingutility.loader;
 
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVParser;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
@@ -98,8 +99,8 @@ public class CSVFileLoader implements FileLoader {
                 if (!file.isHidden()) {
                     String[] firstLine;
 
-                    CSVReader reader = new CSVReader(new FileReader(file), delimiter);
-
+                    CSVReader reader = new CSVReader(new FileReader(file), delimiter,
+                            CSVParser.DEFAULT_QUOTE_CHARACTER, '|');
 
                     if (delimiter == FileLoader.COMMA_DELIM) {
                         readerUsed = FileLoader.CSV_READER_CSV;

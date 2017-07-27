@@ -38,6 +38,7 @@
 package org.isatools.isacreator.formatmappingutility.logic;
 
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVParser;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
@@ -353,8 +354,8 @@ public class MappingLogic {
             if (readerToUse == FileLoader.CSV_READER_CSV || readerToUse == FileLoader.CSV_READER_TXT) {
 
                 char delimiter = (readerToUse == FileLoader.CSV_READER_CSV) ? FileLoader.COMMA_DELIM : FileLoader.TAB_DELIM;
-                CSVReader fileReader = new CSVReader(new FileReader(fileName), delimiter);
-
+                CSVReader fileReader = new CSVReader(new FileReader(fileName), delimiter,
+                        CSVParser.DEFAULT_QUOTE_CHARACTER, '|');
                 // read first line to discard it!
                 String[] nextLine;
 

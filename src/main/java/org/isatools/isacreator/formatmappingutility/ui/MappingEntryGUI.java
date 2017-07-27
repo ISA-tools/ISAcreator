@@ -38,6 +38,7 @@
 package org.isatools.isacreator.formatmappingutility.ui;
 
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVParser;
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -481,8 +482,8 @@ public class MappingEntryGUI extends JPanel implements TreeSelectionListener, Mo
         if (readerToUse == FileLoader.CSV_READER_CSV || readerToUse == FileLoader.CSV_READER_TXT) {
 
             char delimiter = (readerToUse == FileLoader.CSV_READER_CSV) ? FileLoader.COMMA_DELIM : FileLoader.TAB_DELIM;
-            CSVReader fileReader = new CSVReader(new FileReader(fileName), delimiter);
-
+            CSVReader fileReader = new CSVReader(new FileReader(fileName), delimiter,
+                    CSVParser.DEFAULT_QUOTE_CHARACTER, '|');
             // read first line to discard it!
             fileReader.readNext();
             String[] nextLine;

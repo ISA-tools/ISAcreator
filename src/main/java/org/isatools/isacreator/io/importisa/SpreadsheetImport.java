@@ -1,5 +1,6 @@
 package org.isatools.isacreator.io.importisa;
 
+import au.com.bytecode.opencsv.CSVParser;
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.isatools.isacreator.configuration.DataTypes;
@@ -42,7 +43,8 @@ public class SpreadsheetImport {
         File f = new File(fileName);
 
         if (f.exists()) {
-            CSVReader reader = new CSVReader(new FileReader(f), '\t');
+            CSVReader reader = new CSVReader(new FileReader(f), '\t', CSVParser.DEFAULT_QUOTE_CHARACTER,
+                    '|');
             int count = 0;
             String[] nextLine;
             String[] colHeaders = null;

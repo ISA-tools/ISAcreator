@@ -38,6 +38,7 @@
 package org.isatools.isacreator.io.importisa;
 
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVParser;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
@@ -215,8 +216,8 @@ public class InvestigationImport {
     private List<String[]> loadFile(File investigationFile) throws IOException {
         List<String[]> fileContents = new ArrayList<String[]>();
         if (investigationFile.exists()) {
-            CSVReader csvReader = new CSVReader(new FileReader(investigationFile), TAB_DELIM);
-
+            CSVReader csvReader = new CSVReader(new FileReader(investigationFile), '\t',
+                    CSVParser.DEFAULT_QUOTE_CHARACTER, '|');
             String[] line;
             while((line = csvReader.readNext()) != null) {
                 if(line.length > 0) {
