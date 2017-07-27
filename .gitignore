@@ -21,6 +21,10 @@ overlays/
 *.iws
 .idea/
 
+# Files created by Vagrant #
+############################
+.vagrant
+
 # Files created by NetBeans #
 #############################
 nbproject/private/
@@ -73,8 +77,13 @@ ehthumbs.db
 Thumbs.db
 
 #ISAcreator execution specific files#
-######################
+#####################################
 Configurations/
 isatab files/
 src/main/resources/Configurations/
 Plugins/
+
+#Mac-specific ISAcreator execution specific files#
+##################################################
+ProgramData/
+Settings/
