@@ -83,7 +83,3 @@ isatab files/
 src/main/resources/Configurations/
 Plugins/
 
-#Mac-specific ISAcreator execution specific files#
-##################################################
-ProgramData/
-Settings/
