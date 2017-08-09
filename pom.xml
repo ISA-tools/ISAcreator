@@ -691,6 +691,13 @@
             <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>genomespace</groupId>
+            <artifactId>org.genomespace.jersey-apache-client</artifactId>
+            <version>1.11</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <profiles>
