@@ -152,6 +152,12 @@ public class BioPortalSearchResultHandler {
 
         Map<String, Ontology> result = new HashMap<String, Ontology>();
         String content = queryOntologyEndpoint();
+
+        if (content.contains("Internal server error")) {
+            System.err.println("The BioPortal REST service reports Internal server error");
+            return result;
+        }
+
         JSONArray obj = (JSONArray) JSONValue.parse(content);
 
         for (Object resultItem : obj) {
