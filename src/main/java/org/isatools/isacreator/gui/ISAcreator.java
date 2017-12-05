@@ -345,13 +345,21 @@ public class ISAcreator extends AnimatableJFrame implements WindowFocusListener 
         ISAcreatorProperties.setProperty("java.version", version);
 
         String[] versionParts = version.split("\\.");
+        int javaVersion;
+        int majorVersion = Integer.valueOf(versionParts[0]);
         int minorVersion = Integer.valueOf(versionParts[1]);
+
+        if (majorVersion == 1) {
+            javaVersion = minorVersion;
+        } else {
+            javaVersion = majorVersion;
+        }
 
         log.info("System details");
         log.info(System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + (System.getProperty("os.arch").equals("x86_64") ? "64 bit" : "32 bit"));
         log.info("JRE version: " + version);
 
-        return minorVersion >= 6;
+        return javaVersion >= 6;
     }
 
     private void createTopPanel() {
