@@ -92,6 +92,11 @@ cd $WD
 echo "Changing back to project folder..."
 pwd
 
+###installing xalan dependency
+mvn dependency:get -Dartifact=xalan:xalan:2.4.0
+mvn install:install-file -Dfile="$HOME/.m2/repository/xalan/xalan/2.4.0/xalan-2.4.0.jar" -DgroupId=xalan -DartifactId=xalan -Dversion=2.4 -Dpackaging=jar
+
+
 ##Building ISAcreator
 mvn $MVNOPTS -Dmaven.test.skip=true clean assembly:assembly -Pbuild
 
