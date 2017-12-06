@@ -26,7 +26,7 @@ cd ../
 echo "Running tests"
 
 # now run tests
-mvn $MVNOPTS clean test
+mvn $MVNOPTS clean test jacoco:report coveralls:report
 
 echo "Testing completed successfully!"
 
