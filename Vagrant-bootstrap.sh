@@ -2,7 +2,7 @@
 
 sudo add-apt-repository ppa:openjdk-r/ppa
 sudo apt-get update
-sudo apt-get install -y openjdk-7-jdk maven zip python
+sudo apt-get install -y openjdk-7-jdk maven zip python xvfb
 sudo echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" >> /home/ubuntu/.bashrc
 
 # Workaround for not finding xalan dependency, fix pinched from https://github.com/ISA-tools/linkedISA/pull/13
