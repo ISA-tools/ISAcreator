@@ -42,7 +42,7 @@ import org.isatools.isacreator.gui.StudyDataEntry;
 import org.isatools.isacreator.model.InvestigationPublication;
 import org.isatools.isacreator.model.Publication;
 import org.isatools.isacreator.model.StudyPublication;
-import uk.ac.ebi.cdb.client.*;
+//import uk.ac.ebi.cdb.client.*;
 
 import javax.xml.ws.WebServiceRef;
 import java.util.ArrayList;
@@ -54,86 +54,86 @@ import java.util.Map;
 public class CiteExploreClient {
 
 
-    @WebServiceRef(wsdlLocation = "http://www.ebi.ac.uk/europepmc/webservices/soap?wsdl")
-    private WSCitationImplService service;
-
-    public CiteExploreClient() {
-        service = new WSCitationImplService();
-    }
-
-    public Map<String, Publication> getPublication(SearchOption searchOption, String query, DataEntryForm parent) throws NoPublicationFoundException {
-        Map<String, Publication> publications = new HashMap<String, Publication>();
-        try {
-
-            List<CiteExploreResult> resultBeanCollection = searchForPublication(searchOption, query);
-
-            for (CiteExploreResult resultBean : resultBeanCollection) {
-
-                Publication pub;
-                if (parent instanceof StudyDataEntry) {
-                    pub = new StudyPublication(resultBean.getId(), resultBean.getDoi(), resultBean.getAuthors(), resultBean.getTitle(), "Published");
-                } else {
-                    pub = new InvestigationPublication(resultBean.getId(), resultBean.getDoi(), resultBean.getAuthors(), resultBean.getTitle(), "Published");
-                }
-                pub.setAbstractText(resultBean.getAbstractText());
-                publications.put(resultBean.getId(), pub);
-            }
-        } catch (QueryException_Exception qex) {
-            System.out.printf("Caught QueryException_Exception: %s\n", qex.getFaultInfo().getMessage());
-        }
-
-        return publications;
-    }
-
-    public List<CiteExploreResult> searchForPublication(SearchOption searchOption, String query) throws QueryException_Exception, NoPublicationFoundException {
-
-        String fullQueryString = searchOption.getQueryString(query);
-
-        return performQuery(searchOption, fullQueryString);
-    }
-
-    public List<CiteExploreResult> performQuery(SearchOption searchOption, String fullQueryString) throws QueryException_Exception, NoPublicationFoundException {
-        WSCitationImpl port = service.getWSCitationImplPort();
-
-        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString,
-                "core",
-                "0",
-                "0",
-                "",
-                "false",
-                "isatools@googlgroups.com");
-        ResultList resultList = responseWrapper.getResultList();
-        if (resultList.getResult().size() > 0) {
-            return createResultList(resultList);
-        } else {
-            throw new NoPublicationFoundException(searchOption, fullQueryString);
-        }
-    }
-
-    private List<CiteExploreResult> createResultList(ResultList searchResults) {
-        List<CiteExploreResult> resultSet = new ArrayList<CiteExploreResult>();
-
-        List<Result> resultBeans = searchResults.getResult();
-
-        for (Result result : resultBeans) {
-            if (result.getTitle()==null)
-                continue;
-
-            CiteExploreResult citexploreRecord = new CiteExploreResult(result.getId(), result.getDoi(), result.getAuthorString(),
-                    result.getTitle().replaceAll("\\[|\\]", ""), result.getAbstractText(), result.getAffiliation());
-
-            resultSet.add(citexploreRecord);
-            if (result.getGrantsList() != null) {
-                String grants = "";
-                int grantCount = 0;
-                for (GrantInfo grantInfo : result.getGrantsList().getGrant()) {
-                    grants += (grantInfo.getAcronym() == null ? "" : grantInfo.getAcronym() + ", ") + grantInfo.getAgency() + " (" + grantInfo.getGrantId() + ")";
-                    grants += grantCount < result.getGrantsList().getGrant().size() - 1 ? ", " : "";
-                }
-                citexploreRecord.setGrants(grants);
-            }
-        }
-
-        return resultSet;
-    }
+//    @WebServiceRef(wsdlLocation = "http://www.ebi.ac.uk/europepmc/webservices/soap?wsdl")
+//    private WSCitationImplService service;
+//
+//    public CiteExploreClient() {
+//        service = new WSCitationImplService();
+//    }
+//
+//    public Map<String, Publication> getPublication(SearchOption searchOption, String query, DataEntryForm parent) throws NoPublicationFoundException {
+//        Map<String, Publication> publications = new HashMap<String, Publication>();
+//        try {
+//
+//            List<CiteExploreResult> resultBeanCollection = searchForPublication(searchOption, query);
+//
+//            for (CiteExploreResult resultBean : resultBeanCollection) {
+//
+//                Publication pub;
+//                if (parent instanceof StudyDataEntry) {
+//                    pub = new StudyPublication(resultBean.getId(), resultBean.getDoi(), resultBean.getAuthors(), resultBean.getTitle(), "Published");
+//                } else {
+//                    pub = new InvestigationPublication(resultBean.getId(), resultBean.getDoi(), resultBean.getAuthors(), resultBean.getTitle(), "Published");
+//                }
+//                pub.setAbstractText(resultBean.getAbstractText());
+//                publications.put(resultBean.getId(), pub);
+//            }
+//        } catch (QueryException_Exception qex) {
+//            System.out.printf("Caught QueryException_Exception: %s\n", qex.getFaultInfo().getMessage());
+//        }
+//
+//        return publications;
+//    }
+//
+//    public List<CiteExploreResult> searchForPublication(SearchOption searchOption, String query) throws QueryException_Exception, NoPublicationFoundException {
+//
+//        String fullQueryString = searchOption.getQueryString(query);
+//
+//        return performQuery(searchOption, fullQueryString);
+//    }
+//
+//    public List<CiteExploreResult> performQuery(SearchOption searchOption, String fullQueryString) throws QueryException_Exception, NoPublicationFoundException {
+//        WSCitationImpl port = service.getWSCitationImplPort();
+//
+//        ResponseWrapper responseWrapper = port.searchPublications(fullQueryString,
+//                "core",
+//                "0",
+//                "0",
+//                "",
+//                "false",
+//                "isatools@googlgroups.com");
+//        ResultList resultList = responseWrapper.getResultList();
+//        if (resultList.getResult().size() > 0) {
+//            return createResultList(resultList);
+//        } else {
+//            throw new NoPublicationFoundException(searchOption, fullQueryString);
+//        }
+//    }
+//
+//    private List<CiteExploreResult> createResultList(ResultList searchResults) {
+//        List<CiteExploreResult> resultSet = new ArrayList<CiteExploreResult>();
+//
+//        List<Result> resultBeans = searchResults.getResult();
+//
+//        for (Result result : resultBeans) {
+//            if (result.getTitle()==null)
+//                continue;
+//
+//            CiteExploreResult citexploreRecord = new CiteExploreResult(result.getId(), result.getDoi(), result.getAuthorString(),
+//                    result.getTitle().replaceAll("\\[|\\]", ""), result.getAbstractText(), result.getAffiliation());
+//
+//            resultSet.add(citexploreRecord);
+//            if (result.getGrantsList() != null) {
+//                String grants = "";
+//                int grantCount = 0;
+//                for (GrantInfo grantInfo : result.getGrantsList().getGrant()) {
+//                    grants += (grantInfo.getAcronym() == null ? "" : grantInfo.getAcronym() + ", ") + grantInfo.getAgency() + " (" + grantInfo.getGrantId() + ")";
+//                    grants += grantCount < result.getGrantsList().getGrant().size() - 1 ? ", " : "";
+//                }
+//                citexploreRecord.setGrants(grants);
+//            }
+//        }
+//
+//        return resultSet;
+//    }
 }
