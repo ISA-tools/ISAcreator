@@ -1,7 +1,7 @@
 package org.isatools.isacreator.publicationlocator;
 
 import org.junit.Test;
-import uk.ac.ebi.cdb.client.QueryException_Exception;
+//import uk.ac.ebi.cdb.client.QueryException_Exception;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,14 +39,14 @@ public class CiteXploreTest {
     private void runTest(SearchOption searchOption, String query) {
         CiteExploreClient publicationSearcher = new CiteExploreClient();
 
-        try {
-            List<CiteExploreResult> result = publicationSearcher.searchForPublication(searchOption, query);
-            printResultBeans(result);
-        } catch (QueryException_Exception qex) {
-            System.out.printf("Caught QueryException_Exception: %s\n", qex.getFaultInfo().getMessage());
-        } catch (NoPublicationFoundException e) {
-            System.out.println("No publication found");
-        }
+//        try {
+//            List<CiteExploreResult> result = publicationSearcher.searchForPublication(searchOption, query);
+//            printResultBeans(result);
+//        } catch (QueryException_Exception qex) {
+//            System.out.printf("Caught QueryException_Exception: %s\n", qex.getFaultInfo().getMessage());
+//        } catch (NoPublicationFoundException e) {
+//            System.out.println("No publication found");
+//        }
     }
 
     private void printResultBeans(Collection<CiteExploreResult> resultBeans) {

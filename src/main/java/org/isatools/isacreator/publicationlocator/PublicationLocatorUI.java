@@ -335,19 +335,20 @@ public class PublicationLocatorUI extends JFrame implements WindowListener {
 
                         SearchOption so = selectedSection == PUBMED_SEARCH ? SearchOption.PUBMED : SearchOption.DOI;
 
-                        Map<String, Publication> result = pubExplorer.getPublication(so, searchField.getText(), parent);
+//                        Map<String, Publication> result = pubExplorer.getPublication(so, searchField.getText(), parent);
 
-                        for (String key : result.keySet()) {
-                            currentPublication = result.get(key);
-                            // push to SearchResultPane
-                            resetButtons();
-                            resultPane.showPublication(currentPublication);
-                            selectedSection = RESULT;
-                            swapContainers(resultPane);
-                            resultButton.setIcon(resultOver);
-                            export.setEnabled(true);
-                            break;
-                        }
+//                        for (String key : result.keySet()) {
+//                            currentPublication = result.get(key);
+//                            // push to SearchResultPane
+//                            resetButtons();
+//                            resultPane.showPublication(currentPublication);
+//                            selectedSection = RESULT;
+//                            swapContainers(resultPane);
+//                            resultButton.setIcon(resultOver);
+//                            export.setEnabled(true);
+//                            break;
+//                        }
+                        throw new NoPublicationFoundException(so, searchField.getText());
                     }
                 } catch (NoPublicationFoundException e) {
                     resetButtons();
