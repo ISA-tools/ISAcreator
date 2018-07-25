@@ -3,8 +3,19 @@
 # More details in the POM. 
 #
 
-# should be used by passing in either 'scidata', 'mixs' or 'all' as a parameter, e.g. ./package.sh scidata
-# switching these will result in different actions being performed on packaging.
+# usage:
+#    ./package.sh <PACKAGE_TYPE>
+#
+# The possible values for <PACKAGE_TYPE> are (use them without the quotes):
+#   - 'scidata': to build a package of ISAcreator including the Scientific Data ISA-Tab configurations
+#   - 'mixs': to build a package of ISAcreator including the MIXS ISA-Tab configurations
+#   - 'miacme': to build a package of ISAcreator including the MIACME ISA-Tab configurations
+#   - 'all': to build a package of ISAcreator including the default ISA-Tab configurations
+#
+# If no <PACKAGE_TYPE> parameter is passed, the default value 'all' will be used.
+#
+# e.g. ./package.sh scidata
+#
 
 PACKAGE_TYPE=$1
 echo "ISAcreator packaging for type " $PACKAGE_TYPE
@@ -53,7 +64,12 @@ else
      then
         CONFIGURATION=isaconfig-mixs-v4.zip
     else
-        CONFIGURATION=isaconfig-default_v2015-07-02.zip
+        if [ "$PACKAGE_TYPE" = "miacme"  ]
+        then
+            CONFIGURATION=isaconfig-MIACMEv0.3-multiassay-20180725.zip
+        else
+            CONFIGURATION=isaconfig-default_v2015-07-02.zip
+        fi
     fi
 fi
 
@@ -66,7 +82,12 @@ else
    exit 1
 fi
 
-curl -L -O http://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION"
+if [ "$PACKAGE_TYPE" = "miacme"  ]
+then
+    curl -L -O https://bitbucket.org/agbeltran/isatools-downloads/downloads/"$CONFIGURATION"
+else
+    curl -L -O http://bitbucket.org/eamonnmag/isatools-downloads/downloads/"$CONFIGURATION"
+fi
 
 mkdir Configurations
 cp $CONFIGURATION
