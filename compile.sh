@@ -69,12 +69,12 @@ mvn install:install-file -Dfile="$HOME/.m2/repository/xalan/xalan/2.4.0/xalan-2.
 
 mvn $MVNOPTS -Dmaven.test.skip=$SKIP_TESTS clean assembly:assembly -Pbuild
 
-ISA-TAB-FOLDER = "isatab files"
+ISATAB_FOLDER="isatab files"
 
-mkdir $ISA-TAB-FOLDER
+mkdir $ISATAB_FOLDER
 if [ "$CONFIG" = "scidata" ]
 then
-    cd $ISA-TAB-FOLDER
+    cd $ISATAB_FOLDER
     curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/SciData-Datasets-1-and-2.zip
     unzip SciData-Datasets-1-and-2.zip
     rm -f SciData-Datasets-1-and-2.zip
@@ -82,13 +82,13 @@ then
 fi
 if [ "$CONFIG" = "mixs" ]
 then
-    cd $ISA-TAB-FOLDER
+    cd $ISATAB_FOLDER
     curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/$MIXS_DATASETS
     unzip $MIXS_DATASETS
     rm -f $MIXS_DATASETS
     cd ../
 else
-    cp -r src/test/resources/test-data/ $ISA-TAB-FOLDER/
+    cp -r src/test/resources/test-data/ $ISATAB_FOLDER/
 fi
 
 
