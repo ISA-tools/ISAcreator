@@ -141,10 +141,10 @@ cd ..
 ISATAB_FOLDER = "isatab files"
 
 # Now package up the tools
-mkdir $ISATAB_FOLDER
+mkdir "$ISATAB_FOLDER"
 if [ "$PACKAGE_TYPE" = "scidata" ]
 then
-    cd $ISATAB_FOLDER
+    cd "$ISATAB_FOLDER"
     curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/SciData-Datasets-1-and-2.zip
     unzip SciData-Datasets-1-and-2.zip
     rm -f SciData-Datasets-1-and-2.zip
@@ -152,18 +152,18 @@ then
 fi
 if [ "$PACKAGE_TYPE" = "mixs" ]
 then
-    cd $ISATAB_FOLDER
+    cd "$ISATAB_FOLDER"
     curl -L -O https://bitbucket.org/eamonnmag/isatools-downloads/downloads/$MIXS_DATASETS
     unzip $MIXS_DATASETS
     rm -f $MIXS_DATASETS
     cd ../
 else
-     cp -r ../src/test/resources/test-data/ ./$ISATAB_FOLDER
+     cp -r ../src/test/resources/test-data/ ./"$ISATAB_FOLDER"
 fi
 
 pwd
 
-zip --exclude .DS_STORE -r ISAcreator-$VERSION-$PACKAGE_TYPE.zip Configurations ../ProgramData $ISATAB_FOLDER
+zip --exclude .DS_STORE -r ISAcreator-$VERSION-$PACKAGE_TYPE.zip Configurations ../ProgramData "$ISATAB_FOLDER"
 mv ISAcreator-$VERSION-jar-with-dependencies.jar ISAcreator.jar
 zip -u ISAcreator-$VERSION-$PACKAGE_TYPE.zip ISAcreator.jar
 
@@ -177,4 +177,4 @@ mkdir ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 mv ISAcreator.app ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 cp -r ../src/main/resources/Configurations ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
 cp -r ../ProgramData ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
-cp -r $ISATAB_FOLDER ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION
+cp -r "$ISATAB_FOLDER" ISAcreator-$VERSION-dmg-folder/ISAcreator-$VERSION

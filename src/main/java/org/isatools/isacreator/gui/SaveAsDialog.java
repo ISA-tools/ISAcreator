@@ -182,8 +182,8 @@ public class SaveAsDialog extends JDialog {
 
     public void save(String fileName) {
         if (!fileName.equals("") && !fileName.contains("Please enter a directory name...")) {
-            if (fileName.contains("/")) {
-                status.setText("<html><b>Invalid file name<: / are not allowed in directory names</b></html>");
+            if (fileName.contains(File.separator)) {
+                status.setText("<html><b>Invalid file name<: "+File.separator+" are not allowed in directory names</b></html>");
             } else {
                 File f = new File(ISAcreator.DEFAULT_ISATAB_SAVE_DIRECTORY + File.separator +
                         fileName.replace("/", "_"));
