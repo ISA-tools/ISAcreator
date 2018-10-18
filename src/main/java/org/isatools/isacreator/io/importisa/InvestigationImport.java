@@ -37,9 +37,8 @@
 
 package org.isatools.isacreator.io.importisa;
 
-import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVParser;
-
+import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +47,6 @@ import org.isatools.errorreporter.model.ErrorMessage;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationFileSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationSection;
 import org.isatools.isacreator.io.importisa.investigationproperties.InvestigationStructureLoader;
-import org.isatools.isacreator.utils.StringProcessing;
 import org.isatools.isacreator.utils.datastructures.SetUtils;
 import uk.ac.ebi.utils.collections.Pair;
 
@@ -127,18 +125,17 @@ public class InvestigationImport {
                 if (!StringUtils.isEmpty(lineLabel)) {
 
 
-                    String valueToTitleCase = lineLabel;
-                    if (lineLabel.contains("Comment"))
-                        valueToTitleCase = StringProcessing.removeSpaceFromQualifiedField(StringProcessing.convertStringToTitleCase(lineLabel));
+                    //String valueToTitleCase = lineLabel;
+                    //if (lineLabel.contains("Comment"))
+                    //    valueToTitleCase = StringProcessing.removeSpaceFromQualifiedField(StringProcessing.convertStringToTitleCase(lineLabel));
 
-                    //System.out.println(valueToTitleCase);
-                    if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(valueToTitleCase)) {
-                        importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).put(valueToTitleCase, new ArrayList<String>());
+                    if (!importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).containsKey(lineLabel)) {
+                        importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).put(lineLabel, new ArrayList<String>());
                     }
 
                     if (line.length > 1) {
                         for (int index = 1; index < line.length; index++) {
-                            importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).get(valueToTitleCase).add(line[index]);
+                            importedInvestigationFile.get(currentMajorSection).get(currentMinorSection).get(lineLabel).add(line[index]);
                         }
                     }
                 }
