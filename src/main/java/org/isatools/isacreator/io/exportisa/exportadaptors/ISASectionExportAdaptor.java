@@ -68,9 +68,7 @@ public class ISASectionExportAdaptor {
         for (String fieldName : isaSection.getFieldValues().keySet()) {
 
             String tmpFieldName = fieldName;
-           // if (fieldName.contains("Comment")) {
-           //     tmpFieldName = StringProcessing.removeSpaceFromQualifiedField(StringProcessing.convertStringToTitleCase(tmpFieldName));
-           // }
+
             if (aliasesToRealNames.containsKey(fieldName)) {
                 tmpFieldName = aliasesToRealNames.get(fieldName);
             }
