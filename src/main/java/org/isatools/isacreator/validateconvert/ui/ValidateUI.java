@@ -37,7 +37,7 @@ package org.isatools.isacreator.validateconvert.ui;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-import com.sun.awt.AWTUtilities;
+//import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.*;
 import org.isatools.isacreator.common.UIHelper;
@@ -102,7 +102,8 @@ public class ValidateUI extends CommonValidationConversionUI {
         setBackground(UIHelper.BG_COLOR);
 
         if (GraphicsUtils.isWindowTransparencySupported()) {
-            AWTUtilities.setWindowOpacity(this, DESIRED_OPACITY);
+//            AWTUtilities.setWindowOpacity(this, DESIRED_OPACITY);
+            this.setOpacity(DESIRED_OPACITY);
         }
 
         HUDTitleBar titlePanel = new HUDTitleBar(

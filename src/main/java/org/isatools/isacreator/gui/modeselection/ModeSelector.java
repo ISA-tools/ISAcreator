@@ -36,7 +36,7 @@ package org.isatools.isacreator.gui.modeselection;
  The ISA Team and the ISA software suite have been funded by the EU Carcinogenomics project (http://www.carcinogenomics.eu), the UK BBSRC (http://www.bbsrc.ac.uk), the UK NERC-NEBC (http://nebc.nerc.ac.uk) and in part by the EU NuGO consortium (http://www.nugo.org/everyone).
  */
 
-import com.sun.awt.AWTUtilities;
+//import com.sun.awt.AWTUtilities;
 import org.isatools.isacreator.common.CommonMouseAdapter;
 import org.isatools.isacreator.effects.GraphicsUtils;
 import org.isatools.isacreator.gui.ISAcreator;
@@ -88,8 +88,8 @@ public class ModeSelector extends JFrame implements BundleActivator {
         setAlwaysOnTop(true);
         setUndecorated(true);
 
-        AWTUtilities.setWindowOpaque(this, false);
-
+//        AWTUtilities.setWindowOpaque(this, false);
+        this.setOpacity(0);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
         int x = (dim.width - 590) / 2;

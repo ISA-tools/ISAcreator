@@ -1,7 +1,7 @@
 package org.isatools.isacreator.validateconvert.ui;
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import com.sun.awt.AWTUtilities;
+//import com.sun.awt.AWTUtilities;
 import org.apache.log4j.Logger;
 import org.isatools.errorreporter.model.ErrorLevel;
 import org.isatools.errorreporter.model.ErrorMessage;
@@ -84,7 +84,8 @@ public class ENASubmissionUI extends CommonValidationConversionUI {
         setBackground(UIHelper.BG_COLOR);
 
         if (GraphicsUtils.isWindowTransparencySupported()) {
-            AWTUtilities.setWindowOpacity(this, DESIRED_OPACITY);
+            this.setOpacity(DESIRED_OPACITY);
+//            AWTUtilities.setWindowOpacity(this, DESIRED_OPACITY);
         }
 
         HUDTitleBar titlePanel = new HUDTitleBar(null, null);

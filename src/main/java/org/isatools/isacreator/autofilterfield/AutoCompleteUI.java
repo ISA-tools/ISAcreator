@@ -38,7 +38,7 @@ package org.isatools.isacreator.autofilterfield;
  */
 
 import com.explodingpixels.macwidgets.IAppWidgetFactory;
-import com.sun.awt.AWTUtilities;
+//import com.sun.awt.AWTUtilities;
 import org.isatools.isacreator.autofilteringlist.ExtendedJList;
 import org.isatools.isacreator.autofilteringlist.FilterField;
 import org.isatools.isacreator.autofilteringlist.FilterableListCellRenderer;
@@ -240,12 +240,15 @@ public class AutoCompleteUI<T extends Comparable> extends JWindow implements Act
 
         if (!isShowing()) {
 
-            AWTUtilities.setWindowOpacity(this, 0f);
+
+//            AWTUtilities.setWindowOpacity(this, 0f);
+            this.setOpacity(0);
             repaint();
             setVisible(true);
         }
 
         animationTimer.start();
+
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
@@ -263,7 +266,8 @@ public class AutoCompleteUI<T extends Comparable> extends JWindow implements Act
                 opacity = DESIRED_OPACITY - animationPercent;
             }
 
-            AWTUtilities.setWindowOpacity(this, opacity);
+//            AWTUtilities.setWindowOpacity(this, opacity);
+            this.setOpacity(opacity);
             repaint();
 
             if (animationPercent >= DESIRED_OPACITY) {

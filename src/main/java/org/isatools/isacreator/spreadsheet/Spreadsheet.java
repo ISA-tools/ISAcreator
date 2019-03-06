@@ -68,6 +68,7 @@ import org.jdesktop.fuse.ResourceInjector;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.TableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -80,6 +81,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import java.util.Vector;
+
 
 /**
  * Spreadsheet class.
@@ -338,9 +341,9 @@ public class Spreadsheet extends JComponent implements
         rows = new Vector<Object>();
 
         if (tableReferenceObject.getPreDefinedHeaders() != null) {
-            columns = tableReferenceObject.getPreDefinedHeaders();
+             columns = new Vector (tableReferenceObject.getPreDefinedHeaders());
         } else {
-            columns = tableReferenceObject.getHeaders();
+             columns = new Vector (tableReferenceObject.getHeaders());
         }
 
         spreadsheetModel.setDataVector(rows, columns);

@@ -226,7 +226,9 @@ public class WSOntologyTreeCreator implements OntologyTreeCreator, TreeSelection
         }
 
         // add next level of nodes if not already added
-        final Enumeration<DefaultMutableTreeNode> treeNodeEnumeration = node.children();
+//        final Enumeration<DefaultMutableTreeNode> treeNodeEnumeration = node.children();
+        final Enumeration<DefaultMutableTreeNode> treeNodeEnumeration= (Enumeration<DefaultMutableTreeNode>)(Object)node.depthFirstEnumeration();
+
 
         while (treeNodeEnumeration.hasMoreElements()) {
             DefaultMutableTreeNode treeNode = treeNodeEnumeration.nextElement();

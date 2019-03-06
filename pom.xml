@@ -41,6 +41,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+ 
+       <maven.compiler.source>11</maven.compiler.source>
+       <maven.compiler.target>11</maven.compiler.target>
+             
     </properties>
 
     <repositories>
@@ -70,21 +74,56 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+            
+           <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
                     <source>1.7</source>
-                    <target>1.7</target>
+                    <target>1.7</target> -->
                     <!--<executable>apt</executable>-->
-                    <fork>true</fork>
-                    <debug>true</debug>
-
+           <!--         <fork>true</fork>
+                        <debug>true</debug>  
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
                 </configuration>
+            </plugin> -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <version>1.16</version>
+                <configuration>
+                    <javaHomeClassPath>
+                        <javaHomeClassPath>/Library/Java/JavaVirtualMachines/jdk-11.0.2.jdk/Contents/Home</javaHomeClassPath>
+                        <javaHomeClassPath>/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home</javaHomeClassPath>
+                    </javaHomeClassPath>
+                </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <!--<configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>-->
+                <configuration>
+                    <verbose>true</verbose>
+                    <fork>true</fork>
+                    <executable>/Library/Java/JavaVirtualMachines/jdk-11.0.2.jdk/Contents/Home/bin/javac</executable>
+                    <compilerVersion>11</compilerVersion>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -176,11 +215,14 @@
                 <inherited>true</inherited>
                 <configuration>
                     <schemaDirectory>${project.basedir}/src/main/resources/xsd</schemaDirectory>
+                    <javaSource>11</javaSource>
                     <sourceGenerationDirectory>
                         ${project.basedir}/target/generated/xmlbeans
                     </sourceGenerationDirectory>
                 </configuration>
             </plugin>
+            
+            
 
             <plugin>
                 <groupId>org.jvnet.jax-ws-commons</groupId>
@@ -210,7 +252,7 @@
                     <dependency>
                         <groupId>com.sun.xml.ws</groupId>
                         <artifactId>jaxws-tools</artifactId>
-                        <version>2.1.7</version>
+                        <version>2.3.2</version>
                         <exclusions>
                             <exclusion>
                                 <groupId>org.jvnet.staxex</groupId>
@@ -222,7 +264,7 @@
                     <dependency>
                         <groupId>org.jvnet.staxex</groupId>
                         <artifactId>stax-ex</artifactId>
-                        <version>1.2</version>
+                        <version>1.8.1</version>
                         <exclusions>
                             <exclusion>
                                 <groupId>javax.xml.stream</groupId>
@@ -317,13 +359,13 @@
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>2.0</version>
+                <version>3.6</version>
             </dependency>
 
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.0.1</version>
+                <version>2.6</version>
             </dependency>
 
             <dependency>
@@ -335,7 +377,7 @@
             <dependency>
                 <groupId>net.sf.opencsv</groupId>
                 <artifactId>opencsv</artifactId>
-                <version>2.1</version>
+                <version>2.4</version>
             </dependency>
 
             <dependency>
@@ -353,31 +395,31 @@
             <dependency>
                 <groupId>net.minidev</groupId>
                 <artifactId>json-smart</artifactId>
-                <version>2.0-RC3</version>
+                <version>2.3</version>
             </dependency>
 
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
-                <version>2.4</version>
+                <version>2.6</version>
             </dependency>
 
             <dependency>
                 <groupId>javax.xml.ws</groupId>
                 <artifactId>jaxws-api</artifactId>
-                <version>2.2.5</version>
+                <version>2.3.1</version>
             </dependency>
 
             <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
-                <version>1.1</version>
+                <version>1.1.1</version>
             </dependency>
 
             <dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
-                <version>2.2.3</version>
+                <version>2.4.0-b180830.0359</version>
             </dependency>
 
             <dependency>
@@ -389,7 +431,7 @@
             <dependency>
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
-                <version>1.3.02</version>
+                <version>2.0.2</version>
             </dependency>
 
             <dependency>
@@ -401,7 +443,7 @@
             <dependency>
                 <groupId>net.sourceforge.jexcelapi</groupId>
                 <artifactId>jxl</artifactId>
-                <version>2.6.3</version>
+                <version>2.6.12</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -413,19 +455,19 @@
             <dependency>
                 <groupId>org.apache.xmlbeans</groupId>
                 <artifactId>xmlbeans</artifactId>
-                <version>2.3.0</version>
+                <version>3.0.2</version>
             </dependency>
 
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
-                <version>1.2.14</version>
+                <version>1.2.17-atlassian-2-19d553e</version>
             </dependency>
 
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.10</version>
+                <version>4.13-beta-2</version>
                 <scope>test</scope>
             </dependency>
 
@@ -444,7 +486,7 @@
             <dependency>
                 <groupId>uk.ac.ebi</groupId>
                 <artifactId>jutils</artifactId>
-                <version>1.4</version>
+                <version>1.5</version>
 
                 <exclusions>
                     <exclusion>
@@ -463,13 +505,13 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.main</artifactId>
-                <version>4.2.1</version>
+                <version>6.0.2</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.framework</artifactId>
-                <version>4.2.1</version>
+                <version>6.0.2</version>
             </dependency>
 
             <dependency>
@@ -517,7 +559,7 @@
             <dependency>
                 <groupId>com.google.zxing</groupId>
                 <artifactId>core</artifactId>
-                <version>2.1</version>
+                <version>3.3.3</version>
             </dependency>
 
             <dependency>
@@ -635,7 +677,7 @@
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
-            <version>2.3.0</version>
+            <version>3.0.2</version>
         </dependency>
 
         <dependency>
@@ -719,38 +761,38 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-bundle</artifactId>
-            <version>1.11</version>
+            <version>1.19.4</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-multipart</artifactId>
-            <version>1.18</version>
+            <version>1.19.4</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
-            <version>1.11</version>
+            <version>1.19.4</version>
             <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.3.0</version>
+            <version>1.11.512</version>
         </dependency>
 
         <dependency>
             <groupId>org.jets3t</groupId>
             <artifactId>com.springsource.org.jets3t</artifactId>
-            <version>0.8.0</version>
+            <version>0.8.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
-            <version>1.0</version>
+            <version>1.1.4</version>
         </dependency>
 
     </dependencies>
